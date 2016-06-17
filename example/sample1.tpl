@@ -8,6 +8,10 @@ package {{.Package}}
 
 import "fmt"
 
+{{if .Egg}}
+// you found the easter egg!
+{{end}}
+
 func As{{.Type}}(s string) ({{.Type}}, error) {
 	i0 := _{{.Type}}_index[0]
 	for j := 1; j < len(_{{.Type}}_index); j++ {

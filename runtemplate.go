@@ -123,17 +123,35 @@ func makeFuncMap() template.FuncMap {
 	}
 }
 
-func runTheTemplate(templateFile, outputFile string, context map[string]string) {
+func runTheTemplate(templateFile, outputFile string, context map[string]interface{}) {
 	debug("ReadFile %s\n", templateFile)
 	b, err := ioutil.ReadFile(templateFile)
 	if err != nil {
 		fail(err)
 	}
 
+	//context["GOARCH"] = os.Getenv("GOARCH")
+	//context["GOOS"] = os.Getenv("GOOS")
+	context["GOPATH"] = os.Getenv("GOPATH")
+	context["GOROOT"] = os.Getenv("GOROOT")
+
+	wd, err := os.Getwd()
+	if err != nil {
+		fail(err)
+	}
+
+	context["PWD"] = wd
+	context["Package"] = reemoveBefore(wd, '/')
+
 	for _, arg := range flag.Args() {
 		if strings.Contains(arg, "=") {
-			key, val := divide(arg, '=')
-			context[strings.TrimSpace(key)] = strings.TrimSpace(val)
+			key1, val1 := divide(arg, '=')
+			key2, val2 := strings.TrimSpace(key1), strings.TrimSpace(val1)
+			switch val2 {
+			case "true":  context[key2] = true
+			case "false": context[key2] = false
+			default:      context[key2] = val2
+			}
 		}
 	}
 	debug("context %+v\n", context)
@@ -195,7 +213,7 @@ func youngestDependency(main ...os.FileInfo) os.FileInfo {
 func generate() {
 	// Context will be passed to the template as a map.
 	var err error
-	context := make(map[string]string)
+	context := make(map[string]interface{})
 
 	templateFile := chooseArg(tpl, ".tpl")
 	outputFile := chooseArg(output, ".go")
@@ -239,18 +257,6 @@ func generate() {
 	context["OutFile"] = outputFile
 	context["TemplateFile"] = templateFile
 	context["TemplatePath"] = foundTemplate
-	//context["GOARCH"] = os.Getenv("GOARCH")
-	//context["GOOS"] = os.Getenv("GOOS")
-	context["GOPATH"] = os.Getenv("GOPATH")
-	context["GOROOT"] = os.Getenv("GOROOT")
-
-	wd, err := os.Getwd()
-	if err != nil {
-		fail(err)
-	}
-
-	context["PWD"] = wd
-	context["Package"] = reemoveBefore(wd, '/')
 
 	youngestDep := youngestDependency(templateInfo, mainTypeInfo)
 
