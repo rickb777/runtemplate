@@ -1,7 +1,6 @@
-// Generated from {{.TemplateFile}} with: Package={{.Package}} Type={{.Type}}
+// Generated from {{.TemplateFile}} with Type={{.Type}} PName={{.PType}} LName={{.LType}}
 // Full path {{.TemplatePath}}
 // PWD={{.PWD}}
-// Go GOARCH={{.GOARCH}}, GOOS={{.GOOS}}
 // GOPATH={{.GOPATH}}
 // GOROOT={{.GOROOT}}
 

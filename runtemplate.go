@@ -12,6 +12,7 @@ import (
 var tpl = flag.String("tpl", "", "Name of template file; this must be available locally or be on TEMPLATEPATH.")
 var output = flag.String("output", "", "Name of the output file.")
 var mainType = flag.String("type", "", "Name of the main type.")
+var deps = flag.String("deps", "", "List of other dependent files (separated by commas).")
 var force = flag.Bool("f", false, "Force output generation, even if up to date.")
 var verbose = flag.Bool("v", false, "Verbose progress messages.")
 var dbg = flag.Bool("z", false, "Debug messages.")
@@ -40,6 +41,14 @@ func divide(s string, c byte) (string, string) {
 		return s, ""
 	}
 	return s[:p], s[p + 1:]
+}
+
+func reemoveBefore(s string, c byte) (string) {
+	p := strings.LastIndexByte(s, c)
+	if p < 0 {
+		return s
+	}
+	return s[p + 1:]
 }
 
 func chooseArg(flagValue *string, suffix string) string {
@@ -150,32 +159,59 @@ func runTheTemplate(templateFile, outputFile string, context map[string]string) 
 	}
 }
 
+func youngestDependency(main ...os.FileInfo) os.FileInfo {
+	result := main[0]
+	for _, m := range main {
+		if m != nil && m.ModTime().After(result.ModTime()) {
+			debug("change dep1 %s %v -> %s %v\n", result.Name(), result.ModTime(), m.Name(), m.ModTime())
+			result = m
+		}
+	}
+
+	if deps == nil || *deps == "" {
+		return result
+	}
+
+	list := strings.Split(*deps, ",")
+	for _, f := range list {
+		fi, err := os.Stat(f)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Printf("Warn: %s does not exist.\n", f)
+			} else {
+				fail(err)
+			}
+		} else {
+			if fi.ModTime().After(result.ModTime()) {
+				debug("change dep2 %s %v -> %s %v\n", result.Name(), result.ModTime(), fi.Name(), fi.ModTime())
+				result = fi
+			}
+		}
+	}
+
+	return result
+}
+
 func generate() {
 	// Context will be passed to the template as a map.
+	var err error
 	context := make(map[string]string)
 
 	templateFile := chooseArg(tpl, ".tpl")
 	outputFile := chooseArg(output, ".go")
-	if outputFile == "" {
-		fail("Output file must be specified.")
-	}
-
-	var outputInfo os.FileInfo
-	var err error
-	if !*force {
-		debug("stat %s\n", outputFile)
-		outputInfo, err = os.Stat(outputFile)
-		if os.IsNotExist(err) {
-			outputInfo = nil
-		}
-	}
 
 	var mainTypeInfo os.FileInfo
 	var mainTypeGo string
 	if mainType != nil && *mainType != "" {
 		t := *mainType
-		mainTypeGo = strings.ToLower(t) + ".go"
+		p := t
+		if t[0] == '*' {
+			t = t[1:]
+		}
+		lt := strings.ToLower(t)
+		mainTypeGo = lt + ".go"
 		context["Type"] = t
+		context["PType"] = p
 		context["LType"] = strings.ToLower(t[:1]) + t[1:]
 		debug("stat %s\n", mainTypeGo)
 		mainTypeInfo, err = os.Stat(mainTypeGo)
@@ -185,7 +221,16 @@ func generate() {
 		}
 		if mainTypeGo == outputFile {
 			fail(mainTypeGo, "is specified as both an input dependency and the output file.")
+		} else if outputFile == "" {
+			tf, _ := divide(templateFile, '.')
+			tf = reemoveBefore(tf, '/')
+			outputFile = fmt.Sprintf("%s_%s.go", lt, tf)
+			debug("default output now '%s'\n", outputFile)
 		}
+	}
+
+	if outputFile == "" {
+		fail("Output file must be specified.")
 	}
 
 	foundTemplate, templateInfo := findTemplateFileFromPath(templateFile)
@@ -203,21 +248,32 @@ func generate() {
 	if err != nil {
 		fail(err)
 	}
-	context["PWD"] = wd
-	_, context["Package"] = divide(wd, '/')
 
-	youngestDep := templateInfo
-	if mainTypeInfo != nil {
-		debug("mainType=%v, template=%v\n", mainTypeInfo.ModTime(), templateInfo.ModTime())
-		if mainTypeInfo.ModTime().After(templateInfo.ModTime()) {
-			youngestDep = mainTypeInfo
+	context["PWD"] = wd
+	context["Package"] = reemoveBefore(wd, '/')
+
+	youngestDep := youngestDependency(templateInfo, mainTypeInfo)
+
+	var outputInfo os.FileInfo
+	if !*force {
+		debug("stat %s\n", outputFile)
+		outputInfo, err = os.Stat(outputFile)
+		if os.IsNotExist(err) {
+			outputInfo = nil
 		}
 	}
 
 	if outputInfo != nil {
-		debug("output=%v, youngest=%v\n", outputInfo.ModTime(), youngestDep.ModTime())
+		debug("output=%s %v, youngest=%s %v\n", outputInfo.Name(), outputInfo.ModTime(), youngestDep.Name(), youngestDep.ModTime())
 		if outputInfo.ModTime().After(youngestDep.ModTime()) {
-			info("%s is already newer than %s.\n", outputFile, templateFile)
+			than := templateFile
+			if mainTypeInfo != nil {
+				than = than + "," + mainTypeGo
+			}
+			if deps != nil && *deps != "" {
+				than = than + "," + *deps
+			}
+			info("%s is already newer than %s.\n", outputFile, than)
 			return
 		}
 	}

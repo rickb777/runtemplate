@@ -5,9 +5,14 @@ use-case is for source code generation.
 
 You can install it with:
 
-`go get github.com/rickb777/runtemplate`
+```
+go get github.com/rickb777/runtemplate
+```
 
 It is intended to be used directly from the command-line and also with `go generate`.
+
+It supports light-weight dependency checking, i.e. much less work is done when the generated output file
+already exists and is up to date.
 
 ## Command-Line
 
@@ -20,12 +25,16 @@ runtemplate -tpl filename.tpl -output outfile.go -type MyStruct -deps foo.go,bar
  * `-tpl <name>`
    - (required) set the name of the input template.
 
- * `-output <name>`
-   - (required) set the name of the output file to be written
-
  * `-type <name>`
    - (optional) set the name of the primary Go type for which code generation is being used; the file <name>.go
      (in lowercase) is checked for modification timestamp and treated as a dependency, if it exists.
+
+ * `-output <name>`
+   - set the name of the output file to be written; if `-tpl` is not specifed, `-output` is required,
+     otherwise it is optional.
+
+ * `-deps <name>,<name>,...`
+   - specify more dependencies to be checked in addition to the template itself and the 'type' file if any.
 
  * `-f`
    - force output generation; if this is not set the output file is only produced when it is older than the
@@ -43,7 +52,7 @@ The option parser will also infer the template and output file names, so it is a
 runtemplate outfile.go filename.tpl Type=MyStruct Option1=Value1 Option2=Value2
 ```
 
-i.e. to omit the explicit flags `-tpl` and `output`.
+i.e. to omit the explicit flags `-tpl` and `-output`.
 
 ## Go Generate
 
@@ -66,8 +75,11 @@ In the template file, you can access the key=value pairs simply by their keys. F
 
 `{{ .Option1 }}`
 
-If `-type` is specified, its value is provided in `.Type` and `.LType`, the latter having its first character
-converted to lowercase.
+If `-type` is specified, its value is provided in several variants:
+
+ * `.Type`  - the type name (without '*' prefix)
+ * `.PType` - the type name (prefixed by '*' if supplied)
+ * `.LType` - the type name having its first character converted to lowercase.
 
 Additional keys are also made available:
 
