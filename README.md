@@ -23,18 +23,18 @@ runtemplate -tpl filename.tpl -output outfile.go -type MyStruct -deps foo.go,bar
 ```
 
  * `-tpl <name>`
-   - (required) set the name of the input template.
+   - (required) the name of the input template.
 
  * `-type <name>`
-   - (optional) set the name of the primary Go type for which code generation is being used; the file <name>.go
+   - (optional) the name of the primary Go type for which code generation is being used; the file `<name>.go`
      (in lowercase) is checked for modification timestamp and treated as a dependency, if it exists.
 
  * `-output <name>`
-   - set the name of the output file to be written; if `-tpl` is not specifed, `-output` is required,
+   - the name of the output file to be written. If `-tpl` is not specifed, `-output` is required,
      otherwise it is optional.
 
  * `-deps <name>,<name>,...`
-   - specify more dependencies to be checked in addition to the template itself and the 'type' file if any.
+   - adds more dependencies to be checked in addition to the template itself and the 'type' file (if any).
 
  * `-f`
    - force output generation; if this is not set the output file is only produced when it is older than the
@@ -87,7 +87,7 @@ Additional keys are also made available:
  * `.OutFile` - the name of the output file
  * `.TemplateFile` - the template name as specified
  * `.TemplatePath` - the location and name of the actual template file used
- * `.Package` - the name of the current directory
+ * `.Package` - the name of the directory of the output file (often the current directory)
  * `.GOARCH`, `.GOOS`, `.GOPATH`, `GOROOT` - the value of Go environment variables.
 
 Also included are some filters that may be helpful.
@@ -102,6 +102,10 @@ The last two are useful for getting only the package name or only the type name 
 
 ## Template Path
 
-Templates are located by following TEMPLATEPATH, an optional environment variable. If it is present, it
-is used like GOPATH, i.e. a colon-separate list of directories to be searched. If TEMPLATEPATH is absent,
-its default is `TEMPLATEPATH=.`, i.e. templates are relative to the current directory.
+Templates are located by following `TEMPLATEPATH`, an optional environment variable. If it is defined, it
+is used like `PATH`, i.e. a colon-separate list of directories to be searched.
+
+If `TEMPLATEPATH` is absent, its default is `TEMPLATEPATH=.`, i.e. templates are relative to the current directory.
+
+If available, the location of the builtin templates is also added to `TEMPLATEPATH`; this is found at
+`$GOPATH/src/github/rickb777/runtemplate/builtin`.

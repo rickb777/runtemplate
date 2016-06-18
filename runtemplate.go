@@ -9,6 +9,8 @@ import (
 	"flag"
 )
 
+const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
+
 var tpl = flag.String("tpl", "", "Name of template file; this must be available locally or be on TEMPLATEPATH.")
 var output = flag.String("output", "", "Name of the output file.")
 var mainType = flag.String("type", "", "Name of the main type.")
@@ -43,7 +45,7 @@ func divide(s string, c byte) (string, string) {
 	return s[:p], s[p + 1:]
 }
 
-func reemoveBefore(s string, c byte) (string) {
+func removeBefore(s string, c byte) (string) {
 	p := strings.LastIndexByte(s, c)
 	if p < 0 {
 		return s
@@ -73,22 +75,28 @@ func findTemplateFileFromPath(templateFile string) (string, os.FileInfo) {
 	templatePath := os.Getenv("TEMPLATEPATH")
 	debug("TEMPLATEPATH=%s\n", templatePath)
 
-	if len(templatePath) > 0 {
-		x := strings.Split(templatePath, ":")
-		debug("searching path %+v\n", x)
-		for _, p := range x {
-			path := p + "/" + templateFile
-			debug("stat '%s'\n", path)
-			info, err := os.Stat(path)
-			if err == nil {
-				if info.IsDir() {
-					fail(fmt.Errorf("%s is a directory.", path))
-				}
-				return path, info
+	goPath := os.Getenv("GOPATH")
+	if goPath != "" {
+		if templatePath != "" {
+			templatePath = templatePath + ":"
+		}
+		templatePath = templatePath + goPath + defaultTplPath
+	}
+
+	x := strings.Split(templatePath, ":")
+	debug("searching path %+v\n", x)
+	for _, p := range x {
+		path := p + "/" + templateFile
+		debug("stat '%s'\n", path)
+		info, err := os.Stat(path)
+		if err == nil {
+			if info.IsDir() {
+				fail(fmt.Errorf("%s is a directory.", path))
 			}
-			if !os.IsNotExist(err) {
-				fail(path, err)
-			}
+			return path, info
+		}
+		if !os.IsNotExist(err) {
+			fail(path, err)
 		}
 	}
 
@@ -123,6 +131,27 @@ func makeFuncMap() template.FuncMap {
 	}
 }
 
+func choosePackage(outputFile string) (string, string) {
+	wd, err := os.Getwd()
+	if err != nil {
+		fail(err)
+	}
+
+	pkg := removeBefore(wd, '/')
+
+	if strings.IndexByte(outputFile, '/') > 0 {
+		dir, _ := divide(outputFile, '/')
+		if strings.IndexByte(dir, '/') > 0 {
+			dir = removeBefore(dir, '/')
+		}
+		if dir != "." {
+			pkg = dir
+		}
+	}
+
+	return wd, pkg
+}
+
 func runTheTemplate(templateFile, outputFile string, context map[string]interface{}) {
 	debug("ReadFile %s\n", templateFile)
 	b, err := ioutil.ReadFile(templateFile)
@@ -135,13 +164,7 @@ func runTheTemplate(templateFile, outputFile string, context map[string]interfac
 	context["GOPATH"] = os.Getenv("GOPATH")
 	context["GOROOT"] = os.Getenv("GOROOT")
 
-	wd, err := os.Getwd()
-	if err != nil {
-		fail(err)
-	}
-
-	context["PWD"] = wd
-	context["Package"] = reemoveBefore(wd, '/')
+	context["PWD"], context["Package"] = choosePackage(outputFile)
 
 	for _, arg := range flag.Args() {
 		if strings.Contains(arg, "=") {
@@ -241,7 +264,7 @@ func generate() {
 			fail(mainTypeGo, "is specified as both an input dependency and the output file.")
 		} else if outputFile == "" {
 			tf, _ := divide(templateFile, '.')
-			tf = reemoveBefore(tf, '/')
+			tf = removeBefore(tf, '/')
 			outputFile = fmt.Sprintf("%s_%s.go", lt, tf)
 			debug("default output now '%s'\n", outputFile)
 		}
