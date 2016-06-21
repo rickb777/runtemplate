@@ -82,6 +82,10 @@ If `-type` is specified, its value is provided in several variants:
  * `.PType` - the type name (prefixed by '*' if supplied)
  * `.LType` - the type name having its first character converted to lowercase.
 
+For example, if `-type *Foo` is specified with a *, `.Type` will be `Foo`,  `.PType` will be `*Foo`,  `.LType` will be `foo`.
+Or if `-type Foo` is specified without *, `.Type` will be `Foo`,  `.PType` will also be `Foo`,  `.LType` will be `foo`.
+Be aware that your shell might expand * so you need suitable quote marks.
+
 Additional keys are also made available:
 
  * `.OutFile` - the name of the output file
