@@ -2,10 +2,14 @@
 
 package {{.Package}}
 
+{{if .Stringer}}
 import (
     "bytes"
 )
+{{else}}
+// Stringer is not supported.
 
+{{end}}
 // {{.Type}}Set is the primary type that represents a set
 type {{.Type}}Set map[{{.Type}}]struct{}
 
@@ -196,6 +200,7 @@ func (set {{.Type}}Set) Clone() {{.Type}}Set {
 	return clonedSet
 }
 
+{{if .Stringer}}
 func (set {{.Type}}Set) StringList() []string {
 	strings := make([]string, 0)
 	for elem := range set {
@@ -213,7 +218,6 @@ func (set {{.Type}}Set) MarshalJSON() ([]byte, error) {
 	return set.toBytes("\"", "\", \""), nil
 }
 
-// implements encoding.Marshaler interface {
 func (set {{.Type}}Set) toBytes(quote, sep string) []byte {
 	b := bytes.Buffer{}
 	b.WriteString("[")
@@ -227,3 +231,4 @@ func (set {{.Type}}Set) toBytes(quote, sep string) []byte {
     b.WriteString("]")
 	return b.Bytes()
 }
+{{end}}
