@@ -1,3 +1,9 @@
+// Runtemplate
+// This application provides a simple way of exxecuting standard Go templates from the command line. The obvious
+// use-case is for source code generation.
+//
+// Please see the [README](https://github.com/rickb777/runtemplate/blob/master/README.md).
+
 package main
 
 import (

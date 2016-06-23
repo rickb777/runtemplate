@@ -2,7 +2,6 @@
 
 [![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate)
 [![Build Status](https://travis-ci.org/rickb777/runtemplate.svg?branch=master)](https://travis-ci.org/rickb777/runtemplate)
-[![Coverage Status](https://coveralls.io/repos/rickb777/runtemplate/badge.svg?branch=master&service=github)](https://coveralls.io/github/rickb777/runtemplate?branch=master)
 
 This application provides a simple way of exxecuting standard Go templates from the command line. The obvious
 use-case is for source code generation.
