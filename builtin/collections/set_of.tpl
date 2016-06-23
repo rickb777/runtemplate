@@ -32,7 +32,7 @@ func (set {{.Type}}Set) ToSlice() []{{.Type}} {
 }
 
 // Add adds an item to the current set if it doesn't already exist in the set.
-func (set *{{.Type}}Set) Add(i {{.Type}}) bool {
+func (set {{.Type}}Set) Add(i {{.Type}}) bool {
 	_, found := set[i]
 	set[i] = struct{}{}
 	return !found //False if it existed already
@@ -126,7 +126,7 @@ func (set *{{.Type}}Set) Clear() {
 }
 
 // Remove allows the removal of a single item in the set.
-func (set *{{.Type}}Set) Remove(i {{.Type}}) {
+func (set {{.Type}}Set) Remove(i {{.Type}}) {
 	delete(set, i)
 }
 
