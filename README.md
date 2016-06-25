@@ -47,7 +47,7 @@ runtemplate -tpl filename.tpl -output outfile.go -type MyStruct -deps foo.go,bar
    - verbose info messages
 
  * key=value ...
-   - (optional) supply a (list of) key/value pairs that re passed in to the template. `true` and `false` are
+   - (optional) supply a (list of) key/value pairs that are passed in to the template. `true` and `false` are
      converted to booleans, allowing conditional blocks within your templates.
 
 The option parser will also infer the template and output file names, so it is also permitted to use
@@ -83,7 +83,8 @@ If `-type` is specified, its value is provided in several variants:
 
  * `.Type`  - the type name (without '*' prefix)
  * `.PType` - the type name (prefixed by '*' if supplied)
- * `.LType` - the type name having its first character converted to lowercase.
+ * `.UType` - the type name having its first character converted to uppercase - useful for exported identifiers.
+ * `.LType` - the type name having its first character converted to lowercase - useful for internal identifiers.
 
 For example, if `-type *Foo` is specified with a *, `.Type` will be `Foo`,  `.PType` will be `*Foo`,  `.LType` will be `foo`.
 Or if `-type Foo` is specified without *, `.Type` will be `Foo`,  `.PType` will also be `Foo`,  `.LType` will be `foo`.

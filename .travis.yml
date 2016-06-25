@@ -9,6 +9,8 @@ install:
 #  - go get github.com/mattn/goveralls
 
 script:
+  - go install .
+  - go generate ./...
   - go test -v ./...
 
 #  - go test -v -covermode=count -coverprofile=coverage.out .

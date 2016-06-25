@@ -1,13 +1,13 @@
 package main
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestChoosePackage(t *testing.T) {
 	wd, pkg := choosePackage("foo.go")
-	if ! strings.HasSuffix(wd, pkg) {
+	if !strings.HasSuffix(wd, pkg) {
 		t.Errorf("wd=%s, pkg=%s", wd, pkg)
 	}
 
@@ -28,7 +28,7 @@ func TestChoosePackage(t *testing.T) {
 	}
 
 	wd, pkg = choosePackage("./foo.go")
-	if ! strings.HasSuffix(wd, pkg) {
+	if !strings.HasSuffix(wd, pkg) {
 		t.Errorf("wd=%s, pkg=%s", wd, pkg)
 	}
 }

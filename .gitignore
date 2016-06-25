@@ -1,2 +1,1 @@
-example/*.go
-
+*test/x_*.go

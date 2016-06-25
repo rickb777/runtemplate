@@ -7,12 +7,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
-	"flag"
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
@@ -48,15 +48,15 @@ func divide(s string, c byte) (string, string) {
 	if p < 0 {
 		return s, ""
 	}
-	return s[:p], s[p + 1:]
+	return s[:p], s[p+1:]
 }
 
-func removeBefore(s string, c byte) (string) {
+func removeBefore(s string, c byte) string {
 	p := strings.LastIndexByte(s, c)
 	if p < 0 {
 		return s
 	}
-	return s[p + 1:]
+	return s[p+1:]
 }
 
 func chooseArg(flagValue *string, suffix string) string {
@@ -158,6 +158,19 @@ func choosePackage(outputFile string) (string, string) {
 	return wd, pkg
 }
 
+func setTypeInContext(kind, t string, context map[string]interface{}) string {
+	p := t
+	if t[0] == '*' {
+		t = t[1:]
+	}
+	lt := strings.ToLower(t)
+	context[kind] = t
+	context["P"+kind] = p
+	context["U"+kind] = strings.ToUpper(t[:1]) + t[1:]
+	context["L"+kind] = strings.ToLower(t[:1]) + t[1:]
+	return lt
+}
+
 func runTheTemplate(templateFile, outputFile string, context map[string]interface{}) {
 	debug("ReadFile %s\n", templateFile)
 	b, err := ioutil.ReadFile(templateFile)
@@ -177,9 +190,14 @@ func runTheTemplate(templateFile, outputFile string, context map[string]interfac
 			key1, val1 := divide(arg, '=')
 			key2, val2 := strings.TrimSpace(key1), strings.TrimSpace(val1)
 			switch val2 {
-			case "true":  context[key2] = true
-			case "false": context[key2] = false
-			default:      context[key2] = val2
+			case "true":
+				context[key2] = true
+			case "false":
+				context[key2] = false
+			default:
+				setTypeInContext(key2, val2, context)
+
+				context[key2] = val2
 			}
 		}
 	}
@@ -250,22 +268,16 @@ func generate() {
 	var mainTypeInfo os.FileInfo
 	var mainTypeGo string
 	if mainType != nil && *mainType != "" {
-		t := *mainType
-		p := t
-		if t[0] == '*' {
-			t = t[1:]
-		}
-		lt := strings.ToLower(t)
+		lt := setTypeInContext("Type", *mainType, context)
 		mainTypeGo = lt + ".go"
-		context["Type"] = t
-		context["PType"] = p
-		context["LType"] = strings.ToLower(t[:1]) + t[1:]
+
 		debug("stat %s\n", mainTypeGo)
 		mainTypeInfo, err = os.Stat(mainTypeGo)
 		if os.IsNotExist(err) {
 			mainTypeInfo = nil
 			mainTypeGo = ""
 		}
+
 		if mainTypeGo == outputFile {
 			fail(mainTypeGo, "is specified as both an input dependency and the output file.")
 		} else if outputFile == "" {
