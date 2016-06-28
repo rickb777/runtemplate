@@ -1,4 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
+// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
 
 package {{.Package}}
 
@@ -32,6 +33,40 @@ func (set {{.UType}}Set) ToSlice() []{{.Type}} {
 	return s
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsEmpty returns true if the set is empty.
+func (set {{.UType}}Set) IsEmpty() bool {
+	return set.Size() == 0
+}
+
+// NonEmpty returns true if the set is not empty.
+func (set {{.UType}}Set) NonEmpty() bool {
+	return set.Size() > 0
+}
+
+// IsSequence returns true for lists.
+func (set {{.UType}}Set) IsSequence() bool {
+    return false
+}
+
+// IsSet returns false for lists.
+func (set {{.UType}}Set) IsSet() bool {
+    return true
+}
+
+// Size returns how many items are currently in the set. This is a synonym for Cardinality.
+func (set {{.UType}}Set) Size() int {
+	return len(set)
+}
+
+// Cardinality returns how many items are currently in the set. This is a synonym for Size.
+func (set {{.UType}}Set) Cardinality() int {
+	return set.Size()
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // Add adds an item to the current set if it doesn't already exist in the set.
 func (set {{.UType}}Set) Add(i {{.Type}}) bool {
 	_, found := set[i]
@@ -56,10 +91,12 @@ func (set {{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	return true
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // IsSubset determines if every item in the other set is in this set.
 func (set {{.UType}}Set) IsSubset(other {{.UType}}Set) bool {
-	for elem := range set {
-		if !other.Contains(elem) {
+	for v := range set {
+		if !other.Contains(v) {
 			return false
 		}
 	}
@@ -75,11 +112,11 @@ func (set {{.UType}}Set) IsSuperset(other {{.UType}}Set) bool {
 func (set {{.UType}}Set) Union(other {{.UType}}Set) {{.UType}}Set {
 	unionedSet := New{{.UType}}Set()
 
-	for elem := range set {
-		unionedSet.Add(elem)
+	for v := range set {
+		unionedSet.Add(v)
 	}
-	for elem := range other {
-		unionedSet.Add(elem)
+	for v := range other {
+		unionedSet.Add(v)
 	}
 	return unionedSet
 }
@@ -89,15 +126,15 @@ func (set {{.UType}}Set) Intersect(other {{.UType}}Set) {{.UType}}Set {
 	intersection := New{{.UType}}Set()
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for elem := range set {
-			if other.Contains(elem) {
-				intersection.Add(elem)
+		for v := range set {
+			if other.Contains(v) {
+				intersection.Add(v)
 			}
 		}
 	} else {
-		for elem := range other {
-			if set.Contains(elem) {
-				intersection.Add(elem)
+		for v := range other {
+			if set.Contains(v) {
+				intersection.Add(v)
 			}
 		}
 	}
@@ -107,9 +144,9 @@ func (set {{.UType}}Set) Intersect(other {{.UType}}Set) {{.UType}}Set {
 // Difference returns a new set with items in the current set but not in the other set
 func (set {{.UType}}Set) Difference(other {{.UType}}Set) {{.UType}}Set {
 	differencedSet := New{{.UType}}Set()
-	for elem := range set {
-		if !other.Contains(elem) {
-			differencedSet.Add(elem)
+	for v := range set {
+		if !other.Contains(v) {
+			differencedSet.Add(v)
 		}
 	}
 	return differencedSet
@@ -132,38 +169,32 @@ func (set {{.UType}}Set) Remove(i {{.Type}}) {
 	delete(set, i)
 }
 
-// Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set {{.UType}}Set) Size() int {
-	return len(set)
-}
+//-------------------------------------------------------------------------------------------------
 
-// Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set {{.UType}}Set) Cardinality() int {
-	return len(set)
-}
-
-// IsEmpty returns true if the set is empty.
-func (set {{.UType}}Set) IsEmpty() bool {
-	return len(set) == 0
-}
-
-// NonEmpty returns true if the set is not empty.
-func (set {{.UType}}Set) NonEmpty() bool {
-	return len(set) > 0
-}
-
-// Iter returns a channel of type {{.Type}} that you can range over.
-func (set {{.UType}}Set) Iter() <-chan {{.Type}} {
+// Send returns a channel of type {{.Type}} that you can range over.
+func (set {{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
 	go func() {
-		for elem := range set {
-			ch <- elem
+		for v := range set {
+			ch <- v
 		}
 		close(ch)
 	}()
 
 	return ch
 }
+
+// Clone returns a clone of the set.
+// Does NOT clone the underlying elements.
+func (set {{.UType}}Set) Clone() {{.UType}}Set {
+	clonedSet := New{{.UType}}Set()
+	for v := range set {
+		clonedSet.Add(v)
+	}
+	return clonedSet
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Forall applies a predicate function to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
@@ -172,8 +203,8 @@ func (set {{.UType}}Set) Iter() <-chan {{.Type}} {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set {{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
-    for elem := range set {
-        if !fn(elem) {
+    for v := range set {
+        if !fn(v) {
             return false
         }
     }
@@ -184,13 +215,102 @@ func (set {{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set {{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
-    for elem := range set {
-        if fn(elem) {
+    for v := range set {
+        if fn(v) {
             return true
         }
     }
 	return false
 }
+
+// Foreach iterates over {{.Type}}Set and executes the passed func against each element.
+func (set {{.UType}}Set) Foreach(fn func({{.Type}})) {
+	for v := range set {
+		fn(v)
+	}
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Filter returns a new {{.UType}}Set whose elements return true for func.
+func (set {{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UType}}Set {
+	result := New{{.UType}}Set()
+	for v := range set {
+		if fn(v) {
+			result[v] = struct{}{}
+		}
+	}
+	return result
+}
+
+// Partition returns two new {{.Type}}Lists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original list.
+func (set {{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UType}}Set, {{.UType}}Set) {
+	matching := New{{.UType}}Set()
+	others := New{{.UType}}Set()
+	for v := range set {
+		if p(v) {
+			matching[v] = struct{}{}
+		} else {
+			others[v] = struct{}{}
+		}
+	}
+	return matching, others
+}
+
+// CountBy gives the number elements of {{.UType}}Set that return true for the passed predicate.
+func (set {{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (result int) {
+	for v := range set {
+		if predicate(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of {{.UType}}Set containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (set {{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+	if set.IsEmpty() {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+	var m {{.Type}}
+	first := true
+	for v := range set {
+	    if first {
+			m = v
+			first = false
+		} else if less(v, m) {
+			m = v
+		}
+	}
+	return m
+}
+
+// MaxBy returns an element of {{.UType}}Set containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (set {{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+	if set.IsEmpty() {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+	var m {{.Type}}
+	first := true
+	for v := range set {
+	    if first {
+			m = v
+			first = false
+		} else if less(m, v) {
+			m = v
+		}
+	}
+	return m
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
@@ -199,57 +319,58 @@ func (set {{.UType}}Set) Equals(other {{.UType}}Set) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for elem := range set {
-		if !other.Contains(elem) {
+	for v := range set {
+		if !other.Contains(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Clone returns a clone of the set.
-// Does NOT clone the underlying elements.
-func (set {{.UType}}Set) Clone() {{.UType}}Set {
-	clonedSet := New{{.UType}}Set()
-	for elem := range set {
-		clonedSet.Add(elem)
-	}
-	return clonedSet
-}
-
 {{if .Stringer}}
+//-------------------------------------------------------------------------------------------------
+
 func {{.LType}}ToString(v {{.Type}}) string {
     return fmt.Sprintf("%v", v)
 }
 
 func (set {{.UType}}Set) StringList() []string {
 	strings := make([]string, 0)
-	for elem := range set {
-		strings = append(strings, {{.LType}}ToString(elem))
+	for v := range set {
+		strings = append(strings, {{.LType}}ToString(v))
 	}
 	return strings
 }
 
 func (set {{.UType}}Set) String() string {
-	return string(set.toBytes("", ", "))
+	return set.mkString3Bytes("", ", ", "").String()
 }
 
 // implements encoding.Marshaler interface {
 func (set {{.UType}}Set) MarshalJSON() ([]byte, error) {
-	return set.toBytes("\"", "\", \""), nil
+	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
 }
 
-func (set {{.UType}}Set) toBytes(quote, sep string) []byte {
-	b := bytes.Buffer{}
-	b.WriteString("[")
-	comma := quote
-	for elem := range set {
-		b.WriteString(comma)
-		b.WriteString({{.LType}}ToString(elem))
-		comma = "\", \""
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+func (set {{.UType}}Set) MkString(sep string) string {
+	return set.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+func (set {{.UType}}Set) MkString3(pfx, mid, sfx string) string {
+    return set.mkString3Bytes(pfx, mid, sfx).String()
+}
+
+func (set {{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(pfx)
+	sep := ""
+	for v := range set {
+		b.WriteString(sep)
+		b.WriteString({{.LType}}ToString(v))
+		sep = mid
 	}
-    b.WriteString(quote)
-    b.WriteString("]")
-	return b.Bytes()
+	b.WriteString(sfx)
+	return b
 }
 {{end}}

@@ -160,11 +160,17 @@ func choosePackage(outputFile string) (string, string) {
 
 func setTypeInContext(kind, t string, context map[string]interface{}) string {
 	p := t
+	star := ""
+	amp := ""
 	if t[0] == '*' {
 		t = t[1:]
+		star = "*"
+		amp = "&"
 	}
 	lt := strings.ToLower(t)
 	context[kind] = t
+	context[kind + "Star"] = star
+	context[kind + "Amp"] = amp
 	context["P"+kind] = p
 	context["U"+kind] = strings.ToUpper(t[:1]) + t[1:]
 	context["L"+kind] = strings.ToLower(t[:1]) + t[1:]

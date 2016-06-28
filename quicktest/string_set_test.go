@@ -26,22 +26,11 @@ SOFTWARE.
 package quicktest
 
 import (
-	"reflect"
-	"runtime"
-	"strings"
 	"testing"
 )
 
-func assertEqual(a, b interface{}, t *testing.T) {
-	if !reflect.DeepEqual(a, b) {
-		_, file, line, _ := runtime.Caller(1)
-		s := strings.LastIndexByte(file, '/')
-		if s >= 0 {
-			file = file[s+1:]
-		}
-		t.Errorf("\n%s:%d\n%v != %v", file, line, a, b)
-	}
-}
+// type match validation
+var _ StringCollection = NewStringSet()
 
 func Test_NewSet(t *testing.T) {
 	a := NewStringSet()
@@ -303,11 +292,11 @@ func Test_SetClone(t *testing.T) {
 	}
 }
 
-func Test_Iterator(t *testing.T) {
+func Test_Send(t *testing.T) {
 	a := NewStringSet("z", "y", "x", "w")
 
 	b := NewStringSet()
-	for val := range a.Iter() {
+	for val := range a.Send() {
 		b.Add(val)
 	}
 

@@ -85,10 +85,23 @@ If `-type` is specified, its value is provided in several variants:
  * `.PType` - the type name (prefixed by '*' if supplied)
  * `.UType` - the type name having its first character converted to uppercase - useful for exported identifiers.
  * `.LType` - the type name having its first character converted to lowercase - useful for internal identifiers.
+ * `.TypeStar` - a "*" if the type is a pointer type, otherwise ""
+ * `.TypeAmp` - a "&" if the type is a pointer type, otherwise ""
 
-For example, if `-type *Foo` is specified with a *, `.Type` will be `Foo`,  `.PType` will be `*Foo`,  `.LType` will be `foo`.
-Or if `-type Foo` is specified without *, `.Type` will be `Foo`,  `.PType` will also be `Foo`,  `.LType` will be `foo`.
-Be aware that your shell might expand * so you need suitable quote marks.
+This table shows the set of context symbols defined for a user-defined type Foo and a string.
+
+|--------------|--------------|--------------|--------------|
+|  -type       |   Foo        |   *Foo       |  string      |
+|--------------|--------------|--------------|--------------|
+| `.Type`      |  `Foo`       |  `Foo`       |  `string`    |
+| `.PType`     |  `Foo`       |  `*Foo`      |  `string`    |
+| `.UType`     |  `Foo`       |  `Foo`       |  `String`    |
+| `.LType`     |  `foo`       |  `foo`       |  `string`    |
+| `.TypeStar`  |  ``          |  `*`         |  ``          |
+| `.TypeAmp`   |  ``          |  `&`         |  ``          |
+|--------------|--------------|--------------|--------------|
+
+Be aware that your shell might expand * so you need suitable quote marks for names like `*Foo`.
 
 Additional keys are also made available:
 
@@ -117,3 +130,10 @@ If `TEMPLATEPATH` is absent, its default is `TEMPLATEPATH=.`, i.e. templates are
 
 If available, the location of the builtin templates is also added to `TEMPLATEPATH`; this is found at
 `$GOPATH/src/github/rickb777/runtemplate/builtin`.
+
+# Built-in Templates
+
+A selection of built-in templates is included with `runtemplate`. These provide type-safe collection types.
+Their API style has been loosely influenced by other similar Go types and the excellent Scala collection classes.
+
+[See BUILTIN](BUILTIN.md)

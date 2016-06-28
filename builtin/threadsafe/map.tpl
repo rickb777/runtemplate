@@ -1,4 +1,5 @@
-// Generated from {{.TemplateFile}} with Key={{.Key}} UKey={{.UKey}} Type={{.Type}}
+// Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
+// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
 
 package {{.Package}}
 
