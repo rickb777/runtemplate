@@ -292,7 +292,7 @@ func Test_SetClone(t *testing.T) {
 	}
 }
 
-func Test_Send(t *testing.T) {
+func Test_SetSend(t *testing.T) {
 	a := NewStringSet("z", "y", "x", "w")
 
 	b := NewStringSet()

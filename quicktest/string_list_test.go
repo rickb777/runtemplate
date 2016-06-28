@@ -32,18 +32,7 @@ import (
 // type match validation
 var _ StringCollection = NewStringList()
 
-//func assertEqual(a, b interface{}, t *testing.T) {
-//	if !reflect.DeepEqual(a, b) {
-//		_, file, line, _ := runtime.Caller(1)
-//		s := strings.LastIndexByte(file, '/')
-//		if s >= 0 {
-//			file = file[s+1:]
-//		}
-//		t.Errorf("\n%s:%d\n%v != %v", file, line, a, b)
-//	}
-//}
-
-func xTest_NewSet(t *testing.T) {
+func Test_NewList(t *testing.T) {
 	a := NewStringList()
 	assertEqual(a.Size(), 0, t)
 }
@@ -125,7 +114,7 @@ func Test_NewStringList2(t *testing.T) {
 //	}
 //}
 
-func xTest_Iterator(t *testing.T) {
+func Test_ListIterator(t *testing.T) {
 	a := NewStringList("z", "y", "x", "w")
 
 	b := NewStringList()
