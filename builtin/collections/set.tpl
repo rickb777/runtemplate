@@ -330,14 +330,10 @@ func (set {{.UType}}Set) Equals(other {{.UType}}Set) bool {
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
-func {{.LType}}ToString(v {{.Type}}) string {
-    return fmt.Sprintf("%v", v)
-}
-
 func (set {{.UType}}Set) StringList() []string {
 	strings := make([]string, 0)
 	for v := range set {
-		strings = append(strings, {{.LType}}ToString(v))
+		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
 }
@@ -367,7 +363,7 @@ func (set {{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	sep := ""
 	for v := range set {
 		b.WriteString(sep)
-		b.WriteString({{.LType}}ToString(v))
+		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid
 	}
 	b.WriteString(sfx)

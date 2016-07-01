@@ -11,6 +11,7 @@ install:
 script:
   - go install .
   - go generate -v ./...
+  - ls -l quicktest threadsafetest
   - go test -v ./...
 
 #  - go test -v -covermode=count -coverprofile=coverage.out .

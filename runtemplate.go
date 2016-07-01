@@ -7,79 +7,20 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
+	"runtime"
+	. "github.com/rickb777/runtemplate/support"
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
 
-var tpl = flag.String("tpl", "", "Name of template file; this must be available locally or be on TEMPLATEPATH.")
-var output = flag.String("output", "", "Name of the output file.")
-var mainType = flag.String("type", "", "Name of the main type.")
-var deps = flag.String("deps", "", "List of other dependent files (separated by commas).")
-var force = flag.Bool("f", false, "Force output generation, even if up to date.")
-var verbose = flag.Bool("v", false, "Verbose progress messages.")
-var dbg = flag.Bool("z", false, "Debug messages.")
-
-func fail(args ...interface{}) {
-	fmt.Fprint(os.Stderr, "Error: ")
-	fmt.Fprintln(os.Stderr, args...)
-	os.Exit(1)
-}
-
-func info(msg string, args ...interface{}) {
-	if *verbose {
-		fmt.Printf(msg, args...)
-	}
-}
-
-func debug(msg string, args ...interface{}) {
-	if *dbg {
-		fmt.Printf(msg, args...)
-	}
-}
-
-func divide(s string, c byte) (string, string) {
-	p := strings.LastIndexByte(s, c)
-	if p < 0 {
-		return s, ""
-	}
-	return s[:p], s[p+1:]
-}
-
-func removeBefore(s string, c byte) string {
-	p := strings.LastIndexByte(s, c)
-	if p < 0 {
-		return s
-	}
-	return s[p+1:]
-}
-
-func chooseArg(flagValue *string, suffix string) string {
-	args := flag.Args()
-
-	var arg string
-	if flagValue != nil {
-		arg = *flagValue
-	} else {
-		for i, a := range args {
-			if strings.HasSuffix(a, suffix) {
-				arg = a
-				args[i] = ""
-			}
-		}
-	}
-	return arg
-}
-
-func findTemplateFileFromPath(templateFile string) (string, os.FileInfo) {
-	debug("findTemplateFileFromPath '%s'\n", templateFile)
+func findTemplateFileFromPath(templateFile string) FileMeta {
+	Debug("findTemplateFileFromPath '%s'\n", templateFile)
 	templatePath := os.Getenv("TEMPLATEPATH")
-	debug("TEMPLATEPATH=%s\n", templatePath)
+	Debug("TEMPLATEPATH=%s\n", templatePath)
 
 	goPath := os.Getenv("GOPATH")
 	if goPath != "" {
@@ -90,28 +31,16 @@ func findTemplateFileFromPath(templateFile string) (string, os.FileInfo) {
 	}
 
 	x := strings.Split(templatePath, ":")
-	debug("searching path %+v\n", x)
+	Debug("searching path %+v\n", x)
 	for _, p := range x {
 		path := p + "/" + templateFile
-		debug("stat '%s'\n", path)
-		info, err := os.Stat(path)
-		if err == nil {
-			if info.IsDir() {
-				fail(fmt.Errorf("%s is a directory.", path))
-			}
-			return path, info
-		}
-		if !os.IsNotExist(err) {
-			fail(path, err)
+		file := NewFileMeta(true, path)[0]
+		if file.Exists() {
+			return file
 		}
 	}
 
-	debug("stat '%s'\n", templateFile)
-	info, err := os.Stat(templateFile)
-	if os.IsNotExist(err) {
-		fail(templateFile, err)
-	}
-	return templateFile, info
+	return NewFileMeta(true, templateFile)[0]
 }
 
 // Set up some text munging functions that will be available in the templates.
@@ -124,14 +53,14 @@ func makeFuncMap() template.FuncMap {
 		// Useful for the case in which you want the package name from a passed value
 		// like "package.Type"
 		"splitDotFirst": func(s string) string {
-			first, _ := divide(s, '.')
+			first, _ := RichString(s).DivideOr0('.')
 			return first
 		},
 		// splitDotLast returns the last part of a string split on a "."
 		// Useful for the case in which you want the type name from a passed value
 		// like "package.Type"
 		"splitDotLast": func(s string) string {
-			_, second := divide(s, '.')
+			_, second := RichString(s).DivideOr0('.')
 			return second
 		},
 	}
@@ -140,15 +69,15 @@ func makeFuncMap() template.FuncMap {
 func choosePackage(outputFile string) (string, string) {
 	wd, err := os.Getwd()
 	if err != nil {
-		fail(err)
+		Fail(err)
 	}
 
-	pkg := removeBefore(wd, '/')
+	pkg := RichString(wd).RemoveBefore('/')
 
 	if strings.IndexByte(outputFile, '/') > 0 {
-		dir, _ := divide(outputFile, '/')
+		dir, _ := RichString(outputFile).DivideOr0('/')
 		if strings.IndexByte(dir, '/') > 0 {
-			dir = removeBefore(dir, '/')
+			dir = RichString(dir).RemoveBefore('/')
 		}
 		if dir != "." {
 			pkg = dir
@@ -158,184 +87,121 @@ func choosePackage(outputFile string) (string, string) {
 	return wd, pkg
 }
 
-func setTypeInContext(kind, t string, context map[string]interface{}) string {
-	p := t
+func setTypeInContext(k, v string, context map[string]interface{}) {
+	p := v
 	star := ""
 	amp := ""
-	if t[0] == '*' {
-		t = t[1:]
+	if v[0] == '*' {
+		v = v[1:]
 		star = "*"
 		amp = "&"
 	}
-	lt := strings.ToLower(t)
-	context[kind] = t
-	context[kind + "Star"] = star
-	context[kind + "Amp"] = amp
-	context["P"+kind] = p
-	context["U"+kind] = strings.ToUpper(t[:1]) + t[1:]
-	context["L"+kind] = strings.ToLower(t[:1]) + t[1:]
-	return lt
+	Debug("setTypeInContext %s=%s\n", k, v)
+	context[k] = v
+	context[k + "Star"] = star
+	context[k + "Amp"] = amp
+	context["P" + k] = p
+	context["U" + k] = strings.ToUpper(v[:1]) + v[1:]
+	context["L" + k] = strings.ToLower(v[:1]) + v[1:]
 }
 
-func runTheTemplate(templateFile, outputFile string, context map[string]interface{}) {
-	debug("ReadFile %s\n", templateFile)
-	b, err := ioutil.ReadFile(templateFile)
-	if err != nil {
-		fail(err)
+func setPairInContext(pp Pair, context map[string]interface{}) {
+	k := pp.Key
+	v := pp.Val
+	switch v {
+	case "true":
+		context[k] = true
+	case "false":
+		context[k] = false
+	default:
+		setTypeInContext(k, v, context)
 	}
+}
 
-	//context["GOARCH"] = os.Getenv("GOARCH")
-	//context["GOOS"] = os.Getenv("GOOS")
+func createContext(foundTemplate FileMeta, outputFile string, vals Pairs) map[string]interface{} {
+	// Context will be passed to the template as a map.
+	context := make(map[string]interface{})
+	context["GOARCH"] = runtime.GOARCH
+	context["GOOS"] = runtime.GOOS
 	context["GOPATH"] = os.Getenv("GOPATH")
 	context["GOROOT"] = os.Getenv("GOROOT")
 
 	context["PWD"], context["Package"] = choosePackage(outputFile)
 
-	for _, arg := range flag.Args() {
-		if strings.Contains(arg, "=") {
-			key1, val1 := divide(arg, '=')
-			key2, val2 := strings.TrimSpace(key1), strings.TrimSpace(val1)
-			switch val2 {
-			case "true":
-				context[key2] = true
-			case "false":
-				context[key2] = false
-			default:
-				setTypeInContext(key2, val2, context)
+	// set up some special context values just in case they are wanted.
+	context["OutFile"] = outputFile
+	context["TemplateFile"] = foundTemplate.Name
+	context["TemplatePath"] = foundTemplate.Path
 
-				context[key2] = val2
-			}
-		}
+	for _, p := range vals {
+		setPairInContext(p, context)
 	}
-	debug("context %+v\n", context)
+	return context
+}
+
+func runTheTemplate(foundTemplate, outputFile string, context map[string]interface{}) {
+	Debug("ReadFile %s\n", foundTemplate)
+	b, err := ioutil.ReadFile(foundTemplate)
+	if err != nil {
+		Fail(err)
+	}
 
 	funcMap := makeFuncMap()
-	debug("Parse template\n")
-	tmpl, err := template.New(templateFile).Funcs(funcMap).Parse(string(b))
+	Debug("Parse template\n")
+	tmpl, err := template.New(foundTemplate).Funcs(funcMap).Parse(string(b))
 	if err != nil {
-		fail(err)
+		Fail(err)
 	}
 
-	debug("Create %s\n", outputFile)
+	Debug("Create %s\n", outputFile)
 	f, err := os.Create(outputFile)
 	if err != nil {
-		fail(err)
+		Fail(err)
 	}
 	defer f.Close()
 
-	debug("Execute template\n")
+	Debug("Execute template\n")
 	err = tmpl.Execute(f, context)
 	if err != nil {
-		fail(err)
+		Fail(err)
 	}
 }
 
-func youngestDependency(main ...os.FileInfo) os.FileInfo {
-	result := main[0]
-	for _, m := range main {
-		if m != nil && m.ModTime().After(result.ModTime()) {
-			debug("change dep1 %s %v -> %s %v\n", result.Name(), result.ModTime(), m.Name(), m.ModTime())
-			result = m
-		}
-	}
+func generate(templateFile, outputFile string, force bool, deps []string, vals Pairs) {
+	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, vals)
 
-	if deps == nil || *deps == "" {
-		return result
-	}
+	foundTemplate := findTemplateFileFromPath(templateFile)
+	than := templateFile
 
-	list := strings.Split(*deps, ",")
-	for _, f := range list {
-		fi, err := os.Stat(f)
-		if err != nil {
-			if os.IsNotExist(err) {
-				fmt.Printf("Warn: %s does not exist.\n", f)
-			} else {
-				fail(err)
-			}
-		} else {
-			if fi.ModTime().After(result.ModTime()) {
-				debug("change dep2 %s %v -> %s %v\n", result.Name(), result.ModTime(), fi.Name(), fi.ModTime())
-				result = fi
-			}
-		}
-	}
-
-	return result
-}
-
-func generate() {
-	// Context will be passed to the template as a map.
-	var err error
-	context := make(map[string]interface{})
-
-	templateFile := chooseArg(tpl, ".tpl")
-	outputFile := chooseArg(output, ".go")
-
-	var mainTypeInfo os.FileInfo
-	var mainTypeGo string
-	if mainType != nil && *mainType != "" {
-		lt := setTypeInContext("Type", *mainType, context)
-		mainTypeGo = lt + ".go"
-
-		debug("stat %s\n", mainTypeGo)
-		mainTypeInfo, err = os.Stat(mainTypeGo)
-		if os.IsNotExist(err) {
-			mainTypeInfo = nil
-			mainTypeGo = ""
-		}
-
-		if mainTypeGo == outputFile {
-			fail(mainTypeGo, "is specified as both an input dependency and the output file.")
-		} else if outputFile == "" {
-			tf, _ := divide(templateFile, '.')
-			tf = removeBefore(tf, '/')
-			outputFile = fmt.Sprintf("%s_%s.go", lt, tf)
-			debug("default output now '%s'\n", outputFile)
-		}
-	}
+	youngestDep := foundTemplate
 
 	if outputFile == "" {
-		fail("Output file must be specified.")
+		keys := strings.Join(vals.Values(), "_")
+		tf, _ := RichString(templateFile).DivideOr0('.')
+		tf = RichString(tf).RemoveBefore('/')
+		outputFile = strings.ToLower(keys + "_" + tf) + ".go"
+		Debug("default output now '%s'\n", outputFile)
 	}
 
-	foundTemplate, templateInfo := findTemplateFileFromPath(templateFile)
+	otherDeps := NewFileMeta(false, deps...)
+	youngestDep = youngestDep.Younger(YoungestFile(otherDeps...))
 
-	// set up some special context values just in case they are wanted.
-	context["OutFile"] = outputFile
-	context["TemplateFile"] = templateFile
-	context["TemplatePath"] = foundTemplate
+	outputInfo := NewFileMeta(true, outputFile)[0]
 
-	youngestDep := youngestDependency(templateInfo, mainTypeInfo)
-
-	var outputInfo os.FileInfo
-	if !*force {
-		debug("stat %s\n", outputFile)
-		outputInfo, err = os.Stat(outputFile)
-		if os.IsNotExist(err) {
-			outputInfo = nil
-		}
-	}
-
-	if outputInfo != nil {
-		debug("output=%s %v, youngest=%s %v\n", outputInfo.Name(), outputInfo.ModTime(), youngestDep.Name(), youngestDep.ModTime())
-		if outputInfo.ModTime().After(youngestDep.ModTime()) {
-			than := templateFile
-			if mainTypeInfo != nil {
-				than = than + "," + mainTypeGo
+	Debug("output=%s %v, youngest=%s %v\n", outputInfo.Name, outputInfo.ModTime, youngestDep.Name, youngestDep.ModTime)
+	if outputInfo.ModTime.After(youngestDep.ModTime) {
+		if !force {
+			if len(deps) > 0 {
+				than = than + ", " + strings.Join(deps, ", ")
 			}
-			if deps != nil && *deps != "" {
-				than = than + "," + *deps
-			}
-			info("%s is already newer than %s.\n", outputFile, than)
+			Info("%s is already newer than %s.\n", outputFile, than)
 			return
 		}
 	}
 
-	runTheTemplate(foundTemplate, outputFile, context)
-	info("Generated %s.\n", outputFile)
-}
+	context := createContext(foundTemplate, outputFile, vals)
+	Debug("context %+v\n", context)
 
-func main() {
-	flag.Parse()
-	generate()
+	runTheTemplate(foundTemplate.Path, outputFile, context)
+	Info("Generated %s.\n", outputFile)
 }

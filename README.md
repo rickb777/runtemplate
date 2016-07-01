@@ -14,7 +14,7 @@ go get github.com/rickb777/runtemplate
 
 It is intended to be used directly from the command-line and also with `go generate`.
 
-It supports light-weight dependency checking, i.e. much less work is done when the generated output file
+It supports light-weight dependency checking, i.e. less work is done when the generated output file
 already exists and is up to date.
 
 ## Command-Line
@@ -22,15 +22,11 @@ already exists and is up to date.
 Flexible option parsing is provided. Example
 
 ```
-runtemplate -tpl filename.tpl -output outfile.go -type MyStruct -deps foo.go,bar.go Option1=Value1 Option2=Value2
+runtemplate -tpl filename.tpl -output outfile.go -deps foo.go,bar.go Type=MyStruct Option1=Value1 Option2=Value2
 ```
 
  * `-tpl <name>`
    - (required) the name of the input template.
-
- * `-type <name>`
-   - (optional) the name of the primary Go type for which code generation is being used; the file `<name>.go`
-     (in lowercase) is checked for modification timestamp and treated as a dependency, if it exists.
 
  * `-output <name>`
    - the name of the output file to be written. If `-tpl` is not specifed, `-output` is required,
@@ -53,10 +49,19 @@ runtemplate -tpl filename.tpl -output outfile.go -type MyStruct -deps foo.go,bar
 The option parser will also infer the template and output file names, so it is also permitted to use
 
 ```
-runtemplate outfile.go filename.tpl Type=MyStruct Option1=Value1 Option2=Value2
+runtemplate outfile.go filename.tpl Type=MyStruct Option1=Value1 Option2=true
 ```
 
 i.e. to omit the explicit flags `-tpl` and `-output`.
+
+Furthermore, the output file may be completely omitted
+
+```
+runtemplate filename.tpl Type=MyStruct Option1=Value1 Option2=true
+```
+
+in which case a name will be computed from all the values of the key/value pairs excluding true/false,
+plus the name of the template. For the example above, it will be `mystruct_value1_filename.go`.
 
 ## Go Generate
 
@@ -69,9 +74,6 @@ Simply put the `go generate` comment in your code like this:
 When you run `go generate`, it will find these marked comments and execute their commands. This will
 `runtemplate` against the specified template, passing in whatever options have have been specified
 on the command line as a map.
-
-The explicit `-tpl` and `-output` flags can be omitted if preferred, but both the template file and
-output file must be specified.
 
 ## Template
 
@@ -90,16 +92,14 @@ If `-type` is specified, its value is provided in several variants:
 
 This table shows the set of context symbols defined for a user-defined type Foo and a string.
 
-|--------------|--------------|--------------|--------------|
 |  -type       |   Foo        |   *Foo       |  string      |
-|--------------|--------------|--------------|--------------|
+| ------------ | ------------ | ------------ | ------------ |
 | `.Type`      |  `Foo`       |  `Foo`       |  `string`    |
 | `.PType`     |  `Foo`       |  `*Foo`      |  `string`    |
 | `.UType`     |  `Foo`       |  `Foo`       |  `String`    |
 | `.LType`     |  `foo`       |  `foo`       |  `string`    |
 | `.TypeStar`  |  ``          |  `*`         |  ``          |
 | `.TypeAmp`   |  ``          |  `&`         |  ``          |
-|--------------|--------------|--------------|--------------|
 
 Be aware that your shell might expand * so you need suitable quote marks for names like `*Foo`.
 
