@@ -13,14 +13,14 @@ specify different directories for the generated code via `-output`.
 ## Simple Collections
 ### collections/collection.tpl
 
-This template generates a <Type>Collection interface for some specified type. Use the `-type` parameter.
+This template generates a <Type1>Collection interface for some specified type. Use the `-type` parameter.
 The type can be a pointer to a type if preferred.
 
 The list and set templates (below) both implement this interface.
 
 ### collections/list.tpl
 
-This template generates a <Type>List for some specified type. Use the `-type` parameter. The type can be
+This template generates a <Type1>List for some specified type. Use the `-type` parameter. The type can be
 a pointer to a type if preferred.
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more
@@ -28,7 +28,7 @@ than one goroutine at a time.
 
 ### collections/set.tpl
 
-This template generates a <Type>Set for some specified type. Use the `-type` parameter. It accepts both
+This template generates a <Type1>Set for some specified type. Use the `-type` parameter. It accepts both
 user-defined and built-in Go types.
 
 The generated code is not suitable for access by more than one goroutine at a time.
@@ -36,7 +36,7 @@ The generated code is not suitable for access by more than one goroutine at a ti
 ## Thread-safe Collections
 ### threadasafe/set.tpl
 
-This template generates a <Type>Set for some specified type. Use the `-type` parameter. It accepts both
+This template generates a <Type1>Set for some specified type. Use the `-type` parameter. It accepts both
 user-defined and built-in Go types.
 
 The generated code includes the necessary read and write locking to ensure it is suitable for access by
@@ -44,7 +44,7 @@ any number of concurrent goroutines.
 
 ### threadasafe/map.tpl
 
-This template generates a <Key><Type>Map for some specified key-type and content type. It uses Go's
+This template generates a <Key><Type1>Map for some specified key-type and content type. It uses Go's
 built-in `map` internally. Use the `-type` parameter and set the key type using `Key=type`. The key-type
 and content type can be user-defined or built-in types as needed.
 

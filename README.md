@@ -65,7 +65,7 @@ plus the name of the template. For the example above, it will be `mystruct_value
 
 ## Go Generate
 
-Simply put the `go generate` comment in your code like this:
+Easy. Just put the `go generate` comment in your code like this:
 
 ```
 //go:generate runtemplate -tpl filename.tpl -output outfile.go Option1=Value1 Option2=Value2
