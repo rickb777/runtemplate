@@ -81,25 +81,27 @@ In the template file, you can access the key=value pairs simply by their keys. F
 
 `{{ .Option1 }}`
 
-If `-type` is specified, its value is provided in several variants:
+Boolean true/false key-values are available for `{{if .Flag}} ... {{end}}` conditional use.
 
- * `.Type`  - the type name (without '*' prefix)
+For all other key-values, the values are supplemented by additional entries in the template's context. These are:
+
+ * `.Type`  - the type name (without any '*' prefix)
  * `.PType` - the type name (prefixed by '*' if supplied)
  * `.UType` - the type name having its first character converted to uppercase - useful for exported identifiers.
  * `.LType` - the type name having its first character converted to lowercase - useful for internal identifiers.
  * `.TypeStar` - a "*" if the type is a pointer type, otherwise ""
  * `.TypeAmp` - a "&" if the type is a pointer type, otherwise ""
 
-This table shows the set of context symbols defined for a user-defined type Foo and a string.
+This table shows two examples of context symbols defined for Type=Foo and Type=*Foo.
 
-|  -type       |   Foo        |   *Foo       |  string      |
-| ------------ | ------------ | ------------ | ------------ |
-| `.Type`      |  `Foo`       |  `Foo`       |  `string`    |
-| `.PType`     |  `Foo`       |  `*Foo`      |  `string`    |
-| `.UType`     |  `Foo`       |  `Foo`       |  `String`    |
-| `.LType`     |  `foo`       |  `foo`       |  `string`    |
-| `.TypeStar`  |  ``          |  `*`         |  ``          |
-| `.TypeAmp`   |  ``          |  `&`         |  ``          |
+|              |  Type=Foo    |  Type=*Foo   |
+| ------------ | ------------ | ------------ |
+| `.Type`      |  `Foo`       |  `Foo`       |
+| `.PType`     |  `Foo`       |  `*Foo`      |
+| `.UType`     |  `Foo`       |  `Foo`       |
+| `.LType`     |  `foo`       |  `foo`       |
+| `.TypeStar`  |  ``          |  `*`         |
+| `.TypeAmp`   |  ``          |  `&`         |
 
 Be aware that your shell might expand * so you need suitable quote marks for names like `*Foo`.
 
@@ -116,6 +118,8 @@ Also included are some filters that may be helpful.
  * title - Converts the input to Title Case.
  * upper - Converts the input to UPPER CASE.
  * lower - Converts the input to lower case.
+ * firstUpper - Converts the first character of input to UPPER CASE.
+ * firstLower - Converts the first character of input to lower case.
  * splitDotFirst - Given an input that has a '.' separator, returns the part before the first '.'.
  * splitDotLast - Given an input that has a '.' separator, returns the part after the last '.'.
 

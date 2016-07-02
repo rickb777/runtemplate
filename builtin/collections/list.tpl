@@ -4,8 +4,10 @@
 package {{.Package}}
 
 import (
-	"bytes"
-	"fmt"
+{{if .Stringer}}
+    "bytes"
+    "fmt"
+{{end}}
 	"math/rand"
 )
 

@@ -29,6 +29,14 @@ func Debug(msg string, args ...interface{}) {
 
 type RichString string
 
+func (rs RichString) FirstUpper() string {
+	return strings.ToUpper(rs[:1]) + rs[1:]
+}
+
+func (rs RichString) FirstLower() string {
+	return strings.ToLower(rs[:1]) + rs[1:]
+}
+
 func (rs RichString) DivideOr0(c byte) (string, string) {
 	s := string(rs)
 	p := strings.LastIndexByte(s, c)

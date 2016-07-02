@@ -31,7 +31,7 @@ func findTemplateFileFromPath(templateFile string) FileMeta {
 	}
 
 	x := strings.Split(templatePath, ":")
-	Debug("searching path %+v\n", x)
+	Debug("searching template path %+v\n", x)
 	for _, p := range x {
 		path := p + "/" + templateFile
 		file := NewFileMeta(true, path)[0]
@@ -49,6 +49,12 @@ func makeFuncMap() template.FuncMap {
 		"title": strings.Title,
 		"lower": strings.ToLower,
 		"upper": strings.ToUpper,
+		"firstLower": func(s string) string {
+			return RichString(s).FirstLower()
+		},
+		"firstUpper": func(s string) string {
+			return RichString(s).FirstUpper()
+		},
 		// splitDotFirst returns the first part of a string split on a "."
 		// Useful for the case in which you want the package name from a passed value
 		// like "package.Type"
@@ -101,8 +107,8 @@ func setTypeInContext(k, v string, context map[string]interface{}) {
 	context[k + "Star"] = star
 	context[k + "Amp"] = amp
 	context["P" + k] = p
-	context["U" + k] = strings.ToUpper(v[:1]) + v[1:]
-	context["L" + k] = strings.ToLower(v[:1]) + v[1:]
+	context["U" + k] = RichString(v).FirstUpper()
+	context["L" + k] = RichString(v).FirstLower()
 }
 
 func setPairInContext(pp Pair, context map[string]interface{}) {
