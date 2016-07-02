@@ -182,7 +182,7 @@ func generate(templateFile, outputFile string, force bool, deps []string, vals P
 	youngestDep := foundTemplate
 
 	if outputFile == "" {
-		keys := strings.Join(vals.Values(), "_")
+		keys := strings.Join(vals.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideOr0('.')
 		tf = RichString(tf).RemoveBefore('/')
 		outputFile = strings.ToLower(keys + "_" + tf) + ".go"

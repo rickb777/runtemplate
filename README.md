@@ -3,8 +3,8 @@
 [![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate)
 [![Build Status](https://travis-ci.org/rickb777/runtemplate.svg?branch=master)](https://travis-ci.org/rickb777/runtemplate)
 
-This application provides a simple way of exxecuting standard Go templates from the command line. The obvious
-use-case is for source code generation.
+This application provides a simple way of executing standard Go templates from the command line. The obvious
+use-case is for source code generation, amongst many others.
 
 You can install it with:
 
@@ -103,7 +103,8 @@ This table shows two examples of context symbols defined for Type=Foo and Type=*
 | `.TypeStar`  |              |  `*`         |
 | `.TypeAmp`   |              |  `&`         |
 
-Be aware that your shell might expand * so you may need suitable quote marks, such as `'Type=*Foo'`.
+Be aware that your shell might expand * so you may need suitable quote marks, such as `'Type=*Foo'`. This
+is not needed when using go:generate comment lines.
 
 Additional keys are also made available:
 

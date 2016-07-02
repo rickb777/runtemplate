@@ -68,32 +68,6 @@ func (rs RichString) RemoveBefore(c byte) string {
 
 //-------------------------------------------------------------------------------------------------
 
-type Pair struct {
-	Key, Val string
-}
-
-type Pairs []Pair
-
-func (pairs Pairs) Keys() []string {
-	var list []string
-	for _, p := range pairs {
-		list = append(list, p.Key)
-	}
-	return list
-}
-
-func (pairs Pairs) Values() []string {
-	var list []string
-	for _, p := range pairs {
-		switch p.Val {
-		case "true", "false": // drop
-		default:
-			list = append(list, p.Val)
-		}
-	}
-	return list
-}
-
 func FindTemplateArg(tpl string, args []string) (string, []string) {
 	if tpl != "" {
 		return tpl, args
