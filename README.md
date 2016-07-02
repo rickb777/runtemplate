@@ -89,8 +89,8 @@ For all other key-values, the values are supplemented by additional entries in t
  * `.PType` - the type name (prefixed by '*' if supplied)
  * `.UType` - the type name having its first character converted to uppercase - useful for exported identifiers.
  * `.LType` - the type name having its first character converted to lowercase - useful for internal identifiers.
- * `.TypeStar` - a "*" if the type is a pointer type, otherwise ""
- * `.TypeAmp` - a "&" if the type is a pointer type, otherwise ""
+ * `.TypeStar` - a '*' if the type is a pointer type, otherwise blank
+ * `.TypeAmp` - a '&' if the type is a pointer type, otherwise blank
 
 This table shows two examples of context symbols defined for Type=Foo and Type=*Foo.
 
@@ -100,10 +100,10 @@ This table shows two examples of context symbols defined for Type=Foo and Type=*
 | `.PType`     |  `Foo`       |  `*Foo`      |
 | `.UType`     |  `Foo`       |  `Foo`       |
 | `.LType`     |  `foo`       |  `foo`       |
-| `.TypeStar`  |  ``          |  `*`         |
-| `.TypeAmp`   |  ``          |  `&`         |
+| `.TypeStar`  |              |  `*`         |
+| `.TypeAmp`   |              |  `&`         |
 
-Be aware that your shell might expand * so you need suitable quote marks for names like `*Foo`.
+Be aware that your shell might expand * so you may need suitable quote marks, such as `'Type=*Foo'`.
 
 Additional keys are also made available:
 
@@ -113,12 +113,12 @@ Additional keys are also made available:
  * `.Package` - the name of the directory of the output file (often the current directory)
  * `.GOARCH`, `.GOOS`, `.GOPATH`, `GOROOT` - the value of Go environment variables.
 
-Also included are some filters that may be helpful.
+Some filters are also included that may be helpful.
 
  * title - Converts the input to Title Case.
  * upper - Converts the input to UPPER CASE.
  * lower - Converts the input to lower case.
- * firstUpper - Converts the first character of input to UPPER CASE.
+ * firstUpper - Converts the first character of input to upper case.
  * firstLower - Converts the first character of input to lower case.
  * splitDotFirst - Given an input that has a '.' separator, returns the part before the first '.'.
  * splitDotLast - Given an input that has a '.' separator, returns the part after the last '.'.
