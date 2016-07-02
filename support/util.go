@@ -30,11 +30,13 @@ func Debug(msg string, args ...interface{}) {
 type RichString string
 
 func (rs RichString) FirstUpper() string {
-	return strings.ToUpper(rs[:1]) + rs[1:]
+	s := string(rs)
+	return strings.ToUpper(s[:1]) + s[1:]
 }
 
 func (rs RichString) FirstLower() string {
-	return strings.ToLower(rs[:1]) + rs[1:]
+	s := string(rs)
+	return strings.ToLower(s[:1]) + s[1:]
 }
 
 func (rs RichString) DivideOr0(c byte) (string, string) {
