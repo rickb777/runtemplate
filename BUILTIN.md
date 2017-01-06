@@ -19,6 +19,7 @@ generated or not.
  * `Ordered=true` - use this for types that are ordered (<, <=, >=, >), such as ints and floats.
  * `Numeric=true` - use this for types that support arithmetic operations, such as ints and floats.
  * `Stringer=true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
+ * `Mutable=true` - use this to include mutation methods; omit this if you need immutable collections.
 
 See [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators).
@@ -34,7 +35,7 @@ The list and set templates (below) both implement this interface.
 
 Example use:
 ```
-//go:generate runtemplate -tpl collections/collection.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl collections/collection.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
 
 ### collections/list.tpl
@@ -44,7 +45,7 @@ All four options (above) are supported.
 
 Example use:
 ```
-//go:generate runtemplate -tpl collections/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl collections/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more
@@ -59,7 +60,7 @@ Other options: `Ordered` (see above)
 
 Example use:
 ```
-//go:generate runtemplate -tpl collections/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl collections/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
 
 The generated code is not suitable for access by more than one goroutine at a time.

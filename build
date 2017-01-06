@@ -1,5 +1,5 @@
 #!/bin/bash -e
-rm -vf [qt]*/apple_*.go [qt]*/x_*.go
+rm -vf [ct]*/apple_*.go [ct]*/x_*.go
 go install .
 go generate -v ./...
 go test ./...

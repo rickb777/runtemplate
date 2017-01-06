@@ -4,13 +4,13 @@
 package {{.Package}}
 
 import (
-    "sync"
+	"sync"
 )
 
 // {{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
 type {{.UKey}}{{.UType}}Map struct {
 	s *sync.RWMutex
-    m map[{{.Key}}]{{.Type}}
+	m map[{{.Key}}]{{.Type}}
 }
 
 // {{.UKey}}{{.UType}}Tuple represents a key/value pair.
@@ -22,11 +22,11 @@ type {{.UKey}}{{.UType}}Tuple struct {
 // New{{.UKey}}{{.UType}}Map creates and returns a reference to an empty map.
 func New{{.UKey}}{{.UType}}Map(kv ...{{.UKey}}{{.UType}}Tuple) {{.UKey}}{{.UType}}Map {
 	mm := {{.UKey}}{{.UType}}Map{
-	    s: &sync.RWMutex{},
-	    m: make(map[{{.Key}}]{{.Type}}),
+		s: &sync.RWMutex{},
+		m: make(map[{{.Key}}]{{.Type}}),
 	}
 	for _, t := range kv {
-	    mm.m[t.Key] = t.Val
+		mm.m[t.Key] = t.Val
 	}
 	return mm
 }
@@ -145,11 +145,11 @@ func (mm {{.UKey}}{{.UType}}Map) Forall(fn func({{.Key}}, {{.Type}}) bool) bool 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    for k, v := range mm.m {
-        if !fn(k, v) {
-            return false
-        }
-    }
+	for k, v := range mm.m {
+		if !fn(k, v) {
+			return false
+		}
+	}
 	return true
 }
 
@@ -160,11 +160,11 @@ func (mm {{.UKey}}{{.UType}}Map) Exists(fn func({{.Key}}, {{.Type}}) bool) bool 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    for k, v := range mm.m {
-        if fn(k, v) {
-            return true
-        }
-    }
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return true
+		}
+	}
 	return false
 }
 
@@ -175,11 +175,11 @@ func (mm {{.UKey}}{{.UType}}Map) Filter(fn func({{.Key}}, {{.Type}}) bool) {{.UK
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    for k, v := range mm.m {
-        if fn(k, v) {
-            result.m[k] = v
-        }
-    }
+	for k, v := range mm.m {
+		if fn(k, v) {
+			result.m[k] = v
+		}
+	}
 	return result
 }
 
@@ -192,13 +192,13 @@ func (mm {{.UKey}}{{.UType}}Map) Partition(fn func({{.Key}}, {{.Type}}) bool) (m
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    for k, v := range mm.m {
-        if fn(k, v) {
-            matching.m[k] = v
-        } else {
-            others.m[k] = v
-        }
-    }
+	for k, v := range mm.m {
+		if fn(k, v) {
+			matching.m[k] = v
+		} else {
+			others.m[k] = v
+		}
+	}
 	return
 }
 
@@ -215,7 +215,7 @@ func (mm {{.UKey}}{{.UType}}Map) Equals(other {{.UKey}}{{.UType}}Map) bool {
 		return false
 	}
 	for k, v1 := range mm.m {
-	    v2, found := other.m[k]
+		v2, found := other.m[k]
 		if !found || v1 != v2 {
 			return false
 		}
@@ -223,8 +223,7 @@ func (mm {{.UKey}}{{.UType}}Map) Equals(other {{.UKey}}{{.UType}}Map) bool {
 	return true
 }
 
-// Clone returns a clone of the map.
-// Does NOT clone the underlying elements.
+// Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm {{.UKey}}{{.UType}}Map) Clone() {{.UKey}}{{.UType}}Map {
 	result := New{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()

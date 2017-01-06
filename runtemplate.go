@@ -173,8 +173,8 @@ func runTheTemplate(foundTemplate, outputFile string, context map[string]interfa
 	}
 }
 
-func generate(templateFile, outputFile string, force bool, deps []string, vals Pairs) {
-	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, vals)
+func generate(templateFile, prefix, outputFile string, force bool, deps []string, vals Pairs) {
+	Debug("generate %s %s %s %v %+v %+v\n", templateFile, prefix, outputFile, force, deps, vals)
 
 	foundTemplate := findTemplateFileFromPath(templateFile)
 	than := templateFile
@@ -185,7 +185,7 @@ func generate(templateFile, outputFile string, force bool, deps []string, vals P
 		keys := strings.Join(vals.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideOr0('.')
 		tf = RichString(tf).RemoveBefore('/')
-		outputFile = strings.ToLower(keys + "_" + tf) + ".go"
+		outputFile = prefix + strings.ToLower(keys + "_" + tf) + ".go"
 		Debug("default output now '%s'\n", outputFile)
 	}
 

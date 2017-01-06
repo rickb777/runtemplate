@@ -29,8 +29,10 @@ runtemplate -tpl filename.tpl -output outfile.go -deps foo.go,bar.go Type=MyStru
    - (required) the name of the input template.
 
  * `-output <name>`
-   - the name of the output file to be written. If `-tpl` is not specifed, `-output` is required,
-     otherwise it is optional.
+   - the name of the output file. If `-tpl` is not specifed, `-output` is required, otherwise it is optional.
+
+ * `-prefix <prefix>`
+   - a prefix for the name of the output file. Ignored if `-output` is specified,
 
  * `-deps <name>,<name>,...`
    - adds more dependencies to be checked in addition to the template itself and the 'type' file (if any).
