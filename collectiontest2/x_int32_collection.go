@@ -45,21 +45,27 @@ type Int32Collection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*int32, *int32) bool) *int32
-	
 
+	
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() *int32
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() *int32
-	
-	
 
+	
+	
 	// Sum returns the sum of all the elements in the collection.
 	Sum() *int32
-	
-	
 
+	
+    
+    // ContainsAll determines if two collections have the same size and contain the same items.
+    // The order of items does not matter.
+    //TODO ContainsAll(other Int32Collection) bool
+
+	
+	
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
 	// in square brackets.
 	String() string
@@ -69,5 +75,6 @@ type Int32Collection interface {
 
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
+
 	
 }

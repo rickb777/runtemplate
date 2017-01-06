@@ -45,21 +45,27 @@ type {{.UType}}Collection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
-	{{if .Ordered}}
 
+	{{if .Ordered}}
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() {{.PType}}
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.PType}}
+
 	{{end}}
 	{{if .Numeric}}
-
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.PType}}
+
+	{{end}}
+    {{if .Comparable}}
+    // ContainsAll determines if two collections have the same size and contain the same items.
+    // The order of items does not matter.
+    //TODO ContainsAll(other {{.UType}}Collection) bool
+
 	{{end}}
 	{{if .Stringer}}
-
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
 	// in square brackets.
 	String() string
@@ -69,5 +75,6 @@ type {{.UType}}Collection interface {
 
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
+
 	{{end}}
 }

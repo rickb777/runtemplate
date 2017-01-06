@@ -45,7 +45,9 @@ type PearCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*Pear, *Pear) bool) *Pear
+
 	
 	
+    
 	
 }

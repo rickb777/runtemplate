@@ -45,10 +45,16 @@ type StringCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*string, *string) bool) *string
-	
-	
-	
 
+	
+	
+    
+    // ContainsAll determines if two collections have the same size and contain the same items.
+    // The order of items does not matter.
+    //TODO ContainsAll(other StringCollection) bool
+
+	
+	
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
 	// in square brackets.
 	String() string
@@ -58,5 +64,6 @@ type StringCollection interface {
 
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
+
 	
 }

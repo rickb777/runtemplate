@@ -15,9 +15,9 @@ specify different directories for the generated code via `-output`.
 The built-in collections support a small number of flags that allow you to control whether extra methods are
 generated or not.
 
- * `Comparable=true` - use this for types that are comparable (== and !=), such as strings, ints and floats.
- * `Ordered=true` - use this for types that are ordered (<, <=, >=, >), such as ints and floats.
- * `Numeric=true` - use this for types that support arithmetic operations, such as ints and floats.
+ * `Comparable=true` - use this for types that are comparable (== and !=), such as strings, ints, floats and structs.
+ * `Ordered=true` - use this for types that are ordered (<, <=, >=, >), such as ints and floats (but not structs).
+ * `Numeric=true` - use this for types that support arithmetic operations, such as ints and floats (but not structs).
  * `Stringer=true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
  * `Mutable=true` - use this to include mutation methods; omit this if you need immutable collections.
 
@@ -41,7 +41,7 @@ Example use:
 ### collections/list.tpl
 
 This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred.
-All four options (above) are supported.
+The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Example use:
 ```
@@ -56,7 +56,7 @@ than one goroutine at a time.
 This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types.
 However, these should not be pointer types (a set of pointers would be of little value).
 
-Other options: `Ordered` (see above)
+The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
 
 Example use:
 ```
@@ -70,6 +70,8 @@ The generated code is not suitable for access by more than one goroutine at a ti
 
 This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types.
 
+The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
+
 The generated code includes the necessary read and write locking to ensure it is suitable for access by
 any number of concurrent goroutines.
 
@@ -78,6 +80,8 @@ any number of concurrent goroutines.
 This template generates a `<Key><Type>Map` for some specified key-type and content type. It uses Go's
 built-in `map` internally. Specify the key type using `Key=type`. The key type
 and content type can be user-defined or built-in types as needed.
+
+The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
 
 The generated code includes the necessary read and write locking to ensure it is suitable for access by
 any number of concurrent goroutines.
