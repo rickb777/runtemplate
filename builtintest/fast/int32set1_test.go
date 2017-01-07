@@ -14,7 +14,7 @@ func TestToSlice(t *testing.T) {
 }
 
 func TestAddSet(t *testing.T) {
-	a := makeSet(1, 2, 3)
+	a := NewXInt32Set(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())

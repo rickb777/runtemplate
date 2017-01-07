@@ -1,29 +1,51 @@
-// Generated from threadsafe.tpl with Key=string Type=string
-// options: Comparable=<no value> Numeric=<no value> Ordered=<no value> Stringer=<no value>
+// Generated from threadsafe.tpl with Key=Apple Type=Pear
+// options: Comparable=<no value> Numeric=<no value> Stringer=<no value> Mutable=<no value>
 
 package maps
 
 import (
+
 	"sync"
 )
 
-// StringStringMap is the primary type that represents a thread-safe map
-type StringStringMap struct {
+// TXApplePearMap is the primary type that represents a thread-safe map
+type TXApplePearMap struct {
 	s *sync.RWMutex
-	m map[string]string
+	m map[Apple]Pear
 }
 
-// StringStringTuple represents a key/value pair.
-type StringStringTuple struct {
-	Key string
-	Val string
+// TXApplePearTuple represents a key/value pair.
+type TXApplePearTuple struct {
+	Key Apple
+	Val Pear
 }
 
-// NewStringStringMap creates and returns a reference to an empty map.
-func NewStringStringMap(kv ...StringStringTuple) StringStringMap {
-	mm := StringStringMap{
-		s: &sync.RWMutex{},
-		m: make(map[string]string),
+// TXApplePearTuples can be used as a builder for unmodifiable maps.
+type TXApplePearTuples []TXApplePearTuple
+
+func (ts TXApplePearTuples) Append1(k Apple, v Pear) TXApplePearTuples {
+    return append(ts, TXApplePearTuple{k, v})
+}
+
+func (ts TXApplePearTuples) Append2(k1 Apple, v1 Pear, k2 Apple, v2 Pear) TXApplePearTuples {
+    return append(ts, TXApplePearTuple{k1, v1}, TXApplePearTuple{k2, v2})
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// NewTXApplePearMap creates and returns a reference to a map containing one item.
+func NewTXApplePearMap1(k Apple, v Pear) TXApplePearMap {
+	mm := TXApplePearMap{
+		m: make(map[Apple]Pear),
+	}
+    mm.m[k] = v
+	return mm
+}
+
+// NewTXApplePearMap creates and returns a reference to a map, optionally containing some items.
+func NewTXApplePearMap(kv ...TXApplePearTuple) TXApplePearMap {
+	mm := TXApplePearMap{
+		m: make(map[Apple]Pear),
 	}
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
@@ -32,11 +54,11 @@ func NewStringStringMap(kv ...StringStringTuple) StringStringMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *StringStringMap) Keys() []string {
+func (mm *TXApplePearMap) Keys() []Apple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []string
+	var s []Apple
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -44,19 +66,19 @@ func (mm *StringStringMap) Keys() []string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *StringStringMap) ToSlice() []StringStringTuple {
+func (mm *TXApplePearMap) ToSlice() []TXApplePearTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []StringStringTuple
+	var s []TXApplePearTuple
 	for k, v := range mm.m {
-		s = append(s, StringStringTuple{k, v})
+		s = append(s, TXApplePearTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *StringStringMap) Get(k string) (string, bool) {
+func (mm *TXApplePearMap) Get(k Apple) (Pear, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -64,18 +86,9 @@ func (mm *StringStringMap) Get(k string) (string, bool) {
 	return v, found
 }
 
-// Put adds an item to the current map, replacing any prior value.
-func (mm *StringStringMap) Put(k string, v string) bool {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
-	_, found := mm.m[k]
-	mm.m[k] = v
-	return !found //False if it existed already
-}
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *StringStringMap) ContainsKey(k string) bool {
+func (mm *TXApplePearMap) ContainsKey(k Apple) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -84,7 +97,7 @@ func (mm *StringStringMap) ContainsKey(k string) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *StringStringMap) ContainsAllKeys(kk ...string) bool {
+func (mm *TXApplePearMap) ContainsAllKeys(kk ...Apple) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -96,24 +109,9 @@ func (mm *StringStringMap) ContainsAllKeys(kk ...string) bool {
 	return true
 }
 
-// Clear clears the entire map.
-func (mm *StringStringMap) Clear() {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
-	mm.m = make(map[string]string)
-}
-
-// Remove allows the removal of a single item from the map.
-func (mm *StringStringMap) Remove(k string) {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
-	delete(mm.m, k)
-}
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *StringStringMap) Size() int {
+func (mm *TXApplePearMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -121,12 +119,12 @@ func (mm *StringStringMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *StringStringMap) IsEmpty() bool {
+func (mm *TXApplePearMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *StringStringMap) NonEmpty() bool {
+func (mm *TXApplePearMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -136,7 +134,7 @@ func (mm *StringStringMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *StringStringMap) Forall(fn func(string, string) bool) bool {
+func (mm *TXApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -151,7 +149,7 @@ func (mm *StringStringMap) Forall(fn func(string, string) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *StringStringMap) Exists(fn func(string, string) bool) bool {
+func (mm *TXApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -165,8 +163,8 @@ func (mm *StringStringMap) Exists(fn func(string, string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *StringStringMap) Filter(fn func(string, string) bool) StringStringMap {
-	result := NewStringStringMap()
+func (mm *TXApplePearMap) Filter(fn func(Apple, Pear) bool) TXApplePearMap {
+	result := NewTXApplePearMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -181,9 +179,9 @@ func (mm *StringStringMap) Filter(fn func(string, string) bool) StringStringMap 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *StringStringMap) Partition(fn func(string, string) bool) (matching StringStringMap, others StringStringMap) {
-	matching = NewStringStringMap()
-	others = NewStringStringMap()
+func (mm *TXApplePearMap) Partition(fn func(Apple, Pear) bool) (matching TXApplePearMap, others TXApplePearMap) {
+	matching = NewTXApplePearMap()
+	others = NewTXApplePearMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -197,30 +195,10 @@ func (mm *StringStringMap) Partition(fn func(string, string) bool) (matching Str
 	return
 }
 
-// Equals determines if two sets are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
-func (mm *StringStringMap) Equals(other StringStringMap) bool {
-	mm.s.RLock()
-	other.s.RLock()
-	defer mm.s.RUnlock()
-	defer other.s.RUnlock()
-
-	if mm.Size() != other.Size() {
-		return false
-	}
-	for k, v1 := range mm.m {
-		v2, found := other.m[k]
-		if !found || v1 != v2 {
-			return false
-		}
-	}
-	return true
-}
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *StringStringMap) Clone() StringStringMap {
-	result := NewStringStringMap()
+func (mm *TXApplePearMap) Clone() TXApplePearMap {
+	result := NewTXApplePearMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -229,3 +207,5 @@ func (mm *StringStringMap) Clone() StringStringMap {
 	}
 	return result
 }
+
+

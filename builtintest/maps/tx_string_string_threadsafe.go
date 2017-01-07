@@ -1,29 +1,51 @@
-// Generated from threadsafe.tpl with Key=Apple Type=Pear
-// options: Comparable=<no value> Numeric=<no value> Ordered=<no value> Stringer=<no value>
+// Generated from threadsafe.tpl with Key=string Type=string
+// options: Comparable=true Numeric=<no value> Stringer=<no value> Mutable=true
 
 package maps
 
 import (
+
 	"sync"
 )
 
-// ApplePearMap is the primary type that represents a thread-safe map
-type ApplePearMap struct {
+// TXStringStringMap is the primary type that represents a thread-safe map
+type TXStringStringMap struct {
 	s *sync.RWMutex
-	m map[Apple]Pear
+	m map[string]string
 }
 
-// ApplePearTuple represents a key/value pair.
-type ApplePearTuple struct {
-	Key Apple
-	Val Pear
+// TXStringStringTuple represents a key/value pair.
+type TXStringStringTuple struct {
+	Key string
+	Val string
 }
 
-// NewApplePearMap creates and returns a reference to an empty map.
-func NewApplePearMap(kv ...ApplePearTuple) ApplePearMap {
-	mm := ApplePearMap{
-		s: &sync.RWMutex{},
-		m: make(map[Apple]Pear),
+// TXStringStringTuples can be used as a builder for unmodifiable maps.
+type TXStringStringTuples []TXStringStringTuple
+
+func (ts TXStringStringTuples) Append1(k string, v string) TXStringStringTuples {
+    return append(ts, TXStringStringTuple{k, v})
+}
+
+func (ts TXStringStringTuples) Append2(k1 string, v1 string, k2 string, v2 string) TXStringStringTuples {
+    return append(ts, TXStringStringTuple{k1, v1}, TXStringStringTuple{k2, v2})
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// NewTXStringStringMap creates and returns a reference to a map containing one item.
+func NewTXStringStringMap1(k string, v string) TXStringStringMap {
+	mm := TXStringStringMap{
+		m: make(map[string]string),
+	}
+    mm.m[k] = v
+	return mm
+}
+
+// NewTXStringStringMap creates and returns a reference to a map, optionally containing some items.
+func NewTXStringStringMap(kv ...TXStringStringTuple) TXStringStringMap {
+	mm := TXStringStringMap{
+		m: make(map[string]string),
 	}
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
@@ -32,11 +54,11 @@ func NewApplePearMap(kv ...ApplePearTuple) ApplePearMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *ApplePearMap) Keys() []Apple {
+func (mm *TXStringStringMap) Keys() []string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []Apple
+	var s []string
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -44,19 +66,19 @@ func (mm *ApplePearMap) Keys() []Apple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *ApplePearMap) ToSlice() []ApplePearTuple {
+func (mm *TXStringStringMap) ToSlice() []TXStringStringTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []ApplePearTuple
+	var s []TXStringStringTuple
 	for k, v := range mm.m {
-		s = append(s, ApplePearTuple{k, v})
+		s = append(s, TXStringStringTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *ApplePearMap) Get(k Apple) (Pear, bool) {
+func (mm *TXStringStringMap) Get(k string) (string, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -64,8 +86,9 @@ func (mm *ApplePearMap) Get(k Apple) (Pear, bool) {
 	return v, found
 }
 
+
 // Put adds an item to the current map, replacing any prior value.
-func (mm *ApplePearMap) Put(k Apple, v Pear) bool {
+func (mm *TXStringStringMap) Put(k string, v string) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -74,8 +97,9 @@ func (mm *ApplePearMap) Put(k Apple, v Pear) bool {
 	return !found //False if it existed already
 }
 
+
 // ContainsKey determines if a given item is already in the map.
-func (mm *ApplePearMap) ContainsKey(k Apple) bool {
+func (mm *TXStringStringMap) ContainsKey(k string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -84,7 +108,7 @@ func (mm *ApplePearMap) ContainsKey(k Apple) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *ApplePearMap) ContainsAllKeys(kk ...Apple) bool {
+func (mm *TXStringStringMap) ContainsAllKeys(kk ...string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -96,24 +120,26 @@ func (mm *ApplePearMap) ContainsAllKeys(kk ...Apple) bool {
 	return true
 }
 
+
 // Clear clears the entire map.
-func (mm *ApplePearMap) Clear() {
+func (mm *TXStringStringMap) Clear() {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-	mm.m = make(map[Apple]Pear)
+	mm.m = make(map[string]string)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *ApplePearMap) Remove(k Apple) {
+func (mm *TXStringStringMap) Remove(k string) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
 	delete(mm.m, k)
 }
 
+
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *ApplePearMap) Size() int {
+func (mm *TXStringStringMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -121,12 +147,12 @@ func (mm *ApplePearMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *ApplePearMap) IsEmpty() bool {
+func (mm *TXStringStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *ApplePearMap) NonEmpty() bool {
+func (mm *TXStringStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -136,7 +162,7 @@ func (mm *ApplePearMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *ApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
+func (mm *TXStringStringMap) Forall(fn func(string, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -151,7 +177,7 @@ func (mm *ApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *ApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
+func (mm *TXStringStringMap) Exists(fn func(string, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -165,8 +191,8 @@ func (mm *ApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *ApplePearMap) Filter(fn func(Apple, Pear) bool) ApplePearMap {
-	result := NewApplePearMap()
+func (mm *TXStringStringMap) Filter(fn func(string, string) bool) TXStringStringMap {
+	result := NewTXStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -181,9 +207,9 @@ func (mm *ApplePearMap) Filter(fn func(Apple, Pear) bool) ApplePearMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *ApplePearMap) Partition(fn func(Apple, Pear) bool) (matching ApplePearMap, others ApplePearMap) {
-	matching = NewApplePearMap()
-	others = NewApplePearMap()
+func (mm *TXStringStringMap) Partition(fn func(string, string) bool) (matching TXStringStringMap, others TXStringStringMap) {
+	matching = NewTXStringStringMap()
+	others = NewTXStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -197,10 +223,11 @@ func (mm *ApplePearMap) Partition(fn func(Apple, Pear) bool) (matching ApplePear
 	return
 }
 
+
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (mm *ApplePearMap) Equals(other ApplePearMap) bool {
+func (mm *TXStringStringMap) Equals(other TXStringStringMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -218,9 +245,10 @@ func (mm *ApplePearMap) Equals(other ApplePearMap) bool {
 	return true
 }
 
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *ApplePearMap) Clone() ApplePearMap {
-	result := NewApplePearMap()
+func (mm *TXStringStringMap) Clone() TXStringStringMap {
+	result := NewTXStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -229,3 +257,5 @@ func (mm *ApplePearMap) Clone() ApplePearMap {
 	}
 	return result
 }
+
+
