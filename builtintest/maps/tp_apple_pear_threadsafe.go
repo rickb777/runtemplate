@@ -1,5 +1,8 @@
+// An encapsulated map[Apple]Pear
+// Thread-safe.
+//
 // Generated from threadsafe.tpl with Key=Apple Type=Pear
-// options: Comparable=<no value> Numeric=<no value> Stringer=<no value> Mutable=<no value>
+// options: Comparable=<no value> Stringer=<no value> Mutable=false
 
 package maps
 
@@ -7,7 +10,6 @@ import (
 
 	"sync"
 )
-
 
 // TPApplePearMap is the primary type that represents a thread-safe map
 type TPApplePearMap struct {
@@ -34,22 +36,23 @@ func (ts TPApplePearTuples) Append2(k1 *Apple, v1 *Pear, k2 *Apple, v2 *Pear) TP
 
 //-------------------------------------------------------------------------------------------------
 
-// NewTPApplePearMap creates and returns a reference to a map containing one item.
-func NewTPApplePearMap1(k *Apple, v *Pear) TPApplePearMap {
-	mm := TPApplePearMap{
+func newTPApplePearMap() TPApplePearMap {
+	return TPApplePearMap{
 	    s: &sync.RWMutex{},
 		m: make(map[*Apple]*Pear),
 	}
+}
+
+// NewTPApplePearMap creates and returns a reference to a map containing one item.
+func NewTPApplePearMap1(k *Apple, v *Pear) TPApplePearMap {
+	mm := newTPApplePearMap()
 	mm.m[k] = v
 	return mm
 }
 
 // NewTPApplePearMap creates and returns a reference to a map, optionally containing some items.
 func NewTPApplePearMap(kv ...TPApplePearTuple) TPApplePearMap {
-	mm := TPApplePearMap{
-	    s: &sync.RWMutex{},
-		m: make(map[*Apple]*Pear),
-	}
+	mm := newTPApplePearMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}

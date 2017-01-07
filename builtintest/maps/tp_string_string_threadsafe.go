@@ -1,5 +1,8 @@
+// An encapsulated map[string]string
+// Thread-safe.
+//
 // Generated from threadsafe.tpl with Key=string Type=string
-// options: Comparable=true Numeric=<no value> Stringer=<no value> Mutable=true
+// options: Comparable=true Stringer=<no value> Mutable=true
 
 package maps
 
@@ -7,7 +10,6 @@ import (
 
 	"sync"
 )
-
 
 // TPStringStringMap is the primary type that represents a thread-safe map
 type TPStringStringMap struct {
@@ -34,22 +36,23 @@ func (ts TPStringStringTuples) Append2(k1 *string, v1 *string, k2 *string, v2 *s
 
 //-------------------------------------------------------------------------------------------------
 
-// NewTPStringStringMap creates and returns a reference to a map containing one item.
-func NewTPStringStringMap1(k *string, v *string) TPStringStringMap {
-	mm := TPStringStringMap{
+func newTPStringStringMap() TPStringStringMap {
+	return TPStringStringMap{
 	    s: &sync.RWMutex{},
 		m: make(map[*string]*string),
 	}
+}
+
+// NewTPStringStringMap creates and returns a reference to a map containing one item.
+func NewTPStringStringMap1(k *string, v *string) TPStringStringMap {
+	mm := newTPStringStringMap()
 	mm.m[k] = v
 	return mm
 }
 
 // NewTPStringStringMap creates and returns a reference to a map, optionally containing some items.
 func NewTPStringStringMap(kv ...TPStringStringTuple) TPStringStringMap {
-	mm := TPStringStringMap{
-	    s: &sync.RWMutex{},
-		m: make(map[*string]*string),
-	}
+	mm := newTPStringStringMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -227,9 +230,9 @@ func (mm *TPStringStringMap) Partition(fn func(*string, *string) bool) (matching
 }
 
 
-// Equals determines if two sets are equal to each other.
+// Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
+// Order of items is not relevent for maps to be equal.
 func (mm *TPStringStringMap) Equals(other TPStringStringMap) bool {
 	mm.s.RLock()
 	other.s.RLock()

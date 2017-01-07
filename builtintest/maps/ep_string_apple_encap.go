@@ -1,58 +1,53 @@
 // An encapsulated map[string]Apple
-// Thread-safe.
+// Not thread-safe.
 //
-// Generated from threadsafe.tpl with Key=string Type=Apple
+// Generated from encap.tpl with Key=string Type=Apple
 // options: Comparable=<no value> Stringer=<no value> Mutable=true
 
 package maps
 
-import (
 
-	"sync"
-)
 
-// TPStringAppleMap is the primary type that represents a thread-safe map
-type TPStringAppleMap struct {
-	s *sync.RWMutex
+// EPStringAppleMap is the primary type that represents a map
+type EPStringAppleMap struct {
 	m map[*string]*Apple
 }
 
-// TPStringAppleTuple represents a key/value pair.
-type TPStringAppleTuple struct {
+// EPStringAppleTuple represents a key/value pair.
+type EPStringAppleTuple struct {
 	Key *string
 	Val *Apple
 }
 
-// TPStringAppleTuples can be used as a builder for unmodifiable maps.
-type TPStringAppleTuples []TPStringAppleTuple
+// EPStringAppleTuples can be used as a builder for unmodifiable maps.
+type EPStringAppleTuples []EPStringAppleTuple
 
-func (ts TPStringAppleTuples) Append1(k *string, v *Apple) TPStringAppleTuples {
-	return append(ts, TPStringAppleTuple{k, v})
+func (ts EPStringAppleTuples) Append1(k *string, v *Apple) EPStringAppleTuples {
+	return append(ts, EPStringAppleTuple{k, v})
 }
 
-func (ts TPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *Apple) TPStringAppleTuples {
-	return append(ts, TPStringAppleTuple{k1, v1}, TPStringAppleTuple{k2, v2})
+func (ts EPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *Apple) EPStringAppleTuples {
+	return append(ts, EPStringAppleTuple{k1, v1}, EPStringAppleTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newTPStringAppleMap() TPStringAppleMap {
-	return TPStringAppleMap{
-	    s: &sync.RWMutex{},
-		m: make(map[*string]*Apple),
+func newEPStringAppleMap() EPStringAppleMap {
+	return EPStringAppleMap{
+		make(map[*string]*Apple),
 	}
 }
 
-// NewTPStringAppleMap creates and returns a reference to a map containing one item.
-func NewTPStringAppleMap1(k *string, v *Apple) TPStringAppleMap {
-	mm := newTPStringAppleMap()
+// NewEPStringAppleMap creates and returns a reference to a map containing one item.
+func NewEPStringAppleMap1(k *string, v *Apple) EPStringAppleMap {
+	mm := newEPStringAppleMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewTPStringAppleMap creates and returns a reference to a map, optionally containing some items.
-func NewTPStringAppleMap(kv ...TPStringAppleTuple) TPStringAppleMap {
-	mm := newTPStringAppleMap()
+// NewEPStringAppleMap creates and returns a reference to a map, optionally containing some items.
+func NewEPStringAppleMap(kv ...EPStringAppleTuple) EPStringAppleMap {
+	mm := newEPStringAppleMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -60,10 +55,7 @@ func NewTPStringAppleMap(kv ...TPStringAppleTuple) TPStringAppleMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TPStringAppleMap) Keys() []*string {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Keys() []*string {
 	var s []*string
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -72,32 +64,23 @@ func (mm *TPStringAppleMap) Keys() []*string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TPStringAppleMap) ToSlice() []TPStringAppleTuple {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
-	var s []TPStringAppleTuple
+func (mm *EPStringAppleMap) ToSlice() []EPStringAppleTuple {
+	var s []EPStringAppleTuple
 	for k, v := range mm.m {
-		s = append(s, TPStringAppleTuple{k, v})
+		s = append(s, EPStringAppleTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TPStringAppleMap) Get(k *string) (*Apple, bool) {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Get(k *string) (*Apple, bool) {
 	v, found := mm.m[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TPStringAppleMap) Put(k *string, v *Apple) bool {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EPStringAppleMap) Put(k *string, v *Apple) bool {
 	_, found := mm.m[k]
 	mm.m[k] = v
 	return !found //False if it existed already
@@ -105,19 +88,13 @@ func (mm *TPStringAppleMap) Put(k *string, v *Apple) bool {
 
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TPStringAppleMap) ContainsKey(k *string) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) ContainsKey(k *string) bool {
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -128,37 +105,28 @@ func (mm *TPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
 
 
 // Clear clears the entire map.
-func (mm *TPStringAppleMap) Clear() {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EPStringAppleMap) Clear() {
 	mm.m = make(map[*string]*Apple)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TPStringAppleMap) Remove(k *string) {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EPStringAppleMap) Remove(k *string) {
 	delete(mm.m, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TPStringAppleMap) Size() int {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Size() int {
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TPStringAppleMap) IsEmpty() bool {
+func (mm *EPStringAppleMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TPStringAppleMap) NonEmpty() bool {
+func (mm *EPStringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -168,10 +136,7 @@ func (mm *TPStringAppleMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -183,10 +148,7 @@ func (mm *TPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -197,11 +159,8 @@ func (mm *TPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TPStringAppleMap) Filter(fn func(*string, *Apple) bool) TPStringAppleMap {
-	result := NewTPStringAppleMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Filter(fn func(*string, *Apple) bool) EPStringAppleMap {
+	result := NewEPStringAppleMap()
 	for k, v := range mm.m {
 		if fn(k, v) {
 			result.m[k] = v
@@ -213,12 +172,9 @@ func (mm *TPStringAppleMap) Filter(fn func(*string, *Apple) bool) TPStringAppleM
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching TPStringAppleMap, others TPStringAppleMap) {
-	matching = NewTPStringAppleMap()
-	others = NewTPStringAppleMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching EPStringAppleMap, others EPStringAppleMap) {
+	matching = NewEPStringAppleMap()
+	others = NewEPStringAppleMap()
 	for k, v := range mm.m {
 		if fn(k, v) {
 			matching.m[k] = v
@@ -231,11 +187,8 @@ func (mm *TPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching T
 
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TPStringAppleMap) Clone() TPStringAppleMap {
-	result := NewTPStringAppleMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EPStringAppleMap) Clone() EPStringAppleMap {
+	result := NewEPStringAppleMap()
 	for k, v := range mm.m {
 		result.m[k] = v
 	}

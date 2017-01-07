@@ -1,5 +1,8 @@
+// An encapsulated map[int]int
+// Thread-safe.
+//
 // Generated from threadsafe.tpl with Key=int Type=int
-// options: Comparable=true Numeric=<no value> Stringer=true Mutable=true
+// options: Comparable=true Stringer=true Mutable=true
 
 package maps
 
@@ -10,7 +13,6 @@ import (
 
 	"sync"
 )
-
 
 // TPIntIntMap is the primary type that represents a thread-safe map
 type TPIntIntMap struct {
@@ -37,22 +39,23 @@ func (ts TPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) TPIntIntTup
 
 //-------------------------------------------------------------------------------------------------
 
-// NewTPIntIntMap creates and returns a reference to a map containing one item.
-func NewTPIntIntMap1(k *int, v *int) TPIntIntMap {
-	mm := TPIntIntMap{
+func newTPIntIntMap() TPIntIntMap {
+	return TPIntIntMap{
 	    s: &sync.RWMutex{},
 		m: make(map[*int]*int),
 	}
+}
+
+// NewTPIntIntMap creates and returns a reference to a map containing one item.
+func NewTPIntIntMap1(k *int, v *int) TPIntIntMap {
+	mm := newTPIntIntMap()
 	mm.m[k] = v
 	return mm
 }
 
 // NewTPIntIntMap creates and returns a reference to a map, optionally containing some items.
 func NewTPIntIntMap(kv ...TPIntIntTuple) TPIntIntMap {
-	mm := TPIntIntMap{
-	    s: &sync.RWMutex{},
-		m: make(map[*int]*int),
-	}
+	mm := newTPIntIntMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -230,9 +233,9 @@ func (mm *TPIntIntMap) Partition(fn func(*int, *int) bool) (matching TPIntIntMap
 }
 
 
-// Equals determines if two sets are equal to each other.
+// Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
+// Order of items is not relevent for maps to be equal.
 func (mm *TPIntIntMap) Equals(other TPIntIntMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
@@ -295,7 +298,7 @@ func (mm *TPIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v: %v", k, v))
+		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
 	b.WriteString(sfx)

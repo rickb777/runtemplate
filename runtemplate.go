@@ -50,11 +50,11 @@ func makeFuncMap() template.FuncMap {
 		"title": strings.Title,
 		"lower": strings.ToLower,
 		"upper": strings.ToUpper,
-		"condFirstUpper": func(s string, condition interface{}) string {
-			if v, ok := condition.(string); ok && v == "true" {
-				return RichString(s).FirstUpper()
+		"yesno": func(yes string, no string, value ...bool) string {
+			if len(value) > 0 && value[0] {
+				return yes
 			}
-			return s
+			return no
 		},
 		"firstLower": func(s string) string {
 			return RichString(s).FirstLower()

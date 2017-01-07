@@ -1,3 +1,6 @@
+// A simple map[int]int.
+// Not thread-safe.
+//
 // Generated from simple.tpl with Key=int Type=int
 // options: Comparable=true Stringer=true Mutable=true
 
@@ -13,9 +16,7 @@ import (
 
 
 // SPIntIntMap is the primary type that represents a map
-type SPIntIntMap struct {
-	M map[*int]*int
-}
+type SPIntIntMap map[*int]*int
 
 // SPIntIntTuple represents a key/value pair.
 type SPIntIntTuple struct {
@@ -36,67 +37,67 @@ func (ts SPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) SPIntIntTup
 
 //-------------------------------------------------------------------------------------------------
 
+func newSPIntIntMap() SPIntIntMap {
+	return SPIntIntMap(make(map[*int]*int))
+}
+
 // NewSPIntIntMap creates and returns a reference to a map containing one item.
 func NewSPIntIntMap1(k *int, v *int) SPIntIntMap {
-	mm := SPIntIntMap{
-		M: make(map[*int]*int),
-	}
-	mm.M[k] = v
+	mm := newSPIntIntMap()
+	mm[k] = v
 	return mm
 }
 
 // NewSPIntIntMap creates and returns a reference to a map, optionally containing some items.
 func NewSPIntIntMap(kv ...SPIntIntTuple) SPIntIntMap {
-	mm := SPIntIntMap{
-		M: make(map[*int]*int),
-	}
+	mm := newSPIntIntMap()
 	for _, t := range kv {
-		mm.M[t.Key] = t.Val
+		mm[t.Key] = t.Val
 	}
 	return mm
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *SPIntIntMap) Keys() []*int {
+func (mm SPIntIntMap) Keys() []*int {
 	var s []*int
-	for k, _ := range mm.M {
+	for k, _ := range mm {
 		s = append(s, k)
 	}
 	return s
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *SPIntIntMap) ToSlice() []SPIntIntTuple {
+func (mm SPIntIntMap) ToSlice() []SPIntIntTuple {
 	var s []SPIntIntTuple
-	for k, v := range mm.M {
+	for k, v := range mm {
 		s = append(s, SPIntIntTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *SPIntIntMap) Get(k *int) (*int, bool) {
-	v, found := mm.M[k]
+func (mm SPIntIntMap) Get(k *int) (*int, bool) {
+	v, found := mm[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *SPIntIntMap) Put(k *int, v *int) bool {
-	_, found := mm.M[k]
-	mm.M[k] = v
+func (mm SPIntIntMap) Put(k *int, v *int) bool {
+	_, found := mm[k]
+	mm[k] = v
 	return !found //False if it existed already
 }
 
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *SPIntIntMap) ContainsKey(k *int) bool {
-	_, found := mm.M[k]
+func (mm SPIntIntMap) ContainsKey(k *int) bool {
+	_, found := mm[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *SPIntIntMap) ContainsAllKeys(kk ...*int) bool {
+func (mm SPIntIntMap) ContainsAllKeys(kk ...*int) bool {
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -107,28 +108,28 @@ func (mm *SPIntIntMap) ContainsAllKeys(kk ...*int) bool {
 
 
 // Clear clears the entire map.
-func (mm *SPIntIntMap) Clear() {
-	mm.M = make(map[*int]*int)
+func (mm SPIntIntMap) Clear() {
+	mm = make(map[*int]*int)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *SPIntIntMap) Remove(k *int) {
-	delete(mm.M, k)
+func (mm SPIntIntMap) Remove(k *int) {
+	delete(mm, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *SPIntIntMap) Size() int {
-	return len(mm.M)
+func (mm SPIntIntMap) Size() int {
+	return len(mm)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *SPIntIntMap) IsEmpty() bool {
+func (mm SPIntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *SPIntIntMap) NonEmpty() bool {
+func (mm SPIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -138,8 +139,8 @@ func (mm *SPIntIntMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *SPIntIntMap) Forall(fn func(*int, *int) bool) bool {
-	for k, v := range mm.M {
+func (mm SPIntIntMap) Forall(fn func(*int, *int) bool) bool {
+	for k, v := range mm {
 		if !fn(k, v) {
 			return false
 		}
@@ -150,8 +151,8 @@ func (mm *SPIntIntMap) Forall(fn func(*int, *int) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *SPIntIntMap) Exists(fn func(*int, *int) bool) bool {
-	for k, v := range mm.M {
+func (mm SPIntIntMap) Exists(fn func(*int, *int) bool) bool {
+	for k, v := range mm {
 		if fn(k, v) {
 			return true
 		}
@@ -161,11 +162,11 @@ func (mm *SPIntIntMap) Exists(fn func(*int, *int) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *SPIntIntMap) Filter(fn func(*int, *int) bool) SPIntIntMap {
+func (mm SPIntIntMap) Filter(fn func(*int, *int) bool) SPIntIntMap {
 	result := NewSPIntIntMap()
-	for k, v := range mm.M {
+	for k, v := range mm {
 		if fn(k, v) {
-			result.M[k] = v
+			result[k] = v
 		}
 	}
 	return result
@@ -174,14 +175,14 @@ func (mm *SPIntIntMap) Filter(fn func(*int, *int) bool) SPIntIntMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *SPIntIntMap) Partition(fn func(*int, *int) bool) (matching SPIntIntMap, others SPIntIntMap) {
+func (mm SPIntIntMap) Partition(fn func(*int, *int) bool) (matching SPIntIntMap, others SPIntIntMap) {
 	matching = NewSPIntIntMap()
 	others = NewSPIntIntMap()
-	for k, v := range mm.M {
+	for k, v := range mm {
 		if fn(k, v) {
-			matching.M[k] = v
+			matching[k] = v
 		} else {
-			others.M[k] = v
+			others[k] = v
 		}
 	}
 	return
@@ -191,12 +192,12 @@ func (mm *SPIntIntMap) Partition(fn func(*int, *int) bool) (matching SPIntIntMap
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *SPIntIntMap) Equals(other SPIntIntMap) bool {
+func (mm SPIntIntMap) Equals(other SPIntIntMap) bool {
 	if mm.Size() != other.Size() {
 		return false
 	}
-	for k, v1 := range mm.M {
-		v2, found := other.M[k]
+	for k, v1 := range mm {
+		v2, found := other[k]
 		if !found || *v1 != *v2 {
 			return false
 		}
@@ -206,10 +207,10 @@ func (mm *SPIntIntMap) Equals(other SPIntIntMap) bool {
 
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *SPIntIntMap) Clone() SPIntIntMap {
+func (mm SPIntIntMap) Clone() SPIntIntMap {
 	result := NewSPIntIntMap()
-	for k, v := range mm.M {
-		result.M[k] = v
+	for k, v := range mm {
+		result[k] = v
 	}
 	return result
 }
@@ -217,30 +218,30 @@ func (mm *SPIntIntMap) Clone() SPIntIntMap {
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm *SPIntIntMap) String() string {
+func (mm SPIntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm *SPIntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm SPIntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (mm *SPIntIntMap) MkString(sep string) string {
+func (mm SPIntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (mm *SPIntIntMap) MkString3(pfx, mid, sfx string) string {
+func (mm SPIntIntMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
 
-func (mm *SPIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm SPIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-	for k, v := range mm.M {
+	for k, v := range mm {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid

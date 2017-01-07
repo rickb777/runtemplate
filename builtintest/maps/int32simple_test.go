@@ -29,14 +29,14 @@ func TestSxRemove(t *testing.T) {
 	}
 
 	if !(a.ContainsKey(1) && a.ContainsKey(2)) {
-		t.Errorf("%+v", a.M)
+		t.Errorf("%+v", a)
 	}
 
 	a.Remove(2)
 	a.Remove(1)
 
 	if a.Size() != 0 {
-		t.Errorf("%+v", a.M)
+		t.Errorf("%+v", a)
 	}
 }
 
@@ -58,7 +58,7 @@ func TestSxContainsKey(t *testing.T) {
 	a.Put(9, 5)
 
 	if !(a.ContainsKey(9) && a.ContainsKey(13)) {
-		t.Errorf("%+v", a.M)
+		t.Errorf("%+v", a)
 	}
 }
 
@@ -69,11 +69,11 @@ func TestSxContainsAllKeys(t *testing.T) {
 	a.Put(2, 11)
 
 	if !a.ContainsAllKeys(8, 1, 2) {
-		t.Errorf("%+v", a.M)
+		t.Errorf("%+v", a)
 	}
 
 	if a.ContainsAllKeys(8, 6, 11, 1, 2) {
-		t.Errorf("%+v", a.M)
+		t.Errorf("%+v", a)
 	}
 }
 
@@ -83,7 +83,7 @@ func TestSxClear(t *testing.T) {
 	a.Clear()
 
 	if a.Size() != 0 {
-		t.Errorf("%+v", a.M)
+		t.Errorf("%+v", a)
 	}
 }
 
@@ -124,19 +124,19 @@ func TestSxEquals(t *testing.T) {
 	b := NewSXIntIntMap()
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
 	a.Put(10, 4)
 
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
 	}
 
 	b.Put(10, 4)
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
 	b.Put(8, 8)
@@ -144,7 +144,7 @@ func TestSxEquals(t *testing.T) {
 	b.Put(47, 49)
 
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
 	}
 
 	a.Put(8, 8)
@@ -152,13 +152,13 @@ func TestSxEquals(t *testing.T) {
 	a.Put(47, 49)
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
 	a.Put(47, 1)
 
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
 	}
 }
 
@@ -170,19 +170,19 @@ func TestSxClone(t *testing.T) {
 	b := a.Clone()
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
 	a.Put(3, 3)
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
 	}
 
 	c := a.Clone()
 	c.Remove(1)
 
 	if a.Equals(c) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, c.M)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, c)
 	}
 }
 

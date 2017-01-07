@@ -1,58 +1,53 @@
 // An encapsulated map[string]string
-// Thread-safe.
+// Not thread-safe.
 //
-// Generated from threadsafe.tpl with Key=string Type=string
+// Generated from encap.tpl with Key=string Type=string
 // options: Comparable=true Stringer=<no value> Mutable=true
 
 package maps
 
-import (
 
-	"sync"
-)
 
-// TXStringStringMap is the primary type that represents a thread-safe map
-type TXStringStringMap struct {
-	s *sync.RWMutex
+// EXStringStringMap is the primary type that represents a map
+type EXStringStringMap struct {
 	m map[string]string
 }
 
-// TXStringStringTuple represents a key/value pair.
-type TXStringStringTuple struct {
+// EXStringStringTuple represents a key/value pair.
+type EXStringStringTuple struct {
 	Key string
 	Val string
 }
 
-// TXStringStringTuples can be used as a builder for unmodifiable maps.
-type TXStringStringTuples []TXStringStringTuple
+// EXStringStringTuples can be used as a builder for unmodifiable maps.
+type EXStringStringTuples []EXStringStringTuple
 
-func (ts TXStringStringTuples) Append1(k string, v string) TXStringStringTuples {
-	return append(ts, TXStringStringTuple{k, v})
+func (ts EXStringStringTuples) Append1(k string, v string) EXStringStringTuples {
+	return append(ts, EXStringStringTuple{k, v})
 }
 
-func (ts TXStringStringTuples) Append2(k1 string, v1 string, k2 string, v2 string) TXStringStringTuples {
-	return append(ts, TXStringStringTuple{k1, v1}, TXStringStringTuple{k2, v2})
+func (ts EXStringStringTuples) Append2(k1 string, v1 string, k2 string, v2 string) EXStringStringTuples {
+	return append(ts, EXStringStringTuple{k1, v1}, EXStringStringTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newTXStringStringMap() TXStringStringMap {
-	return TXStringStringMap{
-	    s: &sync.RWMutex{},
-		m: make(map[string]string),
+func newEXStringStringMap() EXStringStringMap {
+	return EXStringStringMap{
+		make(map[string]string),
 	}
 }
 
-// NewTXStringStringMap creates and returns a reference to a map containing one item.
-func NewTXStringStringMap1(k string, v string) TXStringStringMap {
-	mm := newTXStringStringMap()
+// NewEXStringStringMap creates and returns a reference to a map containing one item.
+func NewEXStringStringMap1(k string, v string) EXStringStringMap {
+	mm := newEXStringStringMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewTXStringStringMap creates and returns a reference to a map, optionally containing some items.
-func NewTXStringStringMap(kv ...TXStringStringTuple) TXStringStringMap {
-	mm := newTXStringStringMap()
+// NewEXStringStringMap creates and returns a reference to a map, optionally containing some items.
+func NewEXStringStringMap(kv ...EXStringStringTuple) EXStringStringMap {
+	mm := newEXStringStringMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -60,10 +55,7 @@ func NewTXStringStringMap(kv ...TXStringStringTuple) TXStringStringMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TXStringStringMap) Keys() []string {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Keys() []string {
 	var s []string
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -72,32 +64,23 @@ func (mm *TXStringStringMap) Keys() []string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TXStringStringMap) ToSlice() []TXStringStringTuple {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
-	var s []TXStringStringTuple
+func (mm *EXStringStringMap) ToSlice() []EXStringStringTuple {
+	var s []EXStringStringTuple
 	for k, v := range mm.m {
-		s = append(s, TXStringStringTuple{k, v})
+		s = append(s, EXStringStringTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TXStringStringMap) Get(k string) (string, bool) {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Get(k string) (string, bool) {
 	v, found := mm.m[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TXStringStringMap) Put(k string, v string) bool {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EXStringStringMap) Put(k string, v string) bool {
 	_, found := mm.m[k]
 	mm.m[k] = v
 	return !found //False if it existed already
@@ -105,19 +88,13 @@ func (mm *TXStringStringMap) Put(k string, v string) bool {
 
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TXStringStringMap) ContainsKey(k string) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) ContainsKey(k string) bool {
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TXStringStringMap) ContainsAllKeys(kk ...string) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) ContainsAllKeys(kk ...string) bool {
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -128,37 +105,28 @@ func (mm *TXStringStringMap) ContainsAllKeys(kk ...string) bool {
 
 
 // Clear clears the entire map.
-func (mm *TXStringStringMap) Clear() {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EXStringStringMap) Clear() {
 	mm.m = make(map[string]string)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TXStringStringMap) Remove(k string) {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EXStringStringMap) Remove(k string) {
 	delete(mm.m, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TXStringStringMap) Size() int {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Size() int {
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TXStringStringMap) IsEmpty() bool {
+func (mm *EXStringStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TXStringStringMap) NonEmpty() bool {
+func (mm *EXStringStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -168,10 +136,7 @@ func (mm *TXStringStringMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TXStringStringMap) Forall(fn func(string, string) bool) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Forall(fn func(string, string) bool) bool {
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -183,10 +148,7 @@ func (mm *TXStringStringMap) Forall(fn func(string, string) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TXStringStringMap) Exists(fn func(string, string) bool) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Exists(fn func(string, string) bool) bool {
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -197,11 +159,8 @@ func (mm *TXStringStringMap) Exists(fn func(string, string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TXStringStringMap) Filter(fn func(string, string) bool) TXStringStringMap {
-	result := NewTXStringStringMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Filter(fn func(string, string) bool) EXStringStringMap {
+	result := NewEXStringStringMap()
 	for k, v := range mm.m {
 		if fn(k, v) {
 			result.m[k] = v
@@ -213,12 +172,9 @@ func (mm *TXStringStringMap) Filter(fn func(string, string) bool) TXStringString
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TXStringStringMap) Partition(fn func(string, string) bool) (matching TXStringStringMap, others TXStringStringMap) {
-	matching = NewTXStringStringMap()
-	others = NewTXStringStringMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Partition(fn func(string, string) bool) (matching EXStringStringMap, others EXStringStringMap) {
+	matching = NewEXStringStringMap()
+	others = NewEXStringStringMap()
 	for k, v := range mm.m {
 		if fn(k, v) {
 			matching.m[k] = v
@@ -233,12 +189,7 @@ func (mm *TXStringStringMap) Partition(fn func(string, string) bool) (matching T
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *TXStringStringMap) Equals(other TXStringStringMap) bool {
-	mm.s.RLock()
-	other.s.RLock()
-	defer mm.s.RUnlock()
-	defer other.s.RUnlock()
-
+func (mm *EXStringStringMap) Equals(other EXStringStringMap) bool {
 	if mm.Size() != other.Size() {
 		return false
 	}
@@ -253,11 +204,8 @@ func (mm *TXStringStringMap) Equals(other TXStringStringMap) bool {
 
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TXStringStringMap) Clone() TXStringStringMap {
-	result := NewTXStringStringMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringStringMap) Clone() EXStringStringMap {
+	result := NewEXStringStringMap()
 	for k, v := range mm.m {
 		result.m[k] = v
 	}

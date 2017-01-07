@@ -1,58 +1,53 @@
 // An encapsulated map[string]Apple
-// Thread-safe.
+// Not thread-safe.
 //
-// Generated from threadsafe.tpl with Key=string Type=Apple
+// Generated from encap.tpl with Key=string Type=Apple
 // options: Comparable=<no value> Stringer=<no value> Mutable=true
 
 package maps
 
-import (
 
-	"sync"
-)
 
-// TXStringAppleMap is the primary type that represents a thread-safe map
-type TXStringAppleMap struct {
-	s *sync.RWMutex
+// EXStringAppleMap is the primary type that represents a map
+type EXStringAppleMap struct {
 	m map[string]Apple
 }
 
-// TXStringAppleTuple represents a key/value pair.
-type TXStringAppleTuple struct {
+// EXStringAppleTuple represents a key/value pair.
+type EXStringAppleTuple struct {
 	Key string
 	Val Apple
 }
 
-// TXStringAppleTuples can be used as a builder for unmodifiable maps.
-type TXStringAppleTuples []TXStringAppleTuple
+// EXStringAppleTuples can be used as a builder for unmodifiable maps.
+type EXStringAppleTuples []EXStringAppleTuple
 
-func (ts TXStringAppleTuples) Append1(k string, v Apple) TXStringAppleTuples {
-	return append(ts, TXStringAppleTuple{k, v})
+func (ts EXStringAppleTuples) Append1(k string, v Apple) EXStringAppleTuples {
+	return append(ts, EXStringAppleTuple{k, v})
 }
 
-func (ts TXStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) TXStringAppleTuples {
-	return append(ts, TXStringAppleTuple{k1, v1}, TXStringAppleTuple{k2, v2})
+func (ts EXStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) EXStringAppleTuples {
+	return append(ts, EXStringAppleTuple{k1, v1}, EXStringAppleTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newTXStringAppleMap() TXStringAppleMap {
-	return TXStringAppleMap{
-	    s: &sync.RWMutex{},
-		m: make(map[string]Apple),
+func newEXStringAppleMap() EXStringAppleMap {
+	return EXStringAppleMap{
+		make(map[string]Apple),
 	}
 }
 
-// NewTXStringAppleMap creates and returns a reference to a map containing one item.
-func NewTXStringAppleMap1(k string, v Apple) TXStringAppleMap {
-	mm := newTXStringAppleMap()
+// NewEXStringAppleMap creates and returns a reference to a map containing one item.
+func NewEXStringAppleMap1(k string, v Apple) EXStringAppleMap {
+	mm := newEXStringAppleMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewTXStringAppleMap creates and returns a reference to a map, optionally containing some items.
-func NewTXStringAppleMap(kv ...TXStringAppleTuple) TXStringAppleMap {
-	mm := newTXStringAppleMap()
+// NewEXStringAppleMap creates and returns a reference to a map, optionally containing some items.
+func NewEXStringAppleMap(kv ...EXStringAppleTuple) EXStringAppleMap {
+	mm := newEXStringAppleMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -60,10 +55,7 @@ func NewTXStringAppleMap(kv ...TXStringAppleTuple) TXStringAppleMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TXStringAppleMap) Keys() []string {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Keys() []string {
 	var s []string
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -72,32 +64,23 @@ func (mm *TXStringAppleMap) Keys() []string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TXStringAppleMap) ToSlice() []TXStringAppleTuple {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
-	var s []TXStringAppleTuple
+func (mm *EXStringAppleMap) ToSlice() []EXStringAppleTuple {
+	var s []EXStringAppleTuple
 	for k, v := range mm.m {
-		s = append(s, TXStringAppleTuple{k, v})
+		s = append(s, EXStringAppleTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TXStringAppleMap) Get(k string) (Apple, bool) {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Get(k string) (Apple, bool) {
 	v, found := mm.m[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TXStringAppleMap) Put(k string, v Apple) bool {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EXStringAppleMap) Put(k string, v Apple) bool {
 	_, found := mm.m[k]
 	mm.m[k] = v
 	return !found //False if it existed already
@@ -105,19 +88,13 @@ func (mm *TXStringAppleMap) Put(k string, v Apple) bool {
 
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TXStringAppleMap) ContainsKey(k string) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) ContainsKey(k string) bool {
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TXStringAppleMap) ContainsAllKeys(kk ...string) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) ContainsAllKeys(kk ...string) bool {
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -128,37 +105,28 @@ func (mm *TXStringAppleMap) ContainsAllKeys(kk ...string) bool {
 
 
 // Clear clears the entire map.
-func (mm *TXStringAppleMap) Clear() {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EXStringAppleMap) Clear() {
 	mm.m = make(map[string]Apple)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TXStringAppleMap) Remove(k string) {
-	mm.s.Lock()
-	defer mm.s.Unlock()
-
+func (mm *EXStringAppleMap) Remove(k string) {
 	delete(mm.m, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TXStringAppleMap) Size() int {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Size() int {
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TXStringAppleMap) IsEmpty() bool {
+func (mm *EXStringAppleMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TXStringAppleMap) NonEmpty() bool {
+func (mm *EXStringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -168,10 +136,7 @@ func (mm *TXStringAppleMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TXStringAppleMap) Forall(fn func(string, Apple) bool) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -183,10 +148,7 @@ func (mm *TXStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TXStringAppleMap) Exists(fn func(string, Apple) bool) bool {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -197,11 +159,8 @@ func (mm *TXStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TXStringAppleMap) Filter(fn func(string, Apple) bool) TXStringAppleMap {
-	result := NewTXStringAppleMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Filter(fn func(string, Apple) bool) EXStringAppleMap {
+	result := NewEXStringAppleMap()
 	for k, v := range mm.m {
 		if fn(k, v) {
 			result.m[k] = v
@@ -213,12 +172,9 @@ func (mm *TXStringAppleMap) Filter(fn func(string, Apple) bool) TXStringAppleMap
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TXStringAppleMap) Partition(fn func(string, Apple) bool) (matching TXStringAppleMap, others TXStringAppleMap) {
-	matching = NewTXStringAppleMap()
-	others = NewTXStringAppleMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Partition(fn func(string, Apple) bool) (matching EXStringAppleMap, others EXStringAppleMap) {
+	matching = NewEXStringAppleMap()
+	others = NewEXStringAppleMap()
 	for k, v := range mm.m {
 		if fn(k, v) {
 			matching.m[k] = v
@@ -231,11 +187,8 @@ func (mm *TXStringAppleMap) Partition(fn func(string, Apple) bool) (matching TXS
 
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TXStringAppleMap) Clone() TXStringAppleMap {
-	result := NewTXStringAppleMap()
-	mm.s.RLock()
-	defer mm.s.RUnlock()
-
+func (mm *EXStringAppleMap) Clone() EXStringAppleMap {
+	result := NewEXStringAppleMap()
 	for k, v := range mm.m {
 		result.m[k] = v
 	}
