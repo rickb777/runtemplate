@@ -1,3 +1,6 @@
+// A simple type derived from map[int64]struct{}
+// Not thread-safe.
+//
 // Generated from set.tpl with Type=int64
 // options: Numeric=true Ordered=true Stringer=true Mutable=false
 
@@ -8,7 +11,6 @@ import (
 	"bytes"
 	"fmt"
 )
-
 // XInt64Set is the primary type that represents a set
 type XInt64Set map[int64]struct{}
 
@@ -73,7 +75,6 @@ func (set XInt64Set) Cardinality() int {
 
 //-------------------------------------------------------------------------------------------------
 
-
 func (set XInt64Set) doAdd(i int64) {
 	set[i] = struct{}{}
 }
@@ -87,8 +88,7 @@ func (set XInt64Set) Contains(i int64) bool {
 // ContainsAll determines if the given items are all in the set
 func (set XInt64Set) ContainsAll(i ...int64) bool {
 	for _, v := range i {
-		_, found := set[v]
-		if !found {
+		if !set.Contains(v) {
 			return false
 		}
 	}
@@ -168,10 +168,9 @@ func (set XInt64Set) SymmetricDifference(other XInt64Set) XInt64Set {
 	return aDiff.Union(bDiff)
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel of type int64 that you can range over.
+// Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set XInt64Set) Send() <-chan int64 {
 	ch := make(chan int64)
@@ -303,37 +302,6 @@ func (set XInt64Set) MaxBy(less func(int64, int64) bool) int64 {
 
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int64 is numeric.
-
-// Sum returns the sum of all the elements in the set.
-func (set XInt64Set) Sum() int64 {
-	sum := int64(0)
-	for v, _ := range set {
-		sum = sum + v
-	}
-	return sum
-}
-
-
-//-------------------------------------------------------------------------------------------------
-
-// Equals determines if two sets are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
-func (set XInt64Set) Equals(other XInt64Set) bool {
-	if set.Size() != other.Size() {
-		return false
-	}
-	for v := range set {
-		if !other.Contains(v) {
-			return false
-		}
-	}
-	return true
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // These methods are included when int64 is ordered.
 
 // Min returns the first element containing the minimum value, when compared to other elements.
@@ -352,6 +320,35 @@ func (list XInt64Set) Max() (result int64) {
 	})
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int64 is numeric.
+
+// Sum returns the sum of all the elements in the set.
+func (set XInt64Set) Sum() int64 {
+	sum := int64(0)
+	for v, _ := range set {
+		sum = sum + v
+	}
+	return sum
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Equals determines if two sets are equal to each other.
+// If they both are the same size and have the same items they are considered equal.
+// Order of items is not relevent for sets to be equal.
+func (set XInt64Set) Equals(other XInt64Set) bool {
+	if set.Size() != other.Size() {
+		return false
+	}
+	for v := range set {
+		if !other.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
 
 
 //-------------------------------------------------------------------------------------------------

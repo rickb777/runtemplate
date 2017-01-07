@@ -46,8 +46,4 @@ type PAppleCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*Apple, *Apple) bool) *Apple
 
-	
-	
-	
-	
-}
+	}

@@ -1,5 +1,8 @@
+// An encapsulated []string.
+// Thread-safe.
+//
 // Generated from list.tpl with Type=*string
-// options: Comparable=true Numeric=false Ordered=false Stringer=true
+// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=<no value>
 
 package threadsafe
 
@@ -7,8 +10,7 @@ import (
 
 	"bytes"
 	"fmt"
-
-	"sync"
+"sync"
 	"math/rand"
 )
 
@@ -26,15 +28,15 @@ type PStringList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newPStringList(len, cap int) PStringList {
-	return PStringList{
+func newPStringList(len, cap int) *PStringList {
+	return &PStringList{
 		s: &sync.RWMutex{},
 		m: make([]*string, len, cap),
 	}
 }
 
 // NewPStringList constructs a new list containing the supplied values, if any.
-func NewPStringList(values ...*string) PStringList {
+func NewPStringList(values ...*string) *PStringList {
 	result := newPStringList(len(values), len(values))
 	for i, v := range values {
 		result.m[i] = v
@@ -44,7 +46,7 @@ func NewPStringList(values ...*string) PStringList {
 
 // BuildPStringListFromChan constructs a new PStringList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func BuildPStringListFromChan(source <-chan *string) PStringList {
+func BuildPStringListFromChan(source <-chan *string) *PStringList {
 	result := newPStringList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
@@ -53,7 +55,7 @@ func BuildPStringListFromChan(source <-chan *string) PStringList {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (list PStringList) Clone() PStringList {
+func (list *PStringList) Clone() *PStringList {
 	return NewPStringList(list.m...)
 }
 
@@ -61,7 +63,7 @@ func (list PStringList) Clone() PStringList {
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
-func (list PStringList) Head() *string {
+func (list *PStringList) Head() *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -70,7 +72,7 @@ func (list PStringList) Head() *string {
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
-func (list PStringList) Last() *string {
+func (list *PStringList) Last() *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -79,7 +81,7 @@ func (list PStringList) Last() *string {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
-func (list PStringList) Tail() PStringList {
+func (list *PStringList) Tail() *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -90,7 +92,7 @@ func (list PStringList) Tail() PStringList {
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
-func (list PStringList) Init() PStringList {
+func (list *PStringList) Init() *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -100,29 +102,29 @@ func (list PStringList) Init() PStringList {
 }
 
 // IsEmpty tests whether PStringList is empty.
-func (list PStringList) IsEmpty() bool {
+func (list *PStringList) IsEmpty() bool {
 	return list.Len() == 0
 }
 
 // NonEmpty tests whether PStringList is empty.
-func (list PStringList) NonEmpty() bool {
+func (list *PStringList) NonEmpty() bool {
 	return list.Len() > 0
 }
 
 // IsSequence returns true for lists.
-func (list PStringList) IsSequence() bool {
+func (list *PStringList) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists.
-func (list PStringList) IsSet() bool {
+func (list *PStringList) IsSet() bool {
 	return false
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
-func (list PStringList) Size() int {
+func (list *PStringList) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -131,18 +133,17 @@ func (list PStringList) Size() int {
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
-func (list PStringList) Len() int {
+func (list *PStringList) Len() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	return len(list.m)
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of PStringList return true for the passed func.
-func (list PStringList) Exists(fn func(*string) bool) bool {
+func (list *PStringList) Exists(fn func(*string) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -155,7 +156,7 @@ func (list PStringList) Exists(fn func(*string) bool) bool {
 }
 
 // Forall verifies that all elements of PStringList return true for the passed func.
-func (list PStringList) Forall(fn func(*string) bool) bool {
+func (list *PStringList) Forall(fn func(*string) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -168,7 +169,7 @@ func (list PStringList) Forall(fn func(*string) bool) bool {
 }
 
 // Foreach iterates over PStringList and executes the passed func against each element.
-func (list PStringList) Foreach(fn func(*string)) {
+func (list *PStringList) Foreach(fn func(*string)) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -179,7 +180,7 @@ func (list PStringList) Foreach(fn func(*string)) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (list PStringList) Send() <-chan *string {
+func (list *PStringList) Send() <-chan *string {
 	ch := make(chan *string)
 	go func() {
 		list.s.RLock()
@@ -194,7 +195,7 @@ func (list PStringList) Send() <-chan *string {
 }
 
 // Reverse returns a copy of PStringList with all elements in the reverse order.
-func (list PStringList) Reverse() PStringList {
+func (list *PStringList) Reverse() *PStringList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -208,7 +209,7 @@ func (list PStringList) Reverse() PStringList {
 }
 
 // Shuffle returns a shuffled copy of PStringList, using a version of the Fisher-Yates shuffle.
-func (list PStringList) Shuffle() PStringList {
+func (list *PStringList) Shuffle() *PStringList {
 	numItems := list.Len()
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
@@ -222,7 +223,7 @@ func (list PStringList) Shuffle() PStringList {
 
 // Take returns a slice of PStringList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
-func (list PStringList) Take(n int) PStringList {
+func (list *PStringList) Take(n int) *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -236,7 +237,7 @@ func (list PStringList) Take(n int) PStringList {
 
 // Drop returns a slice of PStringList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
-func (list PStringList) Drop(n int) PStringList {
+func (list *PStringList) Drop(n int) *PStringList {
 	if n == 0 {
 		return list
 	}
@@ -254,7 +255,7 @@ func (list PStringList) Drop(n int) PStringList {
 
 // TakeLast returns a slice of PStringList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
-func (list PStringList) TakeLast(n int) PStringList {
+func (list *PStringList) TakeLast(n int) *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -269,7 +270,7 @@ func (list PStringList) TakeLast(n int) PStringList {
 
 // DropLast returns a slice of PStringList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
-func (list PStringList) DropLast(n int) PStringList {
+func (list *PStringList) DropLast(n int) *PStringList {
 	if n == 0 {
 		return list
 	}
@@ -289,7 +290,7 @@ func (list PStringList) DropLast(n int) PStringList {
 // TakeWhile returns a new PStringList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
-func (list PStringList) TakeWhile(p func(*string) bool) PStringList {
+func (list *PStringList) TakeWhile(p func(*string) bool) *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -307,7 +308,7 @@ func (list PStringList) TakeWhile(p func(*string) bool) PStringList {
 // DropWhile returns a new PStringList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
-func (list PStringList) DropWhile(p func(*string) bool) PStringList {
+func (list *PStringList) DropWhile(p func(*string) bool) *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -327,7 +328,7 @@ func (list PStringList) DropWhile(p func(*string) bool) PStringList {
 //-------------------------------------------------------------------------------------------------
 
 // Filter returns a new PStringList whose elements return true for func.
-func (list PStringList) Filter(fn func(*string) bool) PStringList {
+func (list *PStringList) Filter(fn func(*string) bool) *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -346,7 +347,7 @@ func (list PStringList) Filter(fn func(*string) bool) PStringList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list PStringList) Partition(p func(*string) bool) (PStringList, PStringList) {
+func (list *PStringList) Partition(p func(*string) bool) (*PStringList, *PStringList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -365,7 +366,7 @@ func (list PStringList) Partition(p func(*string) bool) (PStringList, PStringLis
 }
 
 // CountBy gives the number elements of PStringList that return true for the passed predicate.
-func (list PStringList) CountBy(predicate func(*string) bool) (result int) {
+func (list *PStringList) CountBy(predicate func(*string) bool) (result int) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -380,7 +381,7 @@ func (list PStringList) CountBy(predicate func(*string) bool) (result int) {
 // MinBy returns an element of PStringList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (list PStringList) MinBy(less func(*string, *string) bool) *string {
+func (list *PStringList) MinBy(less func(*string, *string) bool) *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -401,7 +402,7 @@ func (list PStringList) MinBy(less func(*string, *string) bool) *string {
 // MaxBy returns an element of PStringList containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (list PStringList) MaxBy(less func(*string, *string) bool) *string {
+func (list *PStringList) MaxBy(less func(*string, *string) bool) *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -420,7 +421,7 @@ func (list PStringList) MaxBy(less func(*string, *string) bool) *string {
 }
 
 // DistinctBy returns a new PStringList whose elements are unique, where equality is defined by a passed func.
-func (list PStringList) DistinctBy(equal func(*string, *string) bool) PStringList {
+func (list *PStringList) DistinctBy(equal func(*string, *string) bool) *PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -438,13 +439,13 @@ Outer:
 }
 
 // IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
-func (list PStringList) IndexWhere(p func(*string) bool) int {
+func (list *PStringList) IndexWhere(p func(*string) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
-func (list PStringList) IndexWhere2(p func(*string) bool, from int) int {
+func (list *PStringList) IndexWhere2(p func(*string) bool, from int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -458,13 +459,13 @@ func (list PStringList) IndexWhere2(p func(*string) bool, from int) int {
 
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
-func (list PStringList) LastIndexWhere(p func(*string) bool) int {
+func (list *PStringList) LastIndexWhere(p func(*string) bool) int {
 	return list.LastIndexWhere2(p, 0)
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
-func (list PStringList) LastIndexWhere2(p func(*string) bool, before int) int {
+func (list *PStringList) LastIndexWhere2(p func(*string) bool, before int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -478,14 +479,13 @@ func (list PStringList) LastIndexWhere2(p func(*string) bool, before int) int {
 }
 
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when string is comparable.
 
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (list PStringList) Equals(other PStringList) bool {
+func (list *PStringList) Equals(other *PStringList) bool {
 	list.s.RLock()
 	other.s.RLock()
 	defer list.s.RUnlock()
@@ -505,22 +505,20 @@ func (list PStringList) Equals(other PStringList) bool {
 }
 
 
-
-
 //-------------------------------------------------------------------------------------------------
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (list PStringList) String() string {
+func (list *PStringList) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (list PStringList) MkString(sep string) string {
+func (list *PStringList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list PStringList) MkString3(pfx, mid, sfx string) string {
+func (list *PStringList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
 

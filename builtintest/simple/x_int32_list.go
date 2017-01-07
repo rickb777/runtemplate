@@ -1,3 +1,6 @@
+// A simple type derived from []int32
+// Not thread-safe.
+//
 // Generated from list.tpl with Type=int32
 // options: Comparable=true Numeric=true Ordered=true Stringer=true
 
@@ -7,8 +10,7 @@ import (
 
 	"bytes"
 	"fmt"
-
-	"math/rand"
+"math/rand"
 )
 
 // XInt32List is a slice of type int32. Use it where you would use []int32.
@@ -107,7 +109,6 @@ func (list XInt32List) Size() int {
 func (list XInt32List) Len() int {
 	return len(list)
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -401,7 +402,6 @@ func (list XInt32List) Sum() int32 {
 }
 
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int32 is comparable.
 
@@ -421,7 +421,6 @@ func (list XInt32List) Equals(other XInt32List) bool {
 
 	return true
 }
-
 
 
 //-------------------------------------------------------------------------------------------------
@@ -451,7 +450,6 @@ func (list XInt32List) Max() (result int32) {
 func (list XInt32List) Less(i, j int) bool {
 	return list[i] < list[j]
 }
-
 
 
 //-------------------------------------------------------------------------------------------------

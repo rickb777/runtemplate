@@ -30,7 +30,7 @@ The built-in collections support a small number of flags that allow you to contr
 See [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators).
 
-## 1. Simple Lists and Sets
+## 1. Lists
 
 The simplest kind of collection directly use Go's slices and maps. These are mutable and do not attempt to encapsulate the underlying Go slice/map. Feel free to access these as slices/maps as appropriate.
 
@@ -132,18 +132,36 @@ This is the same as `fast/collection.tpl`.
 
 ### maps/simple.tpl
 
-This template generates a `<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The supported options are: Comparable, Stringer, Mutable.
+This template generates a simple `<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The underlying Go `map` is directly accessible too. The supported options are: Comparable, Stringer, Mutable.
 
 Example use:
 ```
 //go:generate runtemplate -tpl maps/simple.tpl Key=string Type=int32 Stringer=true Comparable=true Mutable=true
 ```
 
-The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
+The generated code is not suitable for access by more than one goroutine at a time.
 
-### map/threadsafe.tpl
+### maps/encap.tpl
 
-TODO
+This template generates an encapulated`<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The underlying Go `map` is not exported. The supported options are: Comparable, Stringer, Mutable.
+
+Example use:
+```
+//go:generate runtemplate -tpl maps/encap.tpl Key=string Type=int32 Stringer=true Comparable=true Mutable=true
+```
+
+The generated code is not suitable for access by more than one goroutine at a time.
+
+### threadsafe/map.tpl
+
+This template generates an encapulated`<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The underlying Go `map` is not exported. The supported options are: Comparable, Stringer, Mutable.
+
+Example use:
+```
+//go:generate runtemplate -tpl maps/threadsafe.tpl Key=string Type=int32 Stringer=true Comparable=true Mutable=true
+```
+
+The generated code includes read/write locks and is suitable for access by more than one goroutine at a time.
 
 
 ## 4. Channel-based Plumbing

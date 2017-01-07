@@ -1,3 +1,6 @@
+// A simple type derived from map[int32]struct{}
+// Not thread-safe.
+//
 // Generated from set.tpl with Type=int32
 // options: Numeric=true Ordered=true Stringer=true Mutable=true
 
@@ -8,7 +11,6 @@ import (
 	"bytes"
 	"fmt"
 )
-
 // XInt32Set is the primary type that represents a set
 type XInt32Set map[int32]struct{}
 
@@ -82,7 +84,6 @@ func (set XInt32Set) Add(i ...int32) XInt32Set {
 	return set
 }
 
-
 func (set XInt32Set) doAdd(i int32) {
 	set[i] = struct{}{}
 }
@@ -96,8 +97,7 @@ func (set XInt32Set) Contains(i int32) bool {
 // ContainsAll determines if the given items are all in the set
 func (set XInt32Set) ContainsAll(i ...int32) bool {
 	for _, v := range i {
-		_, found := set[v]
-		if !found {
+		if !set.Contains(v) {
 			return false
 		}
 	}
@@ -188,10 +188,9 @@ func (set XInt32Set) Remove(i int32) {
 	delete(set, i)
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel of type int32 that you can range over.
+// Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set XInt32Set) Send() <-chan int32 {
 	ch := make(chan int32)
@@ -323,37 +322,6 @@ func (set XInt32Set) MaxBy(less func(int32, int32) bool) int32 {
 
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int32 is numeric.
-
-// Sum returns the sum of all the elements in the set.
-func (set XInt32Set) Sum() int32 {
-	sum := int32(0)
-	for v, _ := range set {
-		sum = sum + v
-	}
-	return sum
-}
-
-
-//-------------------------------------------------------------------------------------------------
-
-// Equals determines if two sets are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
-func (set XInt32Set) Equals(other XInt32Set) bool {
-	if set.Size() != other.Size() {
-		return false
-	}
-	for v := range set {
-		if !other.Contains(v) {
-			return false
-		}
-	}
-	return true
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // These methods are included when int32 is ordered.
 
 // Min returns the first element containing the minimum value, when compared to other elements.
@@ -372,6 +340,35 @@ func (list XInt32Set) Max() (result int32) {
 	})
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int32 is numeric.
+
+// Sum returns the sum of all the elements in the set.
+func (set XInt32Set) Sum() int32 {
+	sum := int32(0)
+	for v, _ := range set {
+		sum = sum + v
+	}
+	return sum
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Equals determines if two sets are equal to each other.
+// If they both are the same size and have the same items they are considered equal.
+// Order of items is not relevent for sets to be equal.
+func (set XInt32Set) Equals(other XInt32Set) bool {
+	if set.Size() != other.Size() {
+		return false
+	}
+	for v := range set {
+		if !other.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
 
 
 //-------------------------------------------------------------------------------------------------

@@ -53,18 +53,18 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.Type}}
 
-	{{end}}
+	{{end -}}
 	{{if .Numeric}}
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.Type}}
 
-	{{end}}
+	{{end -}}
 	{{if .Comparable}}
 	// ContainsAll determines if two collections have the same size and contain the same items.
 	// The order of items does not matter.
 	//TODO ContainsAll(other {{.UType}}Collection) bool
 
-	{{end}}
+	{{end -}}
 	{{if .Stringer}}
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
 	// in square brackets.
@@ -76,5 +76,5 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
-	{{end}}
+	{{end -}}
 }

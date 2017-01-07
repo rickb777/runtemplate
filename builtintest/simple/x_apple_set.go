@@ -1,3 +1,6 @@
+// A simple type derived from map[Apple]struct{}
+// Not thread-safe.
+//
 // Generated from set.tpl with Type=Apple
 // options: Numeric=<no value> Ordered=<no value> Stringer=false Mutable=true
 
@@ -5,7 +8,6 @@ package simple
 
 
 // Stringer is not supported.
-
 
 // XAppleSet is the primary type that represents a set
 type XAppleSet map[Apple]struct{}
@@ -80,7 +82,6 @@ func (set XAppleSet) Add(i ...Apple) XAppleSet {
 	return set
 }
 
-
 func (set XAppleSet) doAdd(i Apple) {
 	set[i] = struct{}{}
 }
@@ -94,8 +95,7 @@ func (set XAppleSet) Contains(i Apple) bool {
 // ContainsAll determines if the given items are all in the set
 func (set XAppleSet) ContainsAll(i ...Apple) bool {
 	for _, v := range i {
-		_, found := set[v]
-		if !found {
+		if !set.Contains(v) {
 			return false
 		}
 	}
@@ -186,10 +186,9 @@ func (set XAppleSet) Remove(i Apple) {
 	delete(set, i)
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel of type Apple that you can range over.
+// Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set XAppleSet) Send() <-chan Apple {
 	ch := make(chan Apple)
@@ -319,7 +318,6 @@ func (set XAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // Equals determines if two sets are equal to each other.
@@ -336,6 +334,5 @@ func (set XAppleSet) Equals(other XAppleSet) bool {
 	}
 	return true
 }
-
 
 

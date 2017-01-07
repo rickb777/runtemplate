@@ -1,3 +1,6 @@
+// A simple type derived from []{{.Type}}
+// Not thread-safe.
+//
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
 
@@ -7,7 +10,7 @@ import (
 {{if .Stringer}}
 	"bytes"
 	"fmt"
-{{end}}
+{{end -}}
 	"math/rand"
 )
 
@@ -115,7 +118,7 @@ func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
-{{end}}
+{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
@@ -407,7 +410,7 @@ func (list {{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 	return sum
 }
 
-{{end}}
+{{end -}}
 {{if .Comparable}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is comparable.
@@ -429,7 +432,7 @@ func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) 
 	return true
 }
 
-{{end}}
+{{end -}}
 {{if .Ordered}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
@@ -459,7 +462,7 @@ func (list {{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
 	return {{.TypeStar}}list[i] < {{.TypeStar}}list[j]
 }
 
-{{end}}
+{{end -}}
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 

@@ -1,3 +1,6 @@
+// A simple type derived from map[{{.Type}}]struct{}
+// Not thread-safe.
+//
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
 
@@ -11,7 +14,7 @@ import (
 {{else}}
 // Stringer is not supported.
 
-{{end}}
+{{end -}}
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
 type {{.UPrefix}}{{.UType}}Set map[{{.Type}}]struct{}
 
@@ -85,7 +88,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}S
 	return set
 }
 
-{{end}}
+{{end -}}
 func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 	set[i] = struct{}{}
 }
@@ -99,8 +102,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 // ContainsAll determines if the given items are all in the set
 func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	for _, v := range i {
-		_, found := set[v]
-		if !found {
+		if !set.Contains(v) {
 			return false
 		}
 	}
@@ -191,10 +193,10 @@ func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	delete(set, i)
 }
 
-{{end}}
+{{end -}}
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel of type {{.Type}} that you can range over.
+// Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
@@ -324,37 +326,6 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	return m
 }
 
-{{if .Numeric}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is numeric.
-
-// Sum returns the sum of all the elements in the set.
-func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
-	sum := {{.Type}}(0)
-	for v, _ := range set {
-		sum = sum + {{.TypeStar}}v
-	}
-	return sum
-}
-
-{{end}}
-//-------------------------------------------------------------------------------------------------
-
-// Equals determines if two sets are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
-func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) bool {
-	if set.Size() != other.Size() {
-		return false
-	}
-	for v := range set {
-		if !other.Contains(v) {
-			return false
-		}
-	}
-	return true
-}
-
 {{if .Ordered}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
@@ -375,7 +346,38 @@ func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
 	})
 }
 
-{{end}}
+{{end -}}
+{{if .Numeric}}
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is numeric.
+
+// Sum returns the sum of all the elements in the set.
+func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
+	sum := {{.Type}}(0)
+	for v, _ := range set {
+		sum = sum + {{.TypeStar}}v
+	}
+	return sum
+}
+
+{{end -}}
+//-------------------------------------------------------------------------------------------------
+
+// Equals determines if two sets are equal to each other.
+// If they both are the same size and have the same items they are considered equal.
+// Order of items is not relevent for sets to be equal.
+func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) bool {
+	if set.Size() != other.Size() {
+		return false
+	}
+	for v := range set {
+		if !other.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 

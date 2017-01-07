@@ -1,3 +1,6 @@
+// A simple type derived from []string
+// Not thread-safe.
+//
 // Generated from list.tpl with Type=*string
 // options: Comparable=true Numeric=false Ordered=false Stringer=true
 
@@ -7,8 +10,7 @@ import (
 
 	"bytes"
 	"fmt"
-
-	"math/rand"
+"math/rand"
 )
 
 // PStringList is a slice of type *string. Use it where you would use []*string.
@@ -107,7 +109,6 @@ func (list PStringList) Size() int {
 func (list PStringList) Len() int {
 	return len(list)
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -388,7 +389,6 @@ func (list PStringList) LastIndexWhere2(p func(*string) bool, before int) int {
 }
 
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when string is comparable.
 
@@ -408,8 +408,6 @@ func (list PStringList) Equals(other PStringList) bool {
 
 	return true
 }
-
-
 
 
 //-------------------------------------------------------------------------------------------------

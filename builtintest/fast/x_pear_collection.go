@@ -46,8 +46,4 @@ type XPearCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(Pear, Pear) bool) Pear
 
-	
-	
-	
-	
-}
+	}

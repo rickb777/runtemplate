@@ -54,17 +54,14 @@ type XInt32Collection interface {
 	Max() int32
 
 	
-	
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int32
 
-	
 	
 	// ContainsAll determines if two collections have the same size and contain the same items.
 	// The order of items does not matter.
 	//TODO ContainsAll(other Int32Collection) bool
 
-	
 	
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
 	// in square brackets.
@@ -76,5 +73,4 @@ type XInt32Collection interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
-	
-}
+	}

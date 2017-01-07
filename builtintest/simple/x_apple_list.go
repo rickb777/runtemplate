@@ -1,11 +1,13 @@
+// A simple type derived from []Apple
+// Not thread-safe.
+//
 // Generated from list.tpl with Type=Apple
 // options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false
 
 package simple
 
 import (
-
-	"math/rand"
+"math/rand"
 )
 
 // XAppleList is a slice of type Apple. Use it where you would use []Apple.
@@ -104,7 +106,6 @@ func (list XAppleList) Size() int {
 func (list XAppleList) Len() int {
 	return len(list)
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -385,7 +386,6 @@ func (list XAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 }
 
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when Apple is comparable.
 
@@ -405,7 +405,5 @@ func (list XAppleList) Equals(other XAppleList) bool {
 
 	return true
 }
-
-
 
 

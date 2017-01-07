@@ -1,3 +1,6 @@
+// A simple type derived from map[string]struct{}
+// Not thread-safe.
+//
 // Generated from set.tpl with Type=string
 // options: Numeric=false Ordered=false Stringer=true Mutable=true
 
@@ -8,7 +11,6 @@ import (
 	"bytes"
 	"fmt"
 )
-
 // XStringSet is the primary type that represents a set
 type XStringSet map[string]struct{}
 
@@ -82,7 +84,6 @@ func (set XStringSet) Add(i ...string) XStringSet {
 	return set
 }
 
-
 func (set XStringSet) doAdd(i string) {
 	set[i] = struct{}{}
 }
@@ -96,8 +97,7 @@ func (set XStringSet) Contains(i string) bool {
 // ContainsAll determines if the given items are all in the set
 func (set XStringSet) ContainsAll(i ...string) bool {
 	for _, v := range i {
-		_, found := set[v]
-		if !found {
+		if !set.Contains(v) {
 			return false
 		}
 	}
@@ -188,10 +188,9 @@ func (set XStringSet) Remove(i string) {
 	delete(set, i)
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel of type string that you can range over.
+// Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set XStringSet) Send() <-chan string {
 	ch := make(chan string)
@@ -321,7 +320,6 @@ func (set XStringSet) MaxBy(less func(string, string) bool) string {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // Equals determines if two sets are equal to each other.
@@ -338,7 +336,6 @@ func (set XStringSet) Equals(other XStringSet) bool {
 	}
 	return true
 }
-
 
 
 //-------------------------------------------------------------------------------------------------
