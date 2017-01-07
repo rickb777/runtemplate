@@ -4,9 +4,11 @@
 package maps
 
 
+
+
 // SPStringAppleMap is the primary type that represents a map
 type SPStringAppleMap struct {
-	m map[*string]*Apple
+	M map[*string]*Apple
 }
 
 // SPStringAppleTuple represents a key/value pair.
@@ -19,11 +21,11 @@ type SPStringAppleTuple struct {
 type SPStringAppleTuples []SPStringAppleTuple
 
 func (ts SPStringAppleTuples) Append1(k *string, v *Apple) SPStringAppleTuples {
-    return append(ts, SPStringAppleTuple{k, v})
+	return append(ts, SPStringAppleTuple{k, v})
 }
 
 func (ts SPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *Apple) SPStringAppleTuples {
-    return append(ts, SPStringAppleTuple{k1, v1}, SPStringAppleTuple{k2, v2})
+	return append(ts, SPStringAppleTuple{k1, v1}, SPStringAppleTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -31,19 +33,19 @@ func (ts SPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *App
 // NewSPStringAppleMap creates and returns a reference to a map containing one item.
 func NewSPStringAppleMap1(k *string, v *Apple) SPStringAppleMap {
 	mm := SPStringAppleMap{
-		m: make(map[*string]*Apple),
+		M: make(map[*string]*Apple),
 	}
-    mm.m[k] = v
+	mm.M[k] = v
 	return mm
 }
 
 // NewSPStringAppleMap creates and returns a reference to a map, optionally containing some items.
 func NewSPStringAppleMap(kv ...SPStringAppleTuple) SPStringAppleMap {
 	mm := SPStringAppleMap{
-		m: make(map[*string]*Apple),
+		M: make(map[*string]*Apple),
 	}
 	for _, t := range kv {
-		mm.m[t.Key] = t.Val
+		mm.M[t.Key] = t.Val
 	}
 	return mm
 }
@@ -51,7 +53,7 @@ func NewSPStringAppleMap(kv ...SPStringAppleTuple) SPStringAppleMap {
 // Keys returns the keys of the current map as a slice.
 func (mm *SPStringAppleMap) Keys() []*string {
 	var s []*string
-	for k, _ := range mm.m {
+	for k, _ := range mm.M {
 		s = append(s, k)
 	}
 	return s
@@ -60,7 +62,7 @@ func (mm *SPStringAppleMap) Keys() []*string {
 // ToSlice returns the key/value pairs as a slice
 func (mm *SPStringAppleMap) ToSlice() []SPStringAppleTuple {
 	var s []SPStringAppleTuple
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		s = append(s, SPStringAppleTuple{k, v})
 	}
 	return s
@@ -68,22 +70,22 @@ func (mm *SPStringAppleMap) ToSlice() []SPStringAppleTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm *SPStringAppleMap) Get(k *string) (*Apple, bool) {
-	v, found := mm.m[k]
+	v, found := mm.M[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
 func (mm *SPStringAppleMap) Put(k *string, v *Apple) bool {
-	_, found := mm.m[k]
-	mm.m[k] = v
+	_, found := mm.M[k]
+	mm.M[k] = v
 	return !found //False if it existed already
 }
 
 
 // ContainsKey determines if a given item is already in the map.
 func (mm *SPStringAppleMap) ContainsKey(k *string) bool {
-	_, found := mm.m[k]
+	_, found := mm.M[k]
 	return found
 }
 
@@ -100,18 +102,18 @@ func (mm *SPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
 
 // Clear clears the entire map.
 func (mm *SPStringAppleMap) Clear() {
-	mm.m = make(map[*string]*Apple)
+	mm.M = make(map[*string]*Apple)
 }
 
 // Remove allows the removal of a single item from the map.
 func (mm *SPStringAppleMap) Remove(k *string) {
-	delete(mm.m, k)
+	delete(mm.M, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm *SPStringAppleMap) Size() int {
-	return len(mm.m)
+	return len(mm.M)
 }
 
 // IsEmpty returns true if the map is empty.
@@ -131,7 +133,7 @@ func (mm *SPStringAppleMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm *SPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if !fn(k, v) {
 			return false
 		}
@@ -143,7 +145,7 @@ func (mm *SPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm *SPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
 			return true
 		}
@@ -155,9 +157,9 @@ func (mm *SPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
 // only the elements for which the predicate returned true.
 func (mm *SPStringAppleMap) Filter(fn func(*string, *Apple) bool) SPStringAppleMap {
 	result := NewSPStringAppleMap()
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
-			result.m[k] = v
+			result.M[k] = v
 		}
 	}
 	return result
@@ -169,11 +171,11 @@ func (mm *SPStringAppleMap) Filter(fn func(*string, *Apple) bool) SPStringAppleM
 func (mm *SPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching SPStringAppleMap, others SPStringAppleMap) {
 	matching = NewSPStringAppleMap()
 	others = NewSPStringAppleMap()
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
-			matching.m[k] = v
+			matching.M[k] = v
 		} else {
-			others.m[k] = v
+			others.M[k] = v
 		}
 	}
 	return
@@ -183,8 +185,8 @@ func (mm *SPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching S
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm *SPStringAppleMap) Clone() SPStringAppleMap {
 	result := NewSPStringAppleMap()
-	for k, v := range mm.m {
-		result.m[k] = v
+	for k, v := range mm.M {
+		result.M[k] = v
 	}
 	return result
 }

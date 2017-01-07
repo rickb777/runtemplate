@@ -1,37 +1,32 @@
 // Generated from list.tpl with Type=Apple
 // options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false
 
-package fast
+package simple
 
 import (
 
 	"math/rand"
 )
 
-// XAppleList contains a slice of type Apple. Use it where you would use []Apple.
+// XAppleList is a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type XAppleList struct {
-	m []Apple
-}
-
+type XAppleList []Apple
 
 //-------------------------------------------------------------------------------------------------
 
 func newXAppleList(len, cap int) XAppleList {
-	return XAppleList{
-		m: make([]Apple, len, cap),
-	}
+	return make(XAppleList, len, cap)
 }
 
 // NewXAppleList constructs a new list containing the supplied values, if any.
 func NewXAppleList(values ...Apple) XAppleList {
 	result := newXAppleList(len(values), len(values))
 	for i, v := range values {
-		result.m[i] = v
+		result[i] = v
 	}
 	return result
 }
@@ -41,14 +36,14 @@ func NewXAppleList(values ...Apple) XAppleList {
 func BuildXAppleListFromChan(source <-chan Apple) XAppleList {
 	result := newXAppleList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		result = append(result, v)
 	}
 	return result
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list XAppleList) Clone() XAppleList {
-	return NewXAppleList(list.m...)
+	return NewXAppleList(list...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -56,29 +51,25 @@ func (list XAppleList) Clone() XAppleList {
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list XAppleList) Head() Apple {
-	return list.m[0]
+	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
 func (list XAppleList) Last() Apple {
-	return list.m[len(list.m)-1]
+	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
 func (list XAppleList) Tail() XAppleList {
-	result := newXAppleList(0, 0)
-	result.m = list.m[1:]
-	return result
+	return XAppleList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list XAppleList) Init() XAppleList {
-	result := newXAppleList(0, 0)
-	result.m = list.m[:len(list.m)-1]
-	return result
+	return XAppleList(list[:list.Len()-1])
 }
 
 // IsEmpty tests whether XAppleList is empty.
@@ -105,13 +96,13 @@ func (list XAppleList) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list XAppleList) Size() int {
-	return len(list.m)
+	return len(list)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list XAppleList) Len() int {
-	return len(list.m)
+	return len(list)
 }
 
 
@@ -119,7 +110,7 @@ func (list XAppleList) Len() int {
 
 // Exists verifies that one or more elements of XAppleList return true for the passed func.
 func (list XAppleList) Exists(fn func(Apple) bool) bool {
-	for _, v := range list.m {
+	for _, v := range list {
 		if fn(v) {
 			return true
 		}
@@ -129,7 +120,7 @@ func (list XAppleList) Exists(fn func(Apple) bool) bool {
 
 // Forall verifies that all elements of XAppleList return true for the passed func.
 func (list XAppleList) Forall(fn func(Apple) bool) bool {
-	for _, v := range list.m {
+	for _, v := range list {
 		if !fn(v) {
 			return false
 		}
@@ -139,7 +130,7 @@ func (list XAppleList) Forall(fn func(Apple) bool) bool {
 
 // Foreach iterates over XAppleList and executes the passed func against each element.
 func (list XAppleList) Foreach(fn func(Apple)) {
-	for _, v := range list.m {
+	for _, v := range list {
 		fn(v)
 	}
 }
@@ -149,7 +140,7 @@ func (list XAppleList) Foreach(fn func(Apple)) {
 func (list XAppleList) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
-		for _, v := range list.m {
+		for _, v := range list {
 			ch <- v
 		}
 		close(ch)
@@ -162,8 +153,8 @@ func (list XAppleList) Reverse() XAppleList {
 	numItems := list.Len()
 	result := newXAppleList(numItems, numItems)
 	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
+	for i, v := range list {
+		result[last-i] = v
 	}
 	return result
 }
@@ -174,7 +165,7 @@ func (list XAppleList) Shuffle() XAppleList {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result.m[i], result.m[r] = result.m[r], result.m[i]
+		result[i], result[r] = result[r], result[i]
 	}
 	return result
 }
@@ -187,9 +178,7 @@ func (list XAppleList) Take(n int) XAppleList {
 	if n > list.Len() {
 		return list
 	}
-	result := newXAppleList(0, 0)
-	result.m = list.m[0:n]
-	return result
+	return list[0:n]
 }
 
 // Drop returns a slice of XAppleList without the leading n elements of the source list.
@@ -199,10 +188,10 @@ func (list XAppleList) Drop(n int) XAppleList {
 		return list
 	}
 
-	result := newXAppleList(0, 0)
+	result := list
 	l := list.Len()
 	if n < l {
-		result.m = list.m[n:]
+		result = list[n:]
 	}
 	return result
 }
@@ -214,9 +203,7 @@ func (list XAppleList) TakeLast(n int) XAppleList {
 	if n > l {
 		return list
 	}
-	result := newXAppleList(0, 0)
-	result.m = list.m[l-n:]
-	return result
+	return list[l-n:]
 }
 
 // DropLast returns a slice of XAppleList without the trailing n elements of the source list.
@@ -228,11 +215,10 @@ func (list XAppleList) DropLast(n int) XAppleList {
 
 	l := list.Len()
 	if n > l {
-		list.m = list.m[l:]
+		return list[l:]
 	} else {
-		list.m = list.m[0 : l-n]
+		return list[0 : l-n]
 	}
-	return list
 }
 
 // TakeWhile returns a new XAppleList containing the leading elements of the source list. Whilst the
@@ -240,9 +226,9 @@ func (list XAppleList) DropLast(n int) XAppleList {
 // elemense are excluded.
 func (list XAppleList) TakeWhile(p func(Apple) bool) XAppleList {
 	result := newXAppleList(0, 0)
-	for _, v := range list.m {
+	for _, v := range list {
 		if p(v) {
-			result.m = append(result.m, v)
+			result = append(result, v)
 		} else {
 			return result
 		}
@@ -257,10 +243,10 @@ func (list XAppleList) DropWhile(p func(Apple) bool) XAppleList {
 	result := newXAppleList(0, 0)
 	adding := false
 
-	for _, v := range list.m {
+	for _, v := range list {
 		if !p(v) || adding {
 			adding = true
-			result.m = append(result.m, v)
+			result = append(result, v)
 		}
 	}
 
@@ -273,9 +259,9 @@ func (list XAppleList) DropWhile(p func(Apple) bool) XAppleList {
 func (list XAppleList) Filter(fn func(Apple) bool) XAppleList {
 	result := newXAppleList(0, list.Len()/2)
 
-	for _, v := range list.m {
+	for _, v := range list {
 		if fn(v) {
-			result.m = append(result.m, v)
+			result = append(result, v)
 		}
 	}
 
@@ -290,11 +276,11 @@ func (list XAppleList) Partition(p func(Apple) bool) (XAppleList, XAppleList) {
 	matching := newXAppleList(0, list.Len()/2)
 	others := newXAppleList(0, list.Len()/2)
 
-	for _, v := range list.m {
+	for _, v := range list {
 		if p(v) {
-			matching.m = append(matching.m, v)
+			matching = append(matching, v)
 		} else {
-			others.m = append(others.m, v)
+			others = append(others, v)
 		}
 	}
 
@@ -303,7 +289,7 @@ func (list XAppleList) Partition(p func(Apple) bool) (XAppleList, XAppleList) {
 
 // CountBy gives the number elements of XAppleList that return true for the passed predicate.
 func (list XAppleList) CountBy(predicate func(Apple) bool) (result int) {
-	for _, v := range list.m {
+	for _, v := range list {
 		if predicate(v) {
 			result++
 		}
@@ -322,12 +308,12 @@ func (list XAppleList) MinBy(less func(Apple, Apple) bool) Apple {
 
 	m := 0
 	for i := 1; i < l; i++ {
-		if less(list.m[i], list.m[m]) {
+		if less(list[i], list[m]) {
 			m = i
 		}
 	}
 
-	return list.m[m]
+	return list[m]
 }
 
 // MaxBy returns an element of XAppleList containing the maximum value, when compared to other elements
@@ -341,25 +327,25 @@ func (list XAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 
 	m := 0
 	for i := 1; i < l; i++ {
-		if less(list.m[m], list.m[i]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
 
-	return list.m[m]
+	return list[m]
 }
 
 // DistinctBy returns a new XAppleList whose elements are unique, where equality is defined by a passed func.
 func (list XAppleList) DistinctBy(equal func(Apple, Apple) bool) XAppleList {
 	result := newXAppleList(0, list.Len())
 Outer:
-	for _, v := range list.m {
-		for _, r := range result.m {
+	for _, v := range list {
+		for _, r := range result {
 			if equal(v, r) {
 				continue Outer
 			}
 		}
-		result.m = append(result.m, v)
+		result = append(result, v)
 	}
 	return result
 }
@@ -372,7 +358,7 @@ func (list XAppleList) IndexWhere(p func(Apple) bool) int {
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list XAppleList) IndexWhere2(p func(Apple) bool, from int) int {
-	for i, v := range list.m {
+	for i, v := range list {
 		if i >= from && p(v) {
 			return i
 		}
@@ -390,7 +376,7 @@ func (list XAppleList) LastIndexWhere(p func(Apple) bool) int {
 // If none exists, -1 is returned.
 func (list XAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 	for i := list.Len() - 1; i >= 0; i-- {
-		v := list.m[i]
+		v := list[i]
 		if i <= before && p(v) {
 			return i
 		}
@@ -411,8 +397,8 @@ func (list XAppleList) Equals(other XAppleList) bool {
 		return false
 	}
 
-	for i, v := range list.m {
-		if v != other.m[i] {
+	for i, v := range list {
+		if v != other[i] {
 			return false
 		}
 	}

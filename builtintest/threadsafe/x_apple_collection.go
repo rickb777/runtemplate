@@ -48,6 +48,6 @@ type XAppleCollection interface {
 
 	
 	
-    
+	
 	
 }

@@ -2,6 +2,8 @@
 
 [![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate)
 [![Build Status](https://travis-ci.org/rickb777/runtemplate.svg?branch=master)](https://travis-ci.org/rickb777/runtemplate)
+[![Code Coverage](https://img.shields.io/coveralls/rickb777/runtemplate.svg)](https://coveralls.io/r/rickb777/runtemplate)
+[![Issues](https://img.shields.io/github/issues/rickb777/runtemplate.svg)](https://github.com/rickb777/runtemplate/issues)
 
 This application provides a simple way of executing standard Go templates from the command line. The obvious use-case is for source code generation, amongst many others.
 
@@ -114,6 +116,7 @@ Some filters are also included that may be helpful.
  * lower - Converts the input to lower case.
  * firstUpper - Converts the first character of input to upper case.
  * firstLower - Converts the first character of input to lower case.
+ * condFirstUpper - Given a string and a boolean, converts the first character of input to upper case when the boolean is true. 
  * splitDotFirst - Given an input that has a '.' separator, returns the part before the first '.'.
  * splitDotLast - Given an input that has a '.' separator, returns the part after the last '.'.
 

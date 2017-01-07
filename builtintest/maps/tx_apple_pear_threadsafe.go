@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+
 // TXApplePearMap is the primary type that represents a thread-safe map
 type TXApplePearMap struct {
 	s *sync.RWMutex
@@ -24,11 +25,11 @@ type TXApplePearTuple struct {
 type TXApplePearTuples []TXApplePearTuple
 
 func (ts TXApplePearTuples) Append1(k Apple, v Pear) TXApplePearTuples {
-    return append(ts, TXApplePearTuple{k, v})
+	return append(ts, TXApplePearTuple{k, v})
 }
 
 func (ts TXApplePearTuples) Append2(k1 Apple, v1 Pear, k2 Apple, v2 Pear) TXApplePearTuples {
-    return append(ts, TXApplePearTuple{k1, v1}, TXApplePearTuple{k2, v2})
+	return append(ts, TXApplePearTuple{k1, v1}, TXApplePearTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -36,15 +37,17 @@ func (ts TXApplePearTuples) Append2(k1 Apple, v1 Pear, k2 Apple, v2 Pear) TXAppl
 // NewTXApplePearMap creates and returns a reference to a map containing one item.
 func NewTXApplePearMap1(k Apple, v Pear) TXApplePearMap {
 	mm := TXApplePearMap{
+	    s: &sync.RWMutex{},
 		m: make(map[Apple]Pear),
 	}
-    mm.m[k] = v
+	mm.m[k] = v
 	return mm
 }
 
 // NewTXApplePearMap creates and returns a reference to a map, optionally containing some items.
 func NewTXApplePearMap(kv ...TXApplePearTuple) TXApplePearMap {
 	mm := TXApplePearMap{
+	    s: &sync.RWMutex{},
 		m: make(map[Apple]Pear),
 	}
 	for _, t := range kv {

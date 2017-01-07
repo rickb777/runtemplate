@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestToSlice(t *testing.T) {
+func TestSxToSlice(t *testing.T) {
 	a := NewSXIntIntMap1(1, 2)
 	s := a.ToSlice()
 
@@ -17,7 +17,7 @@ func TestToSlice(t *testing.T) {
 	}
 }
 
-func TestRemove(t *testing.T) {
+func TestSxRemove(t *testing.T) {
 	a := NewSXIntIntMap1(3, 1)
 
 	a.Put(1, 5)
@@ -29,18 +29,18 @@ func TestRemove(t *testing.T) {
 	}
 
 	if !(a.ContainsKey(1) && a.ContainsKey(2)) {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a.M)
 	}
 
 	a.Remove(2)
 	a.Remove(1)
 
 	if a.Size() != 0 {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a.M)
 	}
 }
 
-func TestContainsKey(t *testing.T) {
+func TestSxContainsKey(t *testing.T) {
 	a := NewSXIntIntMap1(13, 1)
 
 	a.Put(71, 13)
@@ -58,36 +58,36 @@ func TestContainsKey(t *testing.T) {
 	a.Put(9, 5)
 
 	if !(a.ContainsKey(9) && a.ContainsKey(13)) {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a.M)
 	}
 }
 
-func TestContainsAllKeys(t *testing.T) {
+func TestSxContainsAllKeys(t *testing.T) {
 	a := NewSXIntIntMap1(8, 6)
 
 	a.Put(1, 10)
 	a.Put(2, 11)
 
 	if !a.ContainsAllKeys(8, 1, 2) {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a.M)
 	}
 
 	if a.ContainsAllKeys(8, 6, 11, 1, 2) {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a.M)
 	}
 }
 
-func TestClear(t *testing.T) {
+func TestSxClear(t *testing.T) {
 	a := NewSXIntIntMap1(2, 5)
 
 	a.Clear()
 
 	if a.Size() != 0 {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a.M)
 	}
 }
 
-func TestCardinality(t *testing.T) {
+func TestSxCardinality(t *testing.T) {
 	a := NewSXIntIntMap()
 
 	if a.Size() != 0 {
@@ -119,24 +119,24 @@ func TestCardinality(t *testing.T) {
 	}
 }
 
-func TestEquals(t *testing.T) {
+func TestSxEquals(t *testing.T) {
 	a := NewSXIntIntMap()
 	b := NewSXIntIntMap()
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
 	}
 
 	a.Put(10, 4)
 
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
 	}
 
 	b.Put(10, 4)
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
 	}
 
 	b.Put(8, 8)
@@ -144,7 +144,7 @@ func TestEquals(t *testing.T) {
 	b.Put(47, 49)
 
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
 	}
 
 	a.Put(8, 8)
@@ -152,17 +152,17 @@ func TestEquals(t *testing.T) {
 	a.Put(47, 49)
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
 	}
 
 	a.Put(47, 1)
 
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
 	}
 }
 
-func TestClone(t *testing.T) {
+func TestSxClone(t *testing.T) {
 	a := NewSXIntIntMap()
 	a.Put(1, 9)
 	a.Put(2, 8)
@@ -170,23 +170,23 @@ func TestClone(t *testing.T) {
 	b := a.Clone()
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' to equal '%+v'", a.M, b.M)
 	}
 
 	a.Put(3, 3)
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.m, b.m)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, b.M)
 	}
 
 	c := a.Clone()
 	c.Remove(1)
 
 	if a.Equals(c) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a.m, c.m)
+		t.Errorf("Expected '%+v' not to equal '%+v'", a.M, c.M)
 	}
 }
 
-//func TestSend(t *testing.T) {
+//func TestSxSend(t *testing.T) {
 //	a := NewSXIntIntMap(1, 2, 3, 4)
 //
 //	b := NewSXIntIntMap()

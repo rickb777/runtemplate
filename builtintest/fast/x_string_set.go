@@ -76,8 +76,8 @@ func (set XStringSet) Cardinality() int {
 
 // Add adds items to the current set, returning the modified set.
 func (set XStringSet) Add(i ...string) XStringSet {
-    for _, v := range i {
-	    set.doAdd(v)
+	for _, v := range i {
+		set.doAdd(v)
 	}
 	return set
 }

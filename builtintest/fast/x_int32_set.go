@@ -76,8 +76,8 @@ func (set XInt32Set) Cardinality() int {
 
 // Add adds items to the current set, returning the modified set.
 func (set XInt32Set) Add(i ...int32) XInt32Set {
-    for _, v := range i {
-	    set.doAdd(v)
+	for _, v := range i {
+		set.doAdd(v)
 	}
 	return set
 }

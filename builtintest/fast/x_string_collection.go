@@ -48,10 +48,10 @@ type XStringCollection interface {
 
 	
 	
-    
-    // ContainsAll determines if two collections have the same size and contain the same items.
-    // The order of items does not matter.
-    //TODO ContainsAll(other StringCollection) bool
+	
+	// ContainsAll determines if two collections have the same size and contain the same items.
+	// The order of items does not matter.
+	//TODO ContainsAll(other StringCollection) bool
 
 	
 	

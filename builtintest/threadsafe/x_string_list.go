@@ -213,7 +213,7 @@ func (list XStringList) Shuffle() XStringList {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-    	result.m[i], result.m[r] = result.m[r], result.m[i]
+		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
 }
@@ -388,6 +388,7 @@ func (list XStringList) MinBy(less func(string, string) bool) string {
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[i], list.m[m]) {
@@ -414,6 +415,7 @@ func (list XStringList) MaxBy(less func(string, string) bool) string {
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 

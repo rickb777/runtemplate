@@ -4,9 +4,11 @@
 package maps
 
 
+
+
 // SXAppleStringMap is the primary type that represents a map
 type SXAppleStringMap struct {
-	m map[Apple]string
+	M map[Apple]string
 }
 
 // SXAppleStringTuple represents a key/value pair.
@@ -19,11 +21,11 @@ type SXAppleStringTuple struct {
 type SXAppleStringTuples []SXAppleStringTuple
 
 func (ts SXAppleStringTuples) Append1(k Apple, v string) SXAppleStringTuples {
-    return append(ts, SXAppleStringTuple{k, v})
+	return append(ts, SXAppleStringTuple{k, v})
 }
 
 func (ts SXAppleStringTuples) Append2(k1 Apple, v1 string, k2 Apple, v2 string) SXAppleStringTuples {
-    return append(ts, SXAppleStringTuple{k1, v1}, SXAppleStringTuple{k2, v2})
+	return append(ts, SXAppleStringTuple{k1, v1}, SXAppleStringTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -31,19 +33,19 @@ func (ts SXAppleStringTuples) Append2(k1 Apple, v1 string, k2 Apple, v2 string) 
 // NewSXAppleStringMap creates and returns a reference to a map containing one item.
 func NewSXAppleStringMap1(k Apple, v string) SXAppleStringMap {
 	mm := SXAppleStringMap{
-		m: make(map[Apple]string),
+		M: make(map[Apple]string),
 	}
-    mm.m[k] = v
+	mm.M[k] = v
 	return mm
 }
 
 // NewSXAppleStringMap creates and returns a reference to a map, optionally containing some items.
 func NewSXAppleStringMap(kv ...SXAppleStringTuple) SXAppleStringMap {
 	mm := SXAppleStringMap{
-		m: make(map[Apple]string),
+		M: make(map[Apple]string),
 	}
 	for _, t := range kv {
-		mm.m[t.Key] = t.Val
+		mm.M[t.Key] = t.Val
 	}
 	return mm
 }
@@ -51,7 +53,7 @@ func NewSXAppleStringMap(kv ...SXAppleStringTuple) SXAppleStringMap {
 // Keys returns the keys of the current map as a slice.
 func (mm *SXAppleStringMap) Keys() []Apple {
 	var s []Apple
-	for k, _ := range mm.m {
+	for k, _ := range mm.M {
 		s = append(s, k)
 	}
 	return s
@@ -60,7 +62,7 @@ func (mm *SXAppleStringMap) Keys() []Apple {
 // ToSlice returns the key/value pairs as a slice
 func (mm *SXAppleStringMap) ToSlice() []SXAppleStringTuple {
 	var s []SXAppleStringTuple
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		s = append(s, SXAppleStringTuple{k, v})
 	}
 	return s
@@ -68,22 +70,22 @@ func (mm *SXAppleStringMap) ToSlice() []SXAppleStringTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm *SXAppleStringMap) Get(k Apple) (string, bool) {
-	v, found := mm.m[k]
+	v, found := mm.M[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
 func (mm *SXAppleStringMap) Put(k Apple, v string) bool {
-	_, found := mm.m[k]
-	mm.m[k] = v
+	_, found := mm.M[k]
+	mm.M[k] = v
 	return !found //False if it existed already
 }
 
 
 // ContainsKey determines if a given item is already in the map.
 func (mm *SXAppleStringMap) ContainsKey(k Apple) bool {
-	_, found := mm.m[k]
+	_, found := mm.M[k]
 	return found
 }
 
@@ -100,18 +102,18 @@ func (mm *SXAppleStringMap) ContainsAllKeys(kk ...Apple) bool {
 
 // Clear clears the entire map.
 func (mm *SXAppleStringMap) Clear() {
-	mm.m = make(map[Apple]string)
+	mm.M = make(map[Apple]string)
 }
 
 // Remove allows the removal of a single item from the map.
 func (mm *SXAppleStringMap) Remove(k Apple) {
-	delete(mm.m, k)
+	delete(mm.M, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm *SXAppleStringMap) Size() int {
-	return len(mm.m)
+	return len(mm.M)
 }
 
 // IsEmpty returns true if the map is empty.
@@ -131,7 +133,7 @@ func (mm *SXAppleStringMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm *SXAppleStringMap) Forall(fn func(Apple, string) bool) bool {
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if !fn(k, v) {
 			return false
 		}
@@ -143,7 +145,7 @@ func (mm *SXAppleStringMap) Forall(fn func(Apple, string) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm *SXAppleStringMap) Exists(fn func(Apple, string) bool) bool {
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
 			return true
 		}
@@ -155,9 +157,9 @@ func (mm *SXAppleStringMap) Exists(fn func(Apple, string) bool) bool {
 // only the elements for which the predicate returned true.
 func (mm *SXAppleStringMap) Filter(fn func(Apple, string) bool) SXAppleStringMap {
 	result := NewSXAppleStringMap()
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
-			result.m[k] = v
+			result.M[k] = v
 		}
 	}
 	return result
@@ -169,11 +171,11 @@ func (mm *SXAppleStringMap) Filter(fn func(Apple, string) bool) SXAppleStringMap
 func (mm *SXAppleStringMap) Partition(fn func(Apple, string) bool) (matching SXAppleStringMap, others SXAppleStringMap) {
 	matching = NewSXAppleStringMap()
 	others = NewSXAppleStringMap()
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
-			matching.m[k] = v
+			matching.M[k] = v
 		} else {
-			others.m[k] = v
+			others.M[k] = v
 		}
 	}
 	return
@@ -183,8 +185,8 @@ func (mm *SXAppleStringMap) Partition(fn func(Apple, string) bool) (matching SXA
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm *SXAppleStringMap) Clone() SXAppleStringMap {
 	result := NewSXAppleStringMap()
-	for k, v := range mm.m {
-		result.m[k] = v
+	for k, v := range mm.M {
+		result.M[k] = v
 	}
 	return result
 }

@@ -102,8 +102,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}S
 	set.s.Lock()
 	defer set.s.Unlock()
 
-    for _, v := range i {
-    	set.m[v] = struct{}{}
+	for _, v := range i {
+		set.m[v] = struct{}{}
 	}
 	return set
 }

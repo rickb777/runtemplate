@@ -10,11 +10,12 @@ import (
 {{end}}
 	"sync"
 )
+{{$m := "m"}}
 
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map struct {
 	s *sync.RWMutex
-	m map[{{.PKey}}]{{.PType}}
+	{{$m}} map[{{.PKey}}]{{.PType}}
 }
 
 // {{.UPrefix}}{{.UKey}}{{.UType}}Tuple represents a key/value pair.
@@ -27,11 +28,11 @@ type {{.UPrefix}}{{.UKey}}{{.UType}}Tuple struct {
 type {{.UPrefix}}{{.UKey}}{{.UType}}Tuples []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
 
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-    return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 }
 
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-    return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2})
+	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -39,19 +40,21 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PTyp
 // New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map containing one item.
 func New{{.UPrefix}}{{.UKey}}{{.UType}}Map1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	mm := {{.UPrefix}}{{.UKey}}{{.UType}}Map{
-		m: make(map[{{.PKey}}]{{.PType}}),
+	    s: &sync.RWMutex{},
+		{{$m}}: make(map[{{.PKey}}]{{.PType}}),
 	}
-    mm.m[k] = v
+	mm.{{$m}}[k] = v
 	return mm
 }
 
 // New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map, optionally containing some items.
 func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	mm := {{.UPrefix}}{{.UKey}}{{.UType}}Map{
-		m: make(map[{{.PKey}}]{{.PType}}),
+	    s: &sync.RWMutex{},
+		{{$m}}: make(map[{{.PKey}}]{{.PType}}),
 	}
 	for _, t := range kv {
-		mm.m[t.Key] = t.Val
+		mm.{{$m}}[t.Key] = t.Val
 	}
 	return mm
 }
@@ -62,7 +65,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 	defer mm.s.RUnlock()
 
 	var s []{{.PKey}}
-	for k, _ := range mm.m {
+	for k, _ := range mm.{{$m}} {
 		s = append(s, k)
 	}
 	return s
@@ -74,7 +77,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{
 	defer mm.s.RUnlock()
 
 	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
-	for k, v := range mm.m {
+	for k, v := range mm.{{$m}} {
 		s = append(s, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 	}
 	return s
@@ -85,7 +88,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	v, found := mm.m[k]
+	v, found := mm.{{$m}}[k]
 	return v, found
 }
 
@@ -95,8 +98,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) boo
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-	_, found := mm.m[k]
-	mm.m[k] = v
+	_, found := mm.{{$m}}[k]
+	mm.{{$m}}[k] = v
 	return !found //False if it existed already
 }
 
@@ -106,7 +109,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	_, found := mm.m[k]
+	_, found := mm.{{$m}}[k]
 	return found
 }
 
@@ -129,7 +132,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clear() {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-	mm.m = make(map[{{.PKey}}]{{.PType}})
+	mm.{{$m}} = make(map[{{.PKey}}]{{.PType}})
 }
 
 // Remove allows the removal of a single item from the map.
@@ -137,7 +140,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-	delete(mm.m, k)
+	delete(mm.{{$m}}, k)
 }
 
 {{end}}
@@ -146,7 +149,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	return len(mm.m)
+	return len(mm.{{$m}})
 }
 
 // IsEmpty returns true if the map is empty.
@@ -169,7 +172,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+	for k, v := range mm.{{$m}} {
 		if !fn(k, v) {
 			return false
 		}
@@ -184,7 +187,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+	for k, v := range mm.{{$m}} {
 		if fn(k, v) {
 			return true
 		}
@@ -199,9 +202,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+	for k, v := range mm.{{$m}} {
 		if fn(k, v) {
-			result.m[k] = v
+			result.{{$m}}[k] = v
 		}
 	}
 	return result
@@ -216,11 +219,11 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PT
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+	for k, v := range mm.{{$m}} {
 		if fn(k, v) {
-			matching.m[k] = v
+			matching.{{$m}}[k] = v
 		} else {
-			others.m[k] = v
+			others.{{$m}}[k] = v
 		}
 	}
 	return
@@ -239,8 +242,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}
 	if mm.Size() != other.Size() {
 		return false
 	}
-	for k, v1 := range mm.m {
-		v2, found := other.m[k]
+	for k, v1 := range mm.{{$m}} {
+		v2, found := other.{{$m}}[k]
 		if !found || {{.TypeStar}}v1 != {{.TypeStar}}v2 {
 			return false
 		}
@@ -255,8 +258,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UT
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
-		result.m[k] = v
+	for k, v := range mm.{{$m}} {
+		result.{{$m}}[k] = v
 	}
 	return result
 }
@@ -290,7 +293,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx strin
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+	for k, v := range mm.{{$m}} {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v: %v", k, v))
 		sep = mid

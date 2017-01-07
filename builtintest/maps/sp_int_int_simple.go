@@ -10,9 +10,11 @@ import (
 )
 
 
+
+
 // SPIntIntMap is the primary type that represents a map
 type SPIntIntMap struct {
-	m map[*int]*int
+	M map[*int]*int
 }
 
 // SPIntIntTuple represents a key/value pair.
@@ -25,11 +27,11 @@ type SPIntIntTuple struct {
 type SPIntIntTuples []SPIntIntTuple
 
 func (ts SPIntIntTuples) Append1(k *int, v *int) SPIntIntTuples {
-    return append(ts, SPIntIntTuple{k, v})
+	return append(ts, SPIntIntTuple{k, v})
 }
 
 func (ts SPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) SPIntIntTuples {
-    return append(ts, SPIntIntTuple{k1, v1}, SPIntIntTuple{k2, v2})
+	return append(ts, SPIntIntTuple{k1, v1}, SPIntIntTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -37,19 +39,19 @@ func (ts SPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) SPIntIntTup
 // NewSPIntIntMap creates and returns a reference to a map containing one item.
 func NewSPIntIntMap1(k *int, v *int) SPIntIntMap {
 	mm := SPIntIntMap{
-		m: make(map[*int]*int),
+		M: make(map[*int]*int),
 	}
-    mm.m[k] = v
+	mm.M[k] = v
 	return mm
 }
 
 // NewSPIntIntMap creates and returns a reference to a map, optionally containing some items.
 func NewSPIntIntMap(kv ...SPIntIntTuple) SPIntIntMap {
 	mm := SPIntIntMap{
-		m: make(map[*int]*int),
+		M: make(map[*int]*int),
 	}
 	for _, t := range kv {
-		mm.m[t.Key] = t.Val
+		mm.M[t.Key] = t.Val
 	}
 	return mm
 }
@@ -57,7 +59,7 @@ func NewSPIntIntMap(kv ...SPIntIntTuple) SPIntIntMap {
 // Keys returns the keys of the current map as a slice.
 func (mm *SPIntIntMap) Keys() []*int {
 	var s []*int
-	for k, _ := range mm.m {
+	for k, _ := range mm.M {
 		s = append(s, k)
 	}
 	return s
@@ -66,7 +68,7 @@ func (mm *SPIntIntMap) Keys() []*int {
 // ToSlice returns the key/value pairs as a slice
 func (mm *SPIntIntMap) ToSlice() []SPIntIntTuple {
 	var s []SPIntIntTuple
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		s = append(s, SPIntIntTuple{k, v})
 	}
 	return s
@@ -74,22 +76,22 @@ func (mm *SPIntIntMap) ToSlice() []SPIntIntTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm *SPIntIntMap) Get(k *int) (*int, bool) {
-	v, found := mm.m[k]
+	v, found := mm.M[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
 func (mm *SPIntIntMap) Put(k *int, v *int) bool {
-	_, found := mm.m[k]
-	mm.m[k] = v
+	_, found := mm.M[k]
+	mm.M[k] = v
 	return !found //False if it existed already
 }
 
 
 // ContainsKey determines if a given item is already in the map.
 func (mm *SPIntIntMap) ContainsKey(k *int) bool {
-	_, found := mm.m[k]
+	_, found := mm.M[k]
 	return found
 }
 
@@ -106,18 +108,18 @@ func (mm *SPIntIntMap) ContainsAllKeys(kk ...*int) bool {
 
 // Clear clears the entire map.
 func (mm *SPIntIntMap) Clear() {
-	mm.m = make(map[*int]*int)
+	mm.M = make(map[*int]*int)
 }
 
 // Remove allows the removal of a single item from the map.
 func (mm *SPIntIntMap) Remove(k *int) {
-	delete(mm.m, k)
+	delete(mm.M, k)
 }
 
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm *SPIntIntMap) Size() int {
-	return len(mm.m)
+	return len(mm.M)
 }
 
 // IsEmpty returns true if the map is empty.
@@ -137,7 +139,7 @@ func (mm *SPIntIntMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm *SPIntIntMap) Forall(fn func(*int, *int) bool) bool {
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if !fn(k, v) {
 			return false
 		}
@@ -149,7 +151,7 @@ func (mm *SPIntIntMap) Forall(fn func(*int, *int) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm *SPIntIntMap) Exists(fn func(*int, *int) bool) bool {
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
 			return true
 		}
@@ -161,9 +163,9 @@ func (mm *SPIntIntMap) Exists(fn func(*int, *int) bool) bool {
 // only the elements for which the predicate returned true.
 func (mm *SPIntIntMap) Filter(fn func(*int, *int) bool) SPIntIntMap {
 	result := NewSPIntIntMap()
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
-			result.m[k] = v
+			result.M[k] = v
 		}
 	}
 	return result
@@ -175,11 +177,11 @@ func (mm *SPIntIntMap) Filter(fn func(*int, *int) bool) SPIntIntMap {
 func (mm *SPIntIntMap) Partition(fn func(*int, *int) bool) (matching SPIntIntMap, others SPIntIntMap) {
 	matching = NewSPIntIntMap()
 	others = NewSPIntIntMap()
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		if fn(k, v) {
-			matching.m[k] = v
+			matching.M[k] = v
 		} else {
-			others.m[k] = v
+			others.M[k] = v
 		}
 	}
 	return
@@ -193,8 +195,8 @@ func (mm *SPIntIntMap) Equals(other SPIntIntMap) bool {
 	if mm.Size() != other.Size() {
 		return false
 	}
-	for k, v1 := range mm.m {
-		v2, found := other.m[k]
+	for k, v1 := range mm.M {
+		v2, found := other.M[k]
 		if !found || *v1 != *v2 {
 			return false
 		}
@@ -206,8 +208,8 @@ func (mm *SPIntIntMap) Equals(other SPIntIntMap) bool {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm *SPIntIntMap) Clone() SPIntIntMap {
 	result := NewSPIntIntMap()
-	for k, v := range mm.m {
-		result.m[k] = v
+	for k, v := range mm.M {
+		result.M[k] = v
 	}
 	return result
 }
@@ -238,7 +240,7 @@ func (mm *SPIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-	for k, v := range mm.m {
+	for k, v := range mm.M {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid

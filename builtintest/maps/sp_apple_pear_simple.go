@@ -4,6 +4,8 @@
 package maps
 
 
+
+
 // SPApplePearMap is the primary type that represents a map
 type SPApplePearMap struct {
 	m map[*Apple]*Pear
@@ -19,11 +21,11 @@ type SPApplePearTuple struct {
 type SPApplePearTuples []SPApplePearTuple
 
 func (ts SPApplePearTuples) Append1(k *Apple, v *Pear) SPApplePearTuples {
-    return append(ts, SPApplePearTuple{k, v})
+	return append(ts, SPApplePearTuple{k, v})
 }
 
 func (ts SPApplePearTuples) Append2(k1 *Apple, v1 *Pear, k2 *Apple, v2 *Pear) SPApplePearTuples {
-    return append(ts, SPApplePearTuple{k1, v1}, SPApplePearTuple{k2, v2})
+	return append(ts, SPApplePearTuple{k1, v1}, SPApplePearTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -33,7 +35,7 @@ func NewSPApplePearMap1(k *Apple, v *Pear) SPApplePearMap {
 	mm := SPApplePearMap{
 		m: make(map[*Apple]*Pear),
 	}
-    mm.m[k] = v
+	mm.m[k] = v
 	return mm
 }
 

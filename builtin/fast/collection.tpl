@@ -59,10 +59,10 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	Sum() {{.Type}}
 
 	{{end}}
-    {{if .Comparable}}
-    // ContainsAll determines if two collections have the same size and contain the same items.
-    // The order of items does not matter.
-    //TODO ContainsAll(other {{.UType}}Collection) bool
+	{{if .Comparable}}
+	// ContainsAll determines if two collections have the same size and contain the same items.
+	// The order of items does not matter.
+	//TODO ContainsAll(other {{.UType}}Collection) bool
 
 	{{end}}
 	{{if .Stringer}}

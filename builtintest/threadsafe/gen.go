@@ -16,8 +16,8 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/set.tpl Prefix=X Type=int64  Stringer=true Ordered=true  Numeric=true  Mutable=false
 //go:generate runtemplate -tpl threadsafe/set.tpl Prefix=X Type=Apple Stringer=false Mutable=true
 
-//go:generate runtemplate -tpl plumbing/core.tpl  Prefix=X Type=Apple
-//go:generate runtemplate -tpl plumbing/mapTo.tpl Prefix=X Type=Apple ToPrefix=X ToType=Pear
+//go:generate runtemplate -tpl plumbing/plumbing.tpl Prefix=X Type=Apple
+//go:generate runtemplate -tpl plumbing/mapTo.tpl    Prefix=X Type=Apple ToPrefix=X ToType=Pear
 
 
 // Code generation with pointer values
@@ -31,8 +31,8 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/list.tpl Prefix=P Type=*int32  Stringer=true Comparable=true Ordered=true  Numeric=true
 //go:generate runtemplate -tpl threadsafe/list.tpl Prefix=P Type=*Apple Stringer=false Comparable=true
 
-//go:generate runtemplate -tpl plumbing/core.tpl  Prefix=P Type=*Apple
-//go:generate runtemplate -tpl plumbing/mapTo.tpl Prefix=P Type=*Apple ToPrefix=P ToType=*Pear
+//go:generate runtemplate -tpl plumbing/plumbing.tpl Prefix=P Type=*Apple
+//go:generate runtemplate -tpl plumbing/mapTo.tpl    Prefix=P Type=*Apple ToPrefix=P ToType=*Pear
 
 
 type Apple struct{}

@@ -74,8 +74,8 @@ func (set XAppleSet) Cardinality() int {
 
 // Add adds items to the current set, returning the modified set.
 func (set XAppleSet) Add(i ...Apple) XAppleSet {
-    for _, v := range i {
-	    set.doAdd(v)
+	for _, v := range i {
+		set.doAdd(v)
 	}
 	return set
 }

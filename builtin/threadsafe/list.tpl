@@ -223,7 +223,7 @@ func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-    	result.m[i], result.m[r] = result.m[r], result.m[i]
+		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
 }
@@ -398,6 +398,7 @@ func (list {{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) b
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[i], list.m[m]) {
@@ -424,6 +425,7 @@ func (list {{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) b
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
@@ -555,6 +557,13 @@ func (list {{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
 	return {{.TypeStar}}m
+}
+
+// Less returns true if the element at index i is less than the element at index j. This implements
+// one of the methods needed by sort.Interface.
+// Panics if i or j is out of range.
+func (list {{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
+	return {{.TypeStar}}list.m[i] < {{.TypeStar}}list.m[j]
 }
 
 {{end}}

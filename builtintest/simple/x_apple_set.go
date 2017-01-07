@@ -1,41 +1,28 @@
 // Generated from set.tpl with Type=Apple
-// options: Numeric=<no value> Ordered=<no value> Stringer=false Mutable=always-true
+// options: Numeric=<no value> Ordered=<no value> Stringer=false Mutable=true
 
-package threadsafe
+package simple
 
 
 // Stringer is not supported.
 
-import (
-	"sync"
-)
-
 
 // XAppleSet is the primary type that represents a set
-type XAppleSet struct {
-	s *sync.RWMutex
-	m map[Apple]struct{}
-}
+type XAppleSet map[Apple]struct{}
 
 // NewXAppleSet creates and returns a reference to an empty set.
 func NewXAppleSet(a ...Apple) XAppleSet {
-	set := XAppleSet{
-		s: &sync.RWMutex{},
-		m: make(map[Apple]struct{}),
-	}
+	set := make(XAppleSet)
 	for _, i := range a {
-		set.m[i] = struct{}{}
+		set[i] = struct{}{}
 	}
 	return set
 }
 
 // ToSlice returns the elements of the current set as a slice
 func (set XAppleSet) ToSlice() []Apple {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	var s []Apple
-	for v := range set.m {
+	for v := range set {
 		s = append(s, v)
 	}
 	return s
@@ -44,11 +31,7 @@ func (set XAppleSet) ToSlice() []Apple {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set XAppleSet) Clone() XAppleSet {
 	clonedSet := NewXAppleSet()
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -78,10 +61,7 @@ func (set XAppleSet) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set XAppleSet) Size() int {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	return len(set.m)
+	return len(set)
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
@@ -91,37 +71,31 @@ func (set XAppleSet) Cardinality() int {
 
 //-------------------------------------------------------------------------------------------------
 
+
 // Add adds items to the current set, returning the modified set.
 func (set XAppleSet) Add(i ...Apple) XAppleSet {
-	set.s.Lock()
-	defer set.s.Unlock()
-
 	for _, v := range i {
-		set.m[v] = struct{}{}
+		set.doAdd(v)
 	}
 	return set
 }
 
+
 func (set XAppleSet) doAdd(i Apple) {
-	set.m[i] = struct{}{}
+	set[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
 func (set XAppleSet) Contains(i Apple) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	_, found := set.m[i]
+	_, found := set[i]
 	return found
 }
 
 // ContainsAll determines if the given items are all in the set
 func (set XAppleSet) ContainsAll(i ...Apple) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	for _, v := range i {
-		if !set.Contains(v) {
+		_, found := set[v]
+		if !found {
 			return false
 		}
 	}
@@ -132,12 +106,7 @@ func (set XAppleSet) ContainsAll(i ...Apple) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set XAppleSet) IsSubset(other XAppleSet) bool {
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}
@@ -152,9 +121,6 @@ func (set XAppleSet) IsSuperset(other XAppleSet) bool {
 
 // Union returns a new set with all items in both sets.
 func (set XAppleSet) Append(more ...Apple) XAppleSet {
-	set.s.Lock()
-	defer set.s.Unlock()
-
 	unionedSet := set.Clone()
 	for _, v := range more {
 		unionedSet.doAdd(v)
@@ -165,12 +131,8 @@ func (set XAppleSet) Append(more ...Apple) XAppleSet {
 // Union returns a new set with all items in both sets.
 func (set XAppleSet) Union(other XAppleSet) XAppleSet {
 	unionedSet := set.Clone()
-
-	other.s.RLock()
-	defer other.s.RUnlock()
-
-	for v := range other.m {
-		unionedSet.m[v] = struct{}{}
+	for v := range other {
+		unionedSet.doAdd(v)
 	}
 	return unionedSet
 }
@@ -178,23 +140,17 @@ func (set XAppleSet) Union(other XAppleSet) XAppleSet {
 // Intersect returns a new set with items that exist only in both sets.
 func (set XAppleSet) Intersect(other XAppleSet) XAppleSet {
 	intersection := NewXAppleSet()
-
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v := range set {
 			if other.Contains(v) {
-				intersection.Add(v)
+				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v := range other {
 			if set.Contains(v) {
-				intersection.Add(v)
+				intersection.doAdd(v)
 			}
 		}
 	}
@@ -204,15 +160,9 @@ func (set XAppleSet) Intersect(other XAppleSet) XAppleSet {
 // Difference returns a new set with items in the current set but not in the other set
 func (set XAppleSet) Difference(other XAppleSet) XAppleSet {
 	differencedSet := NewXAppleSet()
-
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if !other.Contains(v) {
-			differencedSet.Add(v)
+			differencedSet.doAdd(v)
 		}
 	}
 	return differencedSet
@@ -225,33 +175,26 @@ func (set XAppleSet) SymmetricDifference(other XAppleSet) XAppleSet {
 	return aDiff.Union(bDiff)
 }
 
+
 // Clear clears the entire set to be the empty set.
 func (set *XAppleSet) Clear() {
-	set.s.Lock()
-	defer set.s.Unlock()
-
-	set.m = make(map[Apple]struct{})
+	*set = NewXAppleSet()
 }
 
 // Remove allows the removal of a single item from the set.
 func (set XAppleSet) Remove(i Apple) {
-	set.s.Lock()
-	defer set.s.Unlock()
-
-	delete(set.m, i)
+	delete(set, i)
 }
+
 
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel that will send all the elements in order.
+// Send returns a channel of type Apple that you can range over.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set XAppleSet) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
-		set.s.RLock()
-		defer set.s.RUnlock()
-
-		for v := range set.m {
+		for v := range set {
 			ch <- v
 		}
 		close(ch)
@@ -269,10 +212,7 @@ func (set XAppleSet) Send() <-chan Apple {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set XAppleSet) Forall(fn func(Apple) bool) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if !fn(v) {
 			return false
 		}
@@ -284,10 +224,7 @@ func (set XAppleSet) Forall(fn func(Apple) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set XAppleSet) Exists(fn func(Apple) bool) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if fn(v) {
 			return true
 		}
@@ -297,10 +234,7 @@ func (set XAppleSet) Exists(fn func(Apple) bool) bool {
 
 // Foreach iterates over AppleSet and executes the passed func against each element.
 func (set XAppleSet) Foreach(fn func(Apple)) {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		fn(v)
 	}
 }
@@ -310,12 +244,9 @@ func (set XAppleSet) Foreach(fn func(Apple)) {
 // Filter returns a new XAppleSet whose elements return true for func.
 func (set XAppleSet) Filter(fn func(Apple) bool) XAppleSet {
 	result := NewXAppleSet()
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if fn(v) {
-			result.m[v] = struct{}{}
+			result[v] = struct{}{}
 		}
 	}
 	return result
@@ -328,14 +259,11 @@ func (set XAppleSet) Filter(fn func(Apple) bool) XAppleSet {
 func (set XAppleSet) Partition(p func(Apple) bool) (XAppleSet, XAppleSet) {
 	matching := NewXAppleSet()
 	others := NewXAppleSet()
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if p(v) {
-			matching.m[v] = struct{}{}
+			matching[v] = struct{}{}
 		} else {
-			others.m[v] = struct{}{}
+			others[v] = struct{}{}
 		}
 	}
 	return matching, others
@@ -343,10 +271,7 @@ func (set XAppleSet) Partition(p func(Apple) bool) (XAppleSet, XAppleSet) {
 
 // CountBy gives the number elements of XAppleSet that return true for the passed predicate.
 func (set XAppleSet) CountBy(predicate func(Apple) bool) (result int) {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if predicate(v) {
 			result++
 		}
@@ -361,13 +286,9 @@ func (set XAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	var m Apple
 	first := true
-	for v := range set.m {
+	for v := range set {
 		if first {
 			m = v
 			first = false
@@ -385,13 +306,9 @@ func (set XAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	var m Apple
 	first := true
-	for v := range set.m {
+	for v := range set {
 		if first {
 			m = v
 			first = false
@@ -409,15 +326,10 @@ func (set XAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set XAppleSet) Equals(other XAppleSet) bool {
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}

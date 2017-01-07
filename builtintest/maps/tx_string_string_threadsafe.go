@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+
 // TXStringStringMap is the primary type that represents a thread-safe map
 type TXStringStringMap struct {
 	s *sync.RWMutex
@@ -24,11 +25,11 @@ type TXStringStringTuple struct {
 type TXStringStringTuples []TXStringStringTuple
 
 func (ts TXStringStringTuples) Append1(k string, v string) TXStringStringTuples {
-    return append(ts, TXStringStringTuple{k, v})
+	return append(ts, TXStringStringTuple{k, v})
 }
 
 func (ts TXStringStringTuples) Append2(k1 string, v1 string, k2 string, v2 string) TXStringStringTuples {
-    return append(ts, TXStringStringTuple{k1, v1}, TXStringStringTuple{k2, v2})
+	return append(ts, TXStringStringTuple{k1, v1}, TXStringStringTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -36,15 +37,17 @@ func (ts TXStringStringTuples) Append2(k1 string, v1 string, k2 string, v2 strin
 // NewTXStringStringMap creates and returns a reference to a map containing one item.
 func NewTXStringStringMap1(k string, v string) TXStringStringMap {
 	mm := TXStringStringMap{
+	    s: &sync.RWMutex{},
 		m: make(map[string]string),
 	}
-    mm.m[k] = v
+	mm.m[k] = v
 	return mm
 }
 
 // NewTXStringStringMap creates and returns a reference to a map, optionally containing some items.
 func NewTXStringStringMap(kv ...TXStringStringTuple) TXStringStringMap {
 	mm := TXStringStringMap{
+	    s: &sync.RWMutex{},
 		m: make(map[string]string),
 	}
 	for _, t := range kv {

@@ -11,6 +11,7 @@ import (
 	"sync"
 )
 
+
 // TPIntIntMap is the primary type that represents a thread-safe map
 type TPIntIntMap struct {
 	s *sync.RWMutex
@@ -27,11 +28,11 @@ type TPIntIntTuple struct {
 type TPIntIntTuples []TPIntIntTuple
 
 func (ts TPIntIntTuples) Append1(k *int, v *int) TPIntIntTuples {
-    return append(ts, TPIntIntTuple{k, v})
+	return append(ts, TPIntIntTuple{k, v})
 }
 
 func (ts TPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) TPIntIntTuples {
-    return append(ts, TPIntIntTuple{k1, v1}, TPIntIntTuple{k2, v2})
+	return append(ts, TPIntIntTuple{k1, v1}, TPIntIntTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -39,15 +40,17 @@ func (ts TPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) TPIntIntTup
 // NewTPIntIntMap creates and returns a reference to a map containing one item.
 func NewTPIntIntMap1(k *int, v *int) TPIntIntMap {
 	mm := TPIntIntMap{
+	    s: &sync.RWMutex{},
 		m: make(map[*int]*int),
 	}
-    mm.m[k] = v
+	mm.m[k] = v
 	return mm
 }
 
 // NewTPIntIntMap creates and returns a reference to a map, optionally containing some items.
 func NewTPIntIntMap(kv ...TPIntIntTuple) TPIntIntMap {
 	mm := TPIntIntMap{
+	    s: &sync.RWMutex{},
 		m: make(map[*int]*int),
 	}
 	for _, t := range kv {

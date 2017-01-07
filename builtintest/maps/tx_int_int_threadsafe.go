@@ -11,6 +11,7 @@ import (
 	"sync"
 )
 
+
 // TXIntIntMap is the primary type that represents a thread-safe map
 type TXIntIntMap struct {
 	s *sync.RWMutex
@@ -27,11 +28,11 @@ type TXIntIntTuple struct {
 type TXIntIntTuples []TXIntIntTuple
 
 func (ts TXIntIntTuples) Append1(k int, v int) TXIntIntTuples {
-    return append(ts, TXIntIntTuple{k, v})
+	return append(ts, TXIntIntTuple{k, v})
 }
 
 func (ts TXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TXIntIntTuples {
-    return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2})
+	return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -39,15 +40,17 @@ func (ts TXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TXIntIntTuples 
 // NewTXIntIntMap creates and returns a reference to a map containing one item.
 func NewTXIntIntMap1(k int, v int) TXIntIntMap {
 	mm := TXIntIntMap{
+	    s: &sync.RWMutex{},
 		m: make(map[int]int),
 	}
-    mm.m[k] = v
+	mm.m[k] = v
 	return mm
 }
 
 // NewTXIntIntMap creates and returns a reference to a map, optionally containing some items.
 func NewTXIntIntMap(kv ...TXIntIntTuple) TXIntIntMap {
 	mm := TXIntIntMap{
+	    s: &sync.RWMutex{},
 		m: make(map[int]int),
 	}
 	for _, t := range kv {

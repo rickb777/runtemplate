@@ -213,7 +213,7 @@ func (list PInt32List) Shuffle() PInt32List {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-    	result.m[i], result.m[r] = result.m[r], result.m[i]
+		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
 }
@@ -388,6 +388,7 @@ func (list PInt32List) MinBy(less func(*int32, *int32) bool) *int32 {
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[i], list.m[m]) {
@@ -414,6 +415,7 @@ func (list PInt32List) MaxBy(less func(*int32, *int32) bool) *int32 {
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
@@ -545,6 +547,13 @@ func (list PInt32List) Max() (result int32) {
 		return *a < *b
 	})
 	return *m
+}
+
+// Less returns true if the element at index i is less than the element at index j. This implements
+// one of the methods needed by sort.Interface.
+// Panics if i or j is out of range.
+func (list PInt32List) Less(i, j int) bool {
+	return *list.m[i] < *list.m[j]
 }
 
 

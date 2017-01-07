@@ -95,8 +95,8 @@ func (set XInt32Set) Add(i ...int32) XInt32Set {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-    for _, v := range i {
-    	set.m[v] = struct{}{}
+	for _, v := range i {
+		set.m[v] = struct{}{}
 	}
 	return set
 }

@@ -79,8 +79,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 {{if .Mutable}}
 // Add adds items to the current set, returning the modified set.
 func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-    for _, v := range i {
-	    set.doAdd(v)
+	for _, v := range i {
+		set.doAdd(v)
 	}
 	return set
 }

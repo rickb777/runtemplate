@@ -48,6 +48,6 @@ type PAppleCollection interface {
 
 	
 	
-    
+	
 	
 }

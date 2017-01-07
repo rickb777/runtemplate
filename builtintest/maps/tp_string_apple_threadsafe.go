@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+
 // TPStringAppleMap is the primary type that represents a thread-safe map
 type TPStringAppleMap struct {
 	s *sync.RWMutex
@@ -24,11 +25,11 @@ type TPStringAppleTuple struct {
 type TPStringAppleTuples []TPStringAppleTuple
 
 func (ts TPStringAppleTuples) Append1(k *string, v *Apple) TPStringAppleTuples {
-    return append(ts, TPStringAppleTuple{k, v})
+	return append(ts, TPStringAppleTuple{k, v})
 }
 
 func (ts TPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *Apple) TPStringAppleTuples {
-    return append(ts, TPStringAppleTuple{k1, v1}, TPStringAppleTuple{k2, v2})
+	return append(ts, TPStringAppleTuple{k1, v1}, TPStringAppleTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -36,15 +37,17 @@ func (ts TPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *App
 // NewTPStringAppleMap creates and returns a reference to a map containing one item.
 func NewTPStringAppleMap1(k *string, v *Apple) TPStringAppleMap {
 	mm := TPStringAppleMap{
+	    s: &sync.RWMutex{},
 		m: make(map[*string]*Apple),
 	}
-    mm.m[k] = v
+	mm.m[k] = v
 	return mm
 }
 
 // NewTPStringAppleMap creates and returns a reference to a map, optionally containing some items.
 func NewTPStringAppleMap(kv ...TPStringAppleTuple) TPStringAppleMap {
 	mm := TPStringAppleMap{
+	    s: &sync.RWMutex{},
 		m: make(map[*string]*Apple),
 	}
 	for _, t := range kv {

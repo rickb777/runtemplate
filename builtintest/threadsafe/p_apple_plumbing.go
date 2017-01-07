@@ -1,4 +1,4 @@
-// Generated from core.tpl with Type=Apple
+// Generated from plumbing.tpl with Type=Apple
 // No other options are available.
 
 package threadsafe

@@ -95,8 +95,8 @@ func (set XStringSet) Add(i ...string) XStringSet {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-    for _, v := range i {
-    	set.m[v] = struct{}{}
+	for _, v := range i {
+		set.m[v] = struct{}{}
 	}
 	return set
 }

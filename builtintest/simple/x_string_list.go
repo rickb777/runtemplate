@@ -1,7 +1,7 @@
 // Generated from list.tpl with Type=string
 // options: Comparable=true Numeric=false Ordered=false Stringer=true
 
-package fast
+package simple
 
 import (
 
@@ -11,30 +11,25 @@ import (
 	"math/rand"
 )
 
-// XStringList contains a slice of type string. Use it where you would use []string.
+// XStringList is a slice of type string. Use it where you would use []string.
 // To add items to the list, simply use the normal built-in append function.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type XStringList struct {
-	m []string
-}
-
+type XStringList []string
 
 //-------------------------------------------------------------------------------------------------
 
 func newXStringList(len, cap int) XStringList {
-	return XStringList{
-		m: make([]string, len, cap),
-	}
+	return make(XStringList, len, cap)
 }
 
 // NewXStringList constructs a new list containing the supplied values, if any.
 func NewXStringList(values ...string) XStringList {
 	result := newXStringList(len(values), len(values))
 	for i, v := range values {
-		result.m[i] = v
+		result[i] = v
 	}
 	return result
 }
@@ -44,14 +39,14 @@ func NewXStringList(values ...string) XStringList {
 func BuildXStringListFromChan(source <-chan string) XStringList {
 	result := newXStringList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		result = append(result, v)
 	}
 	return result
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list XStringList) Clone() XStringList {
-	return NewXStringList(list.m...)
+	return NewXStringList(list...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -59,29 +54,25 @@ func (list XStringList) Clone() XStringList {
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list XStringList) Head() string {
-	return list.m[0]
+	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
 func (list XStringList) Last() string {
-	return list.m[len(list.m)-1]
+	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
 func (list XStringList) Tail() XStringList {
-	result := newXStringList(0, 0)
-	result.m = list.m[1:]
-	return result
+	return XStringList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list XStringList) Init() XStringList {
-	result := newXStringList(0, 0)
-	result.m = list.m[:len(list.m)-1]
-	return result
+	return XStringList(list[:list.Len()-1])
 }
 
 // IsEmpty tests whether XStringList is empty.
@@ -108,13 +99,13 @@ func (list XStringList) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list XStringList) Size() int {
-	return len(list.m)
+	return len(list)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list XStringList) Len() int {
-	return len(list.m)
+	return len(list)
 }
 
 
@@ -122,7 +113,7 @@ func (list XStringList) Len() int {
 
 // Exists verifies that one or more elements of XStringList return true for the passed func.
 func (list XStringList) Exists(fn func(string) bool) bool {
-	for _, v := range list.m {
+	for _, v := range list {
 		if fn(v) {
 			return true
 		}
@@ -132,7 +123,7 @@ func (list XStringList) Exists(fn func(string) bool) bool {
 
 // Forall verifies that all elements of XStringList return true for the passed func.
 func (list XStringList) Forall(fn func(string) bool) bool {
-	for _, v := range list.m {
+	for _, v := range list {
 		if !fn(v) {
 			return false
 		}
@@ -142,7 +133,7 @@ func (list XStringList) Forall(fn func(string) bool) bool {
 
 // Foreach iterates over XStringList and executes the passed func against each element.
 func (list XStringList) Foreach(fn func(string)) {
-	for _, v := range list.m {
+	for _, v := range list {
 		fn(v)
 	}
 }
@@ -152,7 +143,7 @@ func (list XStringList) Foreach(fn func(string)) {
 func (list XStringList) Send() <-chan string {
 	ch := make(chan string)
 	go func() {
-		for _, v := range list.m {
+		for _, v := range list {
 			ch <- v
 		}
 		close(ch)
@@ -165,8 +156,8 @@ func (list XStringList) Reverse() XStringList {
 	numItems := list.Len()
 	result := newXStringList(numItems, numItems)
 	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
+	for i, v := range list {
+		result[last-i] = v
 	}
 	return result
 }
@@ -177,7 +168,7 @@ func (list XStringList) Shuffle() XStringList {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result.m[i], result.m[r] = result.m[r], result.m[i]
+		result[i], result[r] = result[r], result[i]
 	}
 	return result
 }
@@ -190,9 +181,7 @@ func (list XStringList) Take(n int) XStringList {
 	if n > list.Len() {
 		return list
 	}
-	result := newXStringList(0, 0)
-	result.m = list.m[0:n]
-	return result
+	return list[0:n]
 }
 
 // Drop returns a slice of XStringList without the leading n elements of the source list.
@@ -202,10 +191,10 @@ func (list XStringList) Drop(n int) XStringList {
 		return list
 	}
 
-	result := newXStringList(0, 0)
+	result := list
 	l := list.Len()
 	if n < l {
-		result.m = list.m[n:]
+		result = list[n:]
 	}
 	return result
 }
@@ -217,9 +206,7 @@ func (list XStringList) TakeLast(n int) XStringList {
 	if n > l {
 		return list
 	}
-	result := newXStringList(0, 0)
-	result.m = list.m[l-n:]
-	return result
+	return list[l-n:]
 }
 
 // DropLast returns a slice of XStringList without the trailing n elements of the source list.
@@ -231,11 +218,10 @@ func (list XStringList) DropLast(n int) XStringList {
 
 	l := list.Len()
 	if n > l {
-		list.m = list.m[l:]
+		return list[l:]
 	} else {
-		list.m = list.m[0 : l-n]
+		return list[0 : l-n]
 	}
-	return list
 }
 
 // TakeWhile returns a new XStringList containing the leading elements of the source list. Whilst the
@@ -243,9 +229,9 @@ func (list XStringList) DropLast(n int) XStringList {
 // elemense are excluded.
 func (list XStringList) TakeWhile(p func(string) bool) XStringList {
 	result := newXStringList(0, 0)
-	for _, v := range list.m {
+	for _, v := range list {
 		if p(v) {
-			result.m = append(result.m, v)
+			result = append(result, v)
 		} else {
 			return result
 		}
@@ -260,10 +246,10 @@ func (list XStringList) DropWhile(p func(string) bool) XStringList {
 	result := newXStringList(0, 0)
 	adding := false
 
-	for _, v := range list.m {
+	for _, v := range list {
 		if !p(v) || adding {
 			adding = true
-			result.m = append(result.m, v)
+			result = append(result, v)
 		}
 	}
 
@@ -276,9 +262,9 @@ func (list XStringList) DropWhile(p func(string) bool) XStringList {
 func (list XStringList) Filter(fn func(string) bool) XStringList {
 	result := newXStringList(0, list.Len()/2)
 
-	for _, v := range list.m {
+	for _, v := range list {
 		if fn(v) {
-			result.m = append(result.m, v)
+			result = append(result, v)
 		}
 	}
 
@@ -293,11 +279,11 @@ func (list XStringList) Partition(p func(string) bool) (XStringList, XStringList
 	matching := newXStringList(0, list.Len()/2)
 	others := newXStringList(0, list.Len()/2)
 
-	for _, v := range list.m {
+	for _, v := range list {
 		if p(v) {
-			matching.m = append(matching.m, v)
+			matching = append(matching, v)
 		} else {
-			others.m = append(others.m, v)
+			others = append(others, v)
 		}
 	}
 
@@ -306,7 +292,7 @@ func (list XStringList) Partition(p func(string) bool) (XStringList, XStringList
 
 // CountBy gives the number elements of XStringList that return true for the passed predicate.
 func (list XStringList) CountBy(predicate func(string) bool) (result int) {
-	for _, v := range list.m {
+	for _, v := range list {
 		if predicate(v) {
 			result++
 		}
@@ -325,12 +311,12 @@ func (list XStringList) MinBy(less func(string, string) bool) string {
 
 	m := 0
 	for i := 1; i < l; i++ {
-		if less(list.m[i], list.m[m]) {
+		if less(list[i], list[m]) {
 			m = i
 		}
 	}
 
-	return list.m[m]
+	return list[m]
 }
 
 // MaxBy returns an element of XStringList containing the maximum value, when compared to other elements
@@ -344,25 +330,25 @@ func (list XStringList) MaxBy(less func(string, string) bool) string {
 
 	m := 0
 	for i := 1; i < l; i++ {
-		if less(list.m[m], list.m[i]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
 
-	return list.m[m]
+	return list[m]
 }
 
 // DistinctBy returns a new XStringList whose elements are unique, where equality is defined by a passed func.
 func (list XStringList) DistinctBy(equal func(string, string) bool) XStringList {
 	result := newXStringList(0, list.Len())
 Outer:
-	for _, v := range list.m {
-		for _, r := range result.m {
+	for _, v := range list {
+		for _, r := range result {
 			if equal(v, r) {
 				continue Outer
 			}
 		}
-		result.m = append(result.m, v)
+		result = append(result, v)
 	}
 	return result
 }
@@ -375,7 +361,7 @@ func (list XStringList) IndexWhere(p func(string) bool) int {
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list XStringList) IndexWhere2(p func(string) bool, from int) int {
-	for i, v := range list.m {
+	for i, v := range list {
 		if i >= from && p(v) {
 			return i
 		}
@@ -393,7 +379,7 @@ func (list XStringList) LastIndexWhere(p func(string) bool) int {
 // If none exists, -1 is returned.
 func (list XStringList) LastIndexWhere2(p func(string) bool, before int) int {
 	for i := list.Len() - 1; i >= 0; i-- {
-		v := list.m[i]
+		v := list[i]
 		if i <= before && p(v) {
 			return i
 		}
@@ -414,8 +400,8 @@ func (list XStringList) Equals(other XStringList) bool {
 		return false
 	}
 
-	for i, v := range list.m {
-		if v != other.m[i] {
+	for i, v := range list {
+		if v != other[i] {
 			return false
 		}
 	}
@@ -444,10 +430,10 @@ func (list XStringList) MkString3(pfx, mid, sfx string) string {
 	b.WriteString(pfx)
 	l := list.Len()
 	if l > 0 {
-		v := list.m[0]
+		v := list[0]
 		b.WriteString(fmt.Sprintf("%v", v))
 		for i := 1; i < l; i++ {
-			v := list.m[i]
+			v := list[i]
 			b.WriteString(mid)
 			b.WriteString(fmt.Sprintf("%v", v))
 		}

@@ -210,7 +210,7 @@ func (list XAppleList) Shuffle() XAppleList {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-    	result.m[i], result.m[r] = result.m[r], result.m[i]
+		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
 }
@@ -385,6 +385,7 @@ func (list XAppleList) MinBy(less func(Apple, Apple) bool) Apple {
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[i], list.m[m]) {
@@ -411,6 +412,7 @@ func (list XAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
