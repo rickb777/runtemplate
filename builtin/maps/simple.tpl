@@ -216,7 +216,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UT
 //-------------------------------------------------------------------------------------------------
 
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
-	return mm.MkString(", ")
+	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
@@ -240,7 +240,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx strin
 	sep := ""
 	for k, v := range mm.m {
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v: %v", k, v))
+		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
 	b.WriteString(sfx)

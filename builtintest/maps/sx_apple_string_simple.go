@@ -1,5 +1,5 @@
 // Generated from simple.tpl with Key=Apple Type=string
-// options: Comparable=<no value> Stringer=<no value> Mutable=<no value>
+// options: Comparable=<no value> Stringer=<no value> Mutable=true
 
 package maps
 
@@ -73,6 +73,14 @@ func (mm *SXAppleStringMap) Get(k Apple) (string, bool) {
 }
 
 
+// Put adds an item to the current map, replacing any prior value.
+func (mm *SXAppleStringMap) Put(k Apple, v string) bool {
+	_, found := mm.m[k]
+	mm.m[k] = v
+	return !found //False if it existed already
+}
+
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *SXAppleStringMap) ContainsKey(k Apple) bool {
 	_, found := mm.m[k]
@@ -87,6 +95,17 @@ func (mm *SXAppleStringMap) ContainsAllKeys(kk ...Apple) bool {
 		}
 	}
 	return true
+}
+
+
+// Clear clears the entire map.
+func (mm *SXAppleStringMap) Clear() {
+	mm.m = make(map[Apple]string)
+}
+
+// Remove allows the removal of a single item from the map.
+func (mm *SXAppleStringMap) Remove(k Apple) {
+	delete(mm.m, k)
 }
 
 

@@ -1,5 +1,5 @@
 // Generated from threadsafe.tpl with Key=Apple Type=string
-// options: Comparable=<no value> Numeric=<no value> Stringer=<no value> Mutable=<no value>
+// options: Comparable=<no value> Numeric=<no value> Stringer=<no value> Mutable=true
 
 package maps
 
@@ -87,6 +87,17 @@ func (mm *TPAppleStringMap) Get(k *Apple) (*string, bool) {
 }
 
 
+// Put adds an item to the current map, replacing any prior value.
+func (mm *TPAppleStringMap) Put(k *Apple, v *string) bool {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	_, found := mm.m[k]
+	mm.m[k] = v
+	return !found //False if it existed already
+}
+
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *TPAppleStringMap) ContainsKey(k *Apple) bool {
 	mm.s.RLock()
@@ -107,6 +118,23 @@ func (mm *TPAppleStringMap) ContainsAllKeys(kk ...*Apple) bool {
 		}
 	}
 	return true
+}
+
+
+// Clear clears the entire map.
+func (mm *TPAppleStringMap) Clear() {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	mm.m = make(map[*Apple]*string)
+}
+
+// Remove allows the removal of a single item from the map.
+func (mm *TPAppleStringMap) Remove(k *Apple) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	delete(mm.m, k)
 }
 
 

@@ -1,54 +1,54 @@
-// Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Stringer={{.Stringer}} Mutable={{.Mutable}}
+// Generated from threadsafe.tpl with Key=int Type=int
+// options: Comparable=true Numeric=<no value> Stringer=true Mutable=true
 
-package {{.Package}}
+package maps
 
 import (
-{{if .Stringer}}
+
 	"bytes"
 	"fmt"
-{{end}}
+
 	"sync"
 )
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
-type {{.UPrefix}}{{.UKey}}{{.UType}}Map struct {
+// TXIntIntMap is the primary type that represents a thread-safe map
+type TXIntIntMap struct {
 	s *sync.RWMutex
-	m map[{{.PKey}}]{{.PType}}
+	m map[int]int
 }
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Tuple represents a key/value pair.
-type {{.UPrefix}}{{.UKey}}{{.UType}}Tuple struct {
-	Key {{.PKey}}
-	Val {{.PType}}
+// TXIntIntTuple represents a key/value pair.
+type TXIntIntTuple struct {
+	Key int
+	Val int
 }
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Tuples can be used as a builder for unmodifiable maps.
-type {{.UPrefix}}{{.UKey}}{{.UType}}Tuples []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
+// TXIntIntTuples can be used as a builder for unmodifiable maps.
+type TXIntIntTuples []TXIntIntTuple
 
-func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-    return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+func (ts TXIntIntTuples) Append1(k int, v int) TXIntIntTuples {
+    return append(ts, TXIntIntTuple{k, v})
 }
 
-func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-    return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2})
+func (ts TXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TXIntIntTuples {
+    return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map containing one item.
-func New{{.UPrefix}}{{.UKey}}{{.UType}}Map1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	mm := {{.UPrefix}}{{.UKey}}{{.UType}}Map{
-		m: make(map[{{.PKey}}]{{.PType}}),
+// NewTXIntIntMap creates and returns a reference to a map containing one item.
+func NewTXIntIntMap1(k int, v int) TXIntIntMap {
+	mm := TXIntIntMap{
+		m: make(map[int]int),
 	}
     mm.m[k] = v
 	return mm
 }
 
-// New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map, optionally containing some items.
-func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	mm := {{.UPrefix}}{{.UKey}}{{.UType}}Map{
-		m: make(map[{{.PKey}}]{{.PType}}),
+// NewTXIntIntMap creates and returns a reference to a map, optionally containing some items.
+func NewTXIntIntMap(kv ...TXIntIntTuple) TXIntIntMap {
+	mm := TXIntIntMap{
+		m: make(map[int]int),
 	}
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
@@ -57,11 +57,11 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
+func (mm *TXIntIntMap) Keys() []int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []{{.PKey}}
+	var s []int
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -69,19 +69,19 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+func (mm *TXIntIntMap) ToSlice() []TXIntIntTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
+	var s []TXIntIntTuple
 	for k, v := range mm.m {
-		s = append(s, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+		s = append(s, TXIntIntTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool) {
+func (mm *TXIntIntMap) Get(k int) (int, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -89,9 +89,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool
 	return v, found
 }
 
-{{if .Mutable}}
+
 // Put adds an item to the current map, replacing any prior value.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) bool {
+func (mm *TXIntIntMap) Put(k int, v int) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -100,9 +100,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) boo
 	return !found //False if it existed already
 }
 
-{{end}}
+
 // ContainsKey determines if a given item is already in the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
+func (mm *TXIntIntMap) ContainsKey(k int) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -111,7 +111,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bool {
+func (mm *TXIntIntMap) ContainsAllKeys(kk ...int) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -123,26 +123,26 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) b
 	return true
 }
 
-{{if .Mutable}}
+
 // Clear clears the entire map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clear() {
+func (mm *TXIntIntMap) Clear() {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-	mm.m = make(map[{{.PKey}}]{{.PType}})
+	mm.m = make(map[int]int)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
+func (mm *TXIntIntMap) Remove(k int) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
 	delete(mm.m, k)
 }
 
-{{end}}
+
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
+func (mm *TXIntIntMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -150,12 +150,12 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) IsEmpty() bool {
+func (mm *TXIntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
+func (mm *TXIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -165,7 +165,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm *TXIntIntMap) Forall(fn func(int, int) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -180,7 +180,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm *TXIntIntMap) Exists(fn func(int, int) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -194,8 +194,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+func (mm *TXIntIntMap) Filter(fn func(int, int) bool) TXIntIntMap {
+	result := NewTXIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -210,9 +210,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching {{.UPrefix}}{{.UKey}}{{.UType}}Map, others {{.UPrefix}}{{.UKey}}{{.UType}}Map) {
-	matching = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
-	others = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+func (mm *TXIntIntMap) Partition(fn func(int, int) bool) (matching TXIntIntMap, others TXIntIntMap) {
+	matching = NewTXIntIntMap()
+	others = NewTXIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -226,11 +226,11 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PT
 	return
 }
 
-{{if .Comparable}}
+
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{{.UType}}Map) bool {
+func (mm *TXIntIntMap) Equals(other TXIntIntMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -241,17 +241,17 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}
 	}
 	for k, v1 := range mm.m {
 		v2, found := other.m[k]
-		if !found || {{.TypeStar}}v1 != {{.TypeStar}}v2 {
+		if !found || v1 != v2 {
 			return false
 		}
 	}
 	return true
 }
 
-{{end}}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+func (mm *TXIntIntMap) Clone() TXIntIntMap {
+	result := NewTXIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -261,29 +261,29 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UT
 	return result
 }
 
-{{if .Stringer}}
+
 //-------------------------------------------------------------------------------------------------
 
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
+func (mm *TXIntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
+//func (mm *TXIntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
+func (mm *TXIntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
+func (mm *TXIntIntMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
 
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm *TXIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
@@ -298,4 +298,4 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx strin
 	b.WriteString(sfx)
 	return b
 }
-{{end}}
+
