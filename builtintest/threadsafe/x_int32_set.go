@@ -1,33 +1,26 @@
-// Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=always-true
+// Generated from set.tpl with Type=int32
+// options: Numeric=true Ordered=true Stringer=true Mutable=always-true
 
-package {{.Package}}
+package threadsafe
 
-{{if .Stringer}}
+
 import (
 	"bytes"
 	"fmt"
 	"sync"
 )
-{{else}}
-// Stringer is not supported.
 
-import (
-	"sync"
-)
-
-{{end}}
-// {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
-type {{.UPrefix}}{{.UType}}Set struct {
+// XInt32Set is the primary type that represents a set
+type XInt32Set struct {
 	s *sync.RWMutex
-	m map[{{.Type}}]struct{}
+	m map[int32]struct{}
 }
 
-// New{{.UPrefix}}{{.UType}}Set creates and returns a reference to an empty set.
-func New{{.UPrefix}}{{.UType}}Set(a ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	set := {{.UPrefix}}{{.UType}}Set{
+// NewXInt32Set creates and returns a reference to an empty set.
+func NewXInt32Set(a ...int32) XInt32Set {
+	set := XInt32Set{
 		s: &sync.RWMutex{},
-		m: make(map[{{.Type}}]struct{}),
+		m: make(map[int32]struct{}),
 	}
 	for _, i := range a {
 		set.m[i] = struct{}{}
@@ -36,11 +29,11 @@ func New{{.UPrefix}}{{.UType}}Set(a ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
 }
 
 // ToSlice returns the elements of the current set as a slice
-func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
+func (set XInt32Set) ToSlice() []int32 {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	var s []{{.Type}}
+	var s []int32
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -48,8 +41,8 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
-	clonedSet := New{{.UPrefix}}{{.UType}}Set()
+func (set XInt32Set) Clone() XInt32Set {
+	clonedSet := NewXInt32Set()
 
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -63,27 +56,27 @@ func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set {{.UPrefix}}{{.UType}}Set) IsEmpty() bool {
+func (set XInt32Set) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set {{.UPrefix}}{{.UType}}Set) NonEmpty() bool {
+func (set XInt32Set) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (set {{.UPrefix}}{{.UType}}Set) IsSequence() bool {
+func (set XInt32Set) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists.
-func (set {{.UPrefix}}{{.UType}}Set) IsSet() bool {
+func (set XInt32Set) IsSet() bool {
 	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set {{.UPrefix}}{{.UType}}Set) Size() int {
+func (set XInt32Set) Size() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -91,14 +84,14 @@ func (set {{.UPrefix}}{{.UType}}Set) Size() int {
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
+func (set XInt32Set) Cardinality() int {
 	return set.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set, returning the modified set.
-func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
+func (set XInt32Set) Add(i ...int32) XInt32Set {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -108,12 +101,12 @@ func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}S
 	return set
 }
 
-func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
+func (set XInt32Set) doAdd(i int32) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
-func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
+func (set XInt32Set) Contains(i int32) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -122,7 +115,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 }
 
 // ContainsAll determines if the given items are all in the set
-func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
+func (set XInt32Set) ContainsAll(i ...int32) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -137,7 +130,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines if every item in the other set is in this set.
-func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) bool {
+func (set XInt32Set) IsSubset(other XInt32Set) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -152,12 +145,12 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) b
 }
 
 // IsSuperset determines if every item of this set is in the other set.
-func (set {{.UPrefix}}{{.UType}}Set) IsSuperset(other {{.UPrefix}}{{.UType}}Set) bool {
+func (set XInt32Set) IsSuperset(other XInt32Set) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set {{.UPrefix}}{{.UType}}Set) Append(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
+func (set XInt32Set) Append(more ...int32) XInt32Set {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -169,7 +162,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Append(more ...{{.Type}}) {{.UPrefix}}{{.UT
 }
 
 // Union returns a new set with all items in both sets.
-func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
+func (set XInt32Set) Union(other XInt32Set) XInt32Set {
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -182,8 +175,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.U
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
-	intersection := New{{.UPrefix}}{{.UType}}Set()
+func (set XInt32Set) Intersect(other XInt32Set) XInt32Set {
+	intersection := NewXInt32Set()
 
 	set.s.RLock()
 	other.s.RLock()
@@ -208,8 +201,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) 
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
-	differencedSet := New{{.UPrefix}}{{.UType}}Set()
+func (set XInt32Set) Difference(other XInt32Set) XInt32Set {
+	differencedSet := NewXInt32Set()
 
 	set.s.RLock()
 	other.s.RLock()
@@ -225,22 +218,22 @@ func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set)
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
+func (set XInt32Set) SymmetricDifference(other XInt32Set) XInt32Set {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
 }
 
 // Clear clears the entire set to be the empty set.
-func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
+func (set *XInt32Set) Clear() {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-	set.m = make(map[{{.Type}}]struct{})
+	set.m = make(map[int32]struct{})
 }
 
 // Remove allows the removal of a single item from the set.
-func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
+func (set XInt32Set) Remove(i int32) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -251,8 +244,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
-	ch := make(chan {{.Type}})
+func (set XInt32Set) Send() <-chan int32 {
+	ch := make(chan int32)
 	go func() {
 		set.s.RLock()
 		defer set.s.RUnlock()
@@ -274,7 +267,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
+func (set XInt32Set) Forall(fn func(int32) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -289,7 +282,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 // Exists applies a predicate function to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
+func (set XInt32Set) Exists(fn func(int32) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -301,8 +294,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 	return false
 }
 
-// Foreach iterates over {{.Type}}Set and executes the passed func against each element.
-func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
+// Foreach iterates over int32Set and executes the passed func against each element.
+func (set XInt32Set) Foreach(fn func(int32)) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -313,9 +306,9 @@ func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 
 //-------------------------------------------------------------------------------------------------
 
-// Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
-func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
-	result := New{{.UPrefix}}{{.UType}}Set()
+// Filter returns a new XInt32Set whose elements return true for func.
+func (set XInt32Set) Filter(fn func(int32) bool) XInt32Set {
+	result := NewXInt32Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -327,13 +320,13 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 	return result
 }
 
-// Partition returns two new {{.Type}}Lists whose elements return true or false for the predicate, p.
+// Partition returns two new int32Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
-	matching := New{{.UPrefix}}{{.UType}}Set()
-	others := New{{.UPrefix}}{{.UType}}Set()
+func (set XInt32Set) Partition(p func(int32) bool) (XInt32Set, XInt32Set) {
+	matching := NewXInt32Set()
+	others := NewXInt32Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -347,8 +340,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 	return matching, others
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the passed predicate.
-func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (result int) {
+// CountBy gives the number elements of XInt32Set that return true for the passed predicate.
+func (set XInt32Set) CountBy(predicate func(int32) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -360,10 +353,10 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 	return
 }
 
-// MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
+// MinBy returns an element of XInt32Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+func (set XInt32Set) MinBy(less func(int32, int32) bool) int32 {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -371,7 +364,7 @@ func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool)
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	var m {{.Type}}
+	var m int32
 	first := true
 	for v := range set.m {
 		if first {
@@ -384,10 +377,10 @@ func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool)
 	return m
 }
 
-// MaxBy returns an element of {{.UPrefix}}{{.UType}}Set containing the maximum value, when compared to other elements
+// MaxBy returns an element of XInt32Set containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+func (set XInt32Set) MaxBy(less func(int32, int32) bool) int32 {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -395,7 +388,7 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	var m {{.Type}}
+	var m int32
 	first := true
 	for v := range set.m {
 		if first {
@@ -408,29 +401,29 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	return m
 }
 
-{{if .Numeric}}
+
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is numeric.
+// These methods are included when int32 is numeric.
 
 // Sum returns the sum of all the elements in the set.
-func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
+func (set XInt32Set) Sum() int32 {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	sum := {{.Type}}(0)
+	sum := int32(0)
 	for v, _ := range set.m {
-		sum = sum + {{.TypeStar}}v
+		sum = sum + v
 	}
 	return sum
 }
 
-{{end}}
+
 //-------------------------------------------------------------------------------------------------
 
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) bool {
+func (set XInt32Set) Equals(other XInt32Set) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -447,31 +440,31 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 	return true
 }
 
-{{if .Ordered}}
+
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
+// These methods are included when int32 is ordered.
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}Set) Min() {{.PType}} {
-	return list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
+func (list XInt32Set) Min() int32 {
+	return list.MinBy(func(a int32, b int32) bool {
 		return a < b
 	})
 }
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
-	return list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
+func (list XInt32Set) Max() (result int32) {
+	return list.MaxBy(func(a int32, b int32) bool {
 		return a < b
 	})
 }
 
-{{end}}
-{{if .Stringer}}
+
+
 //-------------------------------------------------------------------------------------------------
 
-func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
+func (set XInt32Set) StringList() []string {
 	strings := make([]string, 0)
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -482,26 +475,26 @@ func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
 	return strings
 }
 
-func (set {{.UPrefix}}{{.UType}}Set) String() string {
+func (set XInt32Set) String() string {
 	return set.mkString3Bytes("", ", ", "").String()
 }
 
 // implements encoding.Marshaler interface {
-func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
+func (set XInt32Set) MarshalJSON() ([]byte, error) {
 	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (set {{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
+func (set XInt32Set) MkString(sep string) string {
 	return set.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set {{.UPrefix}}{{.UType}}Set) MkString3(pfx, mid, sfx string) string {
+func (set XInt32Set) MkString3(pfx, mid, sfx string) string {
 	return set.mkString3Bytes(pfx, mid, sfx).String()
 }
 
-func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (set XInt32Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
@@ -517,4 +510,4 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes
 	b.WriteString(sfx)
 	return b
 }
-{{end}}
+

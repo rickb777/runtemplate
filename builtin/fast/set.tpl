@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=always-true
+// options: Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
 
 package {{.Package}}
 
@@ -7,41 +7,27 @@ package {{.Package}}
 import (
 	"bytes"
 	"fmt"
-	"sync"
 )
 {{else}}
 // Stringer is not supported.
 
-import (
-	"sync"
-)
-
 {{end}}
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
-type {{.UPrefix}}{{.UType}}Set struct {
-	s *sync.RWMutex
-	m map[{{.Type}}]struct{}
-}
+type {{.UPrefix}}{{.UType}}Set map[{{.Type}}]struct{}
 
 // New{{.UPrefix}}{{.UType}}Set creates and returns a reference to an empty set.
 func New{{.UPrefix}}{{.UType}}Set(a ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	set := {{.UPrefix}}{{.UType}}Set{
-		s: &sync.RWMutex{},
-		m: make(map[{{.Type}}]struct{}),
-	}
+	set := make({{.UPrefix}}{{.UType}}Set)
 	for _, i := range a {
-		set.m[i] = struct{}{}
+		set[i] = struct{}{}
 	}
 	return set
 }
 
 // ToSlice returns the elements of the current set as a slice
 func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	var s []{{.Type}}
-	for v := range set.m {
+	for v := range set {
 		s = append(s, v)
 	}
 	return s
@@ -50,11 +36,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -84,10 +66,7 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set {{.UPrefix}}{{.UType}}Set) Size() int {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	return len(set.m)
+	return len(set)
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
@@ -97,37 +76,31 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 
 //-------------------------------------------------------------------------------------------------
 
+{{if .Mutable}}
 // Add adds items to the current set, returning the modified set.
 func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	set.s.Lock()
-	defer set.s.Unlock()
-
     for _, v := range i {
-    	set.m[v] = struct{}{}
+	    set.doAdd(v)
 	}
 	return set
 }
 
+{{end}}
 func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
-	set.m[i] = struct{}{}
+	set[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
 func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	_, found := set.m[i]
+	_, found := set[i]
 	return found
 }
 
 // ContainsAll determines if the given items are all in the set
 func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	for _, v := range i {
-		if !set.Contains(v) {
+		_, found := set[v]
+		if !found {
 			return false
 		}
 	}
@@ -138,12 +111,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) bool {
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}
@@ -158,9 +126,6 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSuperset(other {{.UPrefix}}{{.UType}}Set)
 
 // Union returns a new set with all items in both sets.
 func (set {{.UPrefix}}{{.UType}}Set) Append(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	set.s.Lock()
-	defer set.s.Unlock()
-
 	unionedSet := set.Clone()
 	for _, v := range more {
 		unionedSet.doAdd(v)
@@ -171,12 +136,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Append(more ...{{.Type}}) {{.UPrefix}}{{.UT
 // Union returns a new set with all items in both sets.
 func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
 	unionedSet := set.Clone()
-
-	other.s.RLock()
-	defer other.s.RUnlock()
-
-	for v := range other.m {
-		unionedSet.m[v] = struct{}{}
+	for v := range other {
+		unionedSet.doAdd(v)
 	}
 	return unionedSet
 }
@@ -184,23 +145,17 @@ func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.U
 // Intersect returns a new set with items that exist only in both sets.
 func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
 	intersection := New{{.UPrefix}}{{.UType}}Set()
-
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v := range set {
 			if other.Contains(v) {
-				intersection.Add(v)
+				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v := range other {
 			if set.Contains(v) {
-				intersection.Add(v)
+				intersection.doAdd(v)
 			}
 		}
 	}
@@ -210,15 +165,9 @@ func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) 
 // Difference returns a new set with items in the current set but not in the other set
 func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
 	differencedSet := New{{.UPrefix}}{{.UType}}Set()
-
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if !other.Contains(v) {
-			differencedSet.Add(v)
+			differencedSet.doAdd(v)
 		}
 	}
 	return differencedSet
@@ -231,33 +180,26 @@ func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UT
 	return aDiff.Union(bDiff)
 }
 
+{{if .Mutable}}
 // Clear clears the entire set to be the empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
-	set.s.Lock()
-	defer set.s.Unlock()
-
-	set.m = make(map[{{.Type}}]struct{})
+	*set = New{{.UPrefix}}{{.UType}}Set()
 }
 
 // Remove allows the removal of a single item from the set.
 func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
-	set.s.Lock()
-	defer set.s.Unlock()
-
-	delete(set.m, i)
+	delete(set, i)
 }
 
+{{end}}
 //-------------------------------------------------------------------------------------------------
 
-// Send returns a channel that will send all the elements in order.
+// Send returns a channel of type {{.Type}} that you can range over.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
 	go func() {
-		set.s.RLock()
-		defer set.s.RUnlock()
-
-		for v := range set.m {
+		for v := range set {
 			ch <- v
 		}
 		close(ch)
@@ -275,10 +217,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if !fn(v) {
 			return false
 		}
@@ -290,10 +229,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if fn(v) {
 			return true
 		}
@@ -303,10 +239,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 
 // Foreach iterates over {{.Type}}Set and executes the passed func against each element.
 func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		fn(v)
 	}
 }
@@ -316,12 +249,9 @@ func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
 func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if fn(v) {
-			result.m[v] = struct{}{}
+			result[v] = struct{}{}
 		}
 	}
 	return result
@@ -334,14 +264,11 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
 	matching := New{{.UPrefix}}{{.UType}}Set()
 	others := New{{.UPrefix}}{{.UType}}Set()
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if p(v) {
-			matching.m[v] = struct{}{}
+			matching[v] = struct{}{}
 		} else {
-			others.m[v] = struct{}{}
+			others[v] = struct{}{}
 		}
 	}
 	return matching, others
@@ -349,10 +276,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the passed predicate.
 func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (result int) {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		if predicate(v) {
 			result++
 		}
@@ -367,13 +291,9 @@ func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool)
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	var m {{.Type}}
 	first := true
-	for v := range set.m {
+	for v := range set {
 		if first {
 			m = v
 			first = false
@@ -391,13 +311,9 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	var m {{.Type}}
 	first := true
-	for v := range set.m {
+	for v := range set {
 		if first {
 			m = v
 			first = false
@@ -414,11 +330,8 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 
 // Sum returns the sum of all the elements in the set.
 func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
-	set.s.RLock()
-	defer set.s.RUnlock()
-
 	sum := {{.Type}}(0)
-	for v, _ := range set.m {
+	for v, _ := range set {
 		sum = sum + {{.TypeStar}}v
 	}
 	return sum
@@ -431,15 +344,10 @@ func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) bool {
-	set.s.RLock()
-	other.s.RLock()
-	defer set.s.RUnlock()
-	defer other.s.RUnlock()
-
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}
@@ -473,10 +381,7 @@ func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
 
 func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
 	strings := make([]string, 0)
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
@@ -505,11 +410,7 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	for v := range set.m {
+	for v := range set {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid

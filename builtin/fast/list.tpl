@@ -8,36 +8,28 @@ import (
 	"bytes"
 	"fmt"
 {{end}}
-	"sync"
 	"math/rand"
 )
 
-// {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
+// {{.UPrefix}}{{.UType}}List is a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
 // To add items to the list, simply use the normal built-in append function.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type {{.UPrefix}}{{.UType}}List struct {
-	s *sync.RWMutex
-	m []{{.PType}}
-}
-
+type {{.UPrefix}}{{.UType}}List []{{.PType}}
 
 //-------------------------------------------------------------------------------------------------
 
 func new{{.UPrefix}}{{.UType}}List(len, cap int) {{.UPrefix}}{{.UType}}List {
-	return {{.UPrefix}}{{.UType}}List{
-		s: &sync.RWMutex{},
-		m: make([]{{.PType}}, len, cap),
-	}
+	return make({{.UPrefix}}{{.UType}}List, len, cap)
 }
 
 // New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
 	for i, v := range values {
-		result.m[i] = v
+		result[i] = v
 	}
 	return result
 }
@@ -47,14 +39,14 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}L
 func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) {{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		result = append(result, v)
 	}
 	return result
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list {{.UPrefix}}{{.UType}}List) Clone() {{.UPrefix}}{{.UType}}List {
-	return New{{.UPrefix}}{{.UType}}List(list.m...)
+	return New{{.UPrefix}}{{.UType}}List(list...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -62,41 +54,25 @@ func (list {{.UPrefix}}{{.UType}}List) Clone() {{.UPrefix}}{{.UType}}List {
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list {{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return list.m[0]
+	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
 func (list {{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return list.m[len(list.m)-1]
+	return list[list.Len()-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
 func (list {{.UPrefix}}{{.UType}}List) Tail() {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	result.m = list.m[1:]
-	return result
+	return {{.UPrefix}}{{.UType}}List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list {{.UPrefix}}{{.UType}}List) Init() {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	result.m = list.m[:len(list.m)-1]
-	return result
+	return {{.UPrefix}}{{.UType}}List(list[:list.Len()-1])
 }
 
 // IsEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
@@ -123,29 +99,20 @@ func (list {{.UPrefix}}{{.UType}}List) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list {{.UPrefix}}{{.UType}}List) Size() int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return len(list.m)
+	return len(list)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list {{.UPrefix}}{{.UType}}List) Len() int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return len(list.m)
+	return len(list)
 }
 
 {{if .Mutable}}
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
 func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
-	list.s.Lock()
-	defer list.s.Unlock()
-
-	list.m[i], list.m[j] = list.m[j], list.m[i]
+	list[i], list[j] = list[j], list[i]
 }
 
 {{end}}
@@ -153,10 +120,7 @@ func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list {{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	for _, v := range list.m {
+	for _, v := range list {
 		if fn(v) {
 			return true
 		}
@@ -166,10 +130,7 @@ func (list {{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
 
 // Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list {{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	for _, v := range list.m {
+	for _, v := range list {
 		if !fn(v) {
 			return false
 		}
@@ -179,10 +140,7 @@ func (list {{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
 
 // Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
 func (list {{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	for _, v := range list.m {
+	for _, v := range list {
 		fn(v)
 	}
 }
@@ -192,10 +150,7 @@ func (list {{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
-		list.s.RLock()
-		defer list.s.RUnlock()
-
-		for _, v := range list.m {
+		for _, v := range list {
 			ch <- v
 		}
 		close(ch)
@@ -205,14 +160,11 @@ func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 
 // Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
-	list.s.Lock()
-	defer list.s.Unlock()
-
 	numItems := list.Len()
-	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
+	result := make({{.UPrefix}}{{.UType}}List, numItems)
 	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
+	for i, v := range list {
+		result[last-i] = v
 	}
 	return result
 }
@@ -223,7 +175,7 @@ func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-    	result.m[i], result.m[r] = result.m[r], result.m[i]
+    	result[i], result[r] = result[r], result[i]
 	}
 	return result
 }
@@ -233,15 +185,10 @@ func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
 // Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list {{.UPrefix}}{{.UType}}List) Take(n int) {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	if n > list.Len() {
 		return list
 	}
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	result.m = list.m[0:n]
-	return result
+	return list[0:n]
 }
 
 // Drop returns a slice of {{.UPrefix}}{{.UType}}List without the leading n elements of the source list.
@@ -251,30 +198,21 @@ func (list {{.UPrefix}}{{.UType}}List) Drop(n int) {{.UPrefix}}{{.UType}}List {
 		return list
 	}
 
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	l := list.Len()
 	if n < l {
-		result.m = list.m[n:]
+		return list[l:]
 	}
-	return result
+	return list[n:]
 }
 
 // TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list {{.UPrefix}}{{.UType}}List) TakeLast(n int) {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	l := list.Len()
 	if n > l {
 		return list
 	}
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	result.m = list.m[l-n:]
-	return result
+	return list[l-n:]
 }
 
 // DropLast returns a slice of {{.UPrefix}}{{.UType}}List without the trailing n elements of the source list.
@@ -284,68 +222,51 @@ func (list {{.UPrefix}}{{.UType}}List) DropLast(n int) {{.UPrefix}}{{.UType}}Lis
 		return list
 	}
 
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	l := list.Len()
 	if n > l {
-		list.m = list.m[l:]
+		return list[l:]
 	} else {
-		list.m = list.m[0 : l-n]
+		return list[0 : l-n]
 	}
-	return list
 }
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
-func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	for _, v := range list.m {
+func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) (result {{.UPrefix}}{{.UType}}List) {
+	for _, v := range list {
 		if p(v) {
-			result.m = append(result.m, v)
+			result = append(result, v)
 		} else {
-			return result
+			return
 		}
 	}
-	return result
+	return
 }
 
 // DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
-func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) (result {{.UPrefix}}{{.UType}}List) {
 	adding := false
-
-	for _, v := range list.m {
+	for _, v := range list {
 		if !p(v) || adding {
 			adding = true
-			result.m = append(result.m, v)
+			result = append(result, v)
 		}
 	}
-
-	return result
+	return
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
 func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
+	result := make({{.UPrefix}}{{.UType}}List, 0, list.Len()/2)
 
-	result := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
-
-	for _, v := range list.m {
+	for _, v := range list {
 		if fn(v) {
-			result.m = append(result.m, v)
+			result = append(result, v)
 		}
 	}
 
@@ -357,17 +278,14 @@ func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPref
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UPrefix}}{{.UType}}List, {{.UPrefix}}{{.UType}}List) {
-	list.s.RLock()
-	defer list.s.RUnlock()
+	matching := make({{.UPrefix}}{{.UType}}List, 0, list.Len()/2)
+	others := make({{.UPrefix}}{{.UType}}List, 0, list.Len()/2)
 
-	matching := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
-	others := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
-
-	for _, v := range list.m {
+	for _, v := range list {
 		if p(v) {
-			matching.m = append(matching.m, v)
+			matching = append(matching, v)
 		} else {
-			others.m = append(others.m, v)
+			others = append(others, v)
 		}
 	}
 
@@ -376,10 +294,7 @@ func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UP
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
 func (list {{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) (result int) {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	for _, v := range list.m {
+	for _, v := range list {
 		if predicate(v) {
 			result++
 		}
@@ -391,56 +306,50 @@ func (list {{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) 
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list {{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
-		if less(list.m[i], list.m[m]) {
+		if less(list[i], list[m]) {
 			m = i
 		}
 	}
-	return list.m[m]
+
+	return list[m]
 }
 
 // MaxBy returns an element of {{.UPrefix}}{{.UType}}List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list {{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
-		if less(list.m[m], list.m[i]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
-	return list.m[m]
+
+	return list[m]
 }
 
 // DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
-func (list {{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := new{{.UPrefix}}{{.UType}}List(0, list.Len())
+func (list {{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) (result {{.UPrefix}}{{.UType}}List) {
 Outer:
-	for _, v := range list.m {
-		for _, r := range result.m {
+	for _, v := range list {
+		for _, r := range result {
 			if equal(v, r) {
 				continue Outer
 			}
 		}
-		result.m = append(result.m, v)
+		result = append(result, v)
 	}
 	return result
 }
@@ -453,10 +362,7 @@ func (list {{.UPrefix}}{{.UType}}List) IndexWhere(p func({{.PType}}) bool) int {
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list {{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from int) int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	for i, v := range list.m {
+	for i, v := range list {
 		if i >= from && p(v) {
 			return i
 		}
@@ -473,11 +379,8 @@ func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) i
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	for i := list.Len() - 1; i >= 0; i-- {
-		v := list.m[i]
+		v := list[i]
 		if i <= before && p(v) {
 			return i
 		}
@@ -491,11 +394,8 @@ func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, 
 
 // Sum returns the sum of all the elements in the list.
 func (list {{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	sum := {{.Type}}(0)
-	for _, v := range list.m {
+	for _, v := range list {
 		sum = sum + {{.TypeStar}}v
 	}
 	return sum
@@ -510,17 +410,12 @@ func (list {{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) bool {
-	list.s.RLock()
-	other.s.RLock()
-	defer list.s.RUnlock()
-	defer other.s.RUnlock()
-
 	if list.Size() != other.Size() {
 		return false
 	}
 
-	for i, v := range list.m {
-		if v != other.m[i] {
+	for i, v := range list {
+		if v != other[i] {
 			return false
 		}
 	}
@@ -536,9 +431,6 @@ func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
 func (list {{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	m := list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
 		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
@@ -547,14 +439,18 @@ func (list {{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
+func (list {{.UPrefix}}{{.UType}}List) Max() {{.Type}} {
 	m := list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
 		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
 	return {{.TypeStar}}m
+}
+
+// Less returns true if the element at index i is less than the element at index j. This implements
+// one of the methods needed by sort.Interface.
+// Panics if i or j is out of range.
+func (list {{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
+    return {{.TypeStar}}list[i] < {{.TypeStar}}list[j]
 }
 
 {{end}}
@@ -575,16 +471,12 @@ func (list {{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 func (list {{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
-
-	list.s.RLock()
-	defer list.s.RUnlock()
-
 	l := list.Len()
 	if l > 0 {
-		v := list.m[0]
+		v := list[0]
 		b.WriteString(fmt.Sprintf("%v", v))
 		for i := 1; i < l; i++ {
-			v := list.m[i]
+			v := list[i]
 			b.WriteString(mid)
 			b.WriteString(fmt.Sprintf("%v", v))
 		}

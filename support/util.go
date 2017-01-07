@@ -30,11 +30,17 @@ func Debug(msg string, args ...interface{}) {
 type RichString string
 
 func (rs RichString) FirstUpper() string {
+	if rs == "" {
+		return ""
+	}
 	s := string(rs)
 	return strings.ToUpper(s[:1]) + s[1:]
 }
 
 func (rs RichString) FirstLower() string {
+	if rs == "" {
+		return ""
+	}
 	s := string(rs)
 	return strings.ToLower(s[:1]) + s[1:]
 }

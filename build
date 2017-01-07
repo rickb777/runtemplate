@@ -1,5 +1,5 @@
 #!/bin/bash -e
-rm -f [ct]*/x_*.go
+rm -f builtintest/*/[px]_*.go
 go install .
 go generate -v ./...
 go test ./...

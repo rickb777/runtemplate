@@ -16,6 +16,7 @@ import (
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
+const Prefix = "Prefix"
 
 func findTemplateFileFromPath(templateFile string) FileMeta {
 	Debug("findTemplateFileFromPath '%s'\n", templateFile)
@@ -97,18 +98,24 @@ func setTypeInContext(k, v string, context map[string]interface{}) {
 	p := v
 	star := ""
 	amp := ""
-	if v[0] == '*' {
+
+	if len(v) > 0 && v[0] == '*' {
 		v = v[1:]
 		star = "*"
 		amp = "&"
 	}
-	Debug("setTypeInContext %s=%s\n", k, v)
+
+	Debug("setTypeInContext %s=%s for %s, star=%s, amp=%s\n", k, v, p, star, amp)
+
 	context[k] = v
-	context[k + "Star"] = star
-	context[k + "Amp"] = amp
-	context["P" + k] = p
 	context["U" + k] = RichString(v).FirstUpper()
 	context["L" + k] = RichString(v).FirstLower()
+
+	if !strings.HasSuffix(k, Prefix) {
+		context[k + "Star"] = star
+		context[k + "Amp"] = amp
+		context["P" + k] = p
+	}
 }
 
 func setPairInContext(pp Pair, context map[string]interface{}) {
@@ -139,9 +146,20 @@ func createContext(foundTemplate FileMeta, outputFile string, vals Pairs) map[st
 	context["TemplateFile"] = foundTemplate.Name
 	context["TemplatePath"] = foundTemplate.Path
 
+	// define automatic prefix template values with default blank value.
+	for _, p := range vals {
+		if strings.HasSuffix(p.Key, "Type") {
+			l := len(p.Key)
+			k := p.Key[:l-4]
+			setTypeInContext(k + Prefix, "", context)
+		}
+	}
+
+	// copy the key/vals to template values
 	for _, p := range vals {
 		setPairInContext(p, context)
 	}
+
 	return context
 }
 
@@ -173,8 +191,8 @@ func runTheTemplate(foundTemplate, outputFile string, context map[string]interfa
 	}
 }
 
-func generate(templateFile, prefix, outputFile string, force bool, deps []string, vals Pairs) {
-	Debug("generate %s %s %s %v %+v %+v\n", templateFile, prefix, outputFile, force, deps, vals)
+func generate(templateFile, outputFile string, force bool, deps []string, vals Pairs) {
+	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, vals)
 
 	foundTemplate := findTemplateFileFromPath(templateFile)
 	than := templateFile
@@ -185,7 +203,7 @@ func generate(templateFile, prefix, outputFile string, force bool, deps []string
 		keys := strings.Join(vals.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideOr0('.')
 		tf = RichString(tf).RemoveBefore('/')
-		outputFile = prefix + strings.ToLower(keys + "_" + tf) + ".go"
+		outputFile = strings.ToLower(keys + "_" + tf) + ".go"
 		Debug("default output now '%s'\n", outputFile)
 	}
 

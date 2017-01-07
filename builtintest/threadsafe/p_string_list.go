@@ -1,51 +1,51 @@
-// Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
+// Generated from list.tpl with Type=*string
+// options: Comparable=true Numeric=false Ordered=false Stringer=true
 
-package {{.Package}}
+package threadsafe
 
 import (
-{{if .Stringer}}
+
 	"bytes"
 	"fmt"
-{{end}}
+
 	"sync"
 	"math/rand"
 )
 
-// {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
+// PStringList contains a slice of type *string. Use it where you would use []*string.
 // To add items to the list, simply use the normal built-in append function.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type {{.UPrefix}}{{.UType}}List struct {
+type PStringList struct {
 	s *sync.RWMutex
-	m []{{.PType}}
+	m []*string
 }
 
 
 //-------------------------------------------------------------------------------------------------
 
-func new{{.UPrefix}}{{.UType}}List(len, cap int) {{.UPrefix}}{{.UType}}List {
-	return {{.UPrefix}}{{.UType}}List{
+func newPStringList(len, cap int) PStringList {
+	return PStringList{
 		s: &sync.RWMutex{},
-		m: make([]{{.PType}}, len, cap),
+		m: make([]*string, len, cap),
 	}
 }
 
-// New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
-func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
+// NewPStringList constructs a new list containing the supplied values, if any.
+func NewPStringList(values ...*string) PStringList {
+	result := newPStringList(len(values), len(values))
 	for i, v := range values {
 		result.m[i] = v
 	}
 	return result
 }
 
-// Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence
+// BuildPStringListFromChan constructs a new PStringList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+func BuildPStringListFromChan(source <-chan *string) PStringList {
+	result := newPStringList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
 	}
@@ -53,15 +53,15 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) {{.UPrefi
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (list {{.UPrefix}}{{.UType}}List) Clone() {{.UPrefix}}{{.UType}}List {
-	return New{{.UPrefix}}{{.UType}}List(list.m...)
+func (list PStringList) Clone() PStringList {
+	return NewPStringList(list.m...)
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
-func (list {{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
+func (list PStringList) Head() *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -70,7 +70,7 @@ func (list {{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
-func (list {{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
+func (list PStringList) Last() *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -79,50 +79,50 @@ func (list {{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
-func (list {{.UPrefix}}{{.UType}}List) Tail() {{.UPrefix}}{{.UType}}List {
+func (list PStringList) Tail() PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
-func (list {{.UPrefix}}{{.UType}}List) Init() {{.UPrefix}}{{.UType}}List {
+func (list PStringList) Init() PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
 
-// IsEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
-func (list {{.UPrefix}}{{.UType}}List) IsEmpty() bool {
+// IsEmpty tests whether PStringList is empty.
+func (list PStringList) IsEmpty() bool {
 	return list.Len() == 0
 }
 
-// NonEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
-func (list {{.UPrefix}}{{.UType}}List) NonEmpty() bool {
+// NonEmpty tests whether PStringList is empty.
+func (list PStringList) NonEmpty() bool {
 	return list.Len() > 0
 }
 
 // IsSequence returns true for lists.
-func (list {{.UPrefix}}{{.UType}}List) IsSequence() bool {
+func (list PStringList) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists.
-func (list {{.UPrefix}}{{.UType}}List) IsSet() bool {
+func (list PStringList) IsSet() bool {
 	return false
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
-func (list {{.UPrefix}}{{.UType}}List) Size() int {
+func (list PStringList) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -131,28 +131,18 @@ func (list {{.UPrefix}}{{.UType}}List) Size() int {
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
-func (list {{.UPrefix}}{{.UType}}List) Len() int {
+func (list PStringList) Len() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	return len(list.m)
 }
 
-{{if .Mutable}}
-// Swap exchanges two elements, which is necessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
-func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
-	list.s.Lock()
-	defer list.s.Unlock()
 
-	list.m[i], list.m[j] = list.m[j], list.m[i]
-}
-
-{{end}}
 //-------------------------------------------------------------------------------------------------
 
-// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
-func (list {{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
+// Exists verifies that one or more elements of PStringList return true for the passed func.
+func (list PStringList) Exists(fn func(*string) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -164,8 +154,8 @@ func (list {{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
-func (list {{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
+// Forall verifies that all elements of PStringList return true for the passed func.
+func (list PStringList) Forall(fn func(*string) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -177,8 +167,8 @@ func (list {{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
-func (list {{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
+// Foreach iterates over PStringList and executes the passed func against each element.
+func (list PStringList) Foreach(fn func(*string)) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -189,8 +179,8 @@ func (list {{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
-	ch := make(chan {{.PType}})
+func (list PStringList) Send() <-chan *string {
+	ch := make(chan *string)
 	go func() {
 		list.s.RLock()
 		defer list.s.RUnlock()
@@ -203,13 +193,13 @@ func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	return ch
 }
 
-// Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
-func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
+// Reverse returns a copy of PStringList with all elements in the reverse order.
+func (list PStringList) Reverse() PStringList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
 	numItems := list.Len()
-	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
+	result := newPStringList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
@@ -217,8 +207,8 @@ func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
 	return result
 }
 
-// Shuffle returns a shuffled copy of {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
-func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
+// Shuffle returns a shuffled copy of PStringList, using a version of the Fisher-Yates shuffle.
+func (list PStringList) Shuffle() PStringList {
 	numItems := list.Len()
 	result := list.Clone()
 	for i := 0; i < numItems; i++ {
@@ -230,23 +220,23 @@ func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
 
 //-------------------------------------------------------------------------------------------------
 
-// Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
+// Take returns a slice of PStringList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
-func (list {{.UPrefix}}{{.UType}}List) Take(n int) {{.UPrefix}}{{.UType}}List {
+func (list PStringList) Take(n int) PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if n > list.Len() {
 		return list
 	}
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
 
-// Drop returns a slice of {{.UPrefix}}{{.UType}}List without the leading n elements of the source list.
+// Drop returns a slice of PStringList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
-func (list {{.UPrefix}}{{.UType}}List) Drop(n int) {{.UPrefix}}{{.UType}}List {
+func (list PStringList) Drop(n int) PStringList {
 	if n == 0 {
 		return list
 	}
@@ -254,7 +244,7 @@ func (list {{.UPrefix}}{{.UType}}List) Drop(n int) {{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	l := list.Len()
 	if n < l {
 		result.m = list.m[n:]
@@ -262,9 +252,9 @@ func (list {{.UPrefix}}{{.UType}}List) Drop(n int) {{.UPrefix}}{{.UType}}List {
 	return result
 }
 
-// TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
+// TakeLast returns a slice of PStringList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
-func (list {{.UPrefix}}{{.UType}}List) TakeLast(n int) {{.UPrefix}}{{.UType}}List {
+func (list PStringList) TakeLast(n int) PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -272,14 +262,14 @@ func (list {{.UPrefix}}{{.UType}}List) TakeLast(n int) {{.UPrefix}}{{.UType}}Lis
 	if n > l {
 		return list
 	}
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
 
-// DropLast returns a slice of {{.UPrefix}}{{.UType}}List without the trailing n elements of the source list.
+// DropLast returns a slice of PStringList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
-func (list {{.UPrefix}}{{.UType}}List) DropLast(n int) {{.UPrefix}}{{.UType}}List {
+func (list PStringList) DropLast(n int) PStringList {
 	if n == 0 {
 		return list
 	}
@@ -296,14 +286,14 @@ func (list {{.UPrefix}}{{.UType}}List) DropLast(n int) {{.UPrefix}}{{.UType}}Lis
 	return list
 }
 
-// TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
+// TakeWhile returns a new PStringList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
-func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
+func (list PStringList) TakeWhile(p func(*string) bool) PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -314,14 +304,14 @@ func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPr
 	return result
 }
 
-// DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
+// DropWhile returns a new PStringList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
-func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
+func (list PStringList) DropWhile(p func(*string) bool) PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := newPStringList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -336,12 +326,12 @@ func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPr
 
 //-------------------------------------------------------------------------------------------------
 
-// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
-func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
+// Filter returns a new PStringList whose elements return true for func.
+func (list PStringList) Filter(fn func(*string) bool) PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
+	result := newPStringList(0, list.Len()/2)
 
 	for _, v := range list.m {
 		if fn(v) {
@@ -352,16 +342,16 @@ func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPref
 	return result
 }
 
-// Partition returns two new {{.Type}}Lists whose elements return true or false for the predicate, p.
+// Partition returns two new stringLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UPrefix}}{{.UType}}List, {{.UPrefix}}{{.UType}}List) {
+func (list PStringList) Partition(p func(*string) bool) (PStringList, PStringList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
-	others := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
+	matching := newPStringList(0, list.Len()/2)
+	others := newPStringList(0, list.Len()/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -374,8 +364,8 @@ func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UP
 	return matching, others
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
-func (list {{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) (result int) {
+// CountBy gives the number elements of PStringList that return true for the passed predicate.
+func (list PStringList) CountBy(predicate func(*string) bool) (result int) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -387,10 +377,10 @@ func (list {{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) 
 	return
 }
 
-// MinBy returns an element of {{.UPrefix}}{{.UType}}List containing the minimum value, when compared to other elements
+// MinBy returns an element of PStringList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (list {{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+func (list PStringList) MinBy(less func(*string, *string) bool) *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -407,10 +397,10 @@ func (list {{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) b
 	return list.m[m]
 }
 
-// MaxBy returns an element of {{.UPrefix}}{{.UType}}List containing the maximum value, when compared to other elements
+// MaxBy returns an element of PStringList containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (list {{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+func (list PStringList) MaxBy(less func(*string, *string) bool) *string {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -427,12 +417,12 @@ func (list {{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) b
 	return list.m[m]
 }
 
-// DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
-func (list {{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
+// DistinctBy returns a new PStringList whose elements are unique, where equality is defined by a passed func.
+func (list PStringList) DistinctBy(equal func(*string, *string) bool) PStringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, list.Len())
+	result := newPStringList(0, list.Len())
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -446,13 +436,13 @@ Outer:
 }
 
 // IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
-func (list {{.UPrefix}}{{.UType}}List) IndexWhere(p func({{.PType}}) bool) int {
+func (list PStringList) IndexWhere(p func(*string) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
-func (list {{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from int) int {
+func (list PStringList) IndexWhere2(p func(*string) bool, from int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -466,13 +456,13 @@ func (list {{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from
 
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
-func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) int {
+func (list PStringList) LastIndexWhere(p func(*string) bool) int {
 	return list.LastIndexWhere2(p, 0)
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
-func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
+func (list PStringList) LastIndexWhere2(p func(*string) bool, before int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -485,31 +475,15 @@ func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, 
 	return -1
 }
 
-{{if .Numeric}}
+
+
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is numeric.
-
-// Sum returns the sum of all the elements in the list.
-func (list {{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	sum := {{.Type}}(0)
-	for _, v := range list.m {
-		sum = sum + {{.TypeStar}}v
-	}
-	return sum
-}
-
-{{end}}
-{{if .Comparable}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is comparable.
+// These methods are included when string is comparable.
 
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) bool {
+func (list PStringList) Equals(other PStringList) bool {
 	list.s.RLock()
 	other.s.RLock()
 	defer list.s.RUnlock()
@@ -528,51 +502,23 @@ func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) 
 	return true
 }
 
-{{end}}
-{{if .Ordered}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
 
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
 
-	m := list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return {{.TypeStar}}a < {{.TypeStar}}b
-	})
-	return {{.TypeStar}}m
-}
 
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	m := list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return {{.TypeStar}}a < {{.TypeStar}}b
-	})
-	return {{.TypeStar}}m
-}
-
-{{end}}
-{{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (list {{.UPrefix}}{{.UType}}List) String() string {
+func (list PStringList) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (list {{.UPrefix}}{{.UType}}List) MkString(sep string) string {
+func (list PStringList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list {{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
+func (list PStringList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
 
@@ -592,4 +538,4 @@ func (list {{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
 	b.WriteString(sfx)
 	return b.String()
 }
-{{end}}
+

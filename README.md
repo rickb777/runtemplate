@@ -3,8 +3,7 @@
 [![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate)
 [![Build Status](https://travis-ci.org/rickb777/runtemplate.svg?branch=master)](https://travis-ci.org/rickb777/runtemplate)
 
-This application provides a simple way of executing standard Go templates from the command line. The obvious
-use-case is for source code generation, amongst many others.
+This application provides a simple way of executing standard Go templates from the command line. The obvious use-case is for source code generation, amongst many others.
 
 You can install it with:
 
@@ -14,8 +13,7 @@ go get github.com/rickb777/runtemplate
 
 It is intended to be used directly from the command-line and also with `go generate`.
 
-It supports light-weight dependency checking, i.e. less work is done when the generated output file
-already exists and is up to date.
+It supports light-weight dependency checking, i.e. less work is done when the generated output file already exists and is up to date.
 
 ## Command-Line
 
@@ -30,9 +28,6 @@ runtemplate -tpl filename.tpl -output outfile.go -deps foo.go,bar.go Type=MyStru
 
  * `-output <name>`
    - the name of the output file. If `-tpl` is not specifed, `-output` is required, otherwise it is optional.
-
- * `-prefix <prefix>`
-   - a prefix for the name of the output file. Ignored if `-output` is specified,
 
  * `-deps <name>,<name>,...`
    - adds more dependencies to be checked in addition to the template itself and the 'type' file (if any).
@@ -62,8 +57,7 @@ Furthermore, the output file may be completely omitted
 runtemplate filename.tpl Type=MyStruct Option1=Value1 Option2=true
 ```
 
-in which case a name will be computed from all the values of the key/value pairs excluding true/false,
-plus the name of the template. For the example above, it will be `mystruct_value1_filename.go`.
+in which case a name will be computed from all the values of the key/value pairs excluding true/false, plus the name of the template. For the example above, it will be `mystruct_value1_filename.go`.
 
 ## Go Generate
 
@@ -73,9 +67,7 @@ Easy. Just put the `go generate` comment in your code like this:
 //go:generate runtemplate -tpl filename.tpl -output outfile.go Option1=Value1 Option2=Value2
 ```
 
-When you run `go generate`, it will find these marked comments and execute their commands. This will
-`runtemplate` against the specified template, passing in whatever options have have been specified
-on the command line as a map.
+When you run `go generate`, it will find these marked comments and execute their commands. This will `runtemplate` against the specified template, passing in whatever options have have been specified on the command line as a map.
 
 ## Template
 
@@ -105,8 +97,7 @@ This table shows two examples of context symbols defined for Type=Foo and Type=*
 | `.TypeStar`  |              |  `*`         |
 | `.TypeAmp`   |              |  `&`         |
 
-Be aware that your shell might expand * so you may need suitable quote marks, such as `'Type=*Foo'`. This
-is not needed when using go:generate comment lines.
+Be aware that your shell might expand * so you may need suitable quote marks, such as `'Type=*Foo'`. This is not needed when using go:generate comment lines.
 
 Additional keys are also made available:
 
@@ -128,10 +119,15 @@ Some filters are also included that may be helpful.
 
 The last two are useful for getting only the package name or only the type name if passed an input of `package.Type`.
 
+### Prefix
+
+For every `<X>Type` template value that you specify, there is a corresponding special value `<X>Prefix` that is always predefined with a blank default value. So if you set it to something else, the generated types can use this to prefix their names. As well as `<X>Prefix`, there will be `<X>UPrefix`  and `<X>LPrefix` as above.
+
+You can use this so that several generated types can co-exist within the same package.
+
 ## Template Path
 
-Templates are located by following `TEMPLATEPATH`, an optional environment variable. If it is defined, it
-is used like `PATH`, i.e. a colon-separate list of directories to be searched.
+Templates are located by following `TEMPLATEPATH`, an optional environment variable. If it is defined, it is used like `PATH`, i.e. a colon-separate list of directories to be searched.
 
 If `TEMPLATEPATH` is absent, its default is `TEMPLATEPATH=.`, i.e. templates are relative to the current directory.
 
@@ -140,7 +136,6 @@ If available, the location of the builtin templates is also added to `TEMPLATEPA
 
 # Built-in Templates
 
-A selection of built-in templates is included with `runtemplate`. These provide type-safe collection types.
-Their API style has been loosely influenced by other similar Go types and the excellent Scala collection classes.
+A selection of built-in templates is included with `runtemplate`. These provide type-safe collection types. Their API style has been loosely influenced by other similar Go types and the excellent Scala collection classes.
 
 [See BUILTIN](BUILTIN.md)
