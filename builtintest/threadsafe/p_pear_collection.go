@@ -3,8 +3,8 @@
 
 package threadsafe
 
-// PearCollection defines an interface for common collection methods on *Pear.
-type PPearCollection interface {
+// PPearSizer defines an interface for sizing methods on *Pear collections.
+type PPearSizer interface {
 	// IsEmpty tests whether PPearCollection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,21 @@ type PPearCollection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+// PPearCollection defines an interface for common collection methods on *Pear.
+type PPearCollection interface {
+    PPearSizer
+
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []*Pear
 
 	// Exists verifies that one or more elements of PPearCollection return true for the passed func.
 	Exists(fn func(*Pear) bool) bool

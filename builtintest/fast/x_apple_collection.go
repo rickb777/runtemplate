@@ -3,8 +3,8 @@
 
 package fast
 
-// AppleCollection defines an interface for common collection methods on Apple.
-type XAppleCollection interface {
+// XAppleSizer defines an interface for sizing methods on Apple collections.
+type XAppleSizer interface {
 	// IsEmpty tests whether XAppleCollection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,21 @@ type XAppleCollection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+// XAppleCollection defines an interface for common collection methods on Apple.
+type XAppleCollection interface {
+    XAppleSizer
+
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []Apple
 
 	// Exists verifies that one or more elements of XAppleCollection return true for the passed func.
 	Exists(fn func(Apple) bool) bool

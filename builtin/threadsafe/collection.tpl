@@ -3,8 +3,8 @@
 
 package {{.Package}}
 
-// {{.UType}}Collection defines an interface for common collection methods on {{.PType}}.
-type {{.UPrefix}}{{.UType}}Collection interface {
+// {{.UPrefix}}{{.UType}}Sizer defines an interface for sizing methods on {{.PType}} collections.
+type {{.UPrefix}}{{.UType}}Sizer interface {
 	// IsEmpty tests whether {{.UPrefix}}{{.UType}}Collection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,39 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+{{if .Stringer}}
+// {{.UPrefix}}{{.UType}}MkStringer defines an interface for stringer methods on {{.PType}} collections.
+type {{.UPrefix}}{{.UType}}MkStringer interface {
+	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// in square brackets.
+	String() string
+
+	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+	MkString(sep string) string
+
+	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+	MkString3(pfx, mid, sfx string) string
+
+}
+
+{{end -}}
+// {{.UPrefix}}{{.UType}}Collection defines an interface for common collection methods on {{.PType}}.
+type {{.UPrefix}}{{.UType}}Collection interface {
+    {{.UPrefix}}{{.UType}}Sizer
+{{if .Stringer}}
+    {{.UPrefix}}{{.UType}}MkStringer
+{{end}}
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []{{.PType}}
 
 	// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}Collection return true for the passed func.
 	Exists(fn func({{.PType}}) bool) bool
@@ -63,18 +90,6 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// ContainsAll determines if two collections have the same size and contain the same items.
 	// The order of items does not matter.
 	//TODO ContainsAll(other {{.UType}}Collection) bool
-
-	{{end -}}
-	{{if .Stringer}}
-	// String implements the Stringer interface to render the list as a comma-separated string enclosed
-	// in square brackets.
-	String() string
-
-	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-	MkString(sep string) string
-
-	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-	MkString3(pfx, mid, sfx string) string
 
 {{end -}}
 }

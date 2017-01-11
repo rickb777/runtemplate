@@ -3,8 +3,8 @@
 
 package threadsafe
 
-// AppleCollection defines an interface for common collection methods on *Apple.
-type PAppleCollection interface {
+// PAppleSizer defines an interface for sizing methods on *Apple collections.
+type PAppleSizer interface {
 	// IsEmpty tests whether PAppleCollection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,21 @@ type PAppleCollection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+// PAppleCollection defines an interface for common collection methods on *Apple.
+type PAppleCollection interface {
+    PAppleSizer
+
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []*Apple
 
 	// Exists verifies that one or more elements of PAppleCollection return true for the passed func.
 	Exists(fn func(*Apple) bool) bool

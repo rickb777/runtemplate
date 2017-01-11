@@ -3,8 +3,8 @@
 
 package fast
 
-// Int32Collection defines an interface for common collection methods on *int32.
-type PInt32Collection interface {
+// PInt32Sizer defines an interface for sizing methods on *int32 collections.
+type PInt32Sizer interface {
 	// IsEmpty tests whether PInt32Collection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,38 @@ type PInt32Collection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+
+// PInt32MkStringer defines an interface for stringer methods on *int32 collections.
+type PInt32MkStringer interface {
+	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// in square brackets.
+	String() string
+
+	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+	MkString(sep string) string
+
+	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+	MkString3(pfx, mid, sfx string) string
+
+}
+
+// PInt32Collection defines an interface for common collection methods on *int32.
+type PInt32Collection interface {
+    PInt32Sizer
+
+    PInt32MkStringer
+
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []*int32
 
 	// Exists verifies that one or more elements of PInt32Collection return true for the passed func.
 	Exists(fn func(*int32) bool) bool
@@ -61,16 +87,5 @@ type PInt32Collection interface {
 	// ContainsAll determines if two collections have the same size and contain the same items.
 	// The order of items does not matter.
 	//TODO ContainsAll(other Int32Collection) bool
-
-	
-	// String implements the Stringer interface to render the list as a comma-separated string enclosed
-	// in square brackets.
-	String() string
-
-	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-	MkString(sep string) string
-
-	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-	MkString3(pfx, mid, sfx string) string
 
 }

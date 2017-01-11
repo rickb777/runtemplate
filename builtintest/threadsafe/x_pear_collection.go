@@ -3,8 +3,8 @@
 
 package threadsafe
 
-// PearCollection defines an interface for common collection methods on Pear.
-type XPearCollection interface {
+// XPearSizer defines an interface for sizing methods on Pear collections.
+type XPearSizer interface {
 	// IsEmpty tests whether XPearCollection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,21 @@ type XPearCollection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+// XPearCollection defines an interface for common collection methods on Pear.
+type XPearCollection interface {
+    XPearSizer
+
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []Pear
 
 	// Exists verifies that one or more elements of XPearCollection return true for the passed func.
 	Exists(fn func(Pear) bool) bool

@@ -3,8 +3,8 @@
 
 package fast
 
-// StringCollection defines an interface for common collection methods on *string.
-type PStringCollection interface {
+// PStringSizer defines an interface for sizing methods on *string collections.
+type PStringSizer interface {
 	// IsEmpty tests whether PStringCollection is empty.
 	IsEmpty() bool
 
@@ -13,12 +13,38 @@ type PStringCollection interface {
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
+}
+
+
+// PStringMkStringer defines an interface for stringer methods on *string collections.
+type PStringMkStringer interface {
+	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// in square brackets.
+	String() string
+
+	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+	MkString(sep string) string
+
+	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+	MkString3(pfx, mid, sfx string) string
+
+}
+
+// PStringCollection defines an interface for common collection methods on *string.
+type PStringCollection interface {
+    PStringSizer
+
+    PStringMkStringer
+
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
 	// IsSet returns false for lists.
 	IsSet() bool
+
+	// ToSlice returns a shallow copy as a plain slice.
+	ToSlice() []*string
 
 	// Exists verifies that one or more elements of PStringCollection return true for the passed func.
 	Exists(fn func(*string) bool) bool
@@ -50,16 +76,5 @@ type PStringCollection interface {
 	// ContainsAll determines if two collections have the same size and contain the same items.
 	// The order of items does not matter.
 	//TODO ContainsAll(other StringCollection) bool
-
-	
-	// String implements the Stringer interface to render the list as a comma-separated string enclosed
-	// in square brackets.
-	String() string
-
-	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-	MkString(sep string) string
-
-	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-	MkString3(pfx, mid, sfx string) string
 
 }
