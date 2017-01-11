@@ -188,7 +188,7 @@ This template provides stream-based processing primitives using Go channels.
  * `<Type>Filter` filters a stream of `Type`, silently dropping elements that do not match a predicate function.
  * `<Type>Partition` filters a stream of `Type` into two output streams using a predicate function.
  * `<Type>Map` alters a stream of `Type` by applying a function to each item in the stream.
- * `<Type>FlatMap` transforms a stream of `Type` by applying to each item in the stream a function that yields zero or more `Type`s, all of which are sent out.
+ * `<Type>FlatMap` transforms a stream of `Type` by applying to each item in the stream a function that yields zero or more `Type` values, all of which are sent out.
 
 All of these terminate their loops when their input channels get closed. They then close their output channels.
 
@@ -197,6 +197,6 @@ All of these terminate their loops when their input channels get closed. They th
 This template provides two stream-based inline converters using Go channels.
 
  * `<Type>Map<ToType>` transforms a stream of `Type` to a stream of `ToType` using a given transformation function.
- * `<Type>FlatMap<ToType>` transforms a stream of `Type` to a stream of `ToType` using a given transformation function that returns a `<ToType>Collection` for each `Type` value.
+ * `<Type>FlatMap<ToType>` transforms a stream of `Type` to a stream of `ToType` using a given transformation function that yields zero or more `ToType` values, all of which are sent out.
 
 Both of them terminate their loops when their input channels get closed. They then close their output channels.
