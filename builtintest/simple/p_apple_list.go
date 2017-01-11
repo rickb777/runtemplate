@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from list.tpl with Type=*Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false
+// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=always
 
 package simple
 
@@ -105,6 +105,12 @@ func (list PAppleList) Size() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list PAppleList) Len() int {
 	return len(list)
+}
+
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (list PAppleList) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
 }
 
 //-------------------------------------------------------------------------------------------------

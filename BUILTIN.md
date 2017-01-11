@@ -5,13 +5,12 @@ A selection of built-in templates is included with `runtemplate`. These provide 
 There are several main categories:
 
  * simple types using Go's slices and maps
- * encapsulated types for lists and sets - both simple and thread-safe variants
- * encapsulated type-safe maps - both simple and thread-safe variants
+ * encapsulated types for lists, sets and maps - both simple and thread-safe variants
  * channel plumbing
 
 The threadsafe collections and non-threadsafe collections are generally not intended to be used together directly, although it is possible to transfer content from either collections of one category to collections of the other category.
 
-If you want to mix both categories, you will need to generate the output code with different prefixes or in different packages. To do the latter, specify different directories for the generated code via `-output`.
+If you want to mix both categories, you will need to generate the output code with different prefixes or in different packages. To set a prefix, pass `Prefix=Abc` or simiilar to `runtemplate`. To do the latter, specify different directories for the generated code via `-output`.
 
 ## General Flags
 
@@ -30,40 +29,73 @@ The built-in collections support a small number of flags that allow you to contr
 See [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators).
 
-## 1. Lists
+## 1. Direct Use of Go Slices and Maps
 
-The simplest kind of collection directly use Go's slices and maps. These are mutable and do not attempt to encapsulate the underlying Go slice/map. Feel free to access these as slices/maps as appropriate.
+There are three categories of collection. The simplest kind directly use Go's slices and maps. There is a List type derived from Go slices: this template produces a type-safe slice for your chosen type and provides useful methods for handling its data. Similarly, the Map and Set types are derived from Go maps.
+
+Because their base types are Go reference types, the generated types are also reference types, so you will never need to create pointers to them.
+
+These collections are always mutable and do not attempt to encapsulate the underlying Go slice/map. So feel free to access these via their base type slice/map when necessary.
+
 
 ### simple/list.tpl
 
-This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred. The supported options are: Comparable, Ordered, Numeric, Stringer.
+This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred.
+
+The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Example use:
+
 ```
 //go:generate runtemplate -tpl simple/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true
 ```
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
 
-### simple/set.tpl
+Examples: [Int32List](builtintest/simple/x_int32_list.go), [StringList](builtintest/simple/x_string_list.go)
 
-This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would be of little value).
 
-The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
+### simple/map.tpl
+
+This template generates a `<Key><Type>Map` for some specified type. It accepts both user-defined and built-in Go types.
+
+The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
+//go:generate runtemplate -tpl simple/map.tpl Key=string Type=int32 Stringer=true Comparable=true Numeric=true
 ```
 
-The generated code is not suitable for access by more than one goroutine at a time.
+The generated code is a simple wrapper around a map of the key and type. It not suitable for access by more than one goroutine at a time.
+
+Examples: [IntIntMap](builtintest/simple/sx_int_int_list.go), [StringStringMap](builtintest/simple/x_string_string_map.go)
 
 
-## 2. Encapsulated Collections
+### simple/set.tpl
+
+This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would rarely be of any value).
+
+The supported options are: Numeric, Stringer.
+
+Example use:
+```
+//go:generate runtemplate -tpl simple/set.tpl Type=int32 Stringer=true Numeric=true
+```
+
+The generated code is simple wrapper around a map of the key and type. It is not suitable for access by more than one goroutine at a time.
+
+Examples: [Int32Set](builtintest/simple/x_int32_set.go), [StringSet](builtintest/simple/x_string_set.go)
+
+
+## 2. Encapsulated Collections - Fast Variant
+
+The second kind of collection encapsulate their data within structs. The unexported fields can only be accessed via the methods provided. It is therefore possible to make meaningful differentiation between mutable and immutable variants, both of which are available to you.
+
+This category is described as 'fast' because there is no provision for thread locking, but this means you cannot share these collections between goroutines unless you add your own locking or use channels (in the latter case be *very* careful to avoid unwanted aliases).
 
 ### fast/list.tpl
 
-This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred. The supported options are: Comparable, Ordered, Numeric, Stringer.
+This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred. The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
 
 Example use:
 ```
@@ -72,18 +104,42 @@ Example use:
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
 
+The supported options are: Comparable, Ordered, Numeric, Stringer.
+
+Examples: [Int32List](builtintest/fast/x_int32_list.go), [StringList](builtintest/fast/x_string_list.go)
+
+
 ### fast/set.tpl
 
 This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would be of little value).
 
-The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
+The supported options are: Comparable, Numeric, Stringer, Mutable.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
+//go:generate runtemplate -tpl fast/set.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
 
 The generated code is not suitable for access by more than one goroutine at a time.
+
+Examples: [Int32Set](builtintest/fast/x_int32_set.go), [StringSet](builtintest/fast/x_string_set.go)
+
+
+### fast/map.tpl
+
+This template generates a `<Key><Type>Map` for some specified type. It accepts both user-defined and built-in Go types.
+
+The supported options are: Comparable, Numeric, Stringer, Mutable.
+
+Example use:
+```
+//go:generate runtemplate -tpl fast/map.tpl Type=int32 Stringer=true Comparable=true Numeric=true Mutable=true
+```
+
+The generated code is not suitable for access by more than one goroutine at a time.
+
+Examples: [IntIntMap](builtintest/fast/x_int_int_list.go), [StringStringMap](builtintest/fast/x_string_string_map.go)
+
 
 ### fast/collection.tpl
 
@@ -95,17 +151,28 @@ Example use:
 ```
 //go:generate runtemplate -tpl fast/collection.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
+Examples: [Int32Collection](builtintest/fast/x_int32_collection.go), [StringCollection](builtintest/fast/x_string_collection.go)
+
+
+## 3. Encapsulated Collections - Thread-safe Variant
+
+The third kind of collection also encapsulate their data within structs. In the same way, the unexported fields can only be accessed via the methods provided. It is therefore possible to make meaningful differentiation between mutable and immutable variants, both of which are available to you.
+
+This category is described as 'thread-safe' because all accesses have the necessary lock (read accesses have a read lock, write accesses have a write lock). This means you can share these collections between goroutines.
 
 ### threadsafe/list.tpl
 
-This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred. The supported options are: Comparable, Ordered, Numeric, Stringer.
+This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred.
+
+The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
 
 Example use:
 ```
 //go:generate runtemplate -tpl threadsafe/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
 
-The generated code includes read/write locks and is suitable for access by more than one goroutine at a time.
+Examples: [Int32List](builtintest/threadsafe/x_int32_list.go), [StringList](builtintest/threadsafe/x_string_list.go)
+
 
 ### threadsafe/set.tpl
 
@@ -113,55 +180,39 @@ This template generates a `<Type>Set` for some specified type. It accepts both u
 
 The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
 
-The generated code includes read/write locks and is suitable for access by more than one goroutine at a time.
+Example use:
+```
+//go:generate runtemplate -tpl threadsafe/set.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
+```
+
+The generated code is not suitable for access by more than one goroutine at a time.
+
+The supported options are: Comparable, Numeric, Stringer.
+
+Examples: [Int32Set](builtintest/threadsafe/x_int32_set.go), [StringSet](builtintest/threadsafe/x_string_set.go)
+
 
 ### threadsafe/map.tpl
 
 This template generates a `<Key><Type>Map` for some specified key-type and content type. It uses Go's built-in `map` internally. Specify the key type using `Key=type`. The key type and content type can be user-defined or built-in types as needed.
 
-The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
+This template generates a `<Key><Type>Map` for some specified type. It accepts both user-defined and built-in Go types.
 
-The generated code includes read/write locks and is suitable for access by more than one goroutine at a time.
+The supported options are: Comparable, Numeric, Stringer, Mutable.
+
+Example use:
+```
+//go:generate runtemplate -tpl threadsafe/map.tpl Type=int32 Stringer=true Comparable=true Numeric=true Mutable=true
+```
+
+The generated code is not suitable for access by more than one goroutine at a time.
+
+Examples: [IntIntMap](builtintest/threadsafe/x_int_int_list.go), [StringStringMap](builtintest/threadsafe/x_string_string_map.go)
+
 
 ### threadsafe/collection.tpl
 
-This is the same as `fast/collection.tpl`.
-
-
-## 3. Typesafe Maps
-
-### maps/simple.tpl
-
-This template generates a simple `<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The underlying Go `map` is directly accessible too. The supported options are: Comparable, Stringer, Mutable.
-
-Example use:
-```
-//go:generate runtemplate -tpl maps/simple.tpl Key=string Type=int32 Stringer=true Comparable=true Mutable=true
-```
-
-The generated code is not suitable for access by more than one goroutine at a time.
-
-### maps/encap.tpl
-
-This template generates an encapulated`<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The underlying Go `map` is not exported. The supported options are: Comparable, Stringer, Mutable.
-
-Example use:
-```
-//go:generate runtemplate -tpl maps/encap.tpl Key=string Type=int32 Stringer=true Comparable=true Mutable=true
-```
-
-The generated code is not suitable for access by more than one goroutine at a time.
-
-### threadsafe/map.tpl
-
-This template generates an encapulated`<Key><Type>Map` for some specified key and value types. Either type can be a pointer to a type if preferred. The underlying Go `map` is not exported. The supported options are: Comparable, Stringer, Mutable.
-
-Example use:
-```
-//go:generate runtemplate -tpl maps/threadsafe.tpl Key=string Type=int32 Stringer=true Comparable=true Mutable=true
-```
-
-The generated code includes read/write locks and is suitable for access by more than one goroutine at a time.
+This is the same as `fast/collection.tpl`, above.
 
 
 ## 4. Channel-based Plumbing

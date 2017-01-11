@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
+// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=always
 
 package {{.Package}}
 
@@ -111,14 +111,12 @@ func (list {{.UPrefix}}{{.UType}}List) Len() int {
 	return len(list)
 }
 
-{{if .Mutable}}
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
 func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.

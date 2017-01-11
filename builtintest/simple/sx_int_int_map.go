@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from map.tpl with Key=int Type=int
-// options: Comparable=true Stringer=true Mutable=true
+// options: Comparable=true Stringer=true Mutable=always
 
 package simple
 
@@ -11,8 +11,6 @@ import (
 	"bytes"
 	"fmt"
 )
-
-
 
 // SXIntIntMap is the primary type that represents a map
 type SXIntIntMap map[int]int
@@ -80,7 +78,6 @@ func (mm SXIntIntMap) Get(k int) (int, bool) {
 	return v, found
 }
 
-
 // Put adds an item to the current map, replacing any prior value.
 func (mm SXIntIntMap) Put(k int, v int) bool {
 	_, found := mm[k]
@@ -103,7 +100,6 @@ func (mm SXIntIntMap) ContainsAllKeys(kk ...int) bool {
 	}
 	return true
 }
-
 
 // Remove allows the removal of a single item from the map.
 func (mm SXIntIntMap) Remove(k int) {

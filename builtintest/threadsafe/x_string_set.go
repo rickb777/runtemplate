@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"sync"
 )
+
 // XStringSet is the primary type that represents a set
 type XStringSet struct {
 	s *sync.RWMutex

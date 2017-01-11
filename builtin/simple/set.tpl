@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
+// options: Numeric={{.Numeric}} Stringer={{.Stringer}} Mutable=always
 
 package {{.Package}}
 
@@ -79,7 +79,6 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 
 //-------------------------------------------------------------------------------------------------
 
-{{if .Mutable}}
 // Add adds items to the current set, returning the modified set.
 func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
 	for _, v := range i {
@@ -88,7 +87,6 @@ func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}S
 	return set
 }
 
-{{end -}}
 func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 	set[i] = struct{}{}
 }

@@ -2,11 +2,9 @@
 // Not thread-safe.
 //
 // Generated from map.tpl with Key=Apple Type=Pear
-// options: Comparable=<no value> Stringer=<no value> Mutable=false
+// options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package simple
-
-
 
 // SXApplePearMap is the primary type that represents a map
 type SXApplePearMap map[Apple]Pear
@@ -74,6 +72,13 @@ func (mm SXApplePearMap) Get(k Apple) (Pear, bool) {
 	return v, found
 }
 
+// Put adds an item to the current map, replacing any prior value.
+func (mm SXApplePearMap) Put(k Apple, v Pear) bool {
+	_, found := mm[k]
+	mm[k] = v
+	return !found //False if it existed already
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm SXApplePearMap) ContainsKey(k Apple) bool {
 	_, found := mm[k]
@@ -88,6 +93,11 @@ func (mm SXApplePearMap) ContainsAllKeys(kk ...Apple) bool {
 		}
 	}
 	return true
+}
+
+// Remove allows the removal of a single item from the map.
+func (mm SXApplePearMap) Remove(k Apple) {
+	delete(mm, k)
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.

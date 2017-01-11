@@ -2,11 +2,9 @@
 // Not thread-safe.
 //
 // Generated from map.tpl with Key=string Type=Apple
-// options: Comparable=<no value> Stringer=<no value> Mutable=true
+// options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package simple
-
-
 
 // SPStringAppleMap is the primary type that represents a map
 type SPStringAppleMap map[*string]*Apple
@@ -74,7 +72,6 @@ func (mm SPStringAppleMap) Get(k *string) (*Apple, bool) {
 	return v, found
 }
 
-
 // Put adds an item to the current map, replacing any prior value.
 func (mm SPStringAppleMap) Put(k *string, v *Apple) bool {
 	_, found := mm[k]
@@ -97,7 +94,6 @@ func (mm SPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
 	}
 	return true
 }
-
 
 // Remove allows the removal of a single item from the map.
 func (mm SPStringAppleMap) Remove(k *string) {

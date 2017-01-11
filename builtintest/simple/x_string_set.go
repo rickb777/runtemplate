@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from set.tpl with Type=string
-// options: Numeric=false Ordered=false Stringer=true Mutable=true
+// options: Numeric=false Stringer=true Mutable=always
 
 package simple
 
@@ -74,7 +74,6 @@ func (set XStringSet) Cardinality() int {
 }
 
 //-------------------------------------------------------------------------------------------------
-
 
 // Add adds items to the current set, returning the modified set.
 func (set XStringSet) Add(i ...string) XStringSet {

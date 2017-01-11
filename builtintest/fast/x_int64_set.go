@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"fmt"
 )
+
 // XInt64Set is the primary type that represents a set
 type XInt64Set struct {
     m map[int64]struct{}

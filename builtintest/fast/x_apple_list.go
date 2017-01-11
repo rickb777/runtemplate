@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from list.tpl with Type=Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false
+// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=false
 
 package fast
 

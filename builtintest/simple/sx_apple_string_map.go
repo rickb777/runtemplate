@@ -2,11 +2,9 @@
 // Not thread-safe.
 //
 // Generated from map.tpl with Key=Apple Type=string
-// options: Comparable=<no value> Stringer=<no value> Mutable=true
+// options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package simple
-
-
 
 // SXAppleStringMap is the primary type that represents a map
 type SXAppleStringMap map[Apple]string
@@ -74,7 +72,6 @@ func (mm SXAppleStringMap) Get(k Apple) (string, bool) {
 	return v, found
 }
 
-
 // Put adds an item to the current map, replacing any prior value.
 func (mm SXAppleStringMap) Put(k Apple, v string) bool {
 	_, found := mm[k]
@@ -97,7 +94,6 @@ func (mm SXAppleStringMap) ContainsAllKeys(kk ...Apple) bool {
 	}
 	return true
 }
-
 
 // Remove allows the removal of a single item from the map.
 func (mm SXAppleStringMap) Remove(k Apple) {

@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from list.tpl with Type=*int32
-// options: Comparable=true Numeric=true Ordered=true Stringer=true
+// options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=always
 
 package simple
 
@@ -108,6 +108,12 @@ func (list PInt32List) Size() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list PInt32List) Len() int {
 	return len(list)
+}
+
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (list PInt32List) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
 }
 
 //-------------------------------------------------------------------------------------------------

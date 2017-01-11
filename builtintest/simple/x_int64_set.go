@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from set.tpl with Type=int64
-// options: Numeric=true Ordered=true Stringer=true Mutable=false
+// options: Numeric=true Stringer=true Mutable=always
 
 package simple
 
@@ -74,6 +74,14 @@ func (set XInt64Set) Cardinality() int {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+// Add adds items to the current set, returning the modified set.
+func (set XInt64Set) Add(i ...int64) XInt64Set {
+	for _, v := range i {
+		set.doAdd(v)
+	}
+	return set
+}
 
 func (set XInt64Set) doAdd(i int64) {
 	set[i] = struct{}{}

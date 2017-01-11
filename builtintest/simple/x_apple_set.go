@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from set.tpl with Type=Apple
-// options: Numeric=<no value> Ordered=<no value> Stringer=false Mutable=true
+// options: Numeric=<no value> Stringer=false Mutable=always
 
 package simple
 
@@ -72,7 +72,6 @@ func (set XAppleSet) Cardinality() int {
 }
 
 //-------------------------------------------------------------------------------------------------
-
 
 // Add adds items to the current set, returning the modified set.
 func (set XAppleSet) Add(i ...Apple) XAppleSet {

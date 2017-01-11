@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable={{.Comparable}} Stringer={{.Stringer}} Mutable={{.Mutable}}
+// options: Comparable={{.Comparable}} Stringer={{.Stringer}} Mutable=always
 
 package {{.Package}}
 
@@ -13,8 +13,6 @@ import (
 )
 
 {{end -}}
-{{$m := (.Mutable | yesno "" ".m")}}
-
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map map[{{.PKey}}]{{.PType}}
 
@@ -81,7 +79,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool)
 	return v, found
 }
 
-{{if .Mutable}}
 // Put adds an item to the current map, replacing any prior value.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) bool {
 	_, found := mm[k]
@@ -89,7 +86,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) bool
 	return !found //False if it existed already
 }
 
-{{end -}}
 // ContainsKey determines if a given item is already in the map.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 	_, found := mm[k]
@@ -106,13 +102,11 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bo
 	return true
 }
 
-{{if .Mutable}}
 // Remove allows the removal of a single item from the map.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	delete(mm, k)
 }
 
-{{end -}}
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 	return len(mm)

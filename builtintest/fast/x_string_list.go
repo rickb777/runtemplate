@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from list.tpl with Type=string
-// options: Comparable=true Numeric=false Ordered=false Stringer=true
+// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=true
 
 package fast
 
@@ -117,6 +117,13 @@ func (list *XStringList) Size() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list *XStringList) Len() int {
 	return len(list.m)
+}
+
+
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (list *XStringList) Swap(i, j int) {
+	list.m[i], list.m[j] = list.m[j], list.m[i]
 }
 
 //-------------------------------------------------------------------------------------------------

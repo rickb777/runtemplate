@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from set.tpl with Type=int32
-// options: Numeric=true Ordered=true Stringer=true Mutable=true
+// options: Numeric=true Stringer=true Mutable=always
 
 package simple
 
@@ -74,7 +74,6 @@ func (set XInt32Set) Cardinality() int {
 }
 
 //-------------------------------------------------------------------------------------------------
-
 
 // Add adds items to the current set, returning the modified set.
 func (set XInt32Set) Add(i ...int32) XInt32Set {

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"sync"
 )
+
 // XInt32Set is the primary type that represents a set
 type XInt32Set struct {
 	s *sync.RWMutex
