@@ -54,6 +54,18 @@ func BuildPStringListFromChan(source <-chan *string) *PStringList {
 	return result
 }
 
+// ToSlice returns the elements of the current set as a slice
+func (list *PStringList) ToSlice() []*string {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []*string
+	for _, v := range list.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *PStringList) Clone() *PStringList {
 	return NewPStringList(list.m...)

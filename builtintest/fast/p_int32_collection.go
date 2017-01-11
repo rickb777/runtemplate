@@ -73,4 +73,4 @@ type PInt32Collection interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
-	}
+}

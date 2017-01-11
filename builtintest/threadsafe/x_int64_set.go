@@ -37,7 +37,7 @@ func (set *XInt64Set) ToSlice() []int64 {
 	defer set.s.RUnlock()
 
 	var s []int64
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -50,7 +50,7 @@ func (set *XInt64Set) Clone() *XInt64Set {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -128,7 +128,7 @@ func (set *XInt64Set) IsSubset(other *XInt64Set) bool {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -157,7 +157,7 @@ func (set *XInt64Set) Union(other *XInt64Set) *XInt64Set {
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -174,13 +174,13 @@ func (set *XInt64Set) Intersect(other *XInt64Set) *XInt64Set {
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -198,7 +198,7 @@ func (set *XInt64Set) Difference(other *XInt64Set) *XInt64Set {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -223,7 +223,7 @@ func (set *XInt64Set) Send() <-chan int64 {
 		set.s.RLock()
 		defer set.s.RUnlock()
 
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -244,7 +244,7 @@ func (set *XInt64Set) Forall(fn func(int64) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -259,7 +259,7 @@ func (set *XInt64Set) Exists(fn func(int64) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -272,7 +272,7 @@ func (set *XInt64Set) Foreach(fn func(int64)) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -285,7 +285,7 @@ func (set *XInt64Set) Filter(fn func(int64) bool) *XInt64Set {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -303,7 +303,7 @@ func (set *XInt64Set) Partition(p func(int64) bool) (*XInt64Set, *XInt64Set) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -318,7 +318,7 @@ func (set *XInt64Set) CountBy(predicate func(int64) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -339,7 +339,7 @@ func (set *XInt64Set) MinBy(less func(int64, int64) bool) int64 {
 
 	var m int64
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -363,7 +363,7 @@ func (set *XInt64Set) MaxBy(less func(int64, int64) bool) int64 {
 
 	var m int64
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -424,7 +424,7 @@ func (set *XInt64Set) Equals(other *XInt64Set) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -440,7 +440,7 @@ func (set *XInt64Set) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
@@ -473,7 +473,7 @@ func (set *XInt64Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid

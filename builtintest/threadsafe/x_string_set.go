@@ -37,7 +37,7 @@ func (set *XStringSet) ToSlice() []string {
 	defer set.s.RUnlock()
 
 	var s []string
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -50,7 +50,7 @@ func (set *XStringSet) Clone() *XStringSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -140,7 +140,7 @@ func (set *XStringSet) IsSubset(other *XStringSet) bool {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -169,7 +169,7 @@ func (set *XStringSet) Union(other *XStringSet) *XStringSet {
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -186,13 +186,13 @@ func (set *XStringSet) Intersect(other *XStringSet) *XStringSet {
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -210,7 +210,7 @@ func (set *XStringSet) Difference(other *XStringSet) *XStringSet {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -252,7 +252,7 @@ func (set *XStringSet) Send() <-chan string {
 		set.s.RLock()
 		defer set.s.RUnlock()
 
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -273,7 +273,7 @@ func (set *XStringSet) Forall(fn func(string) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -288,7 +288,7 @@ func (set *XStringSet) Exists(fn func(string) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -301,7 +301,7 @@ func (set *XStringSet) Foreach(fn func(string)) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -314,7 +314,7 @@ func (set *XStringSet) Filter(fn func(string) bool) *XStringSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -332,7 +332,7 @@ func (set *XStringSet) Partition(p func(string) bool) (*XStringSet, *XStringSet)
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -347,7 +347,7 @@ func (set *XStringSet) CountBy(predicate func(string) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -368,7 +368,7 @@ func (set *XStringSet) MinBy(less func(string, string) bool) string {
 
 	var m string
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -392,7 +392,7 @@ func (set *XStringSet) MaxBy(less func(string, string) bool) string {
 
 	var m string
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -417,7 +417,7 @@ func (set *XStringSet) Equals(other *XStringSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -433,7 +433,7 @@ func (set *XStringSet) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
@@ -466,7 +466,7 @@ func (set *XStringSet) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid

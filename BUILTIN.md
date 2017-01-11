@@ -151,7 +151,7 @@ Examples: [IntIntMap](builtintest/fast/x_int_int_list.go), [StringStringMap](bui
 
 This template generates a `<Type>Collection` interface for some specified type. The type can be a pointer to a type if preferred. All options (above) are supported.
 
-The list and set templates (below) both implement this interface.
+The **list** and **set** templates (above) both implement this interface.
 
 Example use:
 ```
@@ -221,6 +221,14 @@ Examples: [IntIntMap](builtintest/threadsafe/x_int_int_list.go), [StringStringMa
 ### threadsafe/collection.tpl
 
 This is the same as `fast/collection.tpl`, above.
+
+The **list** and **set** templates (above) both implement this interface.
+
+Example use:
+```
+//go:generate runtemplate -tpl threadsafe/collection.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
+```
+Examples: [Int32Collection](builtintest/threadsafe/x_int32_collection.go), [StringCollection](builtintest/threadsafe/x_string_collection.go)
 
 
 ## 4. Channel-based Plumbing

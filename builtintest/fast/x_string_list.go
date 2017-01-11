@@ -51,6 +51,15 @@ func BuildXStringListFromChan(source <-chan string) *XStringList {
 	return result
 }
 
+// ToSlice returns the elements of the current set as a slice
+func (list *XStringList) ToSlice() []string {
+	var s []string
+	for _, v := range list.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *XStringList) Clone() *XStringList {
 	return NewXStringList(list.m...)

@@ -37,7 +37,7 @@ func (set *XAppleSet) ToSlice() []Apple {
 	defer set.s.RUnlock()
 
 	var s []Apple
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -50,7 +50,7 @@ func (set *XAppleSet) Clone() *XAppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -140,7 +140,7 @@ func (set *XAppleSet) IsSubset(other *XAppleSet) bool {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -169,7 +169,7 @@ func (set *XAppleSet) Union(other *XAppleSet) *XAppleSet {
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -186,13 +186,13 @@ func (set *XAppleSet) Intersect(other *XAppleSet) *XAppleSet {
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -210,7 +210,7 @@ func (set *XAppleSet) Difference(other *XAppleSet) *XAppleSet {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -252,7 +252,7 @@ func (set *XAppleSet) Send() <-chan Apple {
 		set.s.RLock()
 		defer set.s.RUnlock()
 
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -273,7 +273,7 @@ func (set *XAppleSet) Forall(fn func(Apple) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -288,7 +288,7 @@ func (set *XAppleSet) Exists(fn func(Apple) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -301,7 +301,7 @@ func (set *XAppleSet) Foreach(fn func(Apple)) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -314,7 +314,7 @@ func (set *XAppleSet) Filter(fn func(Apple) bool) *XAppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -332,7 +332,7 @@ func (set *XAppleSet) Partition(p func(Apple) bool) (*XAppleSet, *XAppleSet) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -347,7 +347,7 @@ func (set *XAppleSet) CountBy(predicate func(Apple) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -368,7 +368,7 @@ func (set *XAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 
 	var m Apple
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -392,7 +392,7 @@ func (set *XAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 
 	var m Apple
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -417,7 +417,7 @@ func (set *XAppleSet) Equals(other *XAppleSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}

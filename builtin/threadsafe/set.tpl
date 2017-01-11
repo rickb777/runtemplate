@@ -45,7 +45,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 	defer set.s.RUnlock()
 
 	var s []{{.Type}}
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -58,7 +58,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Clone() *{{.UPrefix}}{{.UType}}Set {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -149,7 +149,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -178,7 +178,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -195,13 +195,13 @@ func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -219,7 +219,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Se
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -262,7 +262,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 		set.s.RLock()
 		defer set.s.RUnlock()
 
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -283,7 +283,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -298,7 +298,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -311,7 +311,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -324,7 +324,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) *{{.UPrefi
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -342,7 +342,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPr
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -357,7 +357,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (r
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -378,7 +378,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool
 
 	var m {{.Type}}
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -402,7 +402,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool
 
 	var m {{.Type}}
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -465,7 +465,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) b
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -481,7 +481,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
@@ -514,7 +514,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *byte
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid

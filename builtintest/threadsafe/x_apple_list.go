@@ -51,6 +51,18 @@ func BuildXAppleListFromChan(source <-chan Apple) *XAppleList {
 	return result
 }
 
+// ToSlice returns the elements of the current set as a slice
+func (list *XAppleList) ToSlice() []Apple {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []Apple
+	for _, v := range list.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *XAppleList) Clone() *XAppleList {
 	return NewXAppleList(list.m...)

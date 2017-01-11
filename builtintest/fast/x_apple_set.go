@@ -28,7 +28,7 @@ func NewXAppleSet(a ...Apple) *XAppleSet {
 // ToSlice returns the elements of the current set as a slice
 func (set *XAppleSet) ToSlice() []Apple {
 	var s []Apple
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -37,7 +37,7 @@ func (set *XAppleSet) ToSlice() []Apple {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set *XAppleSet) Clone() *XAppleSet {
 	clonedSet := NewXAppleSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -110,7 +110,7 @@ func (set *XAppleSet) ContainsAll(i ...Apple) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *XAppleSet) IsSubset(other *XAppleSet) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -135,7 +135,7 @@ func (set *XAppleSet) Append(more ...Apple) *XAppleSet {
 // Union returns a new set with all items in both sets.
 func (set *XAppleSet) Union(other *XAppleSet) *XAppleSet {
 	unionedSet := set.Clone()
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -146,13 +146,13 @@ func (set *XAppleSet) Intersect(other *XAppleSet) *XAppleSet {
 	intersection := NewXAppleSet()
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -164,7 +164,7 @@ func (set *XAppleSet) Intersect(other *XAppleSet) *XAppleSet {
 // Difference returns a new set with items in the current set but not in the other set
 func (set *XAppleSet) Difference(other *XAppleSet) *XAppleSet {
 	differencedSet := NewXAppleSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -197,7 +197,7 @@ func (set *XAppleSet) Remove(i Apple) {
 func (set *XAppleSet) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -215,7 +215,7 @@ func (set *XAppleSet) Send() <-chan Apple {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *XAppleSet) Forall(fn func(Apple) bool) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -227,7 +227,7 @@ func (set *XAppleSet) Forall(fn func(Apple) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *XAppleSet) Exists(fn func(Apple) bool) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -237,7 +237,7 @@ func (set *XAppleSet) Exists(fn func(Apple) bool) bool {
 
 // Foreach iterates over AppleSet and executes the passed func against each element.
 func (set *XAppleSet) Foreach(fn func(Apple)) {
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -247,7 +247,7 @@ func (set *XAppleSet) Foreach(fn func(Apple)) {
 // Filter returns a new XAppleSet whose elements return true for func.
 func (set *XAppleSet) Filter(fn func(Apple) bool) *XAppleSet {
 	result := NewXAppleSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -262,7 +262,7 @@ func (set *XAppleSet) Filter(fn func(Apple) bool) *XAppleSet {
 func (set *XAppleSet) Partition(p func(Apple) bool) (*XAppleSet, *XAppleSet) {
 	matching := NewXAppleSet()
 	others := NewXAppleSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -274,7 +274,7 @@ func (set *XAppleSet) Partition(p func(Apple) bool) (*XAppleSet, *XAppleSet) {
 
 // CountBy gives the number elements of XAppleSet that return true for the passed predicate.
 func (set *XAppleSet) CountBy(predicate func(Apple) bool) (result int) {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -291,7 +291,7 @@ func (set *XAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 	}
 	var m Apple
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -311,7 +311,7 @@ func (set *XAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	}
 	var m Apple
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -331,7 +331,7 @@ func (set *XAppleSet) Equals(other *XAppleSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}

@@ -54,6 +54,18 @@ func BuildPInt32ListFromChan(source <-chan *int32) *PInt32List {
 	return result
 }
 
+// ToSlice returns the elements of the current set as a slice
+func (list *PInt32List) ToSlice() []*int32 {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []*int32
+	for _, v := range list.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *PInt32List) Clone() *PInt32List {
 	return NewPInt32List(list.m...)

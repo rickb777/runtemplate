@@ -52,6 +52,15 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 	return result
 }
 
+// ToSlice returns the elements of the current set as a slice
+func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
+	var s []{{.PType}}
+	for _, v := range list.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 	return New{{.UPrefix}}{{.UType}}List(list.m...)

@@ -31,7 +31,7 @@ func NewXInt64Set(a ...int64) *XInt64Set {
 // ToSlice returns the elements of the current set as a slice
 func (set *XInt64Set) ToSlice() []int64 {
 	var s []int64
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -40,7 +40,7 @@ func (set *XInt64Set) ToSlice() []int64 {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set *XInt64Set) Clone() *XInt64Set {
 	clonedSet := NewXInt64Set()
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -104,7 +104,7 @@ func (set *XInt64Set) ContainsAll(i ...int64) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *XInt64Set) IsSubset(other *XInt64Set) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -129,7 +129,7 @@ func (set *XInt64Set) Append(more ...int64) *XInt64Set {
 // Union returns a new set with all items in both sets.
 func (set *XInt64Set) Union(other *XInt64Set) *XInt64Set {
 	unionedSet := set.Clone()
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -140,13 +140,13 @@ func (set *XInt64Set) Intersect(other *XInt64Set) *XInt64Set {
 	intersection := NewXInt64Set()
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -158,7 +158,7 @@ func (set *XInt64Set) Intersect(other *XInt64Set) *XInt64Set {
 // Difference returns a new set with items in the current set but not in the other set
 func (set *XInt64Set) Difference(other *XInt64Set) *XInt64Set {
 	differencedSet := NewXInt64Set()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -180,7 +180,7 @@ func (set *XInt64Set) SymmetricDifference(other *XInt64Set) *XInt64Set {
 func (set *XInt64Set) Send() <-chan int64 {
 	ch := make(chan int64)
 	go func() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -198,7 +198,7 @@ func (set *XInt64Set) Send() <-chan int64 {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *XInt64Set) Forall(fn func(int64) bool) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -210,7 +210,7 @@ func (set *XInt64Set) Forall(fn func(int64) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *XInt64Set) Exists(fn func(int64) bool) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -220,7 +220,7 @@ func (set *XInt64Set) Exists(fn func(int64) bool) bool {
 
 // Foreach iterates over int64Set and executes the passed func against each element.
 func (set *XInt64Set) Foreach(fn func(int64)) {
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -230,7 +230,7 @@ func (set *XInt64Set) Foreach(fn func(int64)) {
 // Filter returns a new XInt64Set whose elements return true for func.
 func (set *XInt64Set) Filter(fn func(int64) bool) *XInt64Set {
 	result := NewXInt64Set()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -245,7 +245,7 @@ func (set *XInt64Set) Filter(fn func(int64) bool) *XInt64Set {
 func (set *XInt64Set) Partition(p func(int64) bool) (*XInt64Set, *XInt64Set) {
 	matching := NewXInt64Set()
 	others := NewXInt64Set()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -257,7 +257,7 @@ func (set *XInt64Set) Partition(p func(int64) bool) (*XInt64Set, *XInt64Set) {
 
 // CountBy gives the number elements of XInt64Set that return true for the passed predicate.
 func (set *XInt64Set) CountBy(predicate func(int64) bool) (result int) {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -274,7 +274,7 @@ func (set *XInt64Set) MinBy(less func(int64, int64) bool) int64 {
 	}
 	var m int64
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -294,7 +294,7 @@ func (set *XInt64Set) MaxBy(less func(int64, int64) bool) int64 {
 	}
 	var m int64
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -347,7 +347,7 @@ func (set *XInt64Set) Equals(other *XInt64Set) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -360,7 +360,7 @@ func (set *XInt64Set) Equals(other *XInt64Set) bool {
 
 func (set *XInt64Set) StringList() []string {
 	strings := make([]string, 0)
-	for v := range set.m {
+	for v, _ := range set.m {
 		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
@@ -389,7 +389,7 @@ func (set *XInt64Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-	for v := range set.m {
+	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid

@@ -31,7 +31,7 @@ func NewXStringSet(a ...string) *XStringSet {
 // ToSlice returns the elements of the current set as a slice
 func (set *XStringSet) ToSlice() []string {
 	var s []string
-	for v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -40,7 +40,7 @@ func (set *XStringSet) ToSlice() []string {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set *XStringSet) Clone() *XStringSet {
 	clonedSet := NewXStringSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -113,7 +113,7 @@ func (set *XStringSet) ContainsAll(i ...string) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *XStringSet) IsSubset(other *XStringSet) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -138,7 +138,7 @@ func (set *XStringSet) Append(more ...string) *XStringSet {
 // Union returns a new set with all items in both sets.
 func (set *XStringSet) Union(other *XStringSet) *XStringSet {
 	unionedSet := set.Clone()
-	for v := range other.m {
+	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
 	return unionedSet
@@ -149,13 +149,13 @@ func (set *XStringSet) Intersect(other *XStringSet) *XStringSet {
 	intersection := NewXStringSet()
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v := range other.m {
+		for v, _ := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -167,7 +167,7 @@ func (set *XStringSet) Intersect(other *XStringSet) *XStringSet {
 // Difference returns a new set with items in the current set but not in the other set
 func (set *XStringSet) Difference(other *XStringSet) *XStringSet {
 	differencedSet := NewXStringSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -200,7 +200,7 @@ func (set *XStringSet) Remove(i string) {
 func (set *XStringSet) Send() <-chan string {
 	ch := make(chan string)
 	go func() {
-		for v := range set.m {
+		for v, _ := range set.m {
 			ch <- v
 		}
 		close(ch)
@@ -218,7 +218,7 @@ func (set *XStringSet) Send() <-chan string {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *XStringSet) Forall(fn func(string) bool) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -230,7 +230,7 @@ func (set *XStringSet) Forall(fn func(string) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *XStringSet) Exists(fn func(string) bool) bool {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -240,7 +240,7 @@ func (set *XStringSet) Exists(fn func(string) bool) bool {
 
 // Foreach iterates over stringSet and executes the passed func against each element.
 func (set *XStringSet) Foreach(fn func(string)) {
-	for v := range set.m {
+	for v, _ := range set.m {
 		fn(v)
 	}
 }
@@ -250,7 +250,7 @@ func (set *XStringSet) Foreach(fn func(string)) {
 // Filter returns a new XStringSet whose elements return true for func.
 func (set *XStringSet) Filter(fn func(string) bool) *XStringSet {
 	result := NewXStringSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -265,7 +265,7 @@ func (set *XStringSet) Filter(fn func(string) bool) *XStringSet {
 func (set *XStringSet) Partition(p func(string) bool) (*XStringSet, *XStringSet) {
 	matching := NewXStringSet()
 	others := NewXStringSet()
-	for v := range set.m {
+	for v, _ := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -277,7 +277,7 @@ func (set *XStringSet) Partition(p func(string) bool) (*XStringSet, *XStringSet)
 
 // CountBy gives the number elements of XStringSet that return true for the passed predicate.
 func (set *XStringSet) CountBy(predicate func(string) bool) (result int) {
-	for v := range set.m {
+	for v, _ := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -294,7 +294,7 @@ func (set *XStringSet) MinBy(less func(string, string) bool) string {
 	}
 	var m string
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -314,7 +314,7 @@ func (set *XStringSet) MaxBy(less func(string, string) bool) string {
 	}
 	var m string
 	first := true
-	for v := range set.m {
+	for v, _ := range set.m {
 		if first {
 			m = v
 			first = false
@@ -334,7 +334,7 @@ func (set *XStringSet) Equals(other *XStringSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
-	for v := range set.m {
+	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -347,7 +347,7 @@ func (set *XStringSet) Equals(other *XStringSet) bool {
 
 func (set *XStringSet) StringList() []string {
 	strings := make([]string, 0)
-	for v := range set.m {
+	for v, _ := range set.m {
 		strings = append(strings, fmt.Sprintf("%v", v))
 	}
 	return strings
@@ -376,7 +376,7 @@ func (set *XStringSet) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-	for v := range set.m {
+	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = mid
