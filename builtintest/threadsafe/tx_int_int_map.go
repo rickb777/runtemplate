@@ -40,7 +40,7 @@ func (ts TXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TXIntIntTuples 
 
 func newTXIntIntMap() TXIntIntMap {
 	return TXIntIntMap{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[int]int),
 	}
 }

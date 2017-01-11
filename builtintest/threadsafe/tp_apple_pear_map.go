@@ -37,7 +37,7 @@ func (ts TPApplePearTuples) Append2(k1 *Apple, v1 *Pear, k2 *Apple, v2 *Pear) TP
 
 func newTPApplePearMap() TPApplePearMap {
 	return TPApplePearMap{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[*Apple]*Pear),
 	}
 }

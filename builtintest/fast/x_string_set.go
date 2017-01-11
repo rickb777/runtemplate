@@ -14,7 +14,7 @@ import (
 
 // XStringSet is the primary type that represents a set
 type XStringSet struct {
-    m map[string]struct{}
+	m map[string]struct{}
 }
 
 // NewXStringSet creates and returns a reference to an empty set.

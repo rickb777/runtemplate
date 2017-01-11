@@ -14,7 +14,7 @@ import (
 
 // XInt32Set is the primary type that represents a set
 type XInt32Set struct {
-    m map[int32]struct{}
+	m map[int32]struct{}
 }
 
 // NewXInt32Set creates and returns a reference to an empty set.

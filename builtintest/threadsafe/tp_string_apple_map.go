@@ -37,7 +37,7 @@ func (ts TPStringAppleTuples) Append2(k1 *string, v1 *Apple, k2 *string, v2 *App
 
 func newTPStringAppleMap() TPStringAppleMap {
 	return TPStringAppleMap{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[*string]*Apple),
 	}
 }

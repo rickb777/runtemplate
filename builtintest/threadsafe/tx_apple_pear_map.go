@@ -37,7 +37,7 @@ func (ts TXApplePearTuples) Append2(k1 Apple, v1 Pear, k2 Apple, v2 Pear) TXAppl
 
 func newTXApplePearMap() TXApplePearMap {
 	return TXApplePearMap{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[Apple]Pear),
 	}
 }

@@ -40,7 +40,7 @@ func (ts TPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) TPIntIntTup
 
 func newTPIntIntMap() TPIntIntMap {
 	return TPIntIntMap{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[*int]*int),
 	}
 }

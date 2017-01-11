@@ -37,7 +37,7 @@ func (ts TXStringStringTuples) Append2(k1 string, v1 string, k2 string, v2 strin
 
 func newTXStringStringMap() TXStringStringMap {
 	return TXStringStringMap{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[string]string),
 	}
 }

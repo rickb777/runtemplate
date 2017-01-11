@@ -18,7 +18,7 @@ import (
 {{end -}}
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
 type {{.UPrefix}}{{.UType}}Set struct {
-    m map[{{.Type}}]struct{}
+	m map[{{.Type}}]struct{}
 }
 
 // New{{.UPrefix}}{{.UType}}Set creates and returns a reference to an empty set.

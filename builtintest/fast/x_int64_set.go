@@ -14,7 +14,7 @@ import (
 
 // XInt64Set is the primary type that represents a set
 type XInt64Set struct {
-    m map[int64]struct{}
+	m map[int64]struct{}
 }
 
 // NewXInt64Set creates and returns a reference to an empty set.

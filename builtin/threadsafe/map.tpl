@@ -41,7 +41,7 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PTyp
 
 func new{{.UPrefix}}{{.UKey}}{{.UType}}Map() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	return {{.UPrefix}}{{.UKey}}{{.UType}}Map{
-	    s: &sync.RWMutex{},
+		s: &sync.RWMutex{},
 		m: make(map[{{.PKey}}]{{.PType}}),
 	}
 }

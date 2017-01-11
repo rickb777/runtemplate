@@ -11,7 +11,7 @@ package fast
 
 // XAppleSet is the primary type that represents a set
 type XAppleSet struct {
-    m map[Apple]struct{}
+	m map[Apple]struct{}
 }
 
 // NewXAppleSet creates and returns a reference to an empty set.
