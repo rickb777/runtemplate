@@ -6,9 +6,6 @@
 
 package simple
 
-
-// Stringer is not supported.
-
 // XAppleSet is the primary type that represents a set
 type XAppleSet map[Apple]struct{}
 

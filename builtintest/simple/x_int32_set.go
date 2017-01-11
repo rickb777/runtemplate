@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"fmt"
 )
+
 // XInt32Set is the primary type that represents a set
 type XInt32Set map[int32]struct{}
 

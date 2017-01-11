@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"fmt"
 )
+
 // XStringSet is the primary type that represents a set
 type XStringSet map[string]struct{}
 

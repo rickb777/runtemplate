@@ -7,10 +7,10 @@
 package simple
 
 import (
+	"math/rand"
 
 	"bytes"
 	"fmt"
-"math/rand"
 )
 
 // PStringList is a slice of type *string. Use it where you would use []*string.

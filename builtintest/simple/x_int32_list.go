@@ -7,10 +7,10 @@
 package simple
 
 import (
+	"math/rand"
 
 	"bytes"
 	"fmt"
-"math/rand"
 )
 
 // XInt32List is a slice of type int32. Use it where you would use []int32.
