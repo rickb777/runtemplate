@@ -178,8 +178,25 @@ Threadsafe: [Int32Collection](builtintest/threadsafe/x_int32_collection.go), [St
 
 ### plumbing/core.tpl
 
-TODO stream-based processing primitives
+This template provides stream-based processing primitives using Go channels.
+
+ * `<Type>Generator` and `<Type>Generator3` create a stream of `Type` values using a generator function. 
+ * `<Type>Delta` duplicates a stream of `Type` to two output channels.
+ * `<Type>Zip2` interleaves two streams of `Type`.
+ * `<Type>Mux2` multiplexes two streams of `Type` into a single output channel.
+ * `<Type>BlackHole` silently consumes a stream of `Type`.
+ * `<Type>Filter` filters a stream of `Type`, silently dropping elements that do not match a predicate function.
+ * `<Type>Partition` filters a stream of `Type` into two output streams using a predicate function.
+ * `<Type>Map` alters a stream of `Type` by applying a function to each item in the stream.
+ * `<Type>FlatMap` transforms a stream of `Type` by applying to each item in the stream a function that yields zero or more `Type`s, all of which are sent out.
+
+All of these terminate their loops when their input channels get closed. They then close their output channels.
 
 ### plumbing/mapTo.tpl
 
-TODO stream-based inline converters
+This template provides two stream-based inline converters using Go channels.
+
+ * `<Type>Map<ToType>` transforms a stream of `Type` to a stream of `ToType` using a given transformation function.
+ * `<Type>FlatMap<ToType>` transforms a stream of `Type` to a stream of `ToType` using a given transformation function that returns a `<ToType>Collection` for each `Type` value.
+
+Both of them terminate their loops when their input channels get closed. They then close their output channels.

@@ -32,9 +32,9 @@ type PStringMkStringer interface {
 
 // PStringCollection defines an interface for common collection methods on *string.
 type PStringCollection interface {
-    PStringSizer
+	PStringSizer
 
-    PStringMkStringer
+	PStringMkStringer
 
 
 	// IsSequence returns true for lists.

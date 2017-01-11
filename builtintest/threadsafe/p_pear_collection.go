@@ -17,7 +17,7 @@ type PPearSizer interface {
 
 // PPearCollection defines an interface for common collection methods on *Pear.
 type PPearCollection interface {
-    PPearSizer
+	PPearSizer
 
 
 	// IsSequence returns true for lists.

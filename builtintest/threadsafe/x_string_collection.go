@@ -32,9 +32,9 @@ type XStringMkStringer interface {
 
 // XStringCollection defines an interface for common collection methods on string.
 type XStringCollection interface {
-    XStringSizer
+	XStringSizer
 
-    XStringMkStringer
+	XStringMkStringer
 
 
 	// IsSequence returns true for lists.

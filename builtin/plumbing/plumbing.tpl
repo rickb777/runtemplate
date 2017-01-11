@@ -168,11 +168,9 @@ func {{.UPrefix}}{{.UType}}Map(in <-chan {{.PType}}, out chan<- {{.PType}}, fn f
 func {{.UPrefix}}{{.UType}}FlatMap(in <-chan {{.PType}}, out chan<- {{.PType}}, fn func({{.PType}}) {{.UPrefix}}{{.UType}}Collection) {
 	for vi := range in {
 		c := fn(vi)
-		if c.NonEmpty() {
-			for vo := range c.Send() {
-				out <- vo
-			}
-		}
+		c.Foreach(func(vo {{.PType}}) {
+			out <- vo
+		})
 	}
 	close(out)
 }

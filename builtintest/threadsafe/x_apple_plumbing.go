@@ -168,11 +168,9 @@ func XAppleMap(in <-chan Apple, out chan<- Apple, fn func(Apple) Apple) {
 func XAppleFlatMap(in <-chan Apple, out chan<- Apple, fn func(Apple) XAppleCollection) {
 	for vi := range in {
 		c := fn(vi)
-		if c.NonEmpty() {
-			for vo := range c.Send() {
-				out <- vo
-			}
-		}
+		c.Foreach(func(vo Apple) {
+			out <- vo
+		})
 	}
 	close(out)
 }

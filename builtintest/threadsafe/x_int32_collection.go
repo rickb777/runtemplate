@@ -32,9 +32,9 @@ type XInt32MkStringer interface {
 
 // XInt32Collection defines an interface for common collection methods on int32.
 type XInt32Collection interface {
-    XInt32Sizer
+	XInt32Sizer
 
-    XInt32MkStringer
+	XInt32MkStringer
 
 
 	// IsSequence returns true for lists.

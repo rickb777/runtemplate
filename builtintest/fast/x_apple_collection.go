@@ -17,7 +17,7 @@ type XAppleSizer interface {
 
 // XAppleCollection defines an interface for common collection methods on Apple.
 type XAppleCollection interface {
-    XAppleSizer
+	XAppleSizer
 
 
 	// IsSequence returns true for lists.

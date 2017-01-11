@@ -17,7 +17,7 @@ type XPearSizer interface {
 
 // XPearCollection defines an interface for common collection methods on Pear.
 type XPearCollection interface {
-    XPearSizer
+	XPearSizer
 
 
 	// IsSequence returns true for lists.

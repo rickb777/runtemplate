@@ -33,9 +33,9 @@ type {{.UPrefix}}{{.UType}}MkStringer interface {
 {{end -}}
 // {{.UPrefix}}{{.UType}}Collection defines an interface for common collection methods on {{.PType}}.
 type {{.UPrefix}}{{.UType}}Collection interface {
-    {{.UPrefix}}{{.UType}}Sizer
+	{{.UPrefix}}{{.UType}}Sizer
 {{if .Stringer}}
-    {{.UPrefix}}{{.UType}}MkStringer
+	{{.UPrefix}}{{.UType}}MkStringer
 {{end}}
 
 	// IsSequence returns true for lists.

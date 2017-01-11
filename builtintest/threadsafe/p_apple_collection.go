@@ -17,7 +17,7 @@ type PAppleSizer interface {
 
 // PAppleCollection defines an interface for common collection methods on *Apple.
 type PAppleCollection interface {
-    PAppleSizer
+	PAppleSizer
 
 
 	// IsSequence returns true for lists.

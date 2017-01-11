@@ -32,9 +32,9 @@ type PInt32MkStringer interface {
 
 // PInt32Collection defines an interface for common collection methods on *int32.
 type PInt32Collection interface {
-    PInt32Sizer
+	PInt32Sizer
 
-    PInt32MkStringer
+	PInt32MkStringer
 
 
 	// IsSequence returns true for lists.
