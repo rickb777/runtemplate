@@ -57,6 +57,22 @@ The generated code is a simple wrapper around a slice of the type. It is not sui
 Examples: [Int32List](builtintest/simple/x_int32_list.go), [StringList](builtintest/simple/x_string_list.go)
 
 
+### simple/set.tpl
+
+This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would rarely be of any value).
+
+The supported options are: Numeric, Stringer. The generated types are always mutable.
+
+Example use:
+```
+//go:generate runtemplate -tpl simple/set.tpl Type=int32 Stringer=true Numeric=true
+```
+
+The generated code is simple wrapper around a map of the type: the set elements are used as map keys; the map uses zero-size values. It is not suitable for access by more than one goroutine at a time.
+
+Examples: [Int32Set](builtintest/simple/x_int32_set.go), [StringSet](builtintest/simple/x_string_set.go)
+
+
 ### simple/map.tpl
 
 This template generates a `<Key><Type>Map` for some specified type. It accepts both user-defined and built-in Go types.
@@ -70,23 +86,9 @@ Example use:
 
 The generated code is a simple wrapper around a map of the key and type. It not suitable for access by more than one goroutine at a time.
 
+A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
+
 Examples: [IntIntMap](builtintest/simple/sx_int_int_map.go), [StringStringMap](builtintest/simple/sx_string_string_map.go)
-
-
-### simple/set.tpl
-
-This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would rarely be of any value).
-
-The supported options are: Numeric, Stringer. The generated types are always mutable.
-
-Example use:
-```
-//go:generate runtemplate -tpl simple/set.tpl Type=int32 Stringer=true Numeric=true
-```
-
-The generated code is simple wrapper around a map of the type. It is not suitable for access by more than one goroutine at a time.
-
-Examples: [Int32Set](builtintest/simple/x_int32_set.go), [StringSet](builtintest/simple/x_string_set.go)
 
 
 ## 2. Encapsulated Collections - Fast Variant
@@ -139,6 +141,8 @@ Example use:
 ```
 
 The generated code is not suitable for access by more than one goroutine at a time.
+
+A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
 Examples: [IntIntMap](builtintest/fast/x_int_int_list.go), [StringStringMap](builtintest/fast/x_string_string_map.go)
 
@@ -208,6 +212,8 @@ Example use:
 ```
 
 The generated code is not suitable for access by more than one goroutine at a time.
+
+A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
 Examples: [IntIntMap](builtintest/threadsafe/x_int_int_list.go), [StringStringMap](builtintest/threadsafe/x_string_string_map.go)
 
