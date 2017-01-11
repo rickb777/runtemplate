@@ -192,6 +192,9 @@ This template provides stream-based processing primitives using Go channels.
 
 All of these terminate their loops when their input channels get closed. They then close their output channels.
 
+Example: [ApplePlumbing](builtintest/threadsafe/x_apple_plumbing.go).
+
+
 ### plumbing/mapTo.tpl
 
 This template provides two stream-based inline converters using Go channels.
@@ -200,3 +203,6 @@ This template provides two stream-based inline converters using Go channels.
  * `<Type>FlatMap<ToType>` transforms a stream of `Type` to a stream of `ToType` using a given transformation function that yields zero or more `ToType` values, all of which are sent out.
 
 Both of them terminate their loops when their input channels get closed. They then close their output channels.
+
+Example: [ApplePearMapTo](builtintest/threadsafe/x_apple_x_pear_mapto.go).
+
