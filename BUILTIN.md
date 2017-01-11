@@ -107,15 +107,15 @@ Collections of the threadsafe variant can be shared between goroutines always. S
 
 ### fast/list.tpl and threadsafe/list.tpl
 
-This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred. The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
+This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred.
+
+The supported options are: Comparable, Ordered, Numeric, Stringer, Mutable.
 
 Example use:
 ```
 //go:generate runtemplate -tpl fast/list.tpl       Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 //go:generate runtemplate -tpl threadsafe/list.tpl Type=int32 Stringer=true Comparable=true Ordered=true Numeric=true Mutable=true
 ```
-
-The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Examples: 
 Fast:       [Int32List](builtintest/fast/x_int32_list.go),       [StringList](builtintest/fast/x_string_list.go).
@@ -178,8 +178,8 @@ Threadsafe: [Int32Collection](builtintest/threadsafe/x_int32_collection.go), [St
 
 ### plumbing/core.tpl
 
-TODO
+TODO stream-based processing primitives
 
 ### plumbing/mapTo.tpl
 
-TODO
+TODO stream-based inline converters
