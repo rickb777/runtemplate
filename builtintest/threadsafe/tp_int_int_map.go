@@ -62,7 +62,7 @@ func NewTPIntIntMap(kv ...TPIntIntTuple) TPIntIntMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TPIntIntMap) Keys() []*int {
+func (mm TPIntIntMap) Keys() []*int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -74,7 +74,7 @@ func (mm *TPIntIntMap) Keys() []*int {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TPIntIntMap) ToSlice() []TPIntIntTuple {
+func (mm TPIntIntMap) ToSlice() []TPIntIntTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -86,7 +86,7 @@ func (mm *TPIntIntMap) ToSlice() []TPIntIntTuple {
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TPIntIntMap) Get(k *int) (*int, bool) {
+func (mm TPIntIntMap) Get(k *int) (*int, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -96,7 +96,7 @@ func (mm *TPIntIntMap) Get(k *int) (*int, bool) {
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TPIntIntMap) Put(k *int, v *int) bool {
+func (mm TPIntIntMap) Put(k *int, v *int) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -106,7 +106,7 @@ func (mm *TPIntIntMap) Put(k *int, v *int) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TPIntIntMap) ContainsKey(k *int) bool {
+func (mm TPIntIntMap) ContainsKey(k *int) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -115,7 +115,7 @@ func (mm *TPIntIntMap) ContainsKey(k *int) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TPIntIntMap) ContainsAllKeys(kk ...*int) bool {
+func (mm TPIntIntMap) ContainsAllKeys(kk ...*int) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -137,7 +137,7 @@ func (mm *TPIntIntMap) Clear() {
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TPIntIntMap) Remove(k *int) {
+func (mm TPIntIntMap) Remove(k *int) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -145,7 +145,7 @@ func (mm *TPIntIntMap) Remove(k *int) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TPIntIntMap) Size() int {
+func (mm TPIntIntMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -153,12 +153,12 @@ func (mm *TPIntIntMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TPIntIntMap) IsEmpty() bool {
+func (mm TPIntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TPIntIntMap) NonEmpty() bool {
+func (mm TPIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -168,7 +168,7 @@ func (mm *TPIntIntMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TPIntIntMap) Forall(fn func(*int, *int) bool) bool {
+func (mm TPIntIntMap) Forall(fn func(*int, *int) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -183,7 +183,7 @@ func (mm *TPIntIntMap) Forall(fn func(*int, *int) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TPIntIntMap) Exists(fn func(*int, *int) bool) bool {
+func (mm TPIntIntMap) Exists(fn func(*int, *int) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -197,7 +197,7 @@ func (mm *TPIntIntMap) Exists(fn func(*int, *int) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TPIntIntMap) Filter(fn func(*int, *int) bool) TPIntIntMap {
+func (mm TPIntIntMap) Filter(fn func(*int, *int) bool) TPIntIntMap {
 	result := NewTPIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -213,7 +213,7 @@ func (mm *TPIntIntMap) Filter(fn func(*int, *int) bool) TPIntIntMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TPIntIntMap) Partition(fn func(*int, *int) bool) (matching TPIntIntMap, others TPIntIntMap) {
+func (mm TPIntIntMap) Partition(fn func(*int, *int) bool) (matching TPIntIntMap, others TPIntIntMap) {
 	matching = NewTPIntIntMap()
 	others = NewTPIntIntMap()
 	mm.s.RLock()
@@ -233,7 +233,7 @@ func (mm *TPIntIntMap) Partition(fn func(*int, *int) bool) (matching TPIntIntMap
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *TPIntIntMap) Equals(other TPIntIntMap) bool {
+func (mm TPIntIntMap) Equals(other TPIntIntMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -252,7 +252,7 @@ func (mm *TPIntIntMap) Equals(other TPIntIntMap) bool {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TPIntIntMap) Clone() TPIntIntMap {
+func (mm TPIntIntMap) Clone() TPIntIntMap {
 	result := NewTPIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -266,26 +266,26 @@ func (mm *TPIntIntMap) Clone() TPIntIntMap {
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm *TPIntIntMap) String() string {
+func (mm TPIntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm *TPIntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm TPIntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (mm *TPIntIntMap) MkString(sep string) string {
+func (mm TPIntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (mm *TPIntIntMap) MkString3(pfx, mid, sfx string) string {
+func (mm TPIntIntMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
 
-func (mm *TPIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TPIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""

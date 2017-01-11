@@ -74,13 +74,19 @@ func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 
 //-------------------------------------------------------------------------------------------------
 
-// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
-func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	return list.m[0]
+	return list.m[i]
+}
+
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
+// Panics if list is empty
+func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
+	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -241,6 +247,34 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
+}
+
+{{if .Mutable}}
+// Append adds items to the current list, returning the modified list.
+func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	for _, v := range more {
+		list.doAppend(v)
+	}
+	return list
+}
+
+{{else}}
+// Append returns a new list with all original items and all in `more`; they retain their order.
+// The original list is not altered.
+func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	newList := list.Clone()
+	for _, v := range more {
+		newList.doAppend(v)
+	}
+	return newList
+}
+
+{{end -}}
+func (list *{{.UPrefix}}{{.UType}}List) doAppend(i {{.PType}}) {
+	list.m = append(list.m, i)
 }
 
 //-------------------------------------------------------------------------------------------------

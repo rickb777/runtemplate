@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from list.tpl with Type=*int32
-// options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=<no value>
+// options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=true
 
 package threadsafe
 
@@ -73,13 +73,19 @@ func (list *PInt32List) Clone() *PInt32List {
 
 //-------------------------------------------------------------------------------------------------
 
-// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
-func (list *PInt32List) Head() *int32 {
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+func (list *PInt32List) Get(i int) *int32 {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	return list.m[0]
+	return list.m[i]
+}
+
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
+// Panics if list is empty
+func (list *PInt32List) Head() *int32 {
+	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -150,6 +156,16 @@ func (list *PInt32List) Len() int {
 	defer list.s.RUnlock()
 
 	return len(list.m)
+}
+
+
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (list *PInt32List) Swap(i, j int) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	list.m[i], list.m[j] = list.m[j], list.m[i]
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -229,6 +245,22 @@ func (list *PInt32List) Shuffle() *PInt32List {
 		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
+}
+
+
+// Append adds items to the current list, returning the modified list.
+func (list *PInt32List) Append(more ...*int32) *PInt32List {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	for _, v := range more {
+		list.doAppend(v)
+	}
+	return list
+}
+
+func (list *PInt32List) doAppend(i *int32) {
+	list.m = append(list.m, i)
 }
 
 //-------------------------------------------------------------------------------------------------

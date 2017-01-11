@@ -1,51 +1,54 @@
-// An encapsulated map[Apple]Pear
-// Not thread-safe.
+// An encapsulated map[Apple]Pear.
+// Thread-safe.
 //
 // Generated from map.tpl with Key=Apple Type=Pear
 // options: Comparable=<no value> Stringer=<no value> Mutable=false
 
 package fast
 
-// XApplePearMap is the primary type that represents a map
-type XApplePearMap struct {
-	m map[Apple]Pear
+import (
+)
+
+// TPApplePearMap is the primary type that represents a thread-safe map
+type TPApplePearMap struct {
+	m map[*Apple]*Pear
 }
 
-// XApplePearTuple represents a key/value pair.
-type XApplePearTuple struct {
-	Key Apple
-	Val Pear
+// TPApplePearTuple represents a key/value pair.
+type TPApplePearTuple struct {
+	Key *Apple
+	Val *Pear
 }
 
-// XApplePearTuples can be used as a builder for unmodifiable maps.
-type XApplePearTuples []XApplePearTuple
+// TPApplePearTuples can be used as a builder for unmodifiable maps.
+type TPApplePearTuples []TPApplePearTuple
 
-func (ts XApplePearTuples) Append1(k Apple, v Pear) XApplePearTuples {
-	return append(ts, XApplePearTuple{k, v})
+func (ts TPApplePearTuples) Append1(k *Apple, v *Pear) TPApplePearTuples {
+	return append(ts, TPApplePearTuple{k, v})
 }
 
-func (ts XApplePearTuples) Append2(k1 Apple, v1 Pear, k2 Apple, v2 Pear) XApplePearTuples {
-	return append(ts, XApplePearTuple{k1, v1}, XApplePearTuple{k2, v2})
+func (ts TPApplePearTuples) Append2(k1 *Apple, v1 *Pear, k2 *Apple, v2 *Pear) TPApplePearTuples {
+	return append(ts, TPApplePearTuple{k1, v1}, TPApplePearTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newXApplePearMap() *XApplePearMap {
-	return &XApplePearMap{
-		make(map[Apple]Pear),
+func newTPApplePearMap() TPApplePearMap {
+	return TPApplePearMap{
+		m: make(map[*Apple]*Pear),
 	}
 }
 
-// NewXApplePearMap creates and returns a reference to a map containing one item.
-func NewXApplePearMap1(k Apple, v Pear) *XApplePearMap {
-	mm := newXApplePearMap()
+// NewTPApplePearMap creates and returns a reference to a map containing one item.
+func NewTPApplePearMap1(k *Apple, v *Pear) TPApplePearMap {
+	mm := newTPApplePearMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewXApplePearMap creates and returns a reference to a map, optionally containing some items.
-func NewXApplePearMap(kv ...XApplePearTuple) *XApplePearMap {
-	mm := newXApplePearMap()
+// NewTPApplePearMap creates and returns a reference to a map, optionally containing some items.
+func NewTPApplePearMap(kv ...TPApplePearTuple) TPApplePearMap {
+	mm := newTPApplePearMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -53,8 +56,9 @@ func NewXApplePearMap(kv ...XApplePearTuple) *XApplePearMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *XApplePearMap) Keys() []Apple {
-	var s []Apple
+func (mm TPApplePearMap) Keys() []*Apple {
+
+	var s []*Apple
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -62,28 +66,32 @@ func (mm *XApplePearMap) Keys() []Apple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *XApplePearMap) ToSlice() []XApplePearTuple {
-	var s []XApplePearTuple
+func (mm TPApplePearMap) ToSlice() []TPApplePearTuple {
+
+	var s []TPApplePearTuple
 	for k, v := range mm.m {
-		s = append(s, XApplePearTuple{k, v})
+		s = append(s, TPApplePearTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *XApplePearMap) Get(k Apple) (Pear, bool) {
+func (mm TPApplePearMap) Get(k *Apple) (*Pear, bool) {
+
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *XApplePearMap) ContainsKey(k Apple) bool {
+func (mm TPApplePearMap) ContainsKey(k *Apple) bool {
+
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *XApplePearMap) ContainsAllKeys(kk ...Apple) bool {
+func (mm TPApplePearMap) ContainsAllKeys(kk ...*Apple) bool {
+
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -93,17 +101,18 @@ func (mm *XApplePearMap) ContainsAllKeys(kk ...Apple) bool {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *XApplePearMap) Size() int {
+func (mm TPApplePearMap) Size() int {
+
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *XApplePearMap) IsEmpty() bool {
+func (mm TPApplePearMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *XApplePearMap) NonEmpty() bool {
+func (mm TPApplePearMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -113,7 +122,8 @@ func (mm *XApplePearMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *XApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
+func (mm TPApplePearMap) Forall(fn func(*Apple, *Pear) bool) bool {
+
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -125,7 +135,8 @@ func (mm *XApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *XApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
+func (mm TPApplePearMap) Exists(fn func(*Apple, *Pear) bool) bool {
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -136,8 +147,9 @@ func (mm *XApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *XApplePearMap) Filter(fn func(Apple, Pear) bool) *XApplePearMap {
-	result := NewXApplePearMap()
+func (mm TPApplePearMap) Filter(fn func(*Apple, *Pear) bool) TPApplePearMap {
+	result := NewTPApplePearMap()
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			result.m[k] = v
@@ -149,9 +161,10 @@ func (mm *XApplePearMap) Filter(fn func(Apple, Pear) bool) *XApplePearMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *XApplePearMap) Partition(fn func(Apple, Pear) bool) (matching *XApplePearMap, others *XApplePearMap) {
-	matching = NewXApplePearMap()
-	others = NewXApplePearMap()
+func (mm TPApplePearMap) Partition(fn func(*Apple, *Pear) bool) (matching TPApplePearMap, others TPApplePearMap) {
+	matching = NewTPApplePearMap()
+	others = NewTPApplePearMap()
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			matching.m[k] = v
@@ -163,8 +176,9 @@ func (mm *XApplePearMap) Partition(fn func(Apple, Pear) bool) (matching *XAppleP
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *XApplePearMap) Clone() *XApplePearMap {
-	result := NewXApplePearMap()
+func (mm TPApplePearMap) Clone() TPApplePearMap {
+	result := NewTPApplePearMap()
+
 	for k, v := range mm.m {
 		result.m[k] = v
 	}

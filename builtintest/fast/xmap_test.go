@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-func TestExToSlice(t *testing.T) {
-	a := NewXIntIntMap1(1, 2)
+func TestTxToSlice(t *testing.T) {
+	a := NewTXIntIntMap1(1, 2)
 	s := a.ToSlice()
 
 	if a.Size() != 1 {
@@ -17,8 +17,8 @@ func TestExToSlice(t *testing.T) {
 	}
 }
 
-func TestExRemove(t *testing.T) {
-	a := NewXIntIntMap1(3, 1)
+func TestTxRemove(t *testing.T) {
+	a := NewTXIntIntMap1(3, 1)
 
 	a.Put(1, 5)
 	a.Put(2, 5)
@@ -40,8 +40,8 @@ func TestExRemove(t *testing.T) {
 	}
 }
 
-func TestExContainsKey(t *testing.T) {
-	a := NewXIntIntMap1(13, 1)
+func TestTxContainsKey(t *testing.T) {
+	a := NewTXIntIntMap1(13, 1)
 
 	a.Put(71, 13)
 
@@ -62,8 +62,8 @@ func TestExContainsKey(t *testing.T) {
 	}
 }
 
-func TestExContainsAllKeys(t *testing.T) {
-	a := NewXIntIntMap1(8, 6)
+func TestTxContainsAllKeys(t *testing.T) {
+	a := NewTXIntIntMap1(8, 6)
 
 	a.Put(1, 10)
 	a.Put(2, 11)
@@ -77,8 +77,8 @@ func TestExContainsAllKeys(t *testing.T) {
 	}
 }
 
-func TestExClear(t *testing.T) {
-	a := NewXIntIntMap1(2, 5)
+func TestTxClear(t *testing.T) {
+	a := NewTXIntIntMap1(2, 5)
 
 	a.Clear()
 
@@ -87,8 +87,8 @@ func TestExClear(t *testing.T) {
 	}
 }
 
-func TestExCardinality(t *testing.T) {
-	a := NewXIntIntMap()
+func TestTxCardinality(t *testing.T) {
+	a := NewTXIntIntMap()
 
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
@@ -119,9 +119,9 @@ func TestExCardinality(t *testing.T) {
 	}
 }
 
-func TestExEquals(t *testing.T) {
-	a := NewXIntIntMap()
-	b := NewXIntIntMap()
+func TestTxEquals(t *testing.T) {
+	a := NewTXIntIntMap()
+	b := NewTXIntIntMap()
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a.m, b.m)
@@ -162,8 +162,8 @@ func TestExEquals(t *testing.T) {
 	}
 }
 
-func TestExClone(t *testing.T) {
-	a := NewXIntIntMap()
+func TestTxClone(t *testing.T) {
+	a := NewTXIntIntMap()
 	a.Put(1, 9)
 	a.Put(2, 8)
 
@@ -186,10 +186,10 @@ func TestExClone(t *testing.T) {
 	}
 }
 
-//func TestExSend(t *testing.T) {
-//	a := NewXIntIntMap(1, 2, 3, 4)
+//func TestTxSend(t *testing.T) {
+//	a := NewTXIntIntMap(1, 2, 3, 4)
 //
-//	b := NewXIntIntMap()
+//	b := NewTXIntIntMap()
 //	for val := range a.Send() {
 //		b.Add(val)
 //	}

@@ -59,7 +59,7 @@ func NewTPApplePearMap(kv ...TPApplePearTuple) TPApplePearMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TPApplePearMap) Keys() []*Apple {
+func (mm TPApplePearMap) Keys() []*Apple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -71,7 +71,7 @@ func (mm *TPApplePearMap) Keys() []*Apple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TPApplePearMap) ToSlice() []TPApplePearTuple {
+func (mm TPApplePearMap) ToSlice() []TPApplePearTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -83,7 +83,7 @@ func (mm *TPApplePearMap) ToSlice() []TPApplePearTuple {
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TPApplePearMap) Get(k *Apple) (*Pear, bool) {
+func (mm TPApplePearMap) Get(k *Apple) (*Pear, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -92,7 +92,7 @@ func (mm *TPApplePearMap) Get(k *Apple) (*Pear, bool) {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TPApplePearMap) ContainsKey(k *Apple) bool {
+func (mm TPApplePearMap) ContainsKey(k *Apple) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -101,7 +101,7 @@ func (mm *TPApplePearMap) ContainsKey(k *Apple) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TPApplePearMap) ContainsAllKeys(kk ...*Apple) bool {
+func (mm TPApplePearMap) ContainsAllKeys(kk ...*Apple) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -114,7 +114,7 @@ func (mm *TPApplePearMap) ContainsAllKeys(kk ...*Apple) bool {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TPApplePearMap) Size() int {
+func (mm TPApplePearMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -122,12 +122,12 @@ func (mm *TPApplePearMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TPApplePearMap) IsEmpty() bool {
+func (mm TPApplePearMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TPApplePearMap) NonEmpty() bool {
+func (mm TPApplePearMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -137,7 +137,7 @@ func (mm *TPApplePearMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TPApplePearMap) Forall(fn func(*Apple, *Pear) bool) bool {
+func (mm TPApplePearMap) Forall(fn func(*Apple, *Pear) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -152,7 +152,7 @@ func (mm *TPApplePearMap) Forall(fn func(*Apple, *Pear) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TPApplePearMap) Exists(fn func(*Apple, *Pear) bool) bool {
+func (mm TPApplePearMap) Exists(fn func(*Apple, *Pear) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -166,7 +166,7 @@ func (mm *TPApplePearMap) Exists(fn func(*Apple, *Pear) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TPApplePearMap) Filter(fn func(*Apple, *Pear) bool) TPApplePearMap {
+func (mm TPApplePearMap) Filter(fn func(*Apple, *Pear) bool) TPApplePearMap {
 	result := NewTPApplePearMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -182,7 +182,7 @@ func (mm *TPApplePearMap) Filter(fn func(*Apple, *Pear) bool) TPApplePearMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TPApplePearMap) Partition(fn func(*Apple, *Pear) bool) (matching TPApplePearMap, others TPApplePearMap) {
+func (mm TPApplePearMap) Partition(fn func(*Apple, *Pear) bool) (matching TPApplePearMap, others TPApplePearMap) {
 	matching = NewTPApplePearMap()
 	others = NewTPApplePearMap()
 	mm.s.RLock()
@@ -199,7 +199,7 @@ func (mm *TPApplePearMap) Partition(fn func(*Apple, *Pear) bool) (matching TPApp
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TPApplePearMap) Clone() TPApplePearMap {
+func (mm TPApplePearMap) Clone() TPApplePearMap {
 	result := NewTPApplePearMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()

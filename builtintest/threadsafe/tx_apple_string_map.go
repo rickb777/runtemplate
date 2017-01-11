@@ -59,7 +59,7 @@ func NewTXAppleStringMap(kv ...TXAppleStringTuple) TXAppleStringMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TXAppleStringMap) Keys() []Apple {
+func (mm TXAppleStringMap) Keys() []Apple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -71,7 +71,7 @@ func (mm *TXAppleStringMap) Keys() []Apple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TXAppleStringMap) ToSlice() []TXAppleStringTuple {
+func (mm TXAppleStringMap) ToSlice() []TXAppleStringTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -83,7 +83,7 @@ func (mm *TXAppleStringMap) ToSlice() []TXAppleStringTuple {
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TXAppleStringMap) Get(k Apple) (string, bool) {
+func (mm TXAppleStringMap) Get(k Apple) (string, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -93,7 +93,7 @@ func (mm *TXAppleStringMap) Get(k Apple) (string, bool) {
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TXAppleStringMap) Put(k Apple, v string) bool {
+func (mm TXAppleStringMap) Put(k Apple, v string) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -103,7 +103,7 @@ func (mm *TXAppleStringMap) Put(k Apple, v string) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TXAppleStringMap) ContainsKey(k Apple) bool {
+func (mm TXAppleStringMap) ContainsKey(k Apple) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -112,7 +112,7 @@ func (mm *TXAppleStringMap) ContainsKey(k Apple) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TXAppleStringMap) ContainsAllKeys(kk ...Apple) bool {
+func (mm TXAppleStringMap) ContainsAllKeys(kk ...Apple) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -134,7 +134,7 @@ func (mm *TXAppleStringMap) Clear() {
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TXAppleStringMap) Remove(k Apple) {
+func (mm TXAppleStringMap) Remove(k Apple) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -142,7 +142,7 @@ func (mm *TXAppleStringMap) Remove(k Apple) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TXAppleStringMap) Size() int {
+func (mm TXAppleStringMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -150,12 +150,12 @@ func (mm *TXAppleStringMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TXAppleStringMap) IsEmpty() bool {
+func (mm TXAppleStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TXAppleStringMap) NonEmpty() bool {
+func (mm TXAppleStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -165,7 +165,7 @@ func (mm *TXAppleStringMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TXAppleStringMap) Forall(fn func(Apple, string) bool) bool {
+func (mm TXAppleStringMap) Forall(fn func(Apple, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -180,7 +180,7 @@ func (mm *TXAppleStringMap) Forall(fn func(Apple, string) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TXAppleStringMap) Exists(fn func(Apple, string) bool) bool {
+func (mm TXAppleStringMap) Exists(fn func(Apple, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -194,7 +194,7 @@ func (mm *TXAppleStringMap) Exists(fn func(Apple, string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TXAppleStringMap) Filter(fn func(Apple, string) bool) TXAppleStringMap {
+func (mm TXAppleStringMap) Filter(fn func(Apple, string) bool) TXAppleStringMap {
 	result := NewTXAppleStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -210,7 +210,7 @@ func (mm *TXAppleStringMap) Filter(fn func(Apple, string) bool) TXAppleStringMap
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TXAppleStringMap) Partition(fn func(Apple, string) bool) (matching TXAppleStringMap, others TXAppleStringMap) {
+func (mm TXAppleStringMap) Partition(fn func(Apple, string) bool) (matching TXAppleStringMap, others TXAppleStringMap) {
 	matching = NewTXAppleStringMap()
 	others = NewTXAppleStringMap()
 	mm.s.RLock()
@@ -227,7 +227,7 @@ func (mm *TXAppleStringMap) Partition(fn func(Apple, string) bool) (matching TXA
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TXAppleStringMap) Clone() TXAppleStringMap {
+func (mm TXAppleStringMap) Clone() TXAppleStringMap {
 	result := NewTXAppleStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()

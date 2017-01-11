@@ -59,7 +59,7 @@ func NewTPStringStringMap(kv ...TPStringStringTuple) TPStringStringMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TPStringStringMap) Keys() []*string {
+func (mm TPStringStringMap) Keys() []*string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -71,7 +71,7 @@ func (mm *TPStringStringMap) Keys() []*string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TPStringStringMap) ToSlice() []TPStringStringTuple {
+func (mm TPStringStringMap) ToSlice() []TPStringStringTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -83,7 +83,7 @@ func (mm *TPStringStringMap) ToSlice() []TPStringStringTuple {
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TPStringStringMap) Get(k *string) (*string, bool) {
+func (mm TPStringStringMap) Get(k *string) (*string, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -93,7 +93,7 @@ func (mm *TPStringStringMap) Get(k *string) (*string, bool) {
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TPStringStringMap) Put(k *string, v *string) bool {
+func (mm TPStringStringMap) Put(k *string, v *string) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -103,7 +103,7 @@ func (mm *TPStringStringMap) Put(k *string, v *string) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TPStringStringMap) ContainsKey(k *string) bool {
+func (mm TPStringStringMap) ContainsKey(k *string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -112,7 +112,7 @@ func (mm *TPStringStringMap) ContainsKey(k *string) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TPStringStringMap) ContainsAllKeys(kk ...*string) bool {
+func (mm TPStringStringMap) ContainsAllKeys(kk ...*string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -134,7 +134,7 @@ func (mm *TPStringStringMap) Clear() {
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TPStringStringMap) Remove(k *string) {
+func (mm TPStringStringMap) Remove(k *string) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -142,7 +142,7 @@ func (mm *TPStringStringMap) Remove(k *string) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TPStringStringMap) Size() int {
+func (mm TPStringStringMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -150,12 +150,12 @@ func (mm *TPStringStringMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TPStringStringMap) IsEmpty() bool {
+func (mm TPStringStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TPStringStringMap) NonEmpty() bool {
+func (mm TPStringStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -165,7 +165,7 @@ func (mm *TPStringStringMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TPStringStringMap) Forall(fn func(*string, *string) bool) bool {
+func (mm TPStringStringMap) Forall(fn func(*string, *string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -180,7 +180,7 @@ func (mm *TPStringStringMap) Forall(fn func(*string, *string) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TPStringStringMap) Exists(fn func(*string, *string) bool) bool {
+func (mm TPStringStringMap) Exists(fn func(*string, *string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -194,7 +194,7 @@ func (mm *TPStringStringMap) Exists(fn func(*string, *string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TPStringStringMap) Filter(fn func(*string, *string) bool) TPStringStringMap {
+func (mm TPStringStringMap) Filter(fn func(*string, *string) bool) TPStringStringMap {
 	result := NewTPStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -210,7 +210,7 @@ func (mm *TPStringStringMap) Filter(fn func(*string, *string) bool) TPStringStri
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TPStringStringMap) Partition(fn func(*string, *string) bool) (matching TPStringStringMap, others TPStringStringMap) {
+func (mm TPStringStringMap) Partition(fn func(*string, *string) bool) (matching TPStringStringMap, others TPStringStringMap) {
 	matching = NewTPStringStringMap()
 	others = NewTPStringStringMap()
 	mm.s.RLock()
@@ -230,7 +230,7 @@ func (mm *TPStringStringMap) Partition(fn func(*string, *string) bool) (matching
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *TPStringStringMap) Equals(other TPStringStringMap) bool {
+func (mm TPStringStringMap) Equals(other TPStringStringMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -249,7 +249,7 @@ func (mm *TPStringStringMap) Equals(other TPStringStringMap) bool {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TPStringStringMap) Clone() TPStringStringMap {
+func (mm TPStringStringMap) Clone() TPStringStringMap {
 	result := NewTPStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()

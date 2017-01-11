@@ -4,24 +4,23 @@ import (
 	"testing"
 )
 
-func TestToSlice(t *testing.T) {
-	a := NewXInt32Set(1, 2, 3)
-	s := a.ToSlice()
-
-	if len(s) != 3 {
-		t.Errorf("Expected 3 but got %d", len(s))
-	}
-}
-
-func TestAddSet(t *testing.T) {
+func TestNewSet(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
 	}
+
+	if !a.IsSet() {
+		t.Error("Expected a set")
+	}
+
+	if a.IsSequence() {
+		t.Error("Expected not a sequence")
+	}
 }
 
-func TestAddSetNoDuplicate(t *testing.T) {
+func TestNewSetNoDuplicate(t *testing.T) {
 	a := NewXInt32Set(7, 5, 3, 7)
 
 	if a.Size() != 3 {
@@ -33,7 +32,7 @@ func TestAddSetNoDuplicate(t *testing.T) {
 	}
 }
 
-func TestRemoveSet(t *testing.T) {
+func TestSetRemove(t *testing.T) {
 	a := NewXInt32Set(6, 3, 1)
 
 	a.Remove(3)
@@ -54,7 +53,7 @@ func TestRemoveSet(t *testing.T) {
 	}
 }
 
-func TestContainsSet(t *testing.T) {
+func TestSetContains(t *testing.T) {
 	a := NewXInt32Set()
 
 	a.Add(71)

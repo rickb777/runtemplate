@@ -59,7 +59,7 @@ func NewTPStringAppleMap(kv ...TPStringAppleTuple) TPStringAppleMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TPStringAppleMap) Keys() []*string {
+func (mm TPStringAppleMap) Keys() []*string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -71,7 +71,7 @@ func (mm *TPStringAppleMap) Keys() []*string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TPStringAppleMap) ToSlice() []TPStringAppleTuple {
+func (mm TPStringAppleMap) ToSlice() []TPStringAppleTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -83,7 +83,7 @@ func (mm *TPStringAppleMap) ToSlice() []TPStringAppleTuple {
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TPStringAppleMap) Get(k *string) (*Apple, bool) {
+func (mm TPStringAppleMap) Get(k *string) (*Apple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -93,7 +93,7 @@ func (mm *TPStringAppleMap) Get(k *string) (*Apple, bool) {
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TPStringAppleMap) Put(k *string, v *Apple) bool {
+func (mm TPStringAppleMap) Put(k *string, v *Apple) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -103,7 +103,7 @@ func (mm *TPStringAppleMap) Put(k *string, v *Apple) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TPStringAppleMap) ContainsKey(k *string) bool {
+func (mm TPStringAppleMap) ContainsKey(k *string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -112,7 +112,7 @@ func (mm *TPStringAppleMap) ContainsKey(k *string) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
+func (mm TPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -134,7 +134,7 @@ func (mm *TPStringAppleMap) Clear() {
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TPStringAppleMap) Remove(k *string) {
+func (mm TPStringAppleMap) Remove(k *string) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -142,7 +142,7 @@ func (mm *TPStringAppleMap) Remove(k *string) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TPStringAppleMap) Size() int {
+func (mm TPStringAppleMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -150,12 +150,12 @@ func (mm *TPStringAppleMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TPStringAppleMap) IsEmpty() bool {
+func (mm TPStringAppleMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TPStringAppleMap) NonEmpty() bool {
+func (mm TPStringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -165,7 +165,7 @@ func (mm *TPStringAppleMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
+func (mm TPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -180,7 +180,7 @@ func (mm *TPStringAppleMap) Forall(fn func(*string, *Apple) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
+func (mm TPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -194,7 +194,7 @@ func (mm *TPStringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TPStringAppleMap) Filter(fn func(*string, *Apple) bool) TPStringAppleMap {
+func (mm TPStringAppleMap) Filter(fn func(*string, *Apple) bool) TPStringAppleMap {
 	result := NewTPStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -210,7 +210,7 @@ func (mm *TPStringAppleMap) Filter(fn func(*string, *Apple) bool) TPStringAppleM
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching TPStringAppleMap, others TPStringAppleMap) {
+func (mm TPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching TPStringAppleMap, others TPStringAppleMap) {
 	matching = NewTPStringAppleMap()
 	others = NewTPStringAppleMap()
 	mm.s.RLock()
@@ -227,7 +227,7 @@ func (mm *TPStringAppleMap) Partition(fn func(*string, *Apple) bool) (matching T
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TPStringAppleMap) Clone() TPStringAppleMap {
+func (mm TPStringAppleMap) Clone() TPStringAppleMap {
 	result := NewTPStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()

@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from list.tpl with Type=Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=<no value>
+// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=false
 
 package threadsafe
 
@@ -70,13 +70,19 @@ func (list *XAppleList) Clone() *XAppleList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
-func (list *XAppleList) Head() Apple {
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+func (list *XAppleList) Get(i int) Apple {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	return list.m[0]
+	return list.m[i]
+}
+
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
+// Panics if list is empty
+func (list *XAppleList) Head() Apple {
+	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -226,6 +232,21 @@ func (list *XAppleList) Shuffle() *XAppleList {
 		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
+}
+
+
+// Append returns a new list with all original items and all in `more`; they retain their order.
+// The original list is not altered.
+func (list *XAppleList) Append(more ...Apple) *XAppleList {
+	newList := list.Clone()
+	for _, v := range more {
+		newList.doAppend(v)
+	}
+	return newList
+}
+
+func (list *XAppleList) doAppend(i Apple) {
+	list.m = append(list.m, i)
 }
 
 //-------------------------------------------------------------------------------------------------

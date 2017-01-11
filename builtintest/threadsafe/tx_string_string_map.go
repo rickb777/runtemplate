@@ -59,7 +59,7 @@ func NewTXStringStringMap(kv ...TXStringStringTuple) TXStringStringMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *TXStringStringMap) Keys() []string {
+func (mm TXStringStringMap) Keys() []string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -71,7 +71,7 @@ func (mm *TXStringStringMap) Keys() []string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TXStringStringMap) ToSlice() []TXStringStringTuple {
+func (mm TXStringStringMap) ToSlice() []TXStringStringTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -83,7 +83,7 @@ func (mm *TXStringStringMap) ToSlice() []TXStringStringTuple {
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *TXStringStringMap) Get(k string) (string, bool) {
+func (mm TXStringStringMap) Get(k string) (string, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -93,7 +93,7 @@ func (mm *TXStringStringMap) Get(k string) (string, bool) {
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *TXStringStringMap) Put(k string, v string) bool {
+func (mm TXStringStringMap) Put(k string, v string) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -103,7 +103,7 @@ func (mm *TXStringStringMap) Put(k string, v string) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *TXStringStringMap) ContainsKey(k string) bool {
+func (mm TXStringStringMap) ContainsKey(k string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -112,7 +112,7 @@ func (mm *TXStringStringMap) ContainsKey(k string) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *TXStringStringMap) ContainsAllKeys(kk ...string) bool {
+func (mm TXStringStringMap) ContainsAllKeys(kk ...string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -134,7 +134,7 @@ func (mm *TXStringStringMap) Clear() {
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *TXStringStringMap) Remove(k string) {
+func (mm TXStringStringMap) Remove(k string) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -142,7 +142,7 @@ func (mm *TXStringStringMap) Remove(k string) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *TXStringStringMap) Size() int {
+func (mm TXStringStringMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -150,12 +150,12 @@ func (mm *TXStringStringMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *TXStringStringMap) IsEmpty() bool {
+func (mm TXStringStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *TXStringStringMap) NonEmpty() bool {
+func (mm TXStringStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -165,7 +165,7 @@ func (mm *TXStringStringMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *TXStringStringMap) Forall(fn func(string, string) bool) bool {
+func (mm TXStringStringMap) Forall(fn func(string, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -180,7 +180,7 @@ func (mm *TXStringStringMap) Forall(fn func(string, string) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *TXStringStringMap) Exists(fn func(string, string) bool) bool {
+func (mm TXStringStringMap) Exists(fn func(string, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -194,7 +194,7 @@ func (mm *TXStringStringMap) Exists(fn func(string, string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *TXStringStringMap) Filter(fn func(string, string) bool) TXStringStringMap {
+func (mm TXStringStringMap) Filter(fn func(string, string) bool) TXStringStringMap {
 	result := NewTXStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -210,7 +210,7 @@ func (mm *TXStringStringMap) Filter(fn func(string, string) bool) TXStringString
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *TXStringStringMap) Partition(fn func(string, string) bool) (matching TXStringStringMap, others TXStringStringMap) {
+func (mm TXStringStringMap) Partition(fn func(string, string) bool) (matching TXStringStringMap, others TXStringStringMap) {
 	matching = NewTXStringStringMap()
 	others = NewTXStringStringMap()
 	mm.s.RLock()
@@ -230,7 +230,7 @@ func (mm *TXStringStringMap) Partition(fn func(string, string) bool) (matching T
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *TXStringStringMap) Equals(other TXStringStringMap) bool {
+func (mm TXStringStringMap) Equals(other TXStringStringMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -249,7 +249,7 @@ func (mm *TXStringStringMap) Equals(other TXStringStringMap) bool {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *TXStringStringMap) Clone() TXStringStringMap {
+func (mm TXStringStringMap) Clone() TXStringStringMap {
 	result := NewTXStringStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()

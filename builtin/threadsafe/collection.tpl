@@ -73,6 +73,14 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
 
+	{{if .Mutable}}
+	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
+	Remove({{.Type}}
+
+	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
+	Max() {{.Type}}
+
+	{{end -}}
 	{{if .Ordered}}
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() {{.Type}}

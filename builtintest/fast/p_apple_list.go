@@ -1,5 +1,5 @@
-// An encapsulated []Apple
-// Not thread-safe.
+// An encapsulated []Apple.
+// Thread-safe.
 //
 // Generated from list.tpl with Type=*Apple
 // options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=false
@@ -50,6 +50,7 @@ func BuildPAppleListFromChan(source <-chan *Apple) *PAppleList {
 
 // ToSlice returns the elements of the current set as a slice
 func (list *PAppleList) ToSlice() []*Apple {
+
 	var s []*Apple
 	for _, v := range list.m {
 		s = append(s, v)
@@ -64,21 +65,30 @@ func (list *PAppleList) Clone() *PAppleList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+func (list *PAppleList) Get(i int) *Apple {
+
+	return list.m[i]
+}
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list *PAppleList) Head() *Apple {
-	return list.m[0]
+	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
 func (list *PAppleList) Last() *Apple {
+
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
 func (list *PAppleList) Tail() *PAppleList {
+
 	result := newPAppleList(0, 0)
 	result.m = list.m[1:]
 	return result
@@ -87,6 +97,7 @@ func (list *PAppleList) Tail() *PAppleList {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list *PAppleList) Init() *PAppleList {
+
 	result := newPAppleList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
@@ -116,12 +127,14 @@ func (list *PAppleList) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *PAppleList) Size() int {
+
 	return len(list.m)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list *PAppleList) Len() int {
+
 	return len(list.m)
 }
 
@@ -129,6 +142,7 @@ func (list *PAppleList) Len() int {
 
 // Exists verifies that one or more elements of PAppleList return true for the passed func.
 func (list *PAppleList) Exists(fn func(*Apple) bool) bool {
+
 	for _, v := range list.m {
 		if fn(v) {
 			return true
@@ -139,6 +153,7 @@ func (list *PAppleList) Exists(fn func(*Apple) bool) bool {
 
 // Forall verifies that all elements of PAppleList return true for the passed func.
 func (list *PAppleList) Forall(fn func(*Apple) bool) bool {
+
 	for _, v := range list.m {
 		if !fn(v) {
 			return false
@@ -149,6 +164,7 @@ func (list *PAppleList) Forall(fn func(*Apple) bool) bool {
 
 // Foreach iterates over PAppleList and executes the passed func against each element.
 func (list *PAppleList) Foreach(fn func(*Apple)) {
+
 	for _, v := range list.m {
 		fn(v)
 	}
@@ -159,6 +175,7 @@ func (list *PAppleList) Foreach(fn func(*Apple)) {
 func (list *PAppleList) Send() <-chan *Apple {
 	ch := make(chan *Apple)
 	go func() {
+
 		for _, v := range list.m {
 			ch <- v
 		}
@@ -169,6 +186,7 @@ func (list *PAppleList) Send() <-chan *Apple {
 
 // Reverse returns a copy of PAppleList with all elements in the reverse order.
 func (list *PAppleList) Reverse() *PAppleList {
+
 	numItems := list.Len()
 	result := newPAppleList(numItems, numItems)
 	last := numItems - 1
@@ -189,11 +207,27 @@ func (list *PAppleList) Shuffle() *PAppleList {
 	return result
 }
 
+
+// Append returns a new list with all original items and all in `more`; they retain their order.
+// The original list is not altered.
+func (list *PAppleList) Append(more ...*Apple) *PAppleList {
+	newList := list.Clone()
+	for _, v := range more {
+		newList.doAppend(v)
+	}
+	return newList
+}
+
+func (list *PAppleList) doAppend(i *Apple) {
+	list.m = append(list.m, i)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of PAppleList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *PAppleList) Take(n int) *PAppleList {
+
 	if n > list.Len() {
 		return list
 	}
@@ -209,6 +243,7 @@ func (list *PAppleList) Drop(n int) *PAppleList {
 		return list
 	}
 
+
 	result := newPAppleList(0, 0)
 	l := list.Len()
 	if n < l {
@@ -220,6 +255,7 @@ func (list *PAppleList) Drop(n int) *PAppleList {
 // TakeLast returns a slice of PAppleList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *PAppleList) TakeLast(n int) *PAppleList {
+
 	l := list.Len()
 	if n > l {
 		return list
@@ -236,6 +272,7 @@ func (list *PAppleList) DropLast(n int) *PAppleList {
 		return list
 	}
 
+
 	l := list.Len()
 	if n > l {
 		list.m = list.m[l:]
@@ -249,6 +286,7 @@ func (list *PAppleList) DropLast(n int) *PAppleList {
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
 func (list *PAppleList) TakeWhile(p func(*Apple) bool) *PAppleList {
+
 	result := newPAppleList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
@@ -264,6 +302,7 @@ func (list *PAppleList) TakeWhile(p func(*Apple) bool) *PAppleList {
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
 func (list *PAppleList) DropWhile(p func(*Apple) bool) *PAppleList {
+
 	result := newPAppleList(0, 0)
 	adding := false
 
@@ -281,6 +320,7 @@ func (list *PAppleList) DropWhile(p func(*Apple) bool) *PAppleList {
 
 // Filter returns a new PAppleList whose elements return true for func.
 func (list *PAppleList) Filter(fn func(*Apple) bool) *PAppleList {
+
 	result := newPAppleList(0, list.Len()/2)
 
 	for _, v := range list.m {
@@ -297,6 +337,7 @@ func (list *PAppleList) Filter(fn func(*Apple) bool) *PAppleList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list *PAppleList) Partition(p func(*Apple) bool) (*PAppleList, *PAppleList) {
+
 	matching := newPAppleList(0, list.Len()/2)
 	others := newPAppleList(0, list.Len()/2)
 
@@ -313,6 +354,7 @@ func (list *PAppleList) Partition(p func(*Apple) bool) (*PAppleList, *PAppleList
 
 // CountBy gives the number elements of PAppleList that return true for the passed predicate.
 func (list *PAppleList) CountBy(predicate func(*Apple) bool) (result int) {
+
 	for _, v := range list.m {
 		if predicate(v) {
 			result++
@@ -325,6 +367,7 @@ func (list *PAppleList) CountBy(predicate func(*Apple) bool) (result int) {
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list *PAppleList) MinBy(less func(*Apple, *Apple) bool) *Apple {
+
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
@@ -336,7 +379,6 @@ func (list *PAppleList) MinBy(less func(*Apple, *Apple) bool) *Apple {
 			m = i
 		}
 	}
-
 	return list.m[m]
 }
 
@@ -344,11 +386,11 @@ func (list *PAppleList) MinBy(less func(*Apple, *Apple) bool) *Apple {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list *PAppleList) MaxBy(less func(*Apple, *Apple) bool) *Apple {
+
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
-
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {
@@ -361,6 +403,7 @@ func (list *PAppleList) MaxBy(less func(*Apple, *Apple) bool) *Apple {
 
 // DistinctBy returns a new PAppleList whose elements are unique, where equality is defined by a passed func.
 func (list *PAppleList) DistinctBy(equal func(*Apple, *Apple) bool) *PAppleList {
+
 	result := newPAppleList(0, list.Len())
 Outer:
 	for _, v := range list.m {
@@ -382,6 +425,7 @@ func (list *PAppleList) IndexWhere(p func(*Apple) bool) int {
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list *PAppleList) IndexWhere2(p func(*Apple) bool, from int) int {
+
 	for i, v := range list.m {
 		if i >= from && p(v) {
 			return i
@@ -399,6 +443,7 @@ func (list *PAppleList) LastIndexWhere(p func(*Apple) bool) int {
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list *PAppleList) LastIndexWhere2(p func(*Apple) bool, before int) int {
+
 	for i := list.Len() - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
@@ -416,6 +461,7 @@ func (list *PAppleList) LastIndexWhere2(p func(*Apple) bool, before int) int {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list *PAppleList) Equals(other *PAppleList) bool {
+
 	if list.Size() != other.Size() {
 		return false
 	}

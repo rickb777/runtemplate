@@ -63,7 +63,7 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -75,7 +75,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -87,7 +87,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool) {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -97,7 +97,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool
 
 {{if .Mutable}}
 // Put adds an item to the current map, replacing any prior value.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -108,7 +108,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) boo
 
 {{end -}}
 // ContainsKey determines if a given item is already in the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -117,7 +117,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -139,7 +139,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clear() {
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -148,7 +148,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 
 {{end -}}
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -156,12 +156,12 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) IsEmpty() bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -171,7 +171,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}}) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -186,7 +186,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}}) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -200,7 +200,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -216,7 +216,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching {{.UPrefix}}{{.UKey}}{{.UType}}Map, others {{.UPrefix}}{{.UKey}}{{.UType}}Map) {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching {{.UPrefix}}{{.UKey}}{{.UType}}Map, others {{.UPrefix}}{{.UKey}}{{.UType}}Map) {
 	matching = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	others = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
@@ -236,7 +236,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PT
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{{.UType}}Map) bool {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{{.UType}}Map) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -256,7 +256,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}
 
 {{end -}}
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -270,26 +270,26 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UT
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
+//func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
 
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""

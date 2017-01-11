@@ -17,11 +17,11 @@ package fast
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=int64  Stringer=true  Ordered=true  Numeric=true  Mutable=false
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=Apple  Stringer=false                             Mutable=true
 
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=X Key=int    Type=int    Mutable=true  Comparable=true Stringer=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=X Key=string Type=string Mutable=true  Comparable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=X Key=string Type=Apple  Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=X Key=Apple  Type=string Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=X Key=Apple  Type=Pear   Mutable=false
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=int    Type=int    Mutable=true  Comparable=true Stringer=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=string Mutable=true  Comparable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=Apple  Mutable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=Apple  Type=string Mutable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=Apple  Type=Pear   Mutable=false
 
 
 // Code generation with pointer values
@@ -35,20 +35,29 @@ package fast
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*int32  Stringer=true  Comparable=true Ordered=true  Numeric=true  Mutable=true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*Apple  Stringer=false Comparable=true                             Mutable=false
 
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=P Key=*int     Type=*int    Mutable=true  Comparable=true Stringer=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=P Key=*string  Type=*string Mutable=true  Comparable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=P Key=*string  Type=*Apple  Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=P Key=*Apple   Type=*string Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=P Key=*Apple   Type=*Pear   Mutable=false
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*int    Type=*int    Mutable=true  Comparable=true Stringer=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*string Type=*string Mutable=true  Comparable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*string Type=*Apple  Mutable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*Apple  Type=*string Mutable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*Apple  Type=*Pear   Mutable=false
 
 
-type Apple struct{}
-type Pear struct{}
+type Apple struct {
+	N int
+}
 
-//var _ StringCollection = NewStringList()
-//var _ Int32Collection = NewInt32List()
-//var _ AppleCollection = NewAppleList()
-//
-//var _ StringCollection = NewStringSet()
-//var _ Int32Collection = NewInt32Set()
-//var _ AppleCollection = NewAppleSet()
+type Pear struct{
+	K int
+}
+
+var _ XStringCollection = NewXStringList()
+var _ XInt32Collection = NewXInt32List()
+var _ XAppleCollection = NewXAppleList()
+
+var _ XStringCollection = NewXStringSet()
+var _ XInt32Collection = NewXInt32Set()
+var _ XAppleCollection = NewXAppleSet()
+
+var _ PStringCollection = NewPStringList()
+var _ PInt32Collection = NewPInt32List()
+var _ PAppleCollection = NewPAppleList()

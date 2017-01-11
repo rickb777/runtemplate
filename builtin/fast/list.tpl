@@ -1,5 +1,5 @@
-// An encapsulated []{{.Type}}
-// Not thread-safe.
+// An encapsulated []{{.Type}}.
+// Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
@@ -54,6 +54,7 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 
 // ToSlice returns the elements of the current set as a slice
 func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
+
 	var s []{{.PType}}
 	for _, v := range list.m {
 		s = append(s, v)
@@ -68,21 +69,30 @@ func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 
 //-------------------------------------------------------------------------------------------------
 
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
+
+	return list.m[i]
+}
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
-	return list.m[0]
+	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
 func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
+
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
 func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
+
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[1:]
 	return result
@@ -91,6 +101,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list *{{.UPrefix}}{{.UType}}List) Init() *{{.UPrefix}}{{.UType}}List {
+
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
@@ -120,12 +131,14 @@ func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *{{.UPrefix}}{{.UType}}List) Size() int {
+
 	return len(list.m)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list *{{.UPrefix}}{{.UType}}List) Len() int {
+
 	return len(list.m)
 }
 
@@ -133,6 +146,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
 func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
+
 	list.m[i], list.m[j] = list.m[j], list.m[i]
 }
 
@@ -141,6 +155,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list *{{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
+
 	for _, v := range list.m {
 		if fn(v) {
 			return true
@@ -151,6 +166,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
 
 // Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list *{{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
+
 	for _, v := range list.m {
 		if !fn(v) {
 			return false
@@ -161,6 +177,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
 
 // Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
+
 	for _, v := range list.m {
 		fn(v)
 	}
@@ -171,6 +188,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
+
 		for _, v := range list.m {
 			ch <- v
 		}
@@ -181,6 +199,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 
 // Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
+
 	numItems := list.Len()
 	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
 	last := numItems - 1
@@ -201,11 +220,38 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 	return result
 }
 
+{{if .Mutable}}
+// Append adds items to the current list, returning the modified list.
+func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+
+	for _, v := range more {
+		list.doAppend(v)
+	}
+	return list
+}
+
+{{else}}
+// Append returns a new list with all original items and all in `more`; they retain their order.
+// The original list is not altered.
+func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	newList := list.Clone()
+	for _, v := range more {
+		newList.doAppend(v)
+	}
+	return newList
+}
+
+{{end -}}
+func (list *{{.UPrefix}}{{.UType}}List) doAppend(i {{.PType}}) {
+	list.m = append(list.m, i)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List {
+
 	if n > list.Len() {
 		return list
 	}
@@ -221,6 +267,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 		return list
 	}
 
+
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	l := list.Len()
 	if n < l {
@@ -232,6 +279,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 // TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}List {
+
 	l := list.Len()
 	if n > l {
 		return list
@@ -248,6 +296,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 		return list
 	}
 
+
 	l := list.Len()
 	if n > l {
 		list.m = list.m[l:]
@@ -261,6 +310,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
 func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	for _, v := range list.m {
 		if p(v) {
@@ -276,6 +326,7 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.U
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
 func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	adding := false
 
@@ -293,6 +344,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
 func (list *{{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
 	result := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
 
 	for _, v := range list.m {
@@ -309,6 +361,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) *{{.UPr
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.UPrefix}}{{.UType}}List, *{{.UPrefix}}{{.UType}}List) {
+
 	matching := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
 	others := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
 
@@ -325,6 +378,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
 func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) (result int) {
+
 	for _, v := range list.m {
 		if predicate(v) {
 			result++
@@ -337,6 +391,7 @@ func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool)
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list *{{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
@@ -348,7 +403,6 @@ func (list *{{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) 
 			m = i
 		}
 	}
-
 	return list.m[m]
 }
 
@@ -356,11 +410,11 @@ func (list *{{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) 
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
-
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {
@@ -373,6 +427,7 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 
 // DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
 func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
 	result := new{{.UPrefix}}{{.UType}}List(0, list.Len())
 Outer:
 	for _, v := range list.m {
@@ -394,6 +449,7 @@ func (list *{{.UPrefix}}{{.UType}}List) IndexWhere(p func({{.PType}}) bool) int 
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from int) int {
+
 	for i, v := range list.m {
 		if i >= from && p(v) {
 			return i
@@ -411,6 +467,7 @@ func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
+
 	for i := list.Len() - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
@@ -426,6 +483,7 @@ func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool,
 
 // Sum returns the sum of all the elements in the list.
 func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
+
 	sum := {{.Type}}(0)
 	for _, v := range list.m {
 		sum = sum + {{.TypeStar}}v
@@ -442,6 +500,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
+
 	if list.Size() != other.Size() {
 		return false
 	}
@@ -463,6 +522,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
+
 	m := list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
 		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
@@ -472,6 +532,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
+
 	m := list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
 		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
@@ -503,6 +564,8 @@ func (list *{{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 func (list *{{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
+
+
 	l := list.Len()
 	if l > 0 {
 		v := list.m[0]

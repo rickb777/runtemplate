@@ -1,5 +1,5 @@
-// An encapsulated []string
-// Not thread-safe.
+// An encapsulated []string.
+// Thread-safe.
 //
 // Generated from list.tpl with Type=string
 // options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=true
@@ -53,6 +53,7 @@ func BuildXStringListFromChan(source <-chan string) *XStringList {
 
 // ToSlice returns the elements of the current set as a slice
 func (list *XStringList) ToSlice() []string {
+
 	var s []string
 	for _, v := range list.m {
 		s = append(s, v)
@@ -67,21 +68,30 @@ func (list *XStringList) Clone() *XStringList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+func (list *XStringList) Get(i int) string {
+
+	return list.m[i]
+}
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list *XStringList) Head() string {
-	return list.m[0]
+	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
 func (list *XStringList) Last() string {
+
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
 func (list *XStringList) Tail() *XStringList {
+
 	result := newXStringList(0, 0)
 	result.m = list.m[1:]
 	return result
@@ -90,6 +100,7 @@ func (list *XStringList) Tail() *XStringList {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list *XStringList) Init() *XStringList {
+
 	result := newXStringList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
@@ -119,12 +130,14 @@ func (list *XStringList) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *XStringList) Size() int {
+
 	return len(list.m)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list *XStringList) Len() int {
+
 	return len(list.m)
 }
 
@@ -132,6 +145,7 @@ func (list *XStringList) Len() int {
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
 func (list *XStringList) Swap(i, j int) {
+
 	list.m[i], list.m[j] = list.m[j], list.m[i]
 }
 
@@ -139,6 +153,7 @@ func (list *XStringList) Swap(i, j int) {
 
 // Exists verifies that one or more elements of XStringList return true for the passed func.
 func (list *XStringList) Exists(fn func(string) bool) bool {
+
 	for _, v := range list.m {
 		if fn(v) {
 			return true
@@ -149,6 +164,7 @@ func (list *XStringList) Exists(fn func(string) bool) bool {
 
 // Forall verifies that all elements of XStringList return true for the passed func.
 func (list *XStringList) Forall(fn func(string) bool) bool {
+
 	for _, v := range list.m {
 		if !fn(v) {
 			return false
@@ -159,6 +175,7 @@ func (list *XStringList) Forall(fn func(string) bool) bool {
 
 // Foreach iterates over XStringList and executes the passed func against each element.
 func (list *XStringList) Foreach(fn func(string)) {
+
 	for _, v := range list.m {
 		fn(v)
 	}
@@ -169,6 +186,7 @@ func (list *XStringList) Foreach(fn func(string)) {
 func (list *XStringList) Send() <-chan string {
 	ch := make(chan string)
 	go func() {
+
 		for _, v := range list.m {
 			ch <- v
 		}
@@ -179,6 +197,7 @@ func (list *XStringList) Send() <-chan string {
 
 // Reverse returns a copy of XStringList with all elements in the reverse order.
 func (list *XStringList) Reverse() *XStringList {
+
 	numItems := list.Len()
 	result := newXStringList(numItems, numItems)
 	last := numItems - 1
@@ -199,11 +218,26 @@ func (list *XStringList) Shuffle() *XStringList {
 	return result
 }
 
+
+// Append adds items to the current list, returning the modified list.
+func (list *XStringList) Append(more ...string) *XStringList {
+
+	for _, v := range more {
+		list.doAppend(v)
+	}
+	return list
+}
+
+func (list *XStringList) doAppend(i string) {
+	list.m = append(list.m, i)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of XStringList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *XStringList) Take(n int) *XStringList {
+
 	if n > list.Len() {
 		return list
 	}
@@ -219,6 +253,7 @@ func (list *XStringList) Drop(n int) *XStringList {
 		return list
 	}
 
+
 	result := newXStringList(0, 0)
 	l := list.Len()
 	if n < l {
@@ -230,6 +265,7 @@ func (list *XStringList) Drop(n int) *XStringList {
 // TakeLast returns a slice of XStringList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *XStringList) TakeLast(n int) *XStringList {
+
 	l := list.Len()
 	if n > l {
 		return list
@@ -246,6 +282,7 @@ func (list *XStringList) DropLast(n int) *XStringList {
 		return list
 	}
 
+
 	l := list.Len()
 	if n > l {
 		list.m = list.m[l:]
@@ -259,6 +296,7 @@ func (list *XStringList) DropLast(n int) *XStringList {
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
 func (list *XStringList) TakeWhile(p func(string) bool) *XStringList {
+
 	result := newXStringList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
@@ -274,6 +312,7 @@ func (list *XStringList) TakeWhile(p func(string) bool) *XStringList {
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
 func (list *XStringList) DropWhile(p func(string) bool) *XStringList {
+
 	result := newXStringList(0, 0)
 	adding := false
 
@@ -291,6 +330,7 @@ func (list *XStringList) DropWhile(p func(string) bool) *XStringList {
 
 // Filter returns a new XStringList whose elements return true for func.
 func (list *XStringList) Filter(fn func(string) bool) *XStringList {
+
 	result := newXStringList(0, list.Len()/2)
 
 	for _, v := range list.m {
@@ -307,6 +347,7 @@ func (list *XStringList) Filter(fn func(string) bool) *XStringList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list *XStringList) Partition(p func(string) bool) (*XStringList, *XStringList) {
+
 	matching := newXStringList(0, list.Len()/2)
 	others := newXStringList(0, list.Len()/2)
 
@@ -323,6 +364,7 @@ func (list *XStringList) Partition(p func(string) bool) (*XStringList, *XStringL
 
 // CountBy gives the number elements of XStringList that return true for the passed predicate.
 func (list *XStringList) CountBy(predicate func(string) bool) (result int) {
+
 	for _, v := range list.m {
 		if predicate(v) {
 			result++
@@ -335,6 +377,7 @@ func (list *XStringList) CountBy(predicate func(string) bool) (result int) {
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list *XStringList) MinBy(less func(string, string) bool) string {
+
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
@@ -346,7 +389,6 @@ func (list *XStringList) MinBy(less func(string, string) bool) string {
 			m = i
 		}
 	}
-
 	return list.m[m]
 }
 
@@ -354,11 +396,11 @@ func (list *XStringList) MinBy(less func(string, string) bool) string {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list *XStringList) MaxBy(less func(string, string) bool) string {
+
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
-
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {
@@ -371,6 +413,7 @@ func (list *XStringList) MaxBy(less func(string, string) bool) string {
 
 // DistinctBy returns a new XStringList whose elements are unique, where equality is defined by a passed func.
 func (list *XStringList) DistinctBy(equal func(string, string) bool) *XStringList {
+
 	result := newXStringList(0, list.Len())
 Outer:
 	for _, v := range list.m {
@@ -392,6 +435,7 @@ func (list *XStringList) IndexWhere(p func(string) bool) int {
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list *XStringList) IndexWhere2(p func(string) bool, from int) int {
+
 	for i, v := range list.m {
 		if i >= from && p(v) {
 			return i
@@ -409,6 +453,7 @@ func (list *XStringList) LastIndexWhere(p func(string) bool) int {
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list *XStringList) LastIndexWhere2(p func(string) bool, before int) int {
+
 	for i := list.Len() - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
@@ -426,6 +471,7 @@ func (list *XStringList) LastIndexWhere2(p func(string) bool, before int) int {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list *XStringList) Equals(other *XStringList) bool {
+
 	if list.Size() != other.Size() {
 		return false
 	}
@@ -456,6 +502,8 @@ func (list *XStringList) MkString(sep string) string {
 func (list *XStringList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
+
+
 	l := list.Len()
 	if l > 0 {
 		v := list.m[0]

@@ -1,51 +1,54 @@
-// An encapsulated map[string]Apple
-// Not thread-safe.
+// An encapsulated map[Apple]string.
+// Thread-safe.
 //
-// Generated from map.tpl with Key=string Type=Apple
+// Generated from map.tpl with Key=Apple Type=string
 // options: Comparable=<no value> Stringer=<no value> Mutable=true
 
 package fast
 
-// XStringAppleMap is the primary type that represents a map
-type XStringAppleMap struct {
-	m map[string]Apple
+import (
+)
+
+// TPAppleStringMap is the primary type that represents a thread-safe map
+type TPAppleStringMap struct {
+	m map[*Apple]*string
 }
 
-// XStringAppleTuple represents a key/value pair.
-type XStringAppleTuple struct {
-	Key string
-	Val Apple
+// TPAppleStringTuple represents a key/value pair.
+type TPAppleStringTuple struct {
+	Key *Apple
+	Val *string
 }
 
-// XStringAppleTuples can be used as a builder for unmodifiable maps.
-type XStringAppleTuples []XStringAppleTuple
+// TPAppleStringTuples can be used as a builder for unmodifiable maps.
+type TPAppleStringTuples []TPAppleStringTuple
 
-func (ts XStringAppleTuples) Append1(k string, v Apple) XStringAppleTuples {
-	return append(ts, XStringAppleTuple{k, v})
+func (ts TPAppleStringTuples) Append1(k *Apple, v *string) TPAppleStringTuples {
+	return append(ts, TPAppleStringTuple{k, v})
 }
 
-func (ts XStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) XStringAppleTuples {
-	return append(ts, XStringAppleTuple{k1, v1}, XStringAppleTuple{k2, v2})
+func (ts TPAppleStringTuples) Append2(k1 *Apple, v1 *string, k2 *Apple, v2 *string) TPAppleStringTuples {
+	return append(ts, TPAppleStringTuple{k1, v1}, TPAppleStringTuple{k2, v2})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newXStringAppleMap() *XStringAppleMap {
-	return &XStringAppleMap{
-		make(map[string]Apple),
+func newTPAppleStringMap() TPAppleStringMap {
+	return TPAppleStringMap{
+		m: make(map[*Apple]*string),
 	}
 }
 
-// NewXStringAppleMap creates and returns a reference to a map containing one item.
-func NewXStringAppleMap1(k string, v Apple) *XStringAppleMap {
-	mm := newXStringAppleMap()
+// NewTPAppleStringMap creates and returns a reference to a map containing one item.
+func NewTPAppleStringMap1(k *Apple, v *string) TPAppleStringMap {
+	mm := newTPAppleStringMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewXStringAppleMap creates and returns a reference to a map, optionally containing some items.
-func NewXStringAppleMap(kv ...XStringAppleTuple) *XStringAppleMap {
-	mm := newXStringAppleMap()
+// NewTPAppleStringMap creates and returns a reference to a map, optionally containing some items.
+func NewTPAppleStringMap(kv ...TPAppleStringTuple) TPAppleStringMap {
+	mm := newTPAppleStringMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -53,8 +56,9 @@ func NewXStringAppleMap(kv ...XStringAppleTuple) *XStringAppleMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *XStringAppleMap) Keys() []string {
-	var s []string
+func (mm TPAppleStringMap) Keys() []*Apple {
+
+	var s []*Apple
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -62,36 +66,41 @@ func (mm *XStringAppleMap) Keys() []string {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *XStringAppleMap) ToSlice() []XStringAppleTuple {
-	var s []XStringAppleTuple
+func (mm TPAppleStringMap) ToSlice() []TPAppleStringTuple {
+
+	var s []TPAppleStringTuple
 	for k, v := range mm.m {
-		s = append(s, XStringAppleTuple{k, v})
+		s = append(s, TPAppleStringTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *XStringAppleMap) Get(k string) (Apple, bool) {
+func (mm TPAppleStringMap) Get(k *Apple) (*string, bool) {
+
 	v, found := mm.m[k]
 	return v, found
 }
 
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm *XStringAppleMap) Put(k string, v Apple) bool {
+func (mm TPAppleStringMap) Put(k *Apple, v *string) bool {
+
 	_, found := mm.m[k]
 	mm.m[k] = v
 	return !found //False if it existed already
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *XStringAppleMap) ContainsKey(k string) bool {
+func (mm TPAppleStringMap) ContainsKey(k *Apple) bool {
+
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *XStringAppleMap) ContainsAllKeys(kk ...string) bool {
+func (mm TPAppleStringMap) ContainsAllKeys(kk ...*Apple) bool {
+
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -102,27 +111,30 @@ func (mm *XStringAppleMap) ContainsAllKeys(kk ...string) bool {
 
 
 // Clear clears the entire map.
-func (mm *XStringAppleMap) Clear() {
-	mm.m = make(map[string]Apple)
+func (mm *TPAppleStringMap) Clear() {
+
+	mm.m = make(map[*Apple]*string)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm *XStringAppleMap) Remove(k string) {
+func (mm TPAppleStringMap) Remove(k *Apple) {
+
 	delete(mm.m, k)
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *XStringAppleMap) Size() int {
+func (mm TPAppleStringMap) Size() int {
+
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *XStringAppleMap) IsEmpty() bool {
+func (mm TPAppleStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *XStringAppleMap) NonEmpty() bool {
+func (mm TPAppleStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
@@ -132,7 +144,8 @@ func (mm *XStringAppleMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *XStringAppleMap) Forall(fn func(string, Apple) bool) bool {
+func (mm TPAppleStringMap) Forall(fn func(*Apple, *string) bool) bool {
+
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -144,7 +157,8 @@ func (mm *XStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *XStringAppleMap) Exists(fn func(string, Apple) bool) bool {
+func (mm TPAppleStringMap) Exists(fn func(*Apple, *string) bool) bool {
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -155,8 +169,9 @@ func (mm *XStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *XStringAppleMap) Filter(fn func(string, Apple) bool) *XStringAppleMap {
-	result := NewXStringAppleMap()
+func (mm TPAppleStringMap) Filter(fn func(*Apple, *string) bool) TPAppleStringMap {
+	result := NewTPAppleStringMap()
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			result.m[k] = v
@@ -168,9 +183,10 @@ func (mm *XStringAppleMap) Filter(fn func(string, Apple) bool) *XStringAppleMap 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *XStringAppleMap) Partition(fn func(string, Apple) bool) (matching *XStringAppleMap, others *XStringAppleMap) {
-	matching = NewXStringAppleMap()
-	others = NewXStringAppleMap()
+func (mm TPAppleStringMap) Partition(fn func(*Apple, *string) bool) (matching TPAppleStringMap, others TPAppleStringMap) {
+	matching = NewTPAppleStringMap()
+	others = NewTPAppleStringMap()
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			matching.m[k] = v
@@ -182,8 +198,9 @@ func (mm *XStringAppleMap) Partition(fn func(string, Apple) bool) (matching *XSt
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm *XStringAppleMap) Clone() *XStringAppleMap {
-	result := NewXStringAppleMap()
+func (mm TPAppleStringMap) Clone() TPAppleStringMap {
+	result := NewTPAppleStringMap()
+
 	for k, v := range mm.m {
 		result.m[k] = v
 	}
