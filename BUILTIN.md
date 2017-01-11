@@ -70,7 +70,7 @@ Example use:
 
 The generated code is a simple wrapper around a map of the key and type. It not suitable for access by more than one goroutine at a time.
 
-Examples: [IntIntMap](builtintest/simple/sx_int_int_list.go), [StringStringMap](builtintest/simple/x_string_string_map.go)
+Examples: [IntIntMap](builtintest/simple/sx_int_int_map.go), [StringStringMap](builtintest/simple/sx_string_string_map.go)
 
 
 ### simple/set.tpl
@@ -84,7 +84,7 @@ Example use:
 //go:generate runtemplate -tpl simple/set.tpl Type=int32 Stringer=true Numeric=true
 ```
 
-The generated code is simple wrapper around a map of the key and type. It is not suitable for access by more than one goroutine at a time.
+The generated code is simple wrapper around a map of the type. It is not suitable for access by more than one goroutine at a time.
 
 Examples: [Int32Set](builtintest/simple/x_int32_set.go), [StringSet](builtintest/simple/x_string_set.go)
 
