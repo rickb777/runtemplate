@@ -26,23 +26,25 @@ The built-in collections support a small number of flags that allow you to contr
  * `Stringer=true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
  * `Mutable=true` - use this to include mutation methods; omit this if you need immutable collections. (Note that the simple collections are inherently mutable.)
 
-See [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
-[Comparison operators](https://golang.org/ref/spec#Comparison_operators).
+The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
+[Comparison operators](https://golang.org/ref/spec#Comparison_operators). If you set a flag that is impossible for the chosen data type, the generated code won't compile, but no other bad thing will happen; so it will soon become obvious.
 
 ## 1. Direct Use of Go Slices and Maps
 
-There are three categories of collection. The simplest kind directly use Go's slices and maps. There is a List type derived from Go slices: this template produces a type-safe slice for your chosen type and provides useful methods for handling its data. Similarly, the Map and Set types are derived from Go maps.
+There are three categories of collection. The simplest category, described first, directly use Go's slices and maps.
 
-Because their base types are Go reference types, the generated types are also reference types, so you will never need to create pointers to them.
+There is a List type derived from Go slices: this template produces a type-safe slice for your chosen type and provides useful methods for handling its data. Similarly, the Map and Set types are derived from Go maps.
 
-These collections are always mutable and do not attempt to encapsulate the underlying Go slice/map. So feel free to access these via their base type slice/map when necessary.
+Because their base types are Go reference types, the generated types are also reference types, so you will never *need* to create pointers to them.
+
+This category of collections are always mutable and do not attempt to encapsulate the underlying Go slice/map. So feel free to access these via their base type slice/map when necessary.
 
 
 ### simple/list.tpl
 
 This template generates a `<Type>List` for some specified type. The type can be a pointer to a type if preferred.
 
-The supported options are: Comparable, Ordered, Numeric, Stringer.
+The supported options are: Comparable, Ordered, Numeric, Stringer. The generated types are always mutable.
 
 Example use:
 
@@ -59,7 +61,7 @@ Examples: [Int32List](builtintest/simple/x_int32_list.go), [StringList](builtint
 
 This template generates a `<Key><Type>Map` for some specified type. It accepts both user-defined and built-in Go types.
 
-The supported options are: Comparable, Numeric, Stringer.
+The supported options are: Comparable, Numeric, Stringer. The generated types are always mutable.
 
 Example use:
 ```
@@ -75,7 +77,7 @@ Examples: [IntIntMap](builtintest/simple/sx_int_int_list.go), [StringStringMap](
 
 This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would rarely be of any value).
 
-The supported options are: Numeric, Stringer.
+The supported options are: Numeric, Stringer. The generated types are always mutable.
 
 Example use:
 ```

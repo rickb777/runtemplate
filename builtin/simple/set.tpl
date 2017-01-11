@@ -11,8 +11,6 @@ import (
 	"bytes"
 	"fmt"
 )
-{{else}}
-// Stringer is not supported.
 
 {{end -}}
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set

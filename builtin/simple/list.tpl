@@ -7,11 +7,11 @@
 package {{.Package}}
 
 import (
+	"math/rand"
 {{if .Stringer}}
 	"bytes"
 	"fmt"
 {{end -}}
-	"math/rand"
 )
 
 // {{.UPrefix}}{{.UType}}List is a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
