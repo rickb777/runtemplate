@@ -36,9 +36,7 @@ func new{{.UPrefix}}{{.UType}}List(len, cap int) *{{.UPrefix}}{{.UType}}List {
 // New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
-	for i, v := range values {
-		result.m[i] = v
-	}
+    copy(result.m, values)
 	return result
 }
 
@@ -136,7 +134,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Less and Swap).
 func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 
 	return len(list.m)
@@ -144,7 +142,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 
 {{if .Mutable}}
 // Swap exchanges two elements, which is necessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Len and Less).
 func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
@@ -221,7 +219,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 // Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 
-	numItems := list.Len()
+	numItems := len(list.m)
 	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list.m {
@@ -232,8 +230,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 
 // Shuffle returns a shuffled copy of {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
 func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(result.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
@@ -250,9 +248,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
 // Append adds items to the current list, returning the modified list.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 
-	for _, v := range more {
-		list.doAppend(v)
-	}
+    list.doAppend(more...)
 	return list
 }
 
@@ -261,15 +257,13 @@ func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}
 // The original list is not altered.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	newList := list.Clone()
-	for _, v := range more {
-		newList.doAppend(v)
-	}
+    newList.doAppend(more...)
 	return newList
 }
 
 {{end -}}
-func (list *{{.UPrefix}}{{.UType}}List) doAppend(i {{.PType}}) {
-	list.m = append(list.m, i)
+func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) {
+	list.m = append(list.m, more...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -417,8 +411,8 @@ func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool)
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
 
-// Less returns true if the element at index i is less than the element at index j. This implements
-// one of the methods needed by sort.Interface.
+// Less returns true if the element at index i is less than the element at index j.
+// This implements one of the methods needed by sort.Interface (along with Len and Swap).
 // Panics if i or j is out of range.
 func (list *{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
 	return {{.TypeStar}}list.m[i] < {{.TypeStar}}list.m[j]
@@ -540,14 +534,17 @@ func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, fro
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
 
-	for i := list.Len() - 1; i >= 0; i-- {
+	if before < 0 {
+		before = len(list.m)
+	}
+	for i := len(list.m) - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
 			return i

@@ -35,9 +35,7 @@ func newPAppleList(len, cap int) *PAppleList {
 // NewPAppleList constructs a new list containing the supplied values, if any.
 func NewPAppleList(values ...*Apple) *PAppleList {
 	result := newPAppleList(len(values), len(values))
-	for i, v := range values {
-		result.m[i] = v
-	}
+    copy(result.m, values)
 	return result
 }
 
@@ -147,7 +145,7 @@ func (list *PAppleList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Less and Swap).
 func (list *PAppleList) Len() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -236,7 +234,7 @@ func (list *PAppleList) Reverse() *PAppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	numItems := list.Len()
+	numItems := len(list.m)
 	result := newPAppleList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list.m {
@@ -247,8 +245,8 @@ func (list *PAppleList) Reverse() *PAppleList {
 
 // Shuffle returns a shuffled copy of PAppleList, using a version of the Fisher-Yates shuffle.
 func (list *PAppleList) Shuffle() *PAppleList {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(result.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
@@ -261,14 +259,12 @@ func (list *PAppleList) Shuffle() *PAppleList {
 // The original list is not altered.
 func (list *PAppleList) Append(more ...*Apple) *PAppleList {
 	newList := list.Clone()
-	for _, v := range more {
-		newList.doAppend(v)
-	}
+    newList.doAppend(more...)
 	return newList
 }
 
-func (list *PAppleList) doAppend(i *Apple) {
-	list.m = append(list.m, i)
+func (list *PAppleList) doAppend(more ...*Apple) {
+	list.m = append(list.m, more...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -512,16 +508,19 @@ func (list *PAppleList) IndexWhere2(p func(*Apple) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *PAppleList) LastIndexWhere(p func(*Apple) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list *PAppleList) LastIndexWhere2(p func(*Apple) bool, before int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	for i := list.Len() - 1; i >= 0; i-- {
+	if before < 0 {
+		before = len(list.m)
+	}
+	for i := len(list.m) - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
 			return i

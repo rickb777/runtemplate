@@ -35,9 +35,7 @@ func newPStringList(len, cap int) *PStringList {
 // NewPStringList constructs a new list containing the supplied values, if any.
 func NewPStringList(values ...*string) *PStringList {
 	result := newPStringList(len(values), len(values))
-	for i, v := range values {
-		result.m[i] = v
-	}
+    copy(result.m, values)
 	return result
 }
 
@@ -135,7 +133,7 @@ func (list *PStringList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Less and Swap).
 func (list *PStringList) Len() int {
 
 	return len(list.m)
@@ -143,7 +141,7 @@ func (list *PStringList) Len() int {
 
 
 // Swap exchanges two elements, which is necessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Len and Less).
 func (list *PStringList) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
@@ -218,7 +216,7 @@ func (list *PStringList) Send() <-chan *string {
 // Reverse returns a copy of PStringList with all elements in the reverse order.
 func (list *PStringList) Reverse() *PStringList {
 
-	numItems := list.Len()
+	numItems := len(list.m)
 	result := newPStringList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list.m {
@@ -229,8 +227,8 @@ func (list *PStringList) Reverse() *PStringList {
 
 // Shuffle returns a shuffled copy of PStringList, using a version of the Fisher-Yates shuffle.
 func (list *PStringList) Shuffle() *PStringList {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(result.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
@@ -247,14 +245,12 @@ func (list *PStringList) Add(more ...*string) {
 // Append adds items to the current list, returning the modified list.
 func (list *PStringList) Append(more ...*string) *PStringList {
 
-	for _, v := range more {
-		list.doAppend(v)
-	}
+    list.doAppend(more...)
 	return list
 }
 
-func (list *PStringList) doAppend(i *string) {
-	list.m = append(list.m, i)
+func (list *PStringList) doAppend(more ...*string) {
+	list.m = append(list.m, more...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -472,14 +468,17 @@ func (list *PStringList) IndexWhere2(p func(*string) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *PStringList) LastIndexWhere(p func(*string) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list *PStringList) LastIndexWhere2(p func(*string) bool, before int) int {
 
-	for i := list.Len() - 1; i >= 0; i-- {
+	if before < 0 {
+		before = len(list.m)
+	}
+	for i := len(list.m) - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
 			return i

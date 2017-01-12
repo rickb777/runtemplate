@@ -144,6 +144,14 @@ func testContains(t *testing.T, a XInt32Collection) {
 	if !(a.Contains(13) && a.Contains(7) && a.Contains(1)) {
 		t.Error("should contain 13, 7, 1")
 	}
+
+	if !a.ContainsAll(1, 7, 13) {
+		t.Error("should contain all 1, 7, 13")
+	}
+
+	if a.ContainsAll(1, 3, 5, 7, 9, 11, 13) {
+		t.Error("should not contain all 1, 3, 5, 7, 9, 11, 13")
+	}
 }
 
 func TestMinMaxSum(t *testing.T) {

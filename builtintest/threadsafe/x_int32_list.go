@@ -38,9 +38,7 @@ func newXInt32List(len, cap int) *XInt32List {
 // NewXInt32List constructs a new list containing the supplied values, if any.
 func NewXInt32List(values ...int32) *XInt32List {
 	result := newXInt32List(len(values), len(values))
-	for i, v := range values {
-		result.m[i] = v
-	}
+    copy(result.m, values)
 	return result
 }
 
@@ -150,7 +148,7 @@ func (list *XInt32List) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Less and Swap).
 func (list *XInt32List) Len() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -160,7 +158,7 @@ func (list *XInt32List) Len() int {
 
 
 // Swap exchanges two elements, which is necessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
+// This implements one of the methods needed by sort.Interface (along with Len and Less).
 func (list *XInt32List) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -249,7 +247,7 @@ func (list *XInt32List) Reverse() *XInt32List {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	numItems := list.Len()
+	numItems := len(list.m)
 	result := newXInt32List(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list.m {
@@ -260,8 +258,8 @@ func (list *XInt32List) Reverse() *XInt32List {
 
 // Shuffle returns a shuffled copy of XInt32List, using a version of the Fisher-Yates shuffle.
 func (list *XInt32List) Shuffle() *XInt32List {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(result.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
@@ -280,14 +278,12 @@ func (list *XInt32List) Append(more ...int32) *XInt32List {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	for _, v := range more {
-		list.doAppend(v)
-	}
+    list.doAppend(more...)
 	return list
 }
 
-func (list *XInt32List) doAppend(i int32) {
-	list.m = append(list.m, i)
+func (list *XInt32List) doAppend(more ...int32) {
+	list.m = append(list.m, more...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -453,8 +449,8 @@ func (list *XInt32List) CountBy(predicate func(int32) bool) (result int) {
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int32 is ordered.
 
-// Less returns true if the element at index i is less than the element at index j. This implements
-// one of the methods needed by sort.Interface.
+// Less returns true if the element at index i is less than the element at index j.
+// This implements one of the methods needed by sort.Interface (along with Len and Swap).
 // Panics if i or j is out of range.
 func (list *XInt32List) Less(i, j int) bool {
 	return list.m[i] < list.m[j]
@@ -544,16 +540,19 @@ func (list *XInt32List) IndexWhere2(p func(int32) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *XInt32List) LastIndexWhere(p func(int32) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list *XInt32List) LastIndexWhere2(p func(int32) bool, before int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	for i := list.Len() - 1; i >= 0; i-- {
+	if before < 0 {
+		before = len(list.m)
+	}
+	for i := len(list.m) - 1; i >= 0; i-- {
 		v := list.m[i]
 		if i <= before && p(v) {
 			return i
