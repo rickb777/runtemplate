@@ -29,7 +29,7 @@ type XInt32List struct {
 //-------------------------------------------------------------------------------------------------
 
 func newXInt32List(len, cap int) *XInt32List {
-	return &XInt32List{
+	return &XInt32List {
 		s: &sync.RWMutex{},
 		m: make([]int32, len, cap),
 	}
@@ -170,6 +170,28 @@ func (list *XInt32List) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
+
+// Contains determines if a given item is already in the list.
+func (list *XInt32List) Contains(v int32) bool {
+	return list.Exists(func (x int32) bool {
+	    return x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *XInt32List) ContainsAll(i ...int32) bool {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
 // Exists verifies that one or more elements of XInt32List return true for the passed func.
 func (list *XInt32List) Exists(fn func(int32) bool) bool {
 	list.s.RLock()
@@ -247,6 +269,11 @@ func (list *XInt32List) Shuffle() *XInt32List {
 	return result
 }
 
+
+// Add adds items to the current list. This is a synonym for Append.
+func (list *XInt32List) Add(more ...int32) {
+    list.Append(more...)
+}
 
 // Append adds items to the current list, returning the modified list.
 func (list *XInt32List) Append(more ...int32) *XInt32List {

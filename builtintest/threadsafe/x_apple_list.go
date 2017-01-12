@@ -26,7 +26,7 @@ type XAppleList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newXAppleList(len, cap int) *XAppleList {
-	return &XAppleList{
+	return &XAppleList {
 		s: &sync.RWMutex{},
 		m: make([]Apple, len, cap),
 	}
@@ -156,6 +156,28 @@ func (list *XAppleList) Len() int {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+
+// Contains determines if a given item is already in the list.
+func (list *XAppleList) Contains(v Apple) bool {
+	return list.Exists(func (x Apple) bool {
+	    return x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *XAppleList) ContainsAll(i ...Apple) bool {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
 
 // Exists verifies that one or more elements of XAppleList return true for the passed func.
 func (list *XAppleList) Exists(fn func(Apple) bool) bool {

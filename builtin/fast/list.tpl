@@ -28,7 +28,7 @@ type {{.UPrefix}}{{.UType}}List struct {
 //-------------------------------------------------------------------------------------------------
 
 func new{{.UPrefix}}{{.UType}}List(len, cap int) *{{.UPrefix}}{{.UType}}List {
-	return &{{.UPrefix}}{{.UType}}List{
+	return &{{.UPrefix}}{{.UType}}List {
 		m: make([]{{.PType}}, len, cap),
 	}
 }
@@ -153,6 +153,27 @@ func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 {{end -}}
 //-------------------------------------------------------------------------------------------------
 
+{{if .Comparable}}
+// Contains determines if a given item is already in the list.
+func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
+	return list.Exists(func (x {{.PType}}) bool {
+	    return {{.TypeStar}}x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
+{{end -}}
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list *{{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
 
@@ -221,6 +242,11 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 }
 
 {{if .Mutable}}
+// Add adds items to the current list. This is a synonym for Append.
+func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
+    list.Append(more...)
+}
+
 // Append adds items to the current list, returning the modified list.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 

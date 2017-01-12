@@ -27,7 +27,7 @@ type PInt32List struct {
 //-------------------------------------------------------------------------------------------------
 
 func newPInt32List(len, cap int) *PInt32List {
-	return &PInt32List{
+	return &PInt32List {
 		m: make([]*int32, len, cap),
 	}
 }
@@ -151,6 +151,26 @@ func (list *PInt32List) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
+
+// Contains determines if a given item is already in the list.
+func (list *PInt32List) Contains(v int32) bool {
+	return list.Exists(func (x *int32) bool {
+	    return *x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *PInt32List) ContainsAll(i ...int32) bool {
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
 // Exists verifies that one or more elements of PInt32List return true for the passed func.
 func (list *PInt32List) Exists(fn func(*int32) bool) bool {
 
@@ -218,6 +238,11 @@ func (list *PInt32List) Shuffle() *PInt32List {
 	return result
 }
 
+
+// Add adds items to the current list. This is a synonym for Append.
+func (list *PInt32List) Add(more ...*int32) {
+    list.Append(more...)
+}
 
 // Append adds items to the current list, returning the modified list.
 func (list *PInt32List) Append(more ...*int32) *PInt32List {

@@ -59,7 +59,7 @@ type XStringCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan string
 
-	// CountBy gives the number elements of XStringCollection that return true for the passed predicate.
+    // CountBy gives the number elements of XStringCollection that return true for the passed predicate.
 	CountBy(predicate func(string) bool) int
 
 	// MinBy returns an element of XStringCollection containing the minimum value, when compared to other elements
@@ -72,9 +72,11 @@ type XStringCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(string, string) bool) string
 
-	
-	// ContainsAll determines if two collections have the same size and contain the same items.
-	// The order of items does not matter.
-	//TODO ContainsAll(other StringCollection) bool
+
+    // Contains determines if a given item is already in the collection.
+    Contains(v string) bool
+
+    // ContainsAll determines if the given items are all in the collection.
+    ContainsAll(v ...string) bool
 
 }

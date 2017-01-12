@@ -53,30 +53,6 @@ func TestSetRemove(t *testing.T) {
 	}
 }
 
-func TestSetContains(t *testing.T) {
-	a := NewXInt32Set()
-
-	a.Add(71)
-
-	if !a.Contains(71) {
-		t.Error("should contain 71")
-	}
-
-	a.Remove(71)
-
-	if a.Contains(71) {
-		t.Error("should not contain 71")
-	}
-
-	a.Add(13)
-	a.Add(7)
-	a.Add(1)
-
-	if !(a.Contains(13) && a.Contains(7) && a.Contains(1)) {
-		t.Error("should contain 13, 7, 1")
-	}
-}
-
 func TestContainsAllSet(t *testing.T) {
 	a := NewXInt32Set(8, 6, 7, 5, 3, 0, 9)
 

@@ -60,7 +60,7 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan {{.PType}}
 
-	// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
+    // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
 	CountBy(predicate func({{.PType}}) bool) int
 
 	// MinBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the minimum value, when compared to other elements
@@ -73,31 +73,35 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
 
-	{{if .Mutable}}
-	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
-	Remove({{.Type}}
+{{if .Comparable}}
+    // Contains determines if a given item is already in the collection.
+    Contains(v {{.Type}}) bool
+
+    // ContainsAll determines if the given items are all in the collection.
+    ContainsAll(v ...{{.Type}}) bool
+
+{{end -}}
+{{if .Mutable}}
+    // Add adds items to the current collection.
+    Add(more ...{{.Type}})
+
+    // Remove removes a single item from the collection.
+	Remove({{.Type}})
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.Type}}
 
-	{{end -}}
-	{{if .Ordered}}
+{{end -}}
+{{if .Ordered}}
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() {{.Type}}
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.Type}}
 
-	{{end -}}
-	{{if .Numeric}}
+{{end -}}
+{{if .Numeric}}
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.Type}}
-
-	{{end -}}
-	{{if .Comparable}}
-	// ContainsAll determines if two collections have the same size and contain the same items.
-	// The order of items does not matter.
-	//TODO ContainsAll(other {{.UType}}Collection) bool
-
 {{end -}}
 }

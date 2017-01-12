@@ -42,7 +42,7 @@ type PPearCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan *Pear
 
-	// CountBy gives the number elements of PPearCollection that return true for the passed predicate.
+    // CountBy gives the number elements of PPearCollection that return true for the passed predicate.
 	CountBy(predicate func(*Pear) bool) int
 
 	// MinBy returns an element of PPearCollection containing the minimum value, when compared to other elements
@@ -55,4 +55,4 @@ type PPearCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*Pear, *Pear) bool) *Pear
 
-	}
+}

@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from set.tpl with Type=string
-// options: Numeric=false Ordered=false Stringer=true Mutable=true
+// options: Comparable=always Numeric=false Ordered=false Stringer=true Mutable=true
 
 package fast
 
@@ -95,13 +95,12 @@ func (set XStringSet) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 
-// Add adds items to the current set, returning the modified set.
-func (set XStringSet) Add(more ...string) XStringSet {
+// Add adds items to the current set.
+func (set XStringSet) Add(more ...string) {
 
 	for _, v := range more {
 		set.doAdd(v)
 	}
-	return set
 }
 
 func (set XStringSet) doAdd(i string) {
@@ -115,7 +114,7 @@ func (set XStringSet) Contains(i string) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// ContainsAll determines if the given items are all in the set.
 func (set XStringSet) ContainsAll(i ...string) bool {
 
 	for _, v := range i {
@@ -204,7 +203,7 @@ func (set *XStringSet) Clear() {
 	set.m = make(map[string]struct{})
 }
 
-// Remove allows the removal of a single item from the set.
+// Remove removes a single item from the set.
 func (set XStringSet) Remove(i string) {
 
 	delete(set.m, i)

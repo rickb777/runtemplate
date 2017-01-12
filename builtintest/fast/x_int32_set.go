@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from set.tpl with Type=int32
-// options: Numeric=true Ordered=true Stringer=true Mutable=true
+// options: Comparable=always Numeric=true Ordered=true Stringer=true Mutable=true
 
 package fast
 
@@ -95,13 +95,12 @@ func (set XInt32Set) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 
-// Add adds items to the current set, returning the modified set.
-func (set XInt32Set) Add(more ...int32) XInt32Set {
+// Add adds items to the current set.
+func (set XInt32Set) Add(more ...int32) {
 
 	for _, v := range more {
 		set.doAdd(v)
 	}
-	return set
 }
 
 func (set XInt32Set) doAdd(i int32) {
@@ -115,7 +114,7 @@ func (set XInt32Set) Contains(i int32) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// ContainsAll determines if the given items are all in the set.
 func (set XInt32Set) ContainsAll(i ...int32) bool {
 
 	for _, v := range i {
@@ -204,7 +203,7 @@ func (set *XInt32Set) Clear() {
 	set.m = make(map[int32]struct{})
 }
 
-// Remove allows the removal of a single item from the set.
+// Remove removes a single item from the set.
 func (set XInt32Set) Remove(i int32) {
 
 	delete(set.m, i)

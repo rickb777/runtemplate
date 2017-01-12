@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from set.tpl with Type=Apple
-// options: Numeric=<no value> Ordered=<no value> Stringer=false Mutable=true
+// options: Comparable=always Numeric=<no value> Ordered=<no value> Stringer=false Mutable=true
 
 package fast
 
@@ -95,13 +95,12 @@ func (set XAppleSet) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 
-// Add adds items to the current set, returning the modified set.
-func (set XAppleSet) Add(more ...Apple) XAppleSet {
+// Add adds items to the current set.
+func (set XAppleSet) Add(more ...Apple) {
 
 	for _, v := range more {
 		set.doAdd(v)
 	}
-	return set
 }
 
 func (set XAppleSet) doAdd(i Apple) {
@@ -115,7 +114,7 @@ func (set XAppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// ContainsAll determines if the given items are all in the set.
 func (set XAppleSet) ContainsAll(i ...Apple) bool {
 
 	for _, v := range i {
@@ -204,7 +203,7 @@ func (set *XAppleSet) Clear() {
 	set.m = make(map[Apple]struct{})
 }
 
-// Remove allows the removal of a single item from the set.
+// Remove removes a single item from the set.
 func (set XAppleSet) Remove(i Apple) {
 
 	delete(set.m, i)

@@ -59,7 +59,7 @@ type PInt32Collection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan *int32
 
-	// CountBy gives the number elements of PInt32Collection that return true for the passed predicate.
+    // CountBy gives the number elements of PInt32Collection that return true for the passed predicate.
 	CountBy(predicate func(*int32) bool) int
 
 	// MinBy returns an element of PInt32Collection containing the minimum value, when compared to other elements
@@ -72,20 +72,21 @@ type PInt32Collection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*int32, *int32) bool) *int32
 
-	
+
+    // Contains determines if a given item is already in the collection.
+    Contains(v int32) bool
+
+    // ContainsAll determines if the given items are all in the collection.
+    ContainsAll(v ...int32) bool
+
+
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() int32
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() int32
 
-	
+
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int32
-
-	
-	// ContainsAll determines if two collections have the same size and contain the same items.
-	// The order of items does not matter.
-	//TODO ContainsAll(other Int32Collection) bool
-
 }

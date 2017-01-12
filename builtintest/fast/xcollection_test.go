@@ -124,3 +124,23 @@ func testForeach(t *testing.T, a XInt32Collection) {
 		t.Errorf("Expected 6 but got %d", sum1)
 	}
 }
+
+func TestSetContains(t *testing.T) {
+	testSetContains(t, NewXInt32Set(71, 1, 7, 13))
+	testSetContains(t, NewXInt32List(71, 1, 7, 13))
+}
+
+func testSetContains(t *testing.T, a XInt32Collection) {
+	if !a.Contains(71) {
+		t.Error("should contain 71")
+	}
+
+	if a.Contains(72) {
+		t.Error("should not contain 72")
+	}
+
+	if !(a.Contains(13) && a.Contains(7) && a.Contains(1)) {
+		t.Error("should contain 13, 7, 1")
+	}
+}
+

@@ -93,3 +93,25 @@ func TestListSend(t *testing.T) {
 	}
 }
 
+func TestListHeadTailLastInit(t *testing.T) {
+	a := NewXInt32List(1, 2, 3, 4)
+
+	if a.Head() != 1 {
+		t.Errorf("Expected 1 but got %d", a.Head())
+	}
+
+	if a.Last() != 4 {
+		t.Errorf("Expected 4 but got %d", a.Last())
+	}
+
+	tail := a.Tail()
+	if !tail.Equals(NewXInt32List(2, 3, 4)) {
+		t.Errorf("Expected '2, 3, 4' but got '%+v'", tail)
+	}
+
+	init := a.Init()
+	if !init.Equals(NewXInt32List(1, 2, 3)) {
+		t.Errorf("Expected '1, 2, 3' but got '%+v'", init)
+	}
+}
+

@@ -24,7 +24,7 @@ type PAppleList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newPAppleList(len, cap int) *PAppleList {
-	return &PAppleList{
+	return &PAppleList {
 		m: make([]*Apple, len, cap),
 	}
 }
@@ -139,6 +139,26 @@ func (list *PAppleList) Len() int {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+
+// Contains determines if a given item is already in the list.
+func (list *PAppleList) Contains(v Apple) bool {
+	return list.Exists(func (x *Apple) bool {
+	    return *x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *PAppleList) ContainsAll(i ...Apple) bool {
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
 
 // Exists verifies that one or more elements of PAppleList return true for the passed func.
 func (list *PAppleList) Exists(fn func(*Apple) bool) bool {

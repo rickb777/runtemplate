@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from set.tpl with Type=int64
-// options: Numeric=true Ordered=true Stringer=true Mutable=false
+// options: Comparable=always Numeric=true Ordered=true Stringer=true Mutable=false
 
 package fast
 
@@ -116,7 +116,7 @@ func (set XInt64Set) Contains(i int64) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// ContainsAll determines if the given items are all in the set.
 func (set XInt64Set) ContainsAll(i ...int64) bool {
 
 	for _, v := range i {

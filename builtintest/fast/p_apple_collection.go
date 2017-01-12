@@ -42,7 +42,7 @@ type PAppleCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan *Apple
 
-	// CountBy gives the number elements of PAppleCollection that return true for the passed predicate.
+    // CountBy gives the number elements of PAppleCollection that return true for the passed predicate.
 	CountBy(predicate func(*Apple) bool) int
 
 	// MinBy returns an element of PAppleCollection containing the minimum value, when compared to other elements
@@ -55,4 +55,4 @@ type PAppleCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*Apple, *Apple) bool) *Apple
 
-	}
+}

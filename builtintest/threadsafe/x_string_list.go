@@ -29,7 +29,7 @@ type XStringList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newXStringList(len, cap int) *XStringList {
-	return &XStringList{
+	return &XStringList {
 		s: &sync.RWMutex{},
 		m: make([]string, len, cap),
 	}
@@ -170,6 +170,28 @@ func (list *XStringList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
+
+// Contains determines if a given item is already in the list.
+func (list *XStringList) Contains(v string) bool {
+	return list.Exists(func (x string) bool {
+	    return x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *XStringList) ContainsAll(i ...string) bool {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
 // Exists verifies that one or more elements of XStringList return true for the passed func.
 func (list *XStringList) Exists(fn func(string) bool) bool {
 	list.s.RLock()
@@ -247,6 +269,11 @@ func (list *XStringList) Shuffle() *XStringList {
 	return result
 }
 
+
+// Add adds items to the current list. This is a synonym for Append.
+func (list *XStringList) Add(more ...string) {
+    list.Append(more...)
+}
 
 // Append adds items to the current list, returning the modified list.
 func (list *XStringList) Append(more ...string) *XStringList {

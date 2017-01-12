@@ -27,7 +27,7 @@ type PStringList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newPStringList(len, cap int) *PStringList {
-	return &PStringList{
+	return &PStringList {
 		m: make([]*string, len, cap),
 	}
 }
@@ -151,6 +151,26 @@ func (list *PStringList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
+
+// Contains determines if a given item is already in the list.
+func (list *PStringList) Contains(v string) bool {
+	return list.Exists(func (x *string) bool {
+	    return *x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list *PStringList) ContainsAll(i ...string) bool {
+
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
 // Exists verifies that one or more elements of PStringList return true for the passed func.
 func (list *PStringList) Exists(fn func(*string) bool) bool {
 
@@ -218,6 +238,11 @@ func (list *PStringList) Shuffle() *PStringList {
 	return result
 }
 
+
+// Add adds items to the current list. This is a synonym for Append.
+func (list *PStringList) Add(more ...*string) {
+    list.Append(more...)
+}
 
 // Append adds items to the current list, returning the modified list.
 func (list *PStringList) Append(more ...*string) *PStringList {

@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
+// options: Comparable=always Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
 
 package {{.Package}}
 
@@ -112,15 +112,14 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 {{if .Mutable}}
-// Add adds items to the current set, returning the modified set.
-func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
+// Add adds items to the current set.
+func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
 	for _, v := range more {
 		set.doAdd(v)
 	}
-	return set
 }
 
 {{else}}
@@ -148,7 +147,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// ContainsAll determines if the given items are all in the set.
 func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -255,7 +254,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 	set.m = make(map[{{.Type}}]struct{})
 }
 
-// Remove allows the removal of a single item from the set.
+// Remove removes a single item from the set.
 func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	set.s.Lock()
 	defer set.s.Unlock()
