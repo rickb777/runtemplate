@@ -21,7 +21,7 @@ sort coverage$$.tmp | uniq | tee coverage$$.dirs
 
 for pkg in $(cat coverage$$.dirs); do
   name=$(echo $pkg | sed 's#^./##' | sed 's#/#-#g')
-  [ "$pkg" = "." ] && name="TOP"
+  [ "$pkg" = "." ] && name=$(basename $PWD)
   echo $pkg becomes $name
   go test -v -coverprofile coverage$$.data $pkg
   if [ -f coverage$$.data ]; then
@@ -30,7 +30,7 @@ for pkg in $(cat coverage$$.dirs); do
   fi
 done
 
-#rm -f coverage$$.tmp coverage$$.dirs
+rm -f coverage$$.tmp coverage$$.dirs
 
 if [ -n "$(type -p chromium-browser)" ]; then
   chromium-browser reports/*.html >/dev/null &

@@ -111,6 +111,9 @@ func TestCardinality(t *testing.T) {
 	if a.Size() != 1 {
 		t.Errorf("Expected 1 but got %d", a.Size())
 	}
+	if a.Cardinality() != 1 {
+		t.Errorf("Expected 1 but got %d", a.Cardinality())
+	}
 
 	a.Remove(1)
 
@@ -134,10 +137,7 @@ func TestCardinality(t *testing.T) {
 func TestIsSubset(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 5, 7)
 
-	b := NewXInt32Set()
-	b.Add(3)
-	b.Add(5)
-	b.Add(7)
+	b := NewXInt32Set(3, 5, 7)
 
 	if !b.IsSubset(a) {
 		t.Errorf("Expected '%+v' to be a subset of '%+v'", b, a)
@@ -151,17 +151,9 @@ func TestIsSubset(t *testing.T) {
 }
 
 func TestIsSuperSet(t *testing.T) {
-	a := NewXInt32Set()
-	a.Add(9)
-	a.Add(5)
-	a.Add(2)
-	a.Add(1)
-	a.Add(11)
+	a := NewXInt32Set(9, 5, 2, 1, 11)
 
-	b := NewXInt32Set()
-	b.Add(5)
-	b.Add(2)
-	b.Add(11)
+	b := NewXInt32Set(5, 2, 11)
 
 	if !a.IsSuperset(b) {
 		t.Errorf("Expected '%+v' to be a superset of '%+v'", a, b)
@@ -177,12 +169,7 @@ func TestIsSuperSet(t *testing.T) {
 func TestSetUnion(t *testing.T) {
 	a := NewXInt32Set()
 
-	b := NewXInt32Set()
-	b.Add(1)
-	b.Add(2)
-	b.Add(3)
-	b.Add(4)
-	b.Add(5)
+	b := NewXInt32Set(1, 2, 3, 4, 5)
 
 	c := a.Union(b)
 
@@ -190,19 +177,14 @@ func TestSetUnion(t *testing.T) {
 		t.Errorf("Expected 5 but got %d", c.Size())
 	}
 
-	d := NewXInt32Set()
-	d.Add(10)
-	d.Add(14)
-	d.Add(0)
+	d := NewXInt32Set(10, 14, 0)
 
 	e := c.Union(d)
 	if e.Size() != 8 {
 		t.Errorf("Expected 8 but got %d", e.Size())
 	}
 
-	f := NewXInt32Set()
-	f.Add(14)
-	f.Add(3)
+	f := NewXInt32Set(14, 3)
 
 	g := f.Union(e)
 	if g.Size() != 8 {
@@ -211,45 +193,36 @@ func TestSetUnion(t *testing.T) {
 }
 
 func TestSetIntersection(t *testing.T) {
-	a := NewXInt32Set()
-	a.Add(1)
-	a.Add(3)
-	a.Add(5)
+	a := NewXInt32Set(1, 3, 5, 7)
 
-	b := NewXInt32Set()
-	a.Add(2)
-	a.Add(4)
-	a.Add(6)
+	b := NewXInt32Set(2, 4, 6)
 
-	c := a.Intersect(b)
+	c1 := a.Intersect(b)
+	c2 := b.Intersect(a)
 
-	if c.Size() != 0 {
-		t.Errorf("Expected 0 but got %d", a.Size())
+	if c1.NonEmpty() || c2.NonEmpty() {
+		t.Errorf("Expected 0 but got %d and %d", c1.Size(), c2.Size())
 	}
 
 	a.Add(10)
 	b.Add(10)
 
-	d := a.Intersect(b)
+	d1 := a.Intersect(b)
+	d2 := b.Intersect(a)
 
-	if !(d.Size() == 1 && d.Contains(10)) {
-		t.Error("set d should have a size of 1 and contain the item 10")
+	if !(d1.Size() == 1 && d1.Contains(10)) {
+		t.Errorf("d1 should have a size of 1 and contain 10: %+v", d1)
+	}
+
+	if !(d2.Size() == 1 && d2.Contains(10)) {
+		t.Errorf("d2 should have a size of 1 and contain 10: %+v", d2)
 	}
 }
 
 func TestSetDifference(t *testing.T) {
-	a := NewXInt32Set()
-	a.Add(1)
-	a.Add(2)
-	a.Add(3)
+	a := NewXInt32Set(1, 2, 3)
 
-	b := NewXInt32Set()
-	b.Add(1)
-	b.Add(3)
-	b.Add(4)
-	b.Add(5)
-	b.Add(6)
-	b.Add(99)
+	b := NewXInt32Set(1, 3, 4, 5, 6, 99)
 
 	c := a.Difference(b)
 
@@ -259,19 +232,9 @@ func TestSetDifference(t *testing.T) {
 }
 
 func TestSetSymmetricDifference(t *testing.T) {
-	a := NewXInt32Set()
-	a.Add(1)
-	a.Add(2)
-	a.Add(3)
-	a.Add(45)
+	a := NewXInt32Set(1, 2, 3, 45)
 
-	b := NewXInt32Set()
-	b.Add(1)
-	b.Add(3)
-	b.Add(4)
-	b.Add(5)
-	b.Add(6)
-	b.Add(99)
+	b := NewXInt32Set(1, 3, 4, 5, 6, 99)
 
 	c := a.SymmetricDifference(b)
 
@@ -318,9 +281,7 @@ func TestSetEqual(t *testing.T) {
 }
 
 func TestSetClone(t *testing.T) {
-	a := NewXInt32Set()
-	a.Add(1)
-	a.Add(2)
+	a := NewXInt32Set(1, 2)
 
 	b := a.Clone()
 
@@ -341,13 +302,10 @@ func TestSetClone(t *testing.T) {
 	}
 }
 
-func TestSend(t *testing.T) {
+func TestSetSend(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 4)
 
-	b := NewXInt32Set()
-	for val := range a.Send() {
-		b.Add(val)
-	}
+	b := BuildXInt32SetFromChan(a.Send())
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)

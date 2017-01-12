@@ -28,6 +28,16 @@ func NewXInt32Set(a ...int32) XInt32Set {
 	return set
 }
 
+// BuildXInt32SetFromChan constructs a new XInt32Set from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildXInt32SetFromChan(source <-chan int32) XInt32Set {
+	result := NewXInt32Set()
+	for v := range source {
+		result.m[v] = struct{}{}
+	}
+	return result
+}
+
 // ToSlice returns the elements of the current set as a slice
 func (set XInt32Set) ToSlice() []int32 {
 

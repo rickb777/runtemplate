@@ -39,6 +39,16 @@ func New{{.UPrefix}}{{.UType}}Set(a ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
 	return set
 }
 
+// Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+	result := New{{.UPrefix}}{{.UType}}Set()
+	for v := range source {
+		result.m[v] = struct{}{}
+	}
+	return result
+}
+
 // ToSlice returns the elements of the current set as a slice
 func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 	set.s.RLock()

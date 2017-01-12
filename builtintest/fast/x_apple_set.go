@@ -28,6 +28,16 @@ func NewXAppleSet(a ...Apple) XAppleSet {
 	return set
 }
 
+// BuildXAppleSetFromChan constructs a new XAppleSet from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildXAppleSetFromChan(source <-chan Apple) XAppleSet {
+	result := NewXAppleSet()
+	for v := range source {
+		result.m[v] = struct{}{}
+	}
+	return result
+}
+
 // ToSlice returns the elements of the current set as a slice
 func (set XAppleSet) ToSlice() []Apple {
 

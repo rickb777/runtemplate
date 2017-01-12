@@ -33,12 +33,8 @@ func TestListAppendMutable(t *testing.T) {
 		t.Errorf("Expected 5 but got %d", a.Size())
 	}
 
-	if b.Size() != 5 {
-		t.Errorf("Expected 5 but got %d", b.Size())
-	}
-
-	if a.Get(3) != 4 {
-		t.Errorf("Expected 4 but got %d", a.Get(3))
+	if b != a {
+		t.Errorf("Expected b but got %v", a)
 	}
 
 	if b.Get(3) != 4 {
@@ -64,5 +60,36 @@ func TestListAppendImmutable(t *testing.T) {
 		t.Errorf("Expected 4 but got %v", b.Get(3))
 	}
 
+}
+
+func TestListClone(t *testing.T) {
+	a := NewXInt32List(1, 2)
+
+	b := a.Clone()
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+	}
+
+	a.Append(3)
+	if a.Equals(b) {
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
+	}
+
+	c := a.Clone().Tail()
+
+	if a.Equals(c) {
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, c)
+	}
+}
+
+func TestListSend(t *testing.T) {
+	a := NewXInt32List(1, 2, 3, 4)
+
+	b := BuildXInt32ListFromChan(a.Send())
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+	}
 }
 

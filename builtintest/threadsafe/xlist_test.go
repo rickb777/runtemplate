@@ -62,3 +62,34 @@ func TestListAppendImmutable(t *testing.T) {
 
 }
 
+func TestListClone(t *testing.T) {
+	a := NewXInt32List(1, 2)
+
+	b := a.Clone()
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+	}
+
+	a.Append(3)
+	if a.Equals(b) {
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
+	}
+
+	c := a.Clone().Tail()
+
+	if a.Equals(c) {
+		t.Errorf("Expected '%+v' not to equal '%+v'", a, c)
+	}
+}
+
+func TestListSend(t *testing.T) {
+	a := NewXInt32List(1, 2, 3, 4)
+
+	b := BuildXInt32ListFromChan(a.Send())
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+	}
+}
+

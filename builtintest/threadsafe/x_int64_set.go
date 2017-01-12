@@ -31,6 +31,16 @@ func NewXInt64Set(a ...int64) XInt64Set {
 	return set
 }
 
+// BuildXInt64SetFromChan constructs a new XInt64Set from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildXInt64SetFromChan(source <-chan int64) XInt64Set {
+	result := NewXInt64Set()
+	for v := range source {
+		result.m[v] = struct{}{}
+	}
+	return result
+}
+
 // ToSlice returns the elements of the current set as a slice
 func (set XInt64Set) ToSlice() []int64 {
 	set.s.RLock()
