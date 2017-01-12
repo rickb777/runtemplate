@@ -428,24 +428,28 @@ func (set XStringSet) Equals(other XStringSet) bool {
 
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
 func (set XStringSet) StringList() []string {
-	strings := make([]string, 0)
 	set.s.RLock()
 	defer set.s.RUnlock()
 
+	strings := make([]string, len(set.m))
+	i := 0
 	for v, _ := range set.m {
-		strings = append(strings, fmt.Sprintf("%v", v))
+		strings[i] = fmt.Sprintf("%v", v)
+		i++
 	}
 	return strings
 }
 
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (set XStringSet) String() string {
-	return set.mkString3Bytes("", ", ", "").String()
+	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
-// implements encoding.Marshaler interface {
+// implements json.Marshaler interface {
 func (set XStringSet) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
+	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.

@@ -398,42 +398,55 @@ func (list *XInt32List) CountBy(predicate func(int32) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of XInt32List containing the minimum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Panics if there are no elements.
-func (list *XInt32List) MinBy(less func(int32, int32) bool) int32 {
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int32 is ordered.
+
+// Less returns true if the element at index i is less than the element at index j. This implements
+// one of the methods needed by sort.Interface.
+// Panics if i or j is out of range.
+func (list *XInt32List) Less(i, j int) bool {
+	return list.m[i] < list.m[j]
+}
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *XInt32List) Min() int32 {
 
 	l := list.Len()
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
 
-	m := 0
+	v := list.m[0]
+	m := v
 	for i := 1; i < l; i++ {
-		if less(list.m[i], list.m[m]) {
-			m = i
+    	v := list.m[i]
+		if v < m {
+			m = v
 		}
 	}
-	return list.m[m]
+	return m
 }
 
-// MaxBy returns an element of XInt32List containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
-// element is returned. Panics if there are no elements.
-func (list *XInt32List) MaxBy(less func(int32, int32) bool) int32 {
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *XInt32List) Max() (result int32) {
 
-	l := list.Len()
-	if l == 0 {
-		panic("Cannot determine the maximum of an empty list.")
-	}
-	m := 0
-	for i := 1; i < l; i++ {
-		if less(list.m[m], list.m[i]) {
-			m = i
-		}
-	}
+    l := list.Len()
+    if l == 0 {
+        panic("Cannot determine the maximum of an empty list.")
+    }
 
-	return list.m[m]
+    v := list.m[0]
+    m := v
+    for i := 1; i < l; i++ {
+        v := list.m[i]
+        if v > m {
+            m = v
+        }
+    }
+    return m
 }
 
 // DistinctBy returns a new XInt32List whose elements are unique, where equality is defined by a passed func.
@@ -526,41 +539,25 @@ func (list *XInt32List) Equals(other *XInt32List) bool {
 
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int32 is ordered.
 
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *XInt32List) Min() int32 {
+// StringList gets a list of strings that depicts all the elements.
+func (list XInt32List) StringList() []string {
 
-	m := list.MinBy(func(a int32, b int32) bool {
-		return a < b
-	})
-	return m
+	strings := make([]string, len(list.m))
+	for i, v := range list.m {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
 }
-
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *XInt32List) Max() (result int32) {
-
-	m := list.MaxBy(func(a int32, b int32) bool {
-		return a < b
-	})
-	return m
-}
-
-// Less returns true if the element at index i is less than the element at index j. This implements
-// one of the methods needed by sort.Interface.
-// Panics if i or j is out of range.
-func (list *XInt32List) Less(i, j int) bool {
-	return list.m[i] < list.m[j]
-}
-
-
-//-------------------------------------------------------------------------------------------------
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list *XInt32List) String() string {
-	return list.MkString3("[", ",", "]")
+	return list.MkString3("[", ", ", "]")
+}
+
+// implements json.Marshaler interface {
+func (list XInt32List) MarshalJSON() ([]byte, error) {
+	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -570,21 +567,21 @@ func (list *XInt32List) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list *XInt32List) MkString3(pfx, mid, sfx string) string {
-	b := bytes.Buffer{}
+	return list.mkString3Bytes(pfx, mid, sfx).String()
+}
+
+func (list XInt32List) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+	b := &bytes.Buffer{}
 	b.WriteString(pfx)
+	sep := ""
 
 
-	l := list.Len()
-	if l > 0 {
-		v := list.m[0]
+	for _, v := range list.m {
+		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		for i := 1; i < l; i++ {
-			v := list.m[i]
-			b.WriteString(mid)
-			b.WriteString(fmt.Sprintf("%v", v))
-		}
+		sep = mid
 	}
 	b.WriteString(sfx)
-	return b.String()
+	return b
 }
 

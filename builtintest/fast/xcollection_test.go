@@ -2,6 +2,8 @@ package fast
 
 import (
 	"testing"
+	"sort"
+	"encoding/json"
 )
 
 func TestNewXCollection(t *testing.T) {
@@ -125,12 +127,12 @@ func testForeach(t *testing.T, a XInt32Collection) {
 	}
 }
 
-func TestSetContains(t *testing.T) {
-	testSetContains(t, NewXInt32Set(71, 1, 7, 13))
-	testSetContains(t, NewXInt32List(71, 1, 7, 13))
+func TestContains(t *testing.T) {
+	testContains(t, NewXInt32Set(71, 1, 7, 13))
+	testContains(t, NewXInt32List(71, 1, 7, 13))
 }
 
-func testSetContains(t *testing.T, a XInt32Collection) {
+func testContains(t *testing.T, a XInt32Collection) {
 	if !a.Contains(71) {
 		t.Error("should contain 71")
 	}
@@ -141,6 +143,84 @@ func testSetContains(t *testing.T, a XInt32Collection) {
 
 	if !(a.Contains(13) && a.Contains(7) && a.Contains(1)) {
 		t.Error("should contain 13, 7, 1")
+	}
+}
+
+func TestMinMaxSum(t *testing.T) {
+	testMinMaxSum(t, NewXInt32Set(10, 71, 3, 7, 13))
+	testMinMaxSum(t, NewXInt32List(10, 71, 3, 7, 13))
+}
+
+func testMinMaxSum(t *testing.T, a XInt32Collection) {
+	if a.Min() != 3 {
+		t.Errorf("Expected 3 but got %d", a.Min())
+	}
+	if a.Max() != 71 {
+		t.Errorf("Expected 71 but got %d", a.Max())
+	}
+	if a.Sum() != 104 {
+		t.Errorf("Expected 104 but got %d", a.Sum())
+	}
+}
+
+func TestStringer(t *testing.T) {
+	testStringer(t, NewXInt32Set(10, 71, 3, 7, 13), false)
+	testStringer(t, NewXInt32List(10, 71, 3, 7, 13), true)
+}
+
+func testStringer(t *testing.T, a XInt32Collection, ordered bool) {
+	s1 := a.String()
+	if ordered && s1 != "[10, 71, 3, 7, 13]" {
+		t.Errorf("Got %s for %+v", s1, a)
+	} else if len(s1) != 18 {
+		t.Errorf("Got %s for %+v", s1, a)
+	}
+
+	s2 := a.MkString("|")
+	if ordered && s2 != "10|71|3|7|13" {
+		t.Errorf("Got %s for %+v", s2, a)
+	} else if len(s2) != 12 {
+		t.Errorf("Got %s for %+v", s2, a)
+	}
+
+	s3 := a.MkString3("<", "|", ">")
+	if ordered && s3 != "<10|71|3|7|13>" {
+		t.Errorf("Got %s for %+v", s3, a)
+	} else if len(s3) != 14 {
+		t.Errorf("Got %s for %+v", s3, a)
+	}
+
+	sl := a.StringList()
+	if len(sl) != 5 {
+		t.Errorf("Expected 5 but got %d", len(sl))
+	}
+
+	sort.Sort(sort.StringSlice(sl))
+	if sl[0] != "10" {
+		t.Errorf("Got %s", sl[0])
+	}
+	if sl[1] != "13" {
+		t.Errorf("Got %s", sl[1])
+	}
+	if sl[2] != "3" {
+		t.Errorf("Got %s", sl[2])
+	}
+	if sl[3] != "7" {
+		t.Errorf("Got %s", sl[3])
+	}
+	if sl[4] != "71" {
+		t.Errorf("Got %s", sl[4])
+	}
+
+	var m json.Marshaler = a
+	json, err := m.MarshalJSON()
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+	if ordered && string(json) != `["10", "71", "3", "7", "13"]` {
+		t.Errorf("Got %s for %+v", json, a)
+	} else if len(json) != 28 {
+		t.Errorf("Got %s for %+v", json, a)
 	}
 }
 

@@ -338,54 +338,6 @@ func (set XInt64Set) CountBy(predicate func(int64) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of XInt64Set containing the minimum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Panics if there are no elements.
-func (set XInt64Set) MinBy(less func(int64, int64) bool) int64 {
-	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
-	}
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	var m int64
-	first := true
-	for v, _ := range set.m {
-		if first {
-			m = v
-			first = false
-		} else if less(v, m) {
-			m = v
-		}
-	}
-	return m
-}
-
-// MaxBy returns an element of XInt64Set containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
-// element is returned. Panics if there are no elements.
-func (set XInt64Set) MaxBy(less func(int64, int64) bool) int64 {
-	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
-	}
-
-	set.s.RLock()
-	defer set.s.RUnlock()
-
-	var m int64
-	first := true
-	for v, _ := range set.m {
-		if first {
-			m = v
-			first = false
-		} else if less(m, v) {
-			m = v
-		}
-	}
-	return m
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int64 is ordered.
@@ -393,17 +345,39 @@ func (set XInt64Set) MaxBy(less func(int64, int64) bool) int64 {
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
 func (set XInt64Set) Min() int64 {
-	return set.MinBy(func(a int64, b int64) bool {
-		return a < b
-	})
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	var m int64
+	first := true
+	for v, _ := range set.m {
+		if first {
+			m = v
+			first = false
+		} else if v < m {
+			m = v
+		}
+	}
+	return m
 }
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
 func (set XInt64Set) Max() (result int64) {
-	return set.MaxBy(func(a int64, b int64) bool {
-		return a < b
-	})
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	var m int64
+	first := true
+	for v, _ := range set.m {
+		if first {
+			m = v
+			first = false
+		} else if v > m {
+			m = v
+		}
+	}
+	return m
 }
 
 
@@ -447,24 +421,28 @@ func (set XInt64Set) Equals(other XInt64Set) bool {
 
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
 func (set XInt64Set) StringList() []string {
-	strings := make([]string, 0)
 	set.s.RLock()
 	defer set.s.RUnlock()
 
+	strings := make([]string, len(set.m))
+	i := 0
 	for v, _ := range set.m {
-		strings = append(strings, fmt.Sprintf("%v", v))
+		strings[i] = fmt.Sprintf("%v", v)
+		i++
 	}
 	return strings
 }
 
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (set XInt64Set) String() string {
-	return set.mkString3Bytes("", ", ", "").String()
+	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
-// implements encoding.Marshaler interface {
+// implements json.Marshaler interface {
 func (set XInt64Set) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
+	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.

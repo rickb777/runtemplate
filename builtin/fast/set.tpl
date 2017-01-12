@@ -328,6 +328,45 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 	return
 }
 
+{{if .Ordered}}
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is ordered.
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (set {{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
+
+	var m {{.Type}}
+	first := true
+	for v, _ := range set.m {
+		if first {
+			m = v
+			first = false
+		} else if v < m {
+			m = v
+		}
+	}
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (set {{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
+
+	var m {{.Type}}
+	first := true
+	for v, _ := range set.m {
+		if first {
+			m = v
+			first = false
+		} else if v > m {
+			m = v
+		}
+	}
+	return m
+}
+
+{{else -}}
 // MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
@@ -372,26 +411,6 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	return m
 }
 
-{{if .Ordered}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
-
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (set {{.UPrefix}}{{.UType}}Set) Min() {{.PType}} {
-	return set.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return a < b
-	})
-}
-
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (set {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
-	return set.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return a < b
-	})
-}
-
 {{end -}}
 {{if .Numeric}}
 //-------------------------------------------------------------------------------------------------
@@ -429,22 +448,26 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
 func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
-	strings := make([]string, 0)
 
+	strings := make([]string, len(set.m))
+	i := 0
 	for v, _ := range set.m {
-		strings = append(strings, fmt.Sprintf("%v", v))
+		strings[i] = fmt.Sprintf("%v", v)
+		i++
 	}
 	return strings
 }
 
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (set {{.UPrefix}}{{.UType}}Set) String() string {
-	return set.mkString3Bytes("", ", ", "").String()
+	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
-// implements encoding.Marshaler interface {
+// implements json.Marshaler interface {
 func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
+	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.

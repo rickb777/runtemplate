@@ -45,7 +45,7 @@ type XPearCollection interface {
     // CountBy gives the number elements of XPearCollection that return true for the passed predicate.
 	CountBy(predicate func(Pear) bool) int
 
-	// MinBy returns an element of XPearCollection containing the minimum value, when compared to other elements
+// MinBy returns an element of XPearCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 	// element is returned. Panics if there are no elements.
 	MinBy(less func(Pear, Pear) bool) Pear

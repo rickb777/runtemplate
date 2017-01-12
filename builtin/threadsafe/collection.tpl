@@ -28,6 +28,11 @@ type {{.UPrefix}}{{.UType}}MkStringer interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
+    // implements json.Marshaler interface {
+    MarshalJSON() ([]byte, error)
+
+    // StringList gets a list of strings that depicts all the elements.
+    StringList() []string
 }
 
 {{end -}}
@@ -63,16 +68,6 @@ type {{.UPrefix}}{{.UType}}Collection interface {
     // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
 	CountBy(predicate func({{.PType}}) bool) int
 
-	// MinBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the minimum value, when compared to other elements
-	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-	// element is returned. Panics if there are no elements.
-	MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
-
-	// MaxBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the maximum value, when compared to other elements
-	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
-	// element is returned. Panics if there are no elements.
-	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
-
 {{if .Comparable}}
     // Contains determines if a given item is already in the collection.
     Contains(v {{.Type}}) bool
@@ -88,9 +83,6 @@ type {{.UPrefix}}{{.UType}}Collection interface {
     // Remove removes a single item from the collection.
 	Remove({{.Type}})
 
-	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
-	Max() {{.Type}}
-
 {{end -}}
 {{if .Ordered}}
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
@@ -98,6 +90,17 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.Type}}
+
+{{else -}}
+	// MinBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the minimum value, when compared to other elements
+	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+	// element is returned. Panics if there are no elements.
+	MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
+
+	// MaxBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the maximum value, when compared to other elements
+	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+	// element is returned. Panics if there are no elements.
+	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
 
 {{end -}}
 {{if .Numeric}}

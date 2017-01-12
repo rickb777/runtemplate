@@ -464,6 +464,62 @@ func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool)
 	return
 }
 
+{{if .Ordered}}
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is ordered.
+
+// Less returns true if the element at index i is less than the element at index j. This implements
+// one of the methods needed by sort.Interface.
+// Panics if i or j is out of range.
+func (list *{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
+	return {{.TypeStar}}list.m[i] < {{.TypeStar}}list.m[j]
+}
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := list.Len()
+	if l == 0 {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := {{.TypeStar}}v
+	for i := 1; i < l; i++ {
+    	v := list.m[i]
+		if {{.TypeStar}}v < m {
+			m = {{.TypeStar}}v
+		}
+	}
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
+	list.s.RLock()
+    defer list.s.RUnlock()
+
+    l := list.Len()
+    if l == 0 {
+        panic("Cannot determine the maximum of an empty list.")
+    }
+
+    v := list.m[0]
+    m := {{.TypeStar}}v
+    for i := 1; i < l; i++ {
+        v := list.m[i]
+        if {{.TypeStar}}v > m {
+            m = {{.TypeStar}}v
+        }
+    }
+    return m
+}
+
+{{else -}}
 // MinBy returns an element of {{.UPrefix}}{{.UType}}List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
@@ -506,6 +562,7 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 	return list.m[m]
 }
 
+{{end -}}
 // DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
 func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
@@ -608,48 +665,29 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 }
 
 {{end -}}
-{{if .Ordered}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
-
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	m := list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return {{.TypeStar}}a < {{.TypeStar}}b
-	})
-	return {{.TypeStar}}m
-}
-
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	m := list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return {{.TypeStar}}a < {{.TypeStar}}b
-	})
-	return {{.TypeStar}}m
-}
-
-// Less returns true if the element at index i is less than the element at index j. This implements
-// one of the methods needed by sort.Interface.
-// Panics if i or j is out of range.
-func (list *{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
-	return {{.TypeStar}}list.m[i] < {{.TypeStar}}list.m[j]
-}
-
-{{end -}}
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
+func (list {{.UPrefix}}{{.UType}}List) StringList() []string {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	strings := make([]string, len(list.m))
+	for i, v := range list.m {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
+}
+
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list *{{.UPrefix}}{{.UType}}List) String() string {
-	return list.MkString3("[", ",", "]")
+	return list.MkString3("[", ", ", "]")
+}
+
+// implements json.Marshaler interface {
+func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
+	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -659,23 +697,23 @@ func (list *{{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list *{{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
-	b := bytes.Buffer{}
+	return list.mkString3Bytes(pfx, mid, sfx).String()
+}
+
+func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+	b := &bytes.Buffer{}
 	b.WriteString(pfx)
+	sep := ""
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
-	if l > 0 {
-		v := list.m[0]
+	for _, v := range list.m {
+		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		for i := 1; i < l; i++ {
-			v := list.m[i]
-			b.WriteString(mid)
-			b.WriteString(fmt.Sprintf("%v", v))
-		}
+		sep = mid
 	}
 	b.WriteString(sfx)
-	return b.String()
+	return b
 }
 {{end}}

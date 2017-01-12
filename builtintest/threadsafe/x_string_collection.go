@@ -28,6 +28,11 @@ type XStringMkStringer interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
+    // implements json.Marshaler interface {
+    MarshalJSON() ([]byte, error)
+
+    // StringList gets a list of strings that depicts all the elements.
+    StringList() []string
 }
 
 // XStringCollection defines an interface for common collection methods on string.
@@ -62,7 +67,14 @@ type XStringCollection interface {
     // CountBy gives the number elements of XStringCollection that return true for the passed predicate.
 	CountBy(predicate func(string) bool) int
 
-	// MinBy returns an element of XStringCollection containing the minimum value, when compared to other elements
+
+    // Contains determines if a given item is already in the collection.
+    Contains(v string) bool
+
+    // ContainsAll determines if the given items are all in the collection.
+    ContainsAll(v ...string) bool
+
+// MinBy returns an element of XStringCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 	// element is returned. Panics if there are no elements.
 	MinBy(less func(string, string) bool) string
@@ -71,12 +83,5 @@ type XStringCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(string, string) bool) string
-
-
-    // Contains determines if a given item is already in the collection.
-    Contains(v string) bool
-
-    // ContainsAll determines if the given items are all in the collection.
-    ContainsAll(v ...string) bool
 
 }

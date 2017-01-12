@@ -115,3 +115,31 @@ func TestListHeadTailLastInit(t *testing.T) {
 	}
 }
 
+func TestListFilter(t *testing.T) {
+	a := NewXInt32List(1, 2, 3, 4)
+
+	b := a.Filter(func(v int32) bool {
+		return v > 2
+	})
+
+	if !b.Equals(NewXInt32List(3, 4)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+}
+
+func TestListPartition(t *testing.T) {
+	a := NewXInt32List(1, 2, 3, 4)
+
+	b, c := a.Partition(func(v int32) bool {
+		return v > 2
+	})
+
+	if !b.Equals(NewXInt32List(3, 4)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	if !c.Equals(NewXInt32List(1, 2)) {
+		t.Errorf("Expected '1, 2' but got '%+v'", c)
+	}
+}
+

@@ -227,32 +227,18 @@ func TestSetEqual(t *testing.T) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
-	a.Add(10)
+	c := NewXInt32Set(1, 3, 5, 6, 8)
+	d := NewXInt32Set(1, 3, 5, 6, 9)
 
-	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
+	if c.Equals(d) {
+		t.Errorf("Expected '%+v' not to equal '%+v'", c, d)
 	}
 
-	b.Add(10)
+	c.Add(9)
+	d.Add(8)
 
-	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
-	}
-
-	b.Add(8)
-	b.Add(3)
-	b.Add(47)
-
-	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
-	}
-
-	a.Add(8)
-	a.Add(3)
-	a.Add(47)
-
-	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+	if !c.Equals(d) {
+		t.Errorf("Expected '%+v' to equal '%+v'", c, d)
 	}
 }
 
@@ -287,3 +273,32 @@ func TestSetSend(t *testing.T) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 }
+
+func TestSetFilter(t *testing.T) {
+	a := NewXInt32Set(1, 2, 3, 4)
+
+	b := a.Filter(func(v int32) bool {
+		return v > 2
+	})
+
+	if !b.Equals(NewXInt32Set(3, 4)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+}
+
+func TestSetPartition(t *testing.T) {
+	a := NewXInt32Set(1, 2, 3, 4)
+
+	b, c := a.Partition(func(v int32) bool {
+		return v > 2
+	})
+
+	if !b.Equals(NewXInt32Set(3, 4)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	if !c.Equals(NewXInt32Set(1, 2)) {
+		t.Errorf("Expected '1, 2' but got '%+v'", c)
+	}
+}
+

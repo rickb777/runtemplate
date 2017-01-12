@@ -513,9 +513,24 @@ func (list *PStringList) Equals(other *PStringList) bool {
 
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
+func (list PStringList) StringList() []string {
+
+	strings := make([]string, len(list.m))
+	for i, v := range list.m {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
+}
+
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list *PStringList) String() string {
-	return list.MkString3("[", ",", "]")
+	return list.MkString3("[", ", ", "]")
+}
+
+// implements json.Marshaler interface {
+func (list PStringList) MarshalJSON() ([]byte, error) {
+	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -525,21 +540,21 @@ func (list *PStringList) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list *PStringList) MkString3(pfx, mid, sfx string) string {
-	b := bytes.Buffer{}
+	return list.mkString3Bytes(pfx, mid, sfx).String()
+}
+
+func (list PStringList) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+	b := &bytes.Buffer{}
 	b.WriteString(pfx)
+	sep := ""
 
 
-	l := list.Len()
-	if l > 0 {
-		v := list.m[0]
+	for _, v := range list.m {
+		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		for i := 1; i < l; i++ {
-			v := list.m[i]
-			b.WriteString(mid)
-			b.WriteString(fmt.Sprintf("%v", v))
-		}
+		sep = mid
 	}
 	b.WriteString(sfx)
-	return b.String()
+	return b
 }
 

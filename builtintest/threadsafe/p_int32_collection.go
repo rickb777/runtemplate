@@ -28,6 +28,11 @@ type PInt32MkStringer interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
+    // implements json.Marshaler interface {
+    MarshalJSON() ([]byte, error)
+
+    // StringList gets a list of strings that depicts all the elements.
+    StringList() []string
 }
 
 // PInt32Collection defines an interface for common collection methods on *int32.
@@ -61,16 +66,6 @@ type PInt32Collection interface {
 
     // CountBy gives the number elements of PInt32Collection that return true for the passed predicate.
 	CountBy(predicate func(*int32) bool) int
-
-	// MinBy returns an element of PInt32Collection containing the minimum value, when compared to other elements
-	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-	// element is returned. Panics if there are no elements.
-	MinBy(less func(*int32, *int32) bool) *int32
-
-	// MaxBy returns an element of PInt32Collection containing the maximum value, when compared to other elements
-	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
-	// element is returned. Panics if there are no elements.
-	MaxBy(less func(*int32, *int32) bool) *int32
 
 
     // Contains determines if a given item is already in the collection.
