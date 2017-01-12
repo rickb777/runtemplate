@@ -51,11 +51,13 @@ func testToSlice(t *testing.T, a XInt32Collection) {
 }
 
 func TestExists(t *testing.T) {
-	testExists(t, NewXInt32Set(1, 2, 3))
-	testExists(t, NewXInt32List(1, 2, 3))
+	testExists1(t, NewXInt32Set(1, 2, 3))
+	testExists1(t, NewXInt32List(1, 2, 3))
+	testExists2(t, imList(1, 2, 3))
+	testExists2(t, imSet(1, 2, 3))
 }
 
-func testExists(t *testing.T, a XInt32Collection) {
+func testExists1(t *testing.T, a XInt32Collection) {
 	has2 := a.Exists(func(v int32) bool {
 		return v > 2
 	})
@@ -66,6 +68,24 @@ func testExists(t *testing.T, a XInt32Collection) {
 
 	has5 := a.Exists(func(v int32) bool {
 		return v > 5
+	})
+
+	if has5 {
+		t.Errorf("Expected not exists for %+v", a)
+	}
+}
+
+func testExists2(t *testing.T, a XAppleCollection) {
+	has2 := a.Exists(func(v Apple) bool {
+		return v.N > 2
+	})
+
+	if !has2 {
+		t.Errorf("Expected exists for %+v", a)
+	}
+
+	has5 := a.Exists(func(v Apple) bool {
+		return v.N > 5
 	})
 
 	if has5 {

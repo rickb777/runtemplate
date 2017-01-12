@@ -262,6 +262,22 @@ func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	delete(set.m, i)
 }
 
+{{else -}}
+// Remove removes a single item from the set.
+func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {{.UPrefix}}{{.UType}}Set {
+	clonedSet := New{{.UPrefix}}{{.UType}}Set()
+
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v, _ := range set.m {
+	    if i != v {
+		    clonedSet.doAdd(v)
+		}
+	}
+	return clonedSet
+}
+
 {{end -}}
 //-------------------------------------------------------------------------------------------------
 

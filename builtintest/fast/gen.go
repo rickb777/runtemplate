@@ -15,7 +15,7 @@ package fast
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=string Stringer=true  Ordered=false Numeric=false Mutable=true
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=int32  Stringer=true  Ordered=true  Numeric=true  Mutable=true
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=int64  Stringer=true  Ordered=true  Numeric=true  Mutable=false
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=Apple  Stringer=false                             Mutable=true
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=Apple  Stringer=false                             Mutable=false
 
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=int    Type=int    Mutable=true  Comparable=true Stringer=true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=string Mutable=true  Comparable=true

@@ -225,6 +225,21 @@ func (set XInt64Set) SymmetricDifference(other XInt64Set) XInt64Set {
 	return aDiff.Union(bDiff)
 }
 
+// Remove removes a single item from the set.
+func (set XInt64Set) Remove(i int64) XInt64Set {
+	clonedSet := NewXInt64Set()
+
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v, _ := range set.m {
+	    if i != v {
+		    clonedSet.doAdd(v)
+		}
+	}
+	return clonedSet
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Send returns a channel that will send all the elements in order.

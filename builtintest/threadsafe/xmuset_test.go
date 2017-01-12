@@ -1,10 +1,10 @@
-package fast
+package threadsafe
 
 import (
 	"testing"
 )
 
-func TestNewSet(t *testing.T) {
+func TestNewMutableSet(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3)
 
 	if a.Size() != 3 {
@@ -20,7 +20,7 @@ func TestNewSet(t *testing.T) {
 	}
 }
 
-func TestNewSetNoDuplicate(t *testing.T) {
+func TestNewMutableSetNoDuplicate(t *testing.T) {
 	a := NewXInt32Set(7, 5, 3, 7)
 
 	if a.Size() != 3 {
@@ -32,7 +32,7 @@ func TestNewSetNoDuplicate(t *testing.T) {
 	}
 }
 
-func TestSetRemove(t *testing.T) {
+func TestMutableSetRemove(t *testing.T) {
 	a := NewXInt32Set(6, 3, 1)
 
 	a.Remove(3)
@@ -53,7 +53,7 @@ func TestSetRemove(t *testing.T) {
 	}
 }
 
-func TestContainsAllSet(t *testing.T) {
+func TestMutableSetContainsAll(t *testing.T) {
 	a := NewXInt32Set(8, 6, 7, 5, 3, 0, 9)
 
 	if !a.ContainsAll(8, 6, 7, 5, 3, 0, 9) {
@@ -65,7 +65,7 @@ func TestContainsAllSet(t *testing.T) {
 	}
 }
 
-func TestClearSet(t *testing.T) {
+func TestMutableSetClear(t *testing.T) {
 	a := NewXInt32Set(2, 5, 9, 10)
 
 	a.Clear()
@@ -75,7 +75,7 @@ func TestClearSet(t *testing.T) {
 	}
 }
 
-func TestCardinality(t *testing.T) {
+func TestMutableSetCardinality(t *testing.T) {
 	a := NewXInt32Set()
 
 	if a.Size() != 0 {
@@ -110,7 +110,7 @@ func TestCardinality(t *testing.T) {
 	}
 }
 
-func TestIsSubset(t *testing.T) {
+func TestMutableSetIsSubset(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 5, 7)
 
 	b := NewXInt32Set(3, 5, 7)
@@ -126,7 +126,7 @@ func TestIsSubset(t *testing.T) {
 	}
 }
 
-func TestIsSuperSet(t *testing.T) {
+func TestMutableSetIsSuperSet(t *testing.T) {
 	a := NewXInt32Set(9, 5, 2, 1, 11)
 
 	b := NewXInt32Set(5, 2, 11)
@@ -142,7 +142,7 @@ func TestIsSuperSet(t *testing.T) {
 	}
 }
 
-func TestSetUnion(t *testing.T) {
+func TestMutableSetUnion(t *testing.T) {
 	a := NewXInt32Set()
 
 	b := NewXInt32Set(1, 2, 3, 4, 5)
@@ -168,7 +168,7 @@ func TestSetUnion(t *testing.T) {
 	}
 }
 
-func TestSetIntersection(t *testing.T) {
+func TestMutableSetIntersection(t *testing.T) {
 	a := NewXInt32Set(1, 3, 5, 7)
 
 	b := NewXInt32Set(2, 4, 6)
@@ -195,7 +195,7 @@ func TestSetIntersection(t *testing.T) {
 	}
 }
 
-func TestSetDifference(t *testing.T) {
+func TestMutableSetDifference(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3)
 
 	b := NewXInt32Set(1, 3, 4, 5, 6, 99)
@@ -207,7 +207,7 @@ func TestSetDifference(t *testing.T) {
 	}
 }
 
-func TestSetSymmetricDifference(t *testing.T) {
+func TestMutableSetSymmetricDifference(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 45)
 
 	b := NewXInt32Set(1, 3, 4, 5, 6, 99)
@@ -219,7 +219,7 @@ func TestSetSymmetricDifference(t *testing.T) {
 	}
 }
 
-func TestSetEqual(t *testing.T) {
+func TestMutableSetEqual(t *testing.T) {
 	a := NewXInt32Set()
 	b := NewXInt32Set()
 
@@ -242,7 +242,7 @@ func TestSetEqual(t *testing.T) {
 	}
 }
 
-func TestSetClone(t *testing.T) {
+func TestMutableSetClone(t *testing.T) {
 	a := NewXInt32Set(1, 2)
 
 	b := a.Clone()
@@ -264,7 +264,7 @@ func TestSetClone(t *testing.T) {
 	}
 }
 
-func TestSetSend(t *testing.T) {
+func TestMutableSetSend(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 4)
 
 	b := BuildXInt32SetFromChan(a.Send())
@@ -274,7 +274,7 @@ func TestSetSend(t *testing.T) {
 	}
 }
 
-func TestSetFilter(t *testing.T) {
+func TestMutableSetFilter(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 4)
 
 	b := a.Filter(func(v int32) bool {
@@ -286,7 +286,7 @@ func TestSetFilter(t *testing.T) {
 	}
 }
 
-func TestSetPartition(t *testing.T) {
+func TestMutableSetPartition(t *testing.T) {
 	a := NewXInt32Set(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int32) bool {
