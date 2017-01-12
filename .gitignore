@@ -1,3 +1,4 @@
 *test/apple_*.go
 *test/x_*.go
 reports/
+.idea/
