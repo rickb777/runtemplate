@@ -13,7 +13,6 @@ import (
 	"text/template"
 	"runtime"
 	. "github.com/rickb777/runtemplate/support"
-	"time"
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
@@ -42,7 +41,7 @@ func findTemplateFileFromPath(templateFile string) FileMeta {
 		}
 	}
 
-	return FileMeta{Path: "", Name: templateFile, ModTime: time.Time{}}
+	return SingleFileMeta(templateFile, templateFile)
 }
 
 // Set up some text munging functions that will be available in the templates.

@@ -27,7 +27,7 @@ func SingleFileMeta(path, name string) FileMeta {
 		}
 	}
 
-	if name == "" {
+	if name == "" || name[0] == '/' {
 		name = info.Name()
 	}
 	return FileMeta{path, name, info.ModTime()}
