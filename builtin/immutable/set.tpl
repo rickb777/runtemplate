@@ -41,7 +41,6 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix
 
 // ToSlice returns the elements of the current set as a slice
 func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
-
 	var s []{{.Type}}
 	for v, _ := range set.m {
 		s = append(s, v)
@@ -83,7 +82,6 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set {{.UPrefix}}{{.UType}}Set) Size() int {
-
 	return len(set.m)
 }
 
