@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from map.tpl with Key=string Type=string
-// options: Comparable=true Stringer=<no value> Mutable=true
+// options: Comparable=true Stringer=<no value> Mutable=always
 
 package threadsafe
 
@@ -91,7 +91,6 @@ func (mm TXStringStringMap) Get(k string) (string, bool) {
 	return v, found
 }
 
-
 // Put adds an item to the current map, replacing any prior value.
 func (mm TXStringStringMap) Put(k string, v string) bool {
 	mm.s.Lock()
@@ -123,7 +122,6 @@ func (mm TXStringStringMap) ContainsAllKeys(kk ...string) bool {
 	}
 	return true
 }
-
 
 // Clear clears the entire map.
 func (mm *TXStringStringMap) Clear() {

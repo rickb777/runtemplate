@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
+// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=always
 
 package {{.Package}}
 
@@ -39,7 +39,7 @@ func new{{.UPrefix}}{{.UType}}List(len, cap int) *{{.UPrefix}}{{.UType}}List {
 // New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
-    copy(result.m, values)
+	copy(result.m, values)
 	return result
 }
 
@@ -157,7 +157,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 	return len(list.m)
 }
 
-{{if .Mutable}}
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This implements one of the methods needed by sort.Interface (along with Len and Less).
 func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
@@ -167,14 +166,13 @@ func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 	list.m[i], list.m[j] = list.m[j], list.m[i]
 }
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 {{if .Comparable}}
 // Contains determines if a given item is already in the list.
 func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 	return list.Exists(func (x {{.PType}}) bool {
-	    return {{.TypeStar}}x == v
+		return {{.TypeStar}}x == v
 	})
 }
 
@@ -270,10 +268,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 	return result
 }
 
-{{if .Mutable}}
 // Add adds items to the current list. This is a synonym for Append.
 func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
-    list.Append(more...)
+	list.Append(more...)
 }
 
 // Append adds items to the current list, returning the modified list.
@@ -281,20 +278,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    list.doAppend(more...)
+	list.doAppend(more...)
 	return list
 }
 
-{{else}}
-// Append returns a new list with all original items and all in `more`; they retain their order.
-// The original list is not altered.
-func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
-	newList := list.Clone()
-    newList.doAppend(more...)
-	return newList
-}
-
-{{end -}}
 func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) {
 	list.m = append(list.m, more...)
 }
@@ -483,7 +470,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
 	v := list.m[0]
 	m := {{.TypeStar}}v
 	for i := 1; i < l; i++ {
-    	v := list.m[i]
+		v := list.m[i]
 		if {{.TypeStar}}v < m {
 			m = {{.TypeStar}}v
 		}
@@ -495,22 +482,22 @@ func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
 // Panics if the collection is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 	list.s.RLock()
-    defer list.s.RUnlock()
+	defer list.s.RUnlock()
 
-    l := list.Len()
-    if l == 0 {
-        panic("Cannot determine the maximum of an empty list.")
-    }
+	l := list.Len()
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty list.")
+	}
 
-    v := list.m[0]
-    m := {{.TypeStar}}v
-    for i := 1; i < l; i++ {
-        v := list.m[i]
-        if {{.TypeStar}}v > m {
-            m = {{.TypeStar}}v
-        }
-    }
-    return m
+	v := list.m[0]
+	m := {{.TypeStar}}v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if {{.TypeStar}}v > m {
+			m = {{.TypeStar}}v
+		}
+	}
+	return m
 }
 
 {{else -}}

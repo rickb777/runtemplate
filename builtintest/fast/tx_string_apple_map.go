@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from map.tpl with Key=string Type=Apple
-// options: Comparable=<no value> Stringer=<no value> Mutable=true
+// options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package fast
 
@@ -82,7 +82,6 @@ func (mm TXStringAppleMap) Get(k string) (Apple, bool) {
 	return v, found
 }
 
-
 // Put adds an item to the current map, replacing any prior value.
 func (mm TXStringAppleMap) Put(k string, v Apple) bool {
 
@@ -108,7 +107,6 @@ func (mm TXStringAppleMap) ContainsAllKeys(kk ...string) bool {
 	}
 	return true
 }
-
 
 // Clear clears the entire map.
 func (mm *TXStringAppleMap) Clear() {

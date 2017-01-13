@@ -2,23 +2,17 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable=always Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable={{.Mutable}}
+// options: Comparable=always Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
 
 package {{.Package}}
 
-{{if .Stringer}}
 import (
+{{if .Stringer}}
 	"bytes"
 	"fmt"
-)
-
-{{else}}
-// Stringer is not supported.
-
-import (
-)
-
 {{end -}}
+)
+
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
 type {{.UPrefix}}{{.UType}}Set struct {
 	m map[{{.Type}}]struct{}
@@ -101,7 +95,6 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 
 //-------------------------------------------------------------------------------------------------
 
-{{if .Mutable}}
 // Add adds items to the current set.
 func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {
 
@@ -110,18 +103,6 @@ func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {
 	}
 }
 
-{{else}}
-// Add returns a new set with all original items and all in `more`.
-// The original set is not altered.
-func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	newSet := set.Clone()
-	for _, v := range more {
-		newSet.doAdd(v)
-	}
-	return newSet
-}
-
-{{end -}}
 func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 	set.m[i] = struct{}{}
 }
@@ -215,7 +196,6 @@ func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UT
 	return aDiff.Union(bDiff)
 }
 
-{{if .Mutable}}
 // Clear clears the entire set to be the empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 
@@ -228,21 +208,6 @@ func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	delete(set.m, i)
 }
 
-{{else -}}
-// Remove removes a single item from the set.
-func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	clonedSet := New{{.UPrefix}}{{.UType}}Set()
-
-
-	for v, _ := range set.m {
-	    if i != v {
-		    clonedSet.doAdd(v)
-		}
-	}
-	return clonedSet
-}
-
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // Send returns a channel that will send all the elements in order.

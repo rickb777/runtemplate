@@ -2,12 +2,9 @@
 // Thread-safe.
 //
 // Generated from set.tpl with Type=Apple
-// options: Comparable=always Numeric=<no value> Ordered=<no value> Stringer=false Mutable=false
+// options: Comparable=always Numeric=<no value> Ordered=<no value> Stringer=false
 
 package fast
-
-
-// Stringer is not supported.
 
 import (
 )
@@ -94,15 +91,12 @@ func (set XAppleSet) Cardinality() int {
 
 //-------------------------------------------------------------------------------------------------
 
+// Add adds items to the current set.
+func (set XAppleSet) Add(more ...Apple) {
 
-// Add returns a new set with all original items and all in `more`.
-// The original set is not altered.
-func (set XAppleSet) Add(more ...Apple) XAppleSet {
-	newSet := set.Clone()
 	for _, v := range more {
-		newSet.doAdd(v)
+		set.doAdd(v)
 	}
-	return newSet
 }
 
 func (set XAppleSet) doAdd(i Apple) {
@@ -198,17 +192,16 @@ func (set XAppleSet) SymmetricDifference(other XAppleSet) XAppleSet {
 	return aDiff.Union(bDiff)
 }
 
+// Clear clears the entire set to be the empty set.
+func (set *XAppleSet) Clear() {
+
+	set.m = make(map[Apple]struct{})
+}
+
 // Remove removes a single item from the set.
-func (set XAppleSet) Remove(i Apple) XAppleSet {
-	clonedSet := NewXAppleSet()
+func (set XAppleSet) Remove(i Apple) {
 
-
-	for v, _ := range set.m {
-	    if i != v {
-		    clonedSet.doAdd(v)
-		}
-	}
-	return clonedSet
+	delete(set.m, i)
 }
 
 //-------------------------------------------------------------------------------------------------

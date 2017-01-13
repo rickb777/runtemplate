@@ -4,42 +4,41 @@ package fast
 // Code generation with non-pointer values
 
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X Type=string Stringer=true Comparable=true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=X Type=int32  Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=X Type=int    Stringer=true Comparable=true Ordered=true Numeric=true
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X Type=Apple  Stringer=false
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X Type=Pear
 
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X Type=string Stringer=true  Comparable=true Ordered=false Numeric=false Mutable=true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X Type=int32  Stringer=true  Comparable=true Ordered=true  Numeric=true  Mutable=true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X Type=Apple  Stringer=false Comparable=true                             Mutable=false
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X Type=string Stringer=true  Comparable=true Ordered=false Numeric=false
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X Type=int    Stringer=true  Comparable=true Ordered=true  Numeric=true
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X Type=Apple  Stringer=false Comparable=true
 
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=string Stringer=true  Ordered=false Numeric=false Mutable=true
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=int32  Stringer=true  Ordered=true  Numeric=true  Mutable=true
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=int64  Stringer=true  Ordered=true  Numeric=true  Mutable=false
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=Apple  Stringer=false                             Mutable=false
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=string Stringer=true  Ordered=false Numeric=false
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=int    Stringer=true  Ordered=true  Numeric=true
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X Type=Apple  Stringer=false
 
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=int    Type=int    Mutable=true  Comparable=true Stringer=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=string Mutable=true  Comparable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=Apple  Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=Apple  Type=string Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=Apple  Type=Pear   Mutable=false
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=int    Type=int     Comparable=true Stringer=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=string  Comparable=true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=string Type=Apple
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=Apple  Type=string
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX Key=Apple  Type=Pear
 
 
 // Code generation with pointer values
 
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*string Stringer=true Comparable=true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*int32  Stringer=true Comparable=true Ordered=true Numeric=true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*Apple  Stringer=false
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*Pear
+//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*string Stringer=true Comparable=true
+//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*int    Stringer=true Comparable=true Ordered=true Numeric=true
+//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*Apple  Stringer=false
+//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P Type=*Pear
 
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*string Stringer=true  Comparable=true Ordered=false Numeric=false Mutable=true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*int32  Stringer=true  Comparable=true Ordered=true  Numeric=true  Mutable=true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*Apple  Stringer=false Comparable=true                             Mutable=false
+//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*string Stringer=true  Comparable=true Ordered=false Numeric=false
+//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*int    Stringer=true  Comparable=true Ordered=true  Numeric=true
+//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P Type=*Apple  Stringer=false Comparable=true
 
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*int    Type=*int    Mutable=true  Comparable=true Stringer=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*string Type=*string Mutable=true  Comparable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*string Type=*Apple  Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*Apple  Type=*string Mutable=true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*Apple  Type=*Pear   Mutable=false
+//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*int    Type=*int     Comparable=true Stringer=true
+//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*string Type=*string  Comparable=true
+//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*string Type=*Apple
+//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*Apple  Type=*string
+//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP Key=*Apple  Type=*Pear
 
 
 type Apple struct {
@@ -51,13 +50,9 @@ type Pear struct{
 }
 
 var _ XStringCollection = NewXStringList()
-var _ XInt32Collection = NewXInt32List()
+var _ XIntCollection = NewXIntList()
 var _ XAppleCollection = NewXAppleList()
 
 var _ XStringCollection = NewXStringSet()
-var _ XInt32Collection = NewXInt32Set()
+var _ XIntCollection = NewXIntSet()
 var _ XAppleCollection = NewXAppleSet()
-
-var _ PStringCollection = NewPStringList()
-var _ PInt32Collection = NewPInt32List()
-var _ PAppleCollection = NewPAppleList()

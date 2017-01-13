@@ -1,5 +1,5 @@
 // Generated from collection.tpl with Type=string
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=true
+// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=true Mutable=always
 
 package threadsafe
 
@@ -28,11 +28,11 @@ type XStringMkStringer interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
-    // implements json.Marshaler interface {
-    MarshalJSON() ([]byte, error)
+	// implements json.Marshaler interface {
+	MarshalJSON() ([]byte, error)
 
-    // StringList gets a list of strings that depicts all the elements.
-    StringList() []string
+	// StringList gets a list of strings that depicts all the elements.
+	StringList() []string
 }
 
 // XStringCollection defines an interface for common collection methods on string.
@@ -64,15 +64,18 @@ type XStringCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan string
 
-    // CountBy gives the number elements of XStringCollection that return true for the passed predicate.
+	// CountBy gives the number elements of XStringCollection that return true for the passed predicate.
 	CountBy(predicate func(string) bool) int
 
 
-    // Contains determines if a given item is already in the collection.
-    Contains(v string) bool
+	// Contains determines if a given item is already in the collection.
+	Contains(v string) bool
 
-    // ContainsAll determines if the given items are all in the collection.
-    ContainsAll(v ...string) bool
+	// ContainsAll determines if the given items are all in the collection.
+	ContainsAll(v ...string) bool
+
+// Add adds items to the current collection.
+	Add(more ...string)
 
 // MinBy returns an element of XStringCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such

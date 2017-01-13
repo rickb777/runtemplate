@@ -178,7 +178,6 @@ func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UT
 	return aDiff.Union(bDiff)
 }
 
-{{if .Mutable}}
 // Clear clears the entire set to be the empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 	*set = New{{.UPrefix}}{{.UType}}Set()
@@ -189,7 +188,6 @@ func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	delete(set, i)
 }
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // Send returns a channel that will send all the elements in order.

@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from list.tpl with Type=Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=false
+// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=always
 
 package fast
 
@@ -32,7 +32,7 @@ func newXAppleList(len, cap int) *XAppleList {
 // NewXAppleList constructs a new list containing the supplied values, if any.
 func NewXAppleList(values ...Apple) *XAppleList {
 	result := newXAppleList(len(values), len(values))
-    copy(result.m, values)
+	copy(result.m, values)
 	return result
 }
 
@@ -136,13 +136,20 @@ func (list *XAppleList) Len() int {
 	return len(list.m)
 }
 
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This implements one of the methods needed by sort.Interface (along with Len and Less).
+func (list *XAppleList) Swap(i, j int) {
+
+	list.m[i], list.m[j] = list.m[j], list.m[i]
+}
+
 //-------------------------------------------------------------------------------------------------
 
 
 // Contains determines if a given item is already in the list.
 func (list *XAppleList) Contains(v Apple) bool {
 	return list.Exists(func (x Apple) bool {
-	    return x == v
+		return x == v
 	})
 }
 
@@ -225,13 +232,16 @@ func (list *XAppleList) Shuffle() *XAppleList {
 	return result
 }
 
+// Add adds items to the current list. This is a synonym for Append.
+func (list *XAppleList) Add(more ...Apple) {
+	list.Append(more...)
+}
 
-// Append returns a new list with all original items and all in `more`; they retain their order.
-// The original list is not altered.
+// Append adds items to the current list, returning the modified list.
 func (list *XAppleList) Append(more ...Apple) *XAppleList {
-	newList := list.Clone()
-    newList.doAppend(more...)
-	return newList
+
+	list.doAppend(more...)
+	return list
 }
 
 func (list *XAppleList) doAppend(more ...Apple) {

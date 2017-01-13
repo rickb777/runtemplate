@@ -177,7 +177,6 @@ func (set XStringSet) SymmetricDifference(other XStringSet) XStringSet {
 	return aDiff.Union(bDiff)
 }
 
-
 // Clear clears the entire set to be the empty set.
 func (set *XStringSet) Clear() {
 	*set = NewXStringSet()

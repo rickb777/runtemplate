@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from list.tpl with Type=string
-// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=true
+// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=always
 
 package threadsafe
 
@@ -38,7 +38,7 @@ func newXStringList(len, cap int) *XStringList {
 // NewXStringList constructs a new list containing the supplied values, if any.
 func NewXStringList(values ...string) *XStringList {
 	result := newXStringList(len(values), len(values))
-    copy(result.m, values)
+	copy(result.m, values)
 	return result
 }
 
@@ -156,7 +156,6 @@ func (list *XStringList) Len() int {
 	return len(list.m)
 }
 
-
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This implements one of the methods needed by sort.Interface (along with Len and Less).
 func (list *XStringList) Swap(i, j int) {
@@ -172,7 +171,7 @@ func (list *XStringList) Swap(i, j int) {
 // Contains determines if a given item is already in the list.
 func (list *XStringList) Contains(v string) bool {
 	return list.Exists(func (x string) bool {
-	    return x == v
+		return x == v
 	})
 }
 
@@ -267,10 +266,9 @@ func (list *XStringList) Shuffle() *XStringList {
 	return result
 }
 
-
 // Add adds items to the current list. This is a synonym for Append.
 func (list *XStringList) Add(more ...string) {
-    list.Append(more...)
+	list.Append(more...)
 }
 
 // Append adds items to the current list, returning the modified list.
@@ -278,7 +276,7 @@ func (list *XStringList) Append(more ...string) *XStringList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    list.doAppend(more...)
+	list.doAppend(more...)
 	return list
 }
 

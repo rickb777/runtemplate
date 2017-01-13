@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from map.tpl with Key=Apple Type=Pear
-// options: Comparable=<no value> Stringer=<no value> Mutable=false
+// options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package threadsafe
 
@@ -91,6 +91,16 @@ func (mm TXApplePearMap) Get(k Apple) (Pear, bool) {
 	return v, found
 }
 
+// Put adds an item to the current map, replacing any prior value.
+func (mm TXApplePearMap) Put(k Apple, v Pear) bool {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	_, found := mm.m[k]
+	mm.m[k] = v
+	return !found //False if it existed already
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm TXApplePearMap) ContainsKey(k Apple) bool {
 	mm.s.RLock()
@@ -111,6 +121,22 @@ func (mm TXApplePearMap) ContainsAllKeys(kk ...Apple) bool {
 		}
 	}
 	return true
+}
+
+// Clear clears the entire map.
+func (mm *TXApplePearMap) Clear() {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	mm.m = make(map[Apple]Pear)
+}
+
+// Remove allows the removal of a single item from the map.
+func (mm TXApplePearMap) Remove(k Apple) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	delete(mm.m, k)
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.

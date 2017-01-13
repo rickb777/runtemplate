@@ -7,13 +7,13 @@ import (
 )
 
 func TestNewXCollection(t *testing.T) {
-	testNewXCollection1(t, NewXInt32Set())
-	testNewXCollection1(t, NewXInt32List())
+	testNewXCollection1(t, NewXIntSet())
+	testNewXCollection1(t, NewXIntList())
 	testNewXCollection2(t, NewXAppleList())
 	testNewXCollection2(t, NewXAppleSet())
 }
 
-func testNewXCollection1(t *testing.T, a XInt32Collection) {
+func testNewXCollection1(t *testing.T, a XIntCollection) {
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
 	}
@@ -38,11 +38,11 @@ func testNewXCollection2(t *testing.T, a XAppleCollection) {
 }
 
 func TestToSlice(t *testing.T) {
-	testToSlice(t, NewXInt32Set(1, 2, 3))
-	testToSlice(t, NewXInt32List(1, 2, 3))
+	testToSlice(t, NewXIntSet(1, 2, 3))
+	testToSlice(t, NewXIntList(1, 2, 3))
 }
 
-func testToSlice(t *testing.T, a XInt32Collection) {
+func testToSlice(t *testing.T, a XIntCollection) {
 	s := a.ToSlice()
 
 	if len(s) != 3 {
@@ -51,14 +51,12 @@ func testToSlice(t *testing.T, a XInt32Collection) {
 }
 
 func TestExists(t *testing.T) {
-	testExists1(t, NewXInt32Set(1, 2, 3))
-	testExists1(t, NewXInt32List(1, 2, 3))
-	testExists2(t, imList(1, 2, 3))
-	testExists2(t, imSet(1, 2, 3))
+	testExists1(t, NewXIntSet(1, 2, 3))
+	testExists1(t, NewXIntList(1, 2, 3))
 }
 
-func testExists1(t *testing.T, a XInt32Collection) {
-	has2 := a.Exists(func(v int32) bool {
+func testExists1(t *testing.T, a XIntCollection) {
+	has2 := a.Exists(func(v int) bool {
 		return v > 2
 	})
 
@@ -66,7 +64,7 @@ func testExists1(t *testing.T, a XInt32Collection) {
 		t.Errorf("Expected exists for %+v", a)
 	}
 
-	has5 := a.Exists(func(v int32) bool {
+	has5 := a.Exists(func(v int) bool {
 		return v > 5
 	})
 
@@ -75,31 +73,13 @@ func testExists1(t *testing.T, a XInt32Collection) {
 	}
 }
 
-func testExists2(t *testing.T, a XAppleCollection) {
-	has2 := a.Exists(func(v Apple) bool {
-		return v.N > 2
-	})
-
-	if !has2 {
-		t.Errorf("Expected exists for %+v", a)
-	}
-
-	has5 := a.Exists(func(v Apple) bool {
-		return v.N > 5
-	})
-
-	if has5 {
-		t.Errorf("Expected not exists for %+v", a)
-	}
-}
-
 func TestForall(t *testing.T) {
-	testForall(t, NewXInt32Set(1, 2, 3))
-	testForall(t, NewXInt32List(1, 2, 3))
+	testForall(t, NewXIntSet(1, 2, 3))
+	testForall(t, NewXIntList(1, 2, 3))
 }
 
-func testForall(t *testing.T, a XInt32Collection) {
-	has1 := a.Forall(func(v int32) bool {
+func testForall(t *testing.T, a XIntCollection) {
+	has1 := a.Forall(func(v int) bool {
 		return v >= 1
 	})
 
@@ -107,7 +87,7 @@ func testForall(t *testing.T, a XInt32Collection) {
 		t.Errorf("Expected forall for %+v", a)
 	}
 
-	has2 := a.Forall(func(v int32) bool {
+	has2 := a.Forall(func(v int) bool {
 		return v >= 2
 	})
 
@@ -117,12 +97,12 @@ func testForall(t *testing.T, a XInt32Collection) {
 }
 
 func TestCountBy(t *testing.T) {
-	testCountBy(t, NewXInt32Set(1, 2, 3))
-	testCountBy(t, NewXInt32List(1, 2, 3))
+	testCountBy(t, NewXIntSet(1, 2, 3))
+	testCountBy(t, NewXIntList(1, 2, 3))
 }
 
-func testCountBy(t *testing.T, a XInt32Collection) {
-	n := a.CountBy(func(v int32) bool {
+func testCountBy(t *testing.T, a XIntCollection) {
+	n := a.CountBy(func(v int) bool {
 		return v >= 2
 	})
 
@@ -132,13 +112,13 @@ func testCountBy(t *testing.T, a XInt32Collection) {
 }
 
 func TestForeach(t *testing.T) {
-	testForeach(t, NewXInt32Set(1, 2, 3))
-	testForeach(t, NewXInt32List(1, 2, 3))
+	testForeach(t, NewXIntSet(1, 2, 3))
+	testForeach(t, NewXIntList(1, 2, 3))
 }
 
-func testForeach(t *testing.T, a XInt32Collection) {
-	sum1 := int32(0)
-	a.Foreach(func(v int32) {
+func testForeach(t *testing.T, a XIntCollection) {
+	sum1 := int(0)
+	a.Foreach(func(v int) {
 		sum1 += v
 	})
 
@@ -148,11 +128,11 @@ func testForeach(t *testing.T, a XInt32Collection) {
 }
 
 func TestContains(t *testing.T) {
-	testContains(t, NewXInt32Set(71, 1, 7, 13))
-	testContains(t, NewXInt32List(71, 1, 7, 13))
+	testContains(t, NewXIntSet(71, 1, 7, 13))
+	testContains(t, NewXIntList(71, 1, 7, 13))
 }
 
-func testContains(t *testing.T, a XInt32Collection) {
+func testContains(t *testing.T, a XIntCollection) {
 	if !a.Contains(71) {
 		t.Error("should contain 71")
 	}
@@ -175,11 +155,11 @@ func testContains(t *testing.T, a XInt32Collection) {
 }
 
 func TestMinMaxSum(t *testing.T) {
-	testMinMaxSum(t, NewXInt32Set(10, 71, 3, 7, 13))
-	testMinMaxSum(t, NewXInt32List(10, 71, 3, 7, 13))
+	testMinMaxSum(t, NewXIntSet(10, 71, 3, 7, 13))
+	testMinMaxSum(t, NewXIntList(10, 71, 3, 7, 13))
 }
 
-func testMinMaxSum(t *testing.T, a XInt32Collection) {
+func testMinMaxSum(t *testing.T, a XIntCollection) {
 	if a.Min() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Min())
 	}
@@ -192,11 +172,11 @@ func testMinMaxSum(t *testing.T, a XInt32Collection) {
 }
 
 func TestStringer(t *testing.T) {
-	testStringer(t, NewXInt32Set(10, 71, 3, 7, 13), false)
-	testStringer(t, NewXInt32List(10, 71, 3, 7, 13), true)
+	testStringer(t, NewXIntSet(10, 71, 3, 7, 13), false)
+	testStringer(t, NewXIntList(10, 71, 3, 7, 13), true)
 }
 
-func testStringer(t *testing.T, a XInt32Collection, ordered bool) {
+func testStringer(t *testing.T, a XIntCollection, ordered bool) {
 	s1 := a.String()
 	if ordered && s1 != "[10, 71, 3, 7, 13]" {
 		t.Errorf("Got %s for %+v", s1, a)

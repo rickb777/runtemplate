@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from map.tpl with Key=int Type=int
-// options: Comparable=true Stringer=true Mutable=true
+// options: Comparable=true Stringer=true Mutable=always
 
 package threadsafe
 
@@ -94,7 +94,6 @@ func (mm TXIntIntMap) Get(k int) (int, bool) {
 	return v, found
 }
 
-
 // Put adds an item to the current map, replacing any prior value.
 func (mm TXIntIntMap) Put(k int, v int) bool {
 	mm.s.Lock()
@@ -126,7 +125,6 @@ func (mm TXIntIntMap) ContainsAllKeys(kk ...int) bool {
 	}
 	return true
 }
-
 
 // Clear clears the entire map.
 func (mm *TXIntIntMap) Clear() {

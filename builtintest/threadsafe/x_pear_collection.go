@@ -1,5 +1,5 @@
 // Generated from collection.tpl with Type=Pear
-// options: Comparable=<no value> Numeric=<no value> Ordered=<no value> Stringer=<no value>
+// options: Comparable=<no value> Numeric=<no value> Ordered=<no value> Stringer=<no value> Mutable=always
 
 package threadsafe
 
@@ -42,8 +42,11 @@ type XPearCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan Pear
 
-    // CountBy gives the number elements of XPearCollection that return true for the passed predicate.
+	// CountBy gives the number elements of XPearCollection that return true for the passed predicate.
 	CountBy(predicate func(Pear) bool) int
+
+// Add adds items to the current collection.
+	Add(more ...Pear)
 
 // MinBy returns an element of XPearCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such

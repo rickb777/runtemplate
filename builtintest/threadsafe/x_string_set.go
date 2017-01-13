@@ -2,15 +2,15 @@
 // Thread-safe.
 //
 // Generated from set.tpl with Type=string
-// options: Comparable=always Numeric=false Ordered=false Stringer=true Mutable=true
+// options: Comparable=always Numeric=false Ordered=false Stringer=true
 
 package threadsafe
 
-
 import (
+
 	"bytes"
 	"fmt"
-	"sync"
+"sync"
 )
 
 // XStringSet is the primary type that represents a set
@@ -102,7 +102,6 @@ func (set XStringSet) Cardinality() int {
 }
 
 //-------------------------------------------------------------------------------------------------
-
 
 // Add adds items to the current set.
 func (set XStringSet) Add(more ...string) {
@@ -224,7 +223,6 @@ func (set XStringSet) SymmetricDifference(other XStringSet) XStringSet {
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
 }
-
 
 // Clear clears the entire set to be the empty set.
 func (set *XStringSet) Clear() {

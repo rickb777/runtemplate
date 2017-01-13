@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
+// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=always
 
 package {{.Package}}
 
@@ -28,11 +28,11 @@ type {{.UPrefix}}{{.UType}}MkStringer interface {
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 	MkString3(pfx, mid, sfx string) string
 
-    // implements json.Marshaler interface {
-    MarshalJSON() ([]byte, error)
+	// implements json.Marshaler interface {
+	MarshalJSON() ([]byte, error)
 
-    // StringList gets a list of strings that depicts all the elements.
-    StringList() []string
+	// StringList gets a list of strings that depicts all the elements.
+	StringList() []string
 }
 
 {{end -}}
@@ -65,25 +65,20 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan {{.PType}}
 
-    // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
+	// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
 	CountBy(predicate func({{.PType}}) bool) int
 
 {{if .Comparable}}
-    // Contains determines if a given item is already in the collection.
-    Contains(v {{.Type}}) bool
+	// Contains determines if a given item is already in the collection.
+	Contains(v {{.Type}}) bool
 
-    // ContainsAll determines if the given items are all in the collection.
-    ContainsAll(v ...{{.Type}}) bool
-
-{{end -}}
-{{if .Mutable}}
-    // Add adds items to the current collection.
-    Add(more ...{{.Type}})
-
-    // Remove removes a single item from the collection.
-	Remove({{.Type}})
+	// ContainsAll determines if the given items are all in the collection.
+	ContainsAll(v ...{{.Type}}) bool
 
 {{end -}}
+	// Add adds items to the current collection.
+	Add(more ...{{.Type}})
+
 {{if .Ordered}}
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() {{.Type}}

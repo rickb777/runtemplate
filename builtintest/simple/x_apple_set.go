@@ -171,7 +171,6 @@ func (set XAppleSet) SymmetricDifference(other XAppleSet) XAppleSet {
 	return aDiff.Union(bDiff)
 }
 
-
 // Clear clears the entire set to be the empty set.
 func (set *XAppleSet) Clear() {
 	*set = NewXAppleSet()
