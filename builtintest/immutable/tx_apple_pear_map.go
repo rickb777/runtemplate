@@ -1,7 +1,7 @@
 // An encapsulated map[Apple]Pear.
 // Thread-safe.
 //
-// Generated from map.tpl with Key=Apple Type=Pear
+// Generated from immutable/map.tpl with Key=Apple Type=Pear
 // options: Comparable=<no value> Stringer=<no value> Mutable=disabled
 
 package immutable

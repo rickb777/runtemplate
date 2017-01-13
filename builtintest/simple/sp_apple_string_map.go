@@ -1,7 +1,7 @@
 // A simple type derived from map[Apple]string.
 // Not thread-safe.
 //
-// Generated from map.tpl with Key=Apple Type=string
+// Generated from simple/map.tpl with Key=Apple Type=string
 // options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package simple

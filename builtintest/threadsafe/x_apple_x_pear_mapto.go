@@ -1,4 +1,4 @@
-// Generated from mapTo.tpl with Type=Apple ToType=Pear
+// Generated from plumbing/mapTo.tpl with Type=Apple ToType=Pear
 
 package threadsafe
 

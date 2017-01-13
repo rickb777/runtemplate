@@ -1,4 +1,4 @@
-// Generated from collection.tpl with Type=string
+// Generated from fast/collection.tpl with Type=string
 // options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=true Mutable=always
 
 package fast

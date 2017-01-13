@@ -1,7 +1,7 @@
 // A simple type derived from map[int]int.
 // Not thread-safe.
 //
-// Generated from map.tpl with Key=int Type=int
+// Generated from simple/map.tpl with Key=int Type=int
 // options: Comparable=true Stringer=true Mutable=always
 
 package simple

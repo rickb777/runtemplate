@@ -1,7 +1,7 @@
 // An encapsulated []int.
 // Thread-safe.
 //
-// Generated from list.tpl with Type=int
+// Generated from fast/list.tpl with Type=int
 // options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=always
 
 package fast

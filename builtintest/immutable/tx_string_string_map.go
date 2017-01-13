@@ -1,7 +1,7 @@
 // An encapsulated map[string]string.
 // Thread-safe.
 //
-// Generated from map.tpl with Key=string Type=string
+// Generated from immutable/map.tpl with Key=string Type=string
 // options: Comparable=true Stringer=<no value> Mutable=disabled
 
 package immutable

@@ -1,7 +1,7 @@
 // A simple type derived from []string
 // Not thread-safe.
 //
-// Generated from list.tpl with Type=*string
+// Generated from simple/list.tpl with Type=*string
 // options: Comparable=true Numeric=false Ordered=false Stringer=true
 
 package simple

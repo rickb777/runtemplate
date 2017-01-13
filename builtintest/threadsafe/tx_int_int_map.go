@@ -1,7 +1,7 @@
 // An encapsulated map[int]int.
 // Thread-safe.
 //
-// Generated from map.tpl with Key=int Type=int
+// Generated from threadsafe/map.tpl with Key=int Type=int
 // options: Comparable=true Stringer=true Mutable=always
 
 package threadsafe

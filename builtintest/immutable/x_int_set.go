@@ -1,7 +1,7 @@
 // An encapsulated map[int]struct{} used as a set.
 // Thread-safe.
 //
-// Generated from set.tpl with Type=int
+// Generated from immutable/set.tpl with Type=int
 // options: Comparable=always Numeric=true Ordered=true Stringer=true Mutable=disabled
 
 package immutable

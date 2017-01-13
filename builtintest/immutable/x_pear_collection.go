@@ -1,4 +1,4 @@
-// Generated from collection.tpl with Type=Pear
+// Generated from immutable/collection.tpl with Type=Pear
 // options: Comparable=<no value> Numeric=<no value> Ordered=<no value> Stringer=<no value> Mutable=disabled
 
 package immutable

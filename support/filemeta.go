@@ -11,26 +11,42 @@ type FileMeta struct {
 	ModTime time.Time
 }
 
+func SingleFileMeta(path, name string) FileMeta {
+	Debug("stat '%s'\n", path)
+	if path == "" {
+		return FileMeta{path, "", time.Time{}}
+	}
+
+	info, err := fs.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			Info("'%s' does not exist.\n", path)
+			return FileMeta{path, "", time.Time{}}
+		} else {
+			Fail(err)
+		}
+	}
+
+	if name == "" {
+		name = info.Name()
+	}
+	return FileMeta{path, name, info.ModTime()}
+}
+
 func NewFileMeta(includeEmpties bool, paths ...string) []FileMeta {
 	result := make([]FileMeta, len(paths))
 
 	i := 0
 	for _, p := range paths {
-		Debug("stat %s\n", p)
-		info, err := os.Stat(p)
-		if err != nil {
-			if os.IsNotExist(err) {
-				Info("%s does not exist.\n", p)
-				if includeEmpties {
-					result[i] = FileMeta{p, "", time.Time{}}
-					i += 1
-				}
-			} else {
-				Fail(err)
-			}
-		} else {
-			result[i] = FileMeta{p, info.Name(), info.ModTime()}
+		fm := SingleFileMeta(p, "")
+		if fm.Exists() {
+			result[i] = fm
 			i += 1
+		} else {
+			if includeEmpties {
+				result[i] = fm
+				i += 1
+			}
 		}
 	}
 

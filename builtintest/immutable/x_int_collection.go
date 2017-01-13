@@ -1,4 +1,4 @@
-// Generated from collection.tpl with Type=int
+// Generated from immutable/collection.tpl with Type=int
 // options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=disabled
 
 package immutable

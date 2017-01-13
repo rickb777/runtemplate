@@ -1,7 +1,7 @@
 // An encapsulated map[Apple]struct{} used as a set.
 // Thread-safe.
 //
-// Generated from set.tpl with Type=Apple
+// Generated from immutable/set.tpl with Type=Apple
 // options: Comparable=always Numeric=<no value> Ordered=<no value> Stringer=false Mutable=disabled
 
 package immutable

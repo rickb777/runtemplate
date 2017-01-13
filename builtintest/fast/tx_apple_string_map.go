@@ -1,7 +1,7 @@
 // An encapsulated map[Apple]string.
 // Thread-safe.
 //
-// Generated from map.tpl with Key=Apple Type=string
+// Generated from fast/map.tpl with Key=Apple Type=string
 // options: Comparable=<no value> Stringer=<no value> Mutable=always
 
 package fast

@@ -1,7 +1,7 @@
 // A simple type derived from []int
 // Not thread-safe.
 //
-// Generated from list.tpl with Type=int
+// Generated from simple/list.tpl with Type=int
 // options: Comparable=true Numeric=true Ordered=true Stringer=true
 
 package simple

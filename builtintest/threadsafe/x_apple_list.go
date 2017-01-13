@@ -1,7 +1,7 @@
 // An encapsulated []Apple.
 // Thread-safe.
 //
-// Generated from list.tpl with Type=Apple
+// Generated from threadsafe/list.tpl with Type=Apple
 // options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=always
 
 package threadsafe

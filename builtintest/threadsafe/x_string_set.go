@@ -1,7 +1,7 @@
 // An encapsulated map[string]struct{} used as a set.
 // Thread-safe.
 //
-// Generated from set.tpl with Type=string
+// Generated from threadsafe/set.tpl with Type=string
 // options: Comparable=always Numeric=false Ordered=false Stringer=true
 
 package threadsafe

@@ -1,7 +1,7 @@
 // A simple type derived from map[int]struct{}
 // Not thread-safe.
 //
-// Generated from set.tpl with Type=int
+// Generated from simple/set.tpl with Type=int
 // options: Numeric=true Stringer=true Mutable=always
 
 package simple

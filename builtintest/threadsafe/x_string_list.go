@@ -1,7 +1,7 @@
 // An encapsulated []string.
 // Thread-safe.
 //
-// Generated from list.tpl with Type=string
+// Generated from threadsafe/list.tpl with Type=string
 // options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=always
 
 package threadsafe

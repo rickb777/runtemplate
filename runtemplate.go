@@ -13,6 +13,7 @@ import (
 	"text/template"
 	"runtime"
 	. "github.com/rickb777/runtemplate/support"
+	"time"
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
@@ -35,13 +36,13 @@ func findTemplateFileFromPath(templateFile string) FileMeta {
 	Debug("searching template path %+v\n", x)
 	for _, p := range x {
 		path := p + "/" + templateFile
-		file := NewFileMeta(true, path)[0]
+		file := SingleFileMeta(path, templateFile)
 		if file.Exists() {
 			return file
 		}
 	}
 
-	return NewFileMeta(true, templateFile)[0]
+	return FileMeta{Path: "", Name: templateFile, ModTime: time.Time{}}
 }
 
 // Set up some text munging functions that will be available in the templates.
@@ -198,7 +199,7 @@ func runTheTemplate(foundTemplate, outputFile string, context map[string]interfa
 }
 
 func generate(templateFile, outputFile string, force bool, deps []string, vals Pairs) {
-	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, vals)
+	Debug("generate '%s' '%s' %v %+v %+v\n", templateFile, outputFile, force, deps, vals)
 
 	foundTemplate := findTemplateFileFromPath(templateFile)
 	than := templateFile
@@ -216,7 +217,7 @@ func generate(templateFile, outputFile string, force bool, deps []string, vals P
 	otherDeps := NewFileMeta(false, deps...)
 	youngestDep = youngestDep.Younger(YoungestFile(otherDeps...))
 
-	outputInfo := NewFileMeta(true, outputFile)[0]
+	outputInfo := SingleFileMeta(outputFile, "")
 
 	Debug("output=%s %v, youngest=%s %v\n", outputInfo.Name, outputInfo.ModTime, youngestDep.Name, youngestDep.ModTime)
 	if outputInfo.ModTime.After(youngestDep.ModTime) {

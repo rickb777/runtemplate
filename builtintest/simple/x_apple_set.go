@@ -1,7 +1,7 @@
 // A simple type derived from map[Apple]struct{}
 // Not thread-safe.
 //
-// Generated from set.tpl with Type=Apple
+// Generated from simple/set.tpl with Type=Apple
 // options: Numeric=<no value> Stringer=false Mutable=always
 
 package simple
