@@ -2,6 +2,7 @@ package immutable
 
 import (
 	"testing"
+	"fmt"
 )
 
 func TestNewImmutableSet(t *testing.T) {
@@ -260,6 +261,19 @@ func TestImmutableSetPartition(t *testing.T) {
 
 	if !c.Equals(NewXIntSet(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c)
+	}
+}
+
+func TestImmutableSetStringMap(t *testing.T) {
+	a := NewXIntSet(1, 2, 3, 4)
+
+	b := a.StringMap()
+
+	for _, c := range a.ToSlice() {
+		s := fmt.Sprintf("%d", c)
+		if _, ok := b[s]; !ok {
+			t.Errorf("Expected '%s' but got '%+v'", s, b)
+		}
 	}
 }
 

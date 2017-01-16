@@ -414,4 +414,14 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes
 	b.WriteString(sfx)
 	return b
 }
+
+// StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
+// resulting map.
+func (set {{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
+	strings := make(map[string]bool)
+	for v, _ := range set {
+		strings[fmt.Sprintf("%v", v)] = true
+	}
+	return strings
+}
 {{end}}

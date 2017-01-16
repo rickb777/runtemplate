@@ -40,7 +40,6 @@ func BuildXIntSetFromChan(source <-chan int) XIntSet {
 
 // ToSlice returns the elements of the current set as a slice
 func (set XIntSet) ToSlice() []int {
-
 	var s []int
 	for v, _ := range set.m {
 		s = append(s, v)
@@ -82,7 +81,6 @@ func (set XIntSet) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set XIntSet) Size() int {
-
 	return len(set.m)
 }
 
@@ -426,5 +424,15 @@ func (set XIntSet) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	}
 	b.WriteString(sfx)
 	return b
+}
+
+// StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
+// resulting map.
+func (set XIntSet) StringMap() map[string]bool {
+	strings := make(map[string]bool)
+	for v, _ := range set.m {
+		strings[fmt.Sprintf("%v", v)] = true
+	}
+	return strings
 }
 

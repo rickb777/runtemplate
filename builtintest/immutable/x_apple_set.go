@@ -34,7 +34,6 @@ func BuildXAppleSetFromChan(source <-chan Apple) XAppleSet {
 
 // ToSlice returns the elements of the current set as a slice
 func (set XAppleSet) ToSlice() []Apple {
-
 	var s []Apple
 	for v, _ := range set.m {
 		s = append(s, v)
@@ -76,7 +75,6 @@ func (set XAppleSet) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set XAppleSet) Size() int {
-
 	return len(set.m)
 }
 

@@ -477,3 +477,13 @@ func (set XStringSet) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	return b
 }
 
+// StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
+// resulting map.
+func (set XStringSet) StringMap() map[string]bool {
+	strings := make(map[string]bool)
+	for v, _ := range set.m {
+		strings[fmt.Sprintf("%v", v)] = true
+	}
+	return strings
+}
+
