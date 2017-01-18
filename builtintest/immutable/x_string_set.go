@@ -47,16 +47,6 @@ func (set XStringSet) ToSlice() []string {
 	return s
 }
 
-// clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set XStringSet) clone() XStringSet {
-	clonedSet := NewXStringSet()
-
-	for v, _ := range set.m {
-		clonedSet.doAdd(v)
-	}
-	return clonedSet
-}
-
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
@@ -94,10 +84,16 @@ func (set XStringSet) Cardinality() int {
 // Add returns a new set with all original items and all in `more`.
 // The original set is not altered.
 func (set XStringSet) Add(more ...string) XStringSet {
-	newSet := set.clone()
+	newSet := NewXStringSet()
+
+	for v, _ := range set.m {
+		newSet.doAdd(v)
+	}
+
 	for _, v := range more {
 		newSet.doAdd(v)
 	}
+
 	return newSet
 }
 
@@ -144,7 +140,11 @@ func (set XStringSet) IsSuperset(other XStringSet) bool {
 
 // Union returns a new set with all items in both sets.
 func (set XStringSet) Union(other XStringSet) XStringSet {
-	unionedSet := set.clone()
+	unionedSet := NewXStringSet()
+
+	for v, _ := range set.m {
+		unionedSet.doAdd(v)
+	}
 
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
@@ -195,7 +195,7 @@ func (set XStringSet) SymmetricDifference(other XStringSet) XStringSet {
 	return aDiff.Union(bDiff)
 }
 
-// Remove removes a single item from the set.
+// Remove removes a single item from the set. A new set is returned that has all the elements except the removed one.
 func (set XStringSet) Remove(i string) XStringSet {
 	clonedSet := NewXStringSet()
 

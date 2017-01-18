@@ -47,16 +47,6 @@ func (set XIntSet) ToSlice() []int {
 	return s
 }
 
-// clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set XIntSet) clone() XIntSet {
-	clonedSet := NewXIntSet()
-
-	for v, _ := range set.m {
-		clonedSet.doAdd(v)
-	}
-	return clonedSet
-}
-
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
@@ -94,10 +84,16 @@ func (set XIntSet) Cardinality() int {
 // Add returns a new set with all original items and all in `more`.
 // The original set is not altered.
 func (set XIntSet) Add(more ...int) XIntSet {
-	newSet := set.clone()
+	newSet := NewXIntSet()
+
+	for v, _ := range set.m {
+		newSet.doAdd(v)
+	}
+
 	for _, v := range more {
 		newSet.doAdd(v)
 	}
+
 	return newSet
 }
 
@@ -144,7 +140,11 @@ func (set XIntSet) IsSuperset(other XIntSet) bool {
 
 // Union returns a new set with all items in both sets.
 func (set XIntSet) Union(other XIntSet) XIntSet {
-	unionedSet := set.clone()
+	unionedSet := NewXIntSet()
+
+	for v, _ := range set.m {
+		unionedSet.doAdd(v)
+	}
 
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
@@ -195,7 +195,7 @@ func (set XIntSet) SymmetricDifference(other XIntSet) XIntSet {
 	return aDiff.Union(bDiff)
 }
 
-// Remove removes a single item from the set.
+// Remove removes a single item from the set. A new set is returned that has all the elements except the removed one.
 func (set XIntSet) Remove(i int) XIntSet {
 	clonedSet := NewXIntSet()
 

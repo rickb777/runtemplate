@@ -41,16 +41,6 @@ func (set XAppleSet) ToSlice() []Apple {
 	return s
 }
 
-// clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set XAppleSet) clone() XAppleSet {
-	clonedSet := NewXAppleSet()
-
-	for v, _ := range set.m {
-		clonedSet.doAdd(v)
-	}
-	return clonedSet
-}
-
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
@@ -88,10 +78,16 @@ func (set XAppleSet) Cardinality() int {
 // Add returns a new set with all original items and all in `more`.
 // The original set is not altered.
 func (set XAppleSet) Add(more ...Apple) XAppleSet {
-	newSet := set.clone()
+	newSet := NewXAppleSet()
+
+	for v, _ := range set.m {
+		newSet.doAdd(v)
+	}
+
 	for _, v := range more {
 		newSet.doAdd(v)
 	}
+
 	return newSet
 }
 
@@ -138,7 +134,11 @@ func (set XAppleSet) IsSuperset(other XAppleSet) bool {
 
 // Union returns a new set with all items in both sets.
 func (set XAppleSet) Union(other XAppleSet) XAppleSet {
-	unionedSet := set.clone()
+	unionedSet := NewXAppleSet()
+
+	for v, _ := range set.m {
+		unionedSet.doAdd(v)
+	}
 
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
@@ -189,7 +189,7 @@ func (set XAppleSet) SymmetricDifference(other XAppleSet) XAppleSet {
 	return aDiff.Union(bDiff)
 }
 
-// Remove removes a single item from the set.
+// Remove removes a single item from the set. A new set is returned that has all the elements except the removed one.
 func (set XAppleSet) Remove(i Apple) XAppleSet {
 	clonedSet := NewXAppleSet()
 

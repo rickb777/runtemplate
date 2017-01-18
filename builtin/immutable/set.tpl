@@ -48,16 +48,6 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 	return s
 }
 
-// clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set {{.UPrefix}}{{.UType}}Set) clone() {{.UPrefix}}{{.UType}}Set {
-	clonedSet := New{{.UPrefix}}{{.UType}}Set()
-
-	for v, _ := range set.m {
-		clonedSet.doAdd(v)
-	}
-	return clonedSet
-}
-
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
@@ -95,10 +85,16 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 // Add returns a new set with all original items and all in `more`.
 // The original set is not altered.
 func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	newSet := set.clone()
+	newSet := New{{.UPrefix}}{{.UType}}Set()
+
+	for v, _ := range set.m {
+		newSet.doAdd(v)
+	}
+
 	for _, v := range more {
 		newSet.doAdd(v)
 	}
+
 	return newSet
 }
 
@@ -145,7 +141,11 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSuperset(other {{.UPrefix}}{{.UType}}Set)
 
 // Union returns a new set with all items in both sets.
 func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
-	unionedSet := set.clone()
+	unionedSet := New{{.UPrefix}}{{.UType}}Set()
+
+	for v, _ := range set.m {
+		unionedSet.doAdd(v)
+	}
 
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
@@ -196,7 +196,7 @@ func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UT
 	return aDiff.Union(bDiff)
 }
 
-// Remove removes a single item from the set.
+// Remove removes a single item from the set. A new set is returned that has all the elements except the removed one.
 func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {{.UPrefix}}{{.UType}}Set {
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
 
