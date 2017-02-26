@@ -63,7 +63,7 @@ func TestBlank(t *testing.T) {
 }
 
 func TestHappy(t *testing.T) {
-	now := time.Now()
+	now := time.Now().UTC()
 	fi := fileInfo{"foo", 123, 0, now, false}
 	fs = osStub{fi, nil} // global
 	m := NewFileMeta(true, "/a/b/c/foo")
@@ -85,7 +85,7 @@ func TestHappy(t *testing.T) {
 }
 
 func TestYoungest(t *testing.T) {
-	now := time.Now()
+	now := time.Now().UTC()
 	a := FileMeta{"", "a", now.Add(-2*time.Minute)}
 	b := FileMeta{"", "b", now.Add(-1*time.Minute)}
 	c := FileMeta{"", "c", now}
