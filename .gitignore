@@ -1,4 +1,4 @@
-*test/apple_*.go
-*test/x_*.go
+builtintest/*/[px]_*.go
+builtintest/*/?[px]_*.go
 reports/
 .idea/
