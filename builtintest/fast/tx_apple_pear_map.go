@@ -28,6 +28,10 @@ func (ts TXApplePearTuples) Append2(k1 Apple, v1 Pear, k2 Apple, v2 Pear) TXAppl
 	return append(ts, TXApplePearTuple{k1, v1}, TXApplePearTuple{k2, v2})
 }
 
+func (ts TXApplePearTuples) Append3(k1 Apple, v1 Pear, k2 Apple, v2 Pear, k3 Apple, v3 Pear) TXApplePearTuples {
+	return append(ts, TXApplePearTuple{k1, v1}, TXApplePearTuple{k2, v2}, TXApplePearTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTXApplePearMap() TXApplePearMap {

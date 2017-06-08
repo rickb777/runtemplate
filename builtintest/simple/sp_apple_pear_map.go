@@ -26,6 +26,10 @@ func (ts SPApplePearTuples) Append2(k1 *Apple, v1 *Pear, k2 *Apple, v2 *Pear) SP
 	return append(ts, SPApplePearTuple{k1, v1}, SPApplePearTuple{k2, v2})
 }
 
+func (ts SPApplePearTuples) Append3(k1 *Apple, v1 *Pear, k2 *Apple, v2 *Pear, k3 *Apple, v3 *Pear) SPApplePearTuples {
+	return append(ts, SPApplePearTuple{k1, v1}, SPApplePearTuple{k2, v2}, SPApplePearTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newSPApplePearMap() SPApplePearMap {

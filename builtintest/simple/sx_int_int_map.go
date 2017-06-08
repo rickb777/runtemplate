@@ -33,6 +33,10 @@ func (ts SXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) SXIntIntTuples 
 	return append(ts, SXIntIntTuple{k1, v1}, SXIntIntTuple{k2, v2})
 }
 
+func (ts SXIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) SXIntIntTuples {
+	return append(ts, SXIntIntTuple{k1, v1}, SXIntIntTuple{k2, v2}, SXIntIntTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newSXIntIntMap() SXIntIntMap {

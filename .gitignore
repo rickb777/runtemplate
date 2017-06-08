@@ -2,3 +2,5 @@ builtintest/*/[px]_*.go
 builtintest/*/?[px]_*.go
 reports/
 .idea/
+.DS_Store
+

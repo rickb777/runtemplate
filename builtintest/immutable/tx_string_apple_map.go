@@ -28,6 +28,10 @@ func (ts TXStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) 
 	return append(ts, TXStringAppleTuple{k1, v1}, TXStringAppleTuple{k2, v2})
 }
 
+func (ts TXStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) TXStringAppleTuples {
+	return append(ts, TXStringAppleTuple{k1, v1}, TXStringAppleTuple{k2, v2}, TXStringAppleTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTXStringAppleMap() TXStringAppleMap {

@@ -2,5 +2,6 @@
 rm -f builtintest/*/[px]_*.go builtintest/*/?[px]_*.go
 go install .
 go generate -v ./...
+./copy-shared-tests
 go test ./...
 #go test $coveralls_testflags $GOBUILDFLAG $@ .

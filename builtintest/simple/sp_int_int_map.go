@@ -33,6 +33,10 @@ func (ts SPIntIntTuples) Append2(k1 *int, v1 *int, k2 *int, v2 *int) SPIntIntTup
 	return append(ts, SPIntIntTuple{k1, v1}, SPIntIntTuple{k2, v2})
 }
 
+func (ts SPIntIntTuples) Append3(k1 *int, v1 *int, k2 *int, v2 *int, k3 *int, v3 *int) SPIntIntTuples {
+	return append(ts, SPIntIntTuple{k1, v1}, SPIntIntTuple{k2, v2}, SPIntIntTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newSPIntIntMap() SPIntIntMap {

@@ -34,6 +34,10 @@ func (ts TXStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) 
 	return append(ts, TXStringAppleTuple{k1, v1}, TXStringAppleTuple{k2, v2})
 }
 
+func (ts TXStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) TXStringAppleTuples {
+	return append(ts, TXStringAppleTuple{k1, v1}, TXStringAppleTuple{k2, v2}, TXStringAppleTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTXStringAppleMap() TXStringAppleMap {
@@ -156,6 +160,22 @@ func (mm TXStringAppleMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TXStringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TXStringAppleMap) DropWhere(fn func(string, Apple) bool) TXStringAppleTuples {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+    removed := make(TXStringAppleTuples, 0)
+	for k, v := range mm.m {
+		if fn(k, v) {
+		    removed = append(removed, TXStringAppleTuple{k, v})
+			delete(mm.m, k)
+		}
+	}
+	return removed
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

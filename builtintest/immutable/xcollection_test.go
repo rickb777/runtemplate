@@ -6,12 +6,23 @@ import (
 	"encoding/json"
 )
 
-func TestNewXCollection(t *testing.T) {
-	testNewXCollection1(t, NewXIntSet())
-	testNewXCollection1(t, NewXIntList())
+type Sizer interface {
+	IsEmpty() bool
+	NonEmpty() bool
+	Size() int
 }
 
-func testNewXCollection1(t *testing.T, a XIntCollection) {
+func TestNewXCollection(t *testing.T) {
+	testEmptyCollection(t, NewXIntSet())
+	testEmptyCollection(t, NewXIntList())
+	testEmptyCollection(t, NewXBigIntList())
+	testEmptyCollection(t, NewXStringSet())
+	testEmptyCollection(t, NewXStringList())
+	testEmptyCollection(t, NewXAppleList())
+	testEmptyCollection(t, NewXAppleSet())
+}
+
+func testEmptyCollection(t *testing.T, a Sizer) {
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
 	}
@@ -24,7 +35,7 @@ func testNewXCollection1(t *testing.T, a XIntCollection) {
 }
 
 func TestToSlice(t *testing.T) {
-	//testToSlice(t, NewXIntSet(1, 2, 3))
+	testToSlice(t, NewXIntSet(1, 2, 3))
 	testToSlice(t, NewXIntList(1, 2, 3))
 }
 

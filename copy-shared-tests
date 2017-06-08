@@ -1,0 +1,18 @@
+#!/bin/bash -e
+cd builtintest
+
+function update
+{
+  if [ fast/$2 -nt $1/$2 ]; then
+    echo $1/$2
+    echo "package $1"  > $1/$2
+    tail -n +2 fast/$2 >> $1/$2
+  fi
+}
+
+for file in xcollection_test.go xlist_test.go ximap_test.go xset_test.go; do
+  update immutable  $file
+  update threadsafe $file
+done
+
+update threadsafe xmmap_test.go

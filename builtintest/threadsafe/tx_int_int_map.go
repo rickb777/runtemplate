@@ -36,6 +36,10 @@ func (ts TXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TXIntIntTuples 
 	return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2})
 }
 
+func (ts TXIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) TXIntIntTuples {
+	return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2}, TXIntIntTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTXIntIntMap() TXIntIntMap {
@@ -158,6 +162,22 @@ func (mm TXIntIntMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TXIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TXIntIntMap) DropWhere(fn func(int, int) bool) TXIntIntTuples {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+    removed := make(TXIntIntTuples, 0)
+	for k, v := range mm.m {
+		if fn(k, v) {
+		    removed = append(removed, TXIntIntTuple{k, v})
+			delete(mm.m, k)
+		}
+	}
+	return removed
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

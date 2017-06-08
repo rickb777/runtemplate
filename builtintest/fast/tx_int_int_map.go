@@ -35,6 +35,10 @@ func (ts TXIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TXIntIntTuples 
 	return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2})
 }
 
+func (ts TXIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) TXIntIntTuples {
+	return append(ts, TXIntIntTuple{k1, v1}, TXIntIntTuple{k2, v2}, TXIntIntTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTXIntIntMap() TXIntIntMap {

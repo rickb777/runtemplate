@@ -6,26 +6,23 @@ import (
 	"encoding/json"
 )
 
+type Sizer interface {
+	IsEmpty() bool
+	NonEmpty() bool
+	Size() int
+}
+
 func TestNewXCollection(t *testing.T) {
-	testNewXCollection1(t, NewXIntSet())
-	testNewXCollection1(t, NewXIntList())
-	testNewXCollection2(t, NewXAppleList())
-	testNewXCollection2(t, NewXAppleSet())
+	testEmptyCollection(t, NewXIntSet())
+	testEmptyCollection(t, NewXIntList())
+	testEmptyCollection(t, NewXBigIntList())
+	testEmptyCollection(t, NewXStringSet())
+	testEmptyCollection(t, NewXStringList())
+	testEmptyCollection(t, NewXAppleList())
+	testEmptyCollection(t, NewXAppleSet())
 }
 
-func testNewXCollection1(t *testing.T, a XIntCollection) {
-	if a.Size() != 0 {
-		t.Errorf("Expected 0 but got %d", a.Size())
-	}
-	if !a.IsEmpty() {
-		t.Error("Expected empty")
-	}
-	if a.NonEmpty() {
-		t.Error("Expected empty")
-	}
-}
-
-func testNewXCollection2(t *testing.T, a XAppleCollection) {
+func testEmptyCollection(t *testing.T, a Sizer) {
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
 	}
@@ -44,6 +41,10 @@ func TestToSlice(t *testing.T) {
 
 func testToSlice(t *testing.T, a XIntCollection) {
 	s := a.ToSlice()
+
+	if a.Size() != 3 {
+		t.Errorf("Expected 3 but got %d", a.Size())
+	}
 
 	if len(s) != 3 {
 		t.Errorf("Expected 3 but got %d", len(s))

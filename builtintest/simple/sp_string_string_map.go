@@ -26,6 +26,10 @@ func (ts SPStringStringTuples) Append2(k1 *string, v1 *string, k2 *string, v2 *s
 	return append(ts, SPStringStringTuple{k1, v1}, SPStringStringTuple{k2, v2})
 }
 
+func (ts SPStringStringTuples) Append3(k1 *string, v1 *string, k2 *string, v2 *string, k3 *string, v3 *string) SPStringStringTuples {
+	return append(ts, SPStringStringTuple{k1, v1}, SPStringStringTuple{k2, v2}, SPStringStringTuple{k3, v3})
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newSPStringStringMap() SPStringStringMap {
