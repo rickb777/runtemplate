@@ -7,11 +7,14 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt"
 {{end -}}
 	"sync"
+{{- if .HasImport}}
+    {{.Import}}
+{{end -}}
 )
 
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map

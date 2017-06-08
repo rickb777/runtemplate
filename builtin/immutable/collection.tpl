@@ -3,6 +3,12 @@
 
 package {{.Package}}
 
+{{if .HasImport}}
+import (
+    {{.Import}}
+)
+
+{{end -}}
 // {{.UPrefix}}{{.UType}}Sizer defines an interface for sizing methods on {{.PType}} collections.
 type {{.UPrefix}}{{.UType}}Sizer interface {
 	// IsEmpty tests whether {{.UPrefix}}{{.UType}}Collection is empty.

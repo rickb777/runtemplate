@@ -7,11 +7,9 @@
 package threadsafe
 
 import (
-
 	"bytes"
 	"fmt"
-"sync"
-)
+"sync")
 
 // TXIntIntMap is the primary type that represents a thread-safe map
 type TXIntIntMap struct {

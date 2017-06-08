@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"fmt"
 )
+
 // TXIntIntMap is the primary type that represents a thread-safe map
 type TXIntIntMap struct {
 	m map[int]int

@@ -6,9 +6,7 @@
 
 package threadsafe
 
-import (
-"sync"
-)
+import ("sync")
 
 // XAppleSet is the primary type that represents a set
 type XAppleSet struct {

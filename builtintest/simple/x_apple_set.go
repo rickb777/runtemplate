@@ -6,8 +6,6 @@
 
 package simple
 
-import ()
-
 // XAppleSet is the primary type that represents a set
 type XAppleSet map[Apple]struct{}
 

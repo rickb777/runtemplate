@@ -7,11 +7,9 @@
 package threadsafe
 
 import (
-
 	"bytes"
 	"fmt"
-"sync"
-)
+"sync")
 
 // XStringSet is the primary type that represents a set
 type XStringSet struct {

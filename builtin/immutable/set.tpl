@@ -6,10 +6,15 @@
 
 package {{.Package}}
 
-{{if .Stringer}}
+{{if or .Stringer .HasImport}}
 import (
+{{- if .Stringer}}
 	"bytes"
 	"fmt"
+{{end -}}
+{{- if .HasImport}}
+    {{.Import}}
+{{end -}}
 )
 
 {{end -}}

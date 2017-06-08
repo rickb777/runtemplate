@@ -6,9 +6,7 @@
 
 package immutable
 
-import (
-"math/rand"
-)
+import ("math/rand")
 
 // XAppleList contains a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.

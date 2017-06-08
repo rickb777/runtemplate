@@ -7,11 +7,9 @@
 package threadsafe
 
 import (
-
 	"bytes"
 	"fmt"
-"sync"
-)
+"sync")
 
 // XIntSet is the primary type that represents a set
 type XIntSet struct {

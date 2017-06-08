@@ -7,11 +7,9 @@
 package immutable
 
 import (
-
 	"bytes"
 	"fmt"
-"math/rand"
-)
+"math/rand")
 
 // XIntList contains a slice of type int. Use it where you would use []int.
 // To add items to the list, simply use the normal built-in append function.

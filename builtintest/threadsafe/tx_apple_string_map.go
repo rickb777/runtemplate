@@ -6,9 +6,7 @@
 
 package threadsafe
 
-import (
-"sync"
-)
+import ("sync")
 
 // TXAppleStringMap is the primary type that represents a thread-safe map
 type TXAppleStringMap struct {

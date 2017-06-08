@@ -6,13 +6,18 @@
 
 package {{.Package}}
 
-{{if .Stringer}}
+{{if or .Stringer .HasImport}}
 import (
+{{- if .Stringer}}
 	"bytes"
 	"fmt"
-)
 {{end -}}
+{{- if .HasImport}}
+    {{.Import}}
+{{end -}}
+)
 
+{{end -}}
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map struct {
 	m map[{{.PKey}}]{{.PType}}

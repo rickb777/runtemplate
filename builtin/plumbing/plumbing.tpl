@@ -3,6 +3,12 @@
 
 package {{.Package}}
 
+{{if .HasImport}}
+import (
+    {{.Import}}
+)
+
+{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // This plumbing suite provides standard functions for piping data between goroutines.

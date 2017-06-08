@@ -6,6 +6,7 @@
 
 package {{.Package}}
 
+{{if or .Stringer .HasImport}}
 import (
 {{- if .Stringer}}
 	"bytes"
@@ -16,6 +17,7 @@ import (
 {{end -}}
 )
 
+{{end -}}
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map map[{{.PKey}}]{{.PType}}
 

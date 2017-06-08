@@ -7,12 +7,10 @@
 package threadsafe
 
 import (
-
 	"bytes"
 	"fmt"
 "sync"
-	"math/rand"
-)
+	"math/rand")
 
 // XStringList contains a slice of type string. Use it where you would use []string.
 // To add items to the list, simply use the normal built-in append function.

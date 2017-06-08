@@ -6,8 +6,6 @@
 
 package simple
 
-import ()
-
 // SXStringAppleMap is the primary type that represents a map
 type SXStringAppleMap map[string]Apple
 

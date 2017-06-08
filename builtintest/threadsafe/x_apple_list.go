@@ -6,10 +6,8 @@
 
 package threadsafe
 
-import (
-"sync"
-	"math/rand"
-)
+import ("sync"
+	"math/rand")
 
 // XAppleList contains a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.

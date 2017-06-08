@@ -7,12 +7,15 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt"
 {{end -}}
 	"sync"
 	"math/rand"
+{{- if .HasImport}}
+    {{.Import}}
+{{end -}}
 )
 
 // {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
