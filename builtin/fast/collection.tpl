@@ -1,8 +1,14 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=always
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:always
 
 package {{.Package}}
 
+{{if .HasImport}}
+import (
+    {{.Import}}
+)
+
+{{end -}}
 // {{.UPrefix}}{{.UType}}Sizer defines an interface for sizing methods on {{.PType}} collections.
 type {{.UPrefix}}{{.UType}}Sizer interface {
 	// IsEmpty tests whether {{.UPrefix}}{{.UType}}Collection is empty.

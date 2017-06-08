@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from fast/list.tpl with Type=string
-// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=always
+// options: Comparable:true Numeric:false Ordered:false Stringer:true Mutable:always
 
 package fast
 
@@ -10,7 +10,7 @@ import (
 
 	"bytes"
 	"fmt"
-"math/rand"
+	"math/rand"
 )
 
 // XStringList contains a slice of type string. Use it where you would use []string.

@@ -2,9 +2,10 @@
 // Thread-safe.
 //
 // Generated from fast/set.tpl with Type=int
-// options: Comparable=always Numeric=true Ordered=true Stringer=true
+// options: Comparable:always Numeric:true Ordered:true Stringer:true
 
 package fast
+
 
 import (
 

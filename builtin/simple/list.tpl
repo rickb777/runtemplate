@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
 
 package {{.Package}}
 
@@ -10,11 +10,10 @@ import (
 	"math/rand"
 {{- if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
 {{- if .HasImport}}
     {{.Import}}
-{{end -}}
+{{end}}
 )
 
 // {{.UPrefix}}{{.UType}}List is a slice of type {{.PType}}. Use it where you would use []{{.PType}}.

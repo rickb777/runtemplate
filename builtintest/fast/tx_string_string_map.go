@@ -2,12 +2,9 @@
 // Thread-safe.
 //
 // Generated from fast/map.tpl with Key=string Type=string
-// options: Comparable=true Stringer=<no value> Mutable=always
+// options: Comparable:true Stringer:<no value> Mutable:always
 
 package fast
-
-import (
-)
 
 // TXStringStringMap is the primary type that represents a thread-safe map
 type TXStringStringMap struct {

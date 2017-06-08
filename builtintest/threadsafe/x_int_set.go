@@ -2,14 +2,16 @@
 // Thread-safe.
 //
 // Generated from threadsafe/set.tpl with Type=int
-// options: Comparable=always Numeric=true Ordered=true Stringer=true
+// options: Comparable:always Numeric:true Ordered:true Stringer:true
 
 package threadsafe
 
 import (
+
 	"bytes"
 	"fmt"
-"sync")
+	"sync"
+)
 
 // XIntSet is the primary type that represents a set
 type XIntSet struct {

@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=Apple Type=Pear
-// options: Comparable=<no value> Stringer=<no value> Mutable=always
+// options: Comparable:<no value> Stringer:<no value> Mutable:always
 
 package simple
 

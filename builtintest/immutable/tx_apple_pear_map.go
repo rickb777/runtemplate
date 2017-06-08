@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=Apple Type=Pear
-// options: Comparable=<no value> Stringer=<no value> Mutable=disabled
+// options: Comparable:<no value> Stringer:<no value> Mutable:disabled
 
 package immutable
 

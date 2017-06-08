@@ -2,11 +2,14 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=Apple Type=string
-// options: Comparable=<no value> Stringer=<no value> Mutable=always
+// options: Comparable:<no value> Stringer:<no value> Mutable:always
 
 package threadsafe
 
-import ("sync")
+import (
+
+	"sync"
+)
 
 // TXAppleStringMap is the primary type that represents a thread-safe map
 type TXAppleStringMap struct {

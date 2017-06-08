@@ -2,15 +2,15 @@
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=int
-// options: Numeric=true Stringer=true Mutable=always
+// options: Numeric:true Stringer:true Mutable:always
 
 package simple
 
 
 import (
+
 	"bytes"
-	"fmt"
-)
+	"fmt")
 
 // XIntSet is the primary type that represents a set
 type XIntSet map[int]struct{}

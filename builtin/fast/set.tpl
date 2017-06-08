@@ -2,17 +2,21 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable=always Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
+// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
 
 package {{.Package}}
 
+{{if or .Stringer .HasImport}}
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
+{{- if .HasImport}}
+    {{.Import}}
+{{end}}
 )
 
+{{end -}}
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
 type {{.UPrefix}}{{.UType}}Set struct {
 	m map[{{.Type}}]struct{}

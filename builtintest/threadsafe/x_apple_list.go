@@ -2,12 +2,15 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=always
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
 
 package threadsafe
 
-import ("sync"
-	"math/rand")
+import (
+
+	"sync"
+	"math/rand"
+)
 
 // XAppleList contains a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.

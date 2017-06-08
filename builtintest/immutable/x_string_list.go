@@ -2,14 +2,16 @@
 // Thread-safe.
 //
 // Generated from immutable/list.tpl with Type=string
-// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=disabled
+// options: Comparable:true Numeric:false Ordered:false Stringer:true Mutable:disabled
 
 package immutable
 
 import (
+
 	"bytes"
 	"fmt"
-"math/rand")
+	"math/rand"
+)
 
 // XStringList contains a slice of type string. Use it where you would use []string.
 // To add items to the list, simply use the normal built-in append function.

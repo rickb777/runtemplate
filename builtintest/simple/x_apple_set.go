@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=Apple
-// options: Numeric=<no value> Stringer=false Mutable=always
+// options: Numeric:<no value> Stringer:false Mutable:always
 
 package simple
 

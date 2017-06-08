@@ -2,15 +2,17 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=string
-// options: Comparable=true Numeric=false Ordered=false Stringer=true Mutable=always
+// options: Comparable:true Numeric:false Ordered:false Stringer:true Mutable:always
 
 package threadsafe
 
 import (
+
 	"bytes"
 	"fmt"
-"sync"
-	"math/rand")
+	"sync"
+	"math/rand"
+)
 
 // XStringList contains a slice of type string. Use it where you would use []string.
 // To add items to the list, simply use the normal built-in append function.

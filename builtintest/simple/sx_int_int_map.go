@@ -2,12 +2,13 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=int Type=int
-// options: Comparable=true Stringer=true Mutable=always
+// options: Comparable:true Stringer:true Mutable:always
 
 package simple
 
 
 import (
+
 	"bytes"
 	"fmt"
 )

@@ -2,15 +2,17 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=int
-// options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=always
+// options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:always
 
 package threadsafe
 
 import (
+
 	"bytes"
 	"fmt"
-"sync"
-	"math/rand")
+	"sync"
+	"math/rand"
+)
 
 // XIntList contains a slice of type int. Use it where you would use []int.
 // To add items to the list, simply use the normal built-in append function.

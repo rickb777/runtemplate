@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=*int
-// options: Comparable=true Numeric=true Ordered=true Stringer=true
+// options: Comparable:true Numeric:true Ordered:true Stringer:true
 
 package simple
 

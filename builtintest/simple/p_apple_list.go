@@ -2,12 +2,13 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=*Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 
 package simple
 
 import (
-	"math/rand")
+	"math/rand"
+)
 
 // PAppleList is a slice of type *Apple. Use it where you would use []*Apple.
 // To add items to the list, simply use the normal built-in append function.

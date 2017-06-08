@@ -1,5 +1,5 @@
 // Generated from immutable/collection.tpl with Type=Apple
-// options: Comparable=<no value> Numeric=<no value> Ordered=<no value> Stringer=false Mutable=disabled
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
 
 package immutable
 

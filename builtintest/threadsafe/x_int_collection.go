@@ -1,5 +1,5 @@
 // Generated from threadsafe/collection.tpl with Type=int
-// options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=always
+// options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:always
 
 package threadsafe
 

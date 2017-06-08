@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from fast/list.tpl with Type=int
-// options: Comparable=true Numeric=true Ordered=true Stringer=true Mutable=always
+// options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:always
 
 package fast
 
@@ -10,7 +10,7 @@ import (
 
 	"bytes"
 	"fmt"
-"math/rand"
+	"math/rand"
 )
 
 // XIntList contains a slice of type int. Use it where you would use []int.

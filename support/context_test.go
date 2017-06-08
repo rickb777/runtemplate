@@ -1,14 +1,14 @@
 package support
 
 import (
-	"testing"
 	"reflect"
-	"time"
 	"strings"
+	"testing"
+	"time"
 )
 
 func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
-	if ctx[key] == "" {
+	if _, ok := ctx[key]; !ok {
 		t.Fatalf("Missing %s; Got len %d %+v", key, len(ctx), ctx)
 	}
 	delete(ctx, key)
@@ -31,36 +31,36 @@ func TestCreateContext(t *testing.T) {
 	expectPresent(t, ctx, "GOPATH")
 
 	if !reflect.DeepEqual(ctx, map[string]interface{}{
-		"OutFile": "output.txt",
-		"Type": "big.Int",
-		"UType": "BigInt",
-		"LType": "bigInt",
-		"PType": "big.Int",
-		"Prefix": "",
-		"UPrefix": "",
-		"LPrefix": "",
-		"B": "FooBar",
-		"UB": "FooBar",
-		"LB": "fooBar",
-		"PB": "*FooBar",
-		"C": "vv3",
-		"UC": "Vv3",
-		"LC": "vv3",
-		"PC": "vv3",
-		"HasType": true,
-		"HasB": true,
-		"HasC": true,
-		"TypeAmp": "",
-		"BAmp": "&",
-		"CAmp": "",
-		"TypeStar": "",
-		"BStar": "*",
-		"CStar": "",
-		"Package": "support",
+		"OutFile":      "output.txt",
+		"Type":         "big.Int",
+		"UType":        "BigInt",
+		"LType":        "bigInt",
+		"PType":        "big.Int",
+		"Prefix":       "",
+		"UPrefix":      "",
+		"LPrefix":      "",
+		"B":            "FooBar",
+		"UB":           "FooBar",
+		"LB":           "fooBar",
+		"PB":           "*FooBar",
+		"C":            "vv3",
+		"UC":           "Vv3",
+		"LC":           "vv3",
+		"PC":           "vv3",
+		"HasType":      true,
+		"HasB":         true,
+		"HasC":         true,
+		"TypeAmp":      "",
+		"BAmp":         "&",
+		"CAmp":         "",
+		"TypeStar":     "",
+		"BStar":        "*",
+		"CStar":        "",
+		"Package":      "support",
 		"TemplatePath": "/a/b/c",
 		"TemplateFile": "foo",
-		"I1": []string{"X1", "X2", "X3"},
-		"HasI1": true,
+		"I1":           []string{"X1", "X2", "X3"},
+		"HasI1":        true,
 	}) {
 		t.Fatalf("Got len %d %+v", len(ctx), ctx)
 	}
@@ -93,4 +93,3 @@ func TestChoosePackage(t *testing.T) {
 		t.Errorf("wd=%s, pkg=%s", wd, pkg)
 	}
 }
-

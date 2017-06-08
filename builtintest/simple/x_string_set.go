@@ -2,15 +2,15 @@
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=string
-// options: Numeric=false Stringer=true Mutable=always
+// options: Numeric:false Stringer:true Mutable:always
 
 package simple
 
 
 import (
+
 	"bytes"
-	"fmt"
-)
+	"fmt")
 
 // XStringSet is the primary type that represents a set
 type XStringSet map[string]struct{}

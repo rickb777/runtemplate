@@ -2,12 +2,13 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=int Type=int
-// options: Comparable=true Stringer=true Mutable=disabled
+// options: Comparable:true Stringer:true Mutable:disabled
 
 package immutable
 
 
 import (
+
 	"bytes"
 	"fmt"
 )

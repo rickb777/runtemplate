@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=string Type=string
-// options: Comparable=true Stringer=<no value> Mutable=always
+// options: Comparable:true Stringer:<no value> Mutable:always
 
 package simple
 

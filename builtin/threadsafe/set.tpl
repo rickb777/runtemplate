@@ -2,19 +2,18 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable=always Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}}
+// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
 
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
 	"sync"
 {{- if .HasImport}}
     {{.Import}}
-{{end -}}
+{{end}}
 )
 
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set

@@ -2,12 +2,9 @@
 // Thread-safe.
 //
 // Generated from fast/set.tpl with Type=Apple
-// options: Comparable=always Numeric=<no value> Ordered=<no value> Stringer=false
+// options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false
 
 package fast
-
-import (
-)
 
 // XAppleSet is the primary type that represents a set
 type XAppleSet struct {

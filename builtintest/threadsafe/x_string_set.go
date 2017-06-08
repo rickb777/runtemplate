@@ -2,14 +2,16 @@
 // Thread-safe.
 //
 // Generated from threadsafe/set.tpl with Type=string
-// options: Comparable=always Numeric=false Ordered=false Stringer=true
+// options: Comparable:always Numeric:false Ordered:false Stringer:true
 
 package threadsafe
 
 import (
+
 	"bytes"
 	"fmt"
-"sync")
+	"sync"
+)
 
 // XStringSet is the primary type that represents a set
 type XStringSet struct {

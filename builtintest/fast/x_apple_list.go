@@ -2,12 +2,13 @@
 // Thread-safe.
 //
 // Generated from fast/list.tpl with Type=Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=always
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
 
 package fast
 
 import (
-"math/rand"
+
+	"math/rand"
 )
 
 // XAppleList contains a slice of type Apple. Use it where you would use []Apple.

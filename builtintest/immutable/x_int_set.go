@@ -2,12 +2,13 @@
 // Thread-safe.
 //
 // Generated from immutable/set.tpl with Type=int
-// options: Comparable=always Numeric=true Ordered=true Stringer=true Mutable=disabled
+// options: Comparable:always Numeric:true Ordered:true Stringer:true Mutable:disabled
 
 package immutable
 
 
 import (
+
 	"bytes"
 	"fmt"
 )

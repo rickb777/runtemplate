@@ -1,8 +1,8 @@
 package support
 
 import (
-	"testing"
 	"os"
+	"testing"
 	"time"
 )
 
@@ -57,7 +57,7 @@ var _ OS = osStub{}
 
 func TestBlank(t *testing.T) {
 	m := SingleFileMeta("", "")
-	if m.Exists()  {
+	if m.Exists() {
 		t.Error("Expected not to exist")
 	}
 }
@@ -70,24 +70,24 @@ func TestHappy(t *testing.T) {
 	if len(m) != 1 {
 		t.Errorf("Expected 1 but got %d", len(m))
 	}
-	if m[0].Path != "/a/b/c/foo"  {
+	if m[0].Path != "/a/b/c/foo" {
 		t.Errorf("Expected '/a/b/c/foo' but got '%s'", m[0].Path)
 	}
-	if m[0].Name != "foo"  {
+	if m[0].Name != "foo" {
 		t.Errorf("Expected 'foo' but got '%s'", m[0].Name)
 	}
-	if m[0].ModTime != now  {
+	if m[0].ModTime != now {
 		t.Errorf("Expected %v but got %v", now, m[0].ModTime)
 	}
-	if !m[0].Exists()  {
+	if !m[0].Exists() {
 		t.Error("Expected exists")
 	}
 }
 
 func TestYoungest(t *testing.T) {
 	now := time.Now().UTC()
-	a := FileMeta{"", "a", now.Add(-2*time.Minute)}
-	b := FileMeta{"", "b", now.Add(-1*time.Minute)}
+	a := FileMeta{"", "a", now.Add(-2 * time.Minute)}
+	b := FileMeta{"", "b", now.Add(-1 * time.Minute)}
 	c := FileMeta{"", "c", now}
 
 	y1 := YoungestFile(c, a, b)

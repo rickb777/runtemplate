@@ -2,19 +2,18 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable={{.Comparable}} Stringer={{.Stringer}} Mutable=always
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} Mutable:always
 
 package {{.Package}}
 
 {{if or .Stringer .HasImport}}
 import (
-{{- if .Stringer}}
+{{if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
 {{- if .HasImport}}
     {{.Import}}
-{{end -}}
+{{end}}
 )
 
 {{end -}}

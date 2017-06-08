@@ -2,19 +2,18 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=disabled
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
 
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
 	"math/rand"
 {{- if .HasImport}}
     {{.Import}}
-{{end -}}
+{{end}}
 )
 
 // {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.

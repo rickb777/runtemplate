@@ -1,8 +1,8 @@
 package support
 
 import (
-	"time"
 	"os"
+	"time"
 )
 
 type FileMeta struct {

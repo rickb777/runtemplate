@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable={{.Comparable}} Numeric={{.Numeric}} Ordered={{.Ordered}} Stringer={{.Stringer}} Mutable=disabled
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
 
 package {{.Package}}
 

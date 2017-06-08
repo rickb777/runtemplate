@@ -2,14 +2,16 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=int Type=int
-// options: Comparable=true Stringer=true Mutable=always
+// options: Comparable:true Stringer:true Mutable:always
 
 package threadsafe
 
 import (
+
 	"bytes"
 	"fmt"
-"sync")
+	"sync"
+)
 
 // TXIntIntMap is the primary type that represents a thread-safe map
 type TXIntIntMap struct {

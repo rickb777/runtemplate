@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/set.tpl with Type=Apple
-// options: Comparable=always Numeric=<no value> Ordered=<no value> Stringer=false Mutable=disabled
+// options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
 
 package immutable
 

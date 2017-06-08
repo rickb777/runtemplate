@@ -1,8 +1,8 @@
 package support
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestRichStringNoDots(t *testing.T) {
@@ -111,4 +111,3 @@ func TestSplitKeyValArgs2(t *testing.T) {
 		t.Fatalf("Got leftovers %+v", left)
 	}
 }
-

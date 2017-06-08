@@ -2,19 +2,18 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable={{.Comparable}} Stringer={{.Stringer}} Mutable=always
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} Mutable:always
 
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
 	"sync"
 {{- if .HasImport}}
     {{.Import}}
-{{end -}}
+{{end}}
 )
 
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map

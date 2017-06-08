@@ -2,11 +2,14 @@
 // Thread-safe.
 //
 // Generated from immutable/list.tpl with Type=Apple
-// options: Comparable=true Numeric=<no value> Ordered=<no value> Stringer=false Mutable=disabled
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
 
 package immutable
 
-import ("math/rand")
+import (
+
+	"math/rand"
+)
 
 // XAppleList contains a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.

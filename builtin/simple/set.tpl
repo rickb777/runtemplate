@@ -2,16 +2,15 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Numeric={{.Numeric}} Stringer={{.Stringer}} Mutable=always
+// options: Numeric:{{.Numeric}} Stringer:{{.Stringer}} Mutable:always
 
 package {{.Package}}
 
 {{if or .Stringer .HasImport}}
 import (
-{{- if .Stringer}}
+{{if .Stringer}}
 	"bytes"
-	"fmt"
-{{end -}}
+	"fmt" {{- end}}
 {{- if .HasImport}}
     {{.Import}}
 {{end -}}

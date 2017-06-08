@@ -2,12 +2,9 @@
 // Thread-safe.
 //
 // Generated from fast/map.tpl with Key=Apple Type=string
-// options: Comparable=<no value> Stringer=<no value> Mutable=always
+// options: Comparable:<no value> Stringer:<no value> Mutable:always
 
 package fast
-
-import (
-)
 
 // TXAppleStringMap is the primary type that represents a thread-safe map
 type TXAppleStringMap struct {

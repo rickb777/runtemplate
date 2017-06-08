@@ -1,8 +1,8 @@
 package support
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestPairsKeys(t *testing.T) {
@@ -28,4 +28,3 @@ func TestPairsTValues(t *testing.T) {
 		t.Fatalf("Got %#v", keys)
 	}
 }
-
