@@ -23,11 +23,24 @@ func Info(msg string, args ...interface{}) {
 
 func Debug(msg string, args ...interface{}) {
 	if Dbg {
-		fmt.Printf("-- " + msg, args...)
+		fmt.Printf("-- "+msg, args...)
 	}
 }
 
 type RichString string
+
+func (rs RichString) NoDots() RichString {
+	if rs == "" {
+		return ""
+	}
+	s := string(rs)
+	d := strings.IndexByte(s, '.')
+	for d >= 0 {
+		s = s[:d] + s[d+1:]
+		d = strings.IndexByte(s, '.')
+	}
+	return RichString(s)
+}
 
 func (rs RichString) FirstUpper() string {
 	if rs == "" {
@@ -51,7 +64,7 @@ func (rs RichString) DivideOr0(c byte) (string, string) {
 	if p < 0 {
 		return s, ""
 	}
-	return s[:p], s[p + 1:]
+	return s[:p], s[p+1:]
 }
 
 func (rs RichString) DivideOr1(c byte) (string, string) {
@@ -60,7 +73,7 @@ func (rs RichString) DivideOr1(c byte) (string, string) {
 	if p < 0 {
 		return "", s
 	}
-	return s[:p], s[p + 1:]
+	return s[:p], s[p+1:]
 }
 
 func (rs RichString) RemoveBefore(c byte) string {
@@ -69,7 +82,7 @@ func (rs RichString) RemoveBefore(c byte) string {
 	if p < 0 {
 		return s
 	}
-	return s[p + 1:]
+	return s[p+1:]
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -89,22 +102,33 @@ func FindTemplateArg(tpl string, args []string) (string, []string) {
 	return tpl, left
 }
 
-func SplitKeyValArgs(args []string) (Pairs, []string) {
-	var pairs []Pair
+func SplitKeyValArgs(args []string) (Pairs, Pairs, []string) {
+	var types []Pair
+	var others []Pair
 	var leftover []string
 	for _, a := range args {
+		found := false
 		k, v := "", ""
 		eq := strings.LastIndexByte(a, '=')
+		co := strings.LastIndexByte(a, ':')
 		if eq >= 0 {
-			k, v = a[:eq], a[eq + 1:]
+			k, v = a[:eq], a[eq+1:]
+			if k != "" && v != "" {
+				p := Pair{a[:eq], a[eq+1:]}
+				types = append(types, p)
+				found = true
+			}
+		} else if co >= 0 {
+			k, v = a[:co], a[co+1:]
+			if k != "" && v != "" {
+				p := Pair{a[:co], a[co+1:]}
+				others = append(others, p)
+				found = true
+			}
 		}
-		if k != "" && v != "" {
-			p := Pair{a[:eq], a[eq + 1:]}
-			pairs = append(pairs, p)
-		} else {
+		if !found {
 			leftover = append(leftover, a)
 		}
 	}
-	return Pairs(pairs), leftover
+	return Pairs(types), Pairs(others), leftover
 }
-

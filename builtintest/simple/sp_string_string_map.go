@@ -6,6 +6,8 @@
 
 package simple
 
+import ()
+
 // SPStringStringMap is the primary type that represents a map
 type SPStringStringMap map[*string]*string
 

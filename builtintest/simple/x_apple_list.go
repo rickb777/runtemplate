@@ -7,8 +7,7 @@
 package simple
 
 import (
-	"math/rand"
-)
+	"math/rand")
 
 // XAppleList is a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.

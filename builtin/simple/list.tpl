@@ -8,9 +8,12 @@ package {{.Package}}
 
 import (
 	"math/rand"
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt"
+{{end -}}
+{{- if .HasImport}}
+    {{.Import}}
 {{end -}}
 )
 

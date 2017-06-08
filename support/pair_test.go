@@ -22,9 +22,9 @@ func TestPairsPValues(t *testing.T) {
 }
 
 func TestPairsTValues(t *testing.T) {
-	pairs := Pairs([]Pair{{"x", "1"}, {"y", "*Foo"}, {"z", "3"}})
+	pairs := Pairs([]Pair{{"x", "1"}, {"y", "*big.Int"}, {"z", "3"}})
 	keys := pairs.TValues()
-	if !reflect.DeepEqual(keys, []string{"1", "Foo", "3"}) {
+	if !reflect.DeepEqual(keys, []string{"1", "bigInt", "3"}) {
 		t.Fatalf("Got %#v", keys)
 	}
 }

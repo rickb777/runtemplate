@@ -149,8 +149,8 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/map.tpl       Type=int Stringer=true Comparable=true Numeric=true
-//go:generate runtemplate -tpl threadsafe/map.tpl Type=int Stringer=true Comparable=true Numeric=true
+//go:generate runtemplate -tpl fast/map.tpl       Key=string Type=int Stringer=true Comparable=true Numeric=true
+//go:generate runtemplate -tpl threadsafe/map.tpl Key=string Type=int Stringer=true Comparable=true Numeric=true
 ```
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
@@ -219,7 +219,7 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/map.tpl Type=int Stringer=true Comparable=true Numeric=true
+//go:generate runtemplate -tpl immutable/map.tpl Key=string Type=int Stringer=true Comparable=true Numeric=true
 ```
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.

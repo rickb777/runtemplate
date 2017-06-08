@@ -6,7 +6,6 @@
 
 package simple
 
-
 import (
 	"bytes"
 	"fmt"

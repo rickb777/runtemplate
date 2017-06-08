@@ -24,7 +24,7 @@ func (pairs Pairs) TValues() []string {
 			if len(v) > 0 && v[0] == '*' {
 				v = v[1:]
 			}
-			list = append(list, v)
+			list = append(list, string(RichString(v).NoDots()))
 		}
 	}
 	return list

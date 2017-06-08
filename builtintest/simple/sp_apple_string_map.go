@@ -6,6 +6,8 @@
 
 package simple
 
+import ()
+
 // SPAppleStringMap is the primary type that represents a map
 type SPAppleStringMap map[*Apple]*string
 

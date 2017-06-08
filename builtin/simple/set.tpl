@@ -6,13 +6,16 @@
 
 package {{.Package}}
 
-{{if .Stringer}}
 import (
+{{- if .Stringer}}
 	"bytes"
 	"fmt"
+{{end -}}
+{{- if .HasImport}}
+    {{.Import}}
+{{end -}}
 )
 
-{{end -}}
 // {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
 type {{.UPrefix}}{{.UType}}Set map[{{.Type}}]struct{}
 

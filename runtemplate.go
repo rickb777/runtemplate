@@ -7,16 +7,14 @@
 package main
 
 import (
+	. "github.com/rickb777/runtemplate/support"
 	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
-	"runtime"
-	. "github.com/rickb777/runtemplate/support"
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
-const Prefix = "Prefix"
 
 func findTemplateFileFromPath(templateFile string) FileMeta {
 	Debug("findTemplateFileFromPath '%s'\n", templateFile)
@@ -79,96 +77,6 @@ func makeFuncMap() template.FuncMap {
 	}
 }
 
-func choosePackage(outputFile string) (string, string) {
-	wd, err := os.Getwd()
-	if err != nil {
-		Fail(err)
-	}
-
-	pkg := RichString(wd).RemoveBefore('/')
-
-	if strings.IndexByte(outputFile, '/') > 0 {
-		dir, _ := RichString(outputFile).DivideOr0('/')
-		if strings.IndexByte(dir, '/') > 0 {
-			dir = RichString(dir).RemoveBefore('/')
-		}
-		if dir != "." {
-			pkg = dir
-		}
-	}
-
-	return wd, pkg
-}
-
-func setTypeInContext(k, v string, context map[string]interface{}) {
-	p := v
-	star := ""
-	amp := ""
-
-	if len(v) > 0 && v[0] == '*' {
-		v = v[1:]
-		star = "*"
-		amp = "&"
-	}
-
-	Debug("setTypeInContext %s=%s for %s, star=%s, amp=%s\n", k, v, p, star, amp)
-
-	context[k] = v
-	context["U" + k] = RichString(v).FirstUpper()
-	context["L" + k] = RichString(v).FirstLower()
-
-	if !strings.HasSuffix(k, Prefix) {
-		context[k + "Star"] = star
-		context[k + "Amp"] = amp
-		context["P" + k] = p
-	}
-}
-
-func setPairInContext(pp Pair, context map[string]interface{}) {
-	k := pp.Key
-	v := pp.Val
-	switch v {
-	case "true":
-		context[k] = true
-	case "false":
-		context[k] = false
-	default:
-		setTypeInContext(k, v, context)
-	}
-}
-
-func createContext(foundTemplate FileMeta, outputFile string, vals Pairs) map[string]interface{} {
-	// Context will be passed to the template as a map.
-	context := make(map[string]interface{})
-	context["GOARCH"] = runtime.GOARCH
-	context["GOOS"] = runtime.GOOS
-	context["GOPATH"] = os.Getenv("GOPATH")
-	context["GOROOT"] = os.Getenv("GOROOT")
-
-	context["PWD"], context["Package"] = choosePackage(outputFile)
-
-	// set up some special context values just in case they are wanted.
-	context["OutFile"] = outputFile
-	context["TemplateFile"] = foundTemplate.Name
-	context["TemplatePath"] = foundTemplate.Path
-
-	// define automatic prefix template values with default blank value.
-	for _, p := range vals {
-		if strings.HasSuffix(p.Key, "Type") {
-			l := len(p.Key)
-			k := p.Key[:l-4]
-			setTypeInContext(k + Prefix, "", context)
-		}
-	}
-
-	// copy the key/vals to template values
-	for _, p := range vals {
-		setPairInContext(p, context)
-	}
-
-	return context
-}
-
 func runTheTemplate(foundTemplate, outputFile string, context map[string]interface{}) {
 	Debug("ReadFile %s\n", foundTemplate)
 	b, err := ioutil.ReadFile(foundTemplate)
@@ -197,8 +105,8 @@ func runTheTemplate(foundTemplate, outputFile string, context map[string]interfa
 	}
 }
 
-func generate(templateFile, outputFile string, force bool, deps []string, vals Pairs) {
-	Debug("generate '%s' '%s' %v %+v %+v\n", templateFile, outputFile, force, deps, vals)
+func generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs) {
+	Debug("generate '%s' '%s' %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
 	foundTemplate := findTemplateFileFromPath(templateFile)
 	than := templateFile
@@ -206,10 +114,10 @@ func generate(templateFile, outputFile string, force bool, deps []string, vals P
 	youngestDep := foundTemplate
 
 	if outputFile == "" {
-		keys := strings.Join(vals.TValues(), "_")
+		keys := strings.Join(types.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideOr0('.')
 		tf = RichString(tf).RemoveBefore('/')
-		outputFile = strings.ToLower(keys + "_" + tf) + ".go"
+		outputFile = strings.ToLower(keys+"_"+tf) + ".go"
 		Debug("default output now '%s'\n", outputFile)
 	}
 
@@ -229,7 +137,7 @@ func generate(templateFile, outputFile string, force bool, deps []string, vals P
 		}
 	}
 
-	context := createContext(foundTemplate, outputFile, vals)
+	context := CreateContext(foundTemplate, outputFile, types, others)
 	Debug("context %+v\n", context)
 
 	runTheTemplate(foundTemplate.Path, outputFile, context)

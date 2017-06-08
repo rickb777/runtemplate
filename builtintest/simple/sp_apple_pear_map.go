@@ -6,6 +6,8 @@
 
 package simple
 
+import ()
+
 // SPApplePearMap is the primary type that represents a map
 type SPApplePearMap map[*Apple]*Pear
 

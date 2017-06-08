@@ -6,6 +6,8 @@
 
 package simple
 
+import ()
+
 // SXApplePearMap is the primary type that represents a map
 type SXApplePearMap map[Apple]Pear
 

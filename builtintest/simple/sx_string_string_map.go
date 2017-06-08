@@ -6,6 +6,8 @@
 
 package simple
 
+import ()
+
 // SXStringStringMap is the primary type that represents a map
 type SXStringStringMap map[string]string
 

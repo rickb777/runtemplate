@@ -8,7 +8,6 @@ package simple
 
 import (
 	"math/rand"
-
 	"bytes"
 	"fmt"
 )
