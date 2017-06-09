@@ -56,6 +56,11 @@ func (list *XStringList) ToSlice() []string {
 	return s
 }
 
+// Clone returns the same list, which is immutable.
+func (list *XStringList) Clone() *XStringList {
+	return list
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
@@ -447,7 +452,7 @@ func (list *XStringList) IndexWhere2(p func(string) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *XStringList) LastIndexWhere(p func(string) bool) int {
-	return list.LastIndexWhere2(p, -1)
+	return list.LastIndexWhere2(p, len(list.m))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.

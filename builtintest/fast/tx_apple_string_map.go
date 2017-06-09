@@ -6,6 +6,10 @@
 
 package fast
 
+import (
+
+)
+
 // TXAppleStringMap is the primary type that represents a thread-safe map
 type TXAppleStringMap struct {
 	m map[Apple]string
@@ -135,6 +139,20 @@ func (mm TXAppleStringMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TXAppleStringMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TXAppleStringMap) DropWhere(fn func(Apple, string) bool) TXAppleStringTuples {
+
+	removed := make(TXAppleStringTuples, 0)
+	for k, v := range mm.m {
+		if fn(k, v) {
+		    removed = append(removed, TXAppleStringTuple{k, v})
+			delete(mm.m, k)
+		}
+	}
+	return removed
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

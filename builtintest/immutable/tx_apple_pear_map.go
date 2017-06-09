@@ -58,7 +58,6 @@ func NewTXApplePearMap(kv ...TXApplePearTuple) TXApplePearMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TXApplePearMap) Keys() []Apple {
-
 	var s []Apple
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -68,7 +67,6 @@ func (mm TXApplePearMap) Keys() []Apple {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm TXApplePearMap) ToSlice() []TXApplePearTuple {
-
 	var s []TXApplePearTuple
 	for k, v := range mm.m {
 		s = append(s, TXApplePearTuple{k, v})
@@ -78,21 +76,18 @@ func (mm TXApplePearMap) ToSlice() []TXApplePearTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm TXApplePearMap) Get(k Apple) (Pear, bool) {
-
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
 func (mm TXApplePearMap) ContainsKey(k Apple) bool {
-
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
 func (mm TXApplePearMap) ContainsAllKeys(kk ...Apple) bool {
-
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -103,7 +98,6 @@ func (mm TXApplePearMap) ContainsAllKeys(kk ...Apple) bool {
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm TXApplePearMap) Size() int {
-
 	return len(mm.m)
 }
 
@@ -124,7 +118,6 @@ func (mm TXApplePearMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm TXApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
-
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -137,7 +130,6 @@ func (mm TXApplePearMap) Forall(fn func(Apple, Pear) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm TXApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
-
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -174,6 +166,11 @@ func (mm TXApplePearMap) Partition(fn func(Apple, Pear) bool) (matching TXAppleP
 		}
 	}
 	return
+}
+
+// Clone returns the same map, which is immutable.
+func (mm TXApplePearMap) Clone() TXApplePearMap {
+	return mm
 }
 
 

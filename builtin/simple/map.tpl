@@ -110,6 +110,11 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bo
 	return true
 }
 
+// Clear clears the entire map.
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clear() {
+	*mm = make(map[{{.PKey}}]{{.PType}})
+}
+
 // Remove allows the removal of a single item from the map.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	delete(mm, k)

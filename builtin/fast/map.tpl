@@ -6,7 +6,6 @@
 
 package {{.Package}}
 
-{{if or .Stringer .HasImport}}
 import (
 {{if .Stringer}}
 	"bytes"
@@ -16,7 +15,6 @@ import (
 {{end}}
 )
 
-{{end -}}
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map struct {
 	m map[{{.PKey}}]{{.PType}}
@@ -146,6 +144,20 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+
+	removed := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, 0)
+	for k, v := range mm.m {
+		if fn(k, v) {
+		    removed = append(removed, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+			delete(mm.m, k)
+		}
+	}
+	return removed
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

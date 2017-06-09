@@ -58,7 +58,6 @@ func NewTXStringAppleMap(kv ...TXStringAppleTuple) TXStringAppleMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TXStringAppleMap) Keys() []string {
-
 	var s []string
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -68,7 +67,6 @@ func (mm TXStringAppleMap) Keys() []string {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm TXStringAppleMap) ToSlice() []TXStringAppleTuple {
-
 	var s []TXStringAppleTuple
 	for k, v := range mm.m {
 		s = append(s, TXStringAppleTuple{k, v})
@@ -78,21 +76,18 @@ func (mm TXStringAppleMap) ToSlice() []TXStringAppleTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm TXStringAppleMap) Get(k string) (Apple, bool) {
-
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
 func (mm TXStringAppleMap) ContainsKey(k string) bool {
-
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
 func (mm TXStringAppleMap) ContainsAllKeys(kk ...string) bool {
-
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -103,7 +98,6 @@ func (mm TXStringAppleMap) ContainsAllKeys(kk ...string) bool {
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm TXStringAppleMap) Size() int {
-
 	return len(mm.m)
 }
 
@@ -124,7 +118,6 @@ func (mm TXStringAppleMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm TXStringAppleMap) Forall(fn func(string, Apple) bool) bool {
-
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -137,7 +130,6 @@ func (mm TXStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm TXStringAppleMap) Exists(fn func(string, Apple) bool) bool {
-
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -174,6 +166,11 @@ func (mm TXStringAppleMap) Partition(fn func(string, Apple) bool) (matching TXSt
 		}
 	}
 	return
+}
+
+// Clone returns the same map, which is immutable.
+func (mm TXStringAppleMap) Clone() TXStringAppleMap {
+	return mm
 }
 
 

@@ -173,7 +173,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PTy
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    removed := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, 0)
+	removed := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
 		    removed = append(removed, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})

@@ -106,6 +106,11 @@ func (mm SPIntIntMap) ContainsAllKeys(kk ...*int) bool {
 	return true
 }
 
+// Clear clears the entire map.
+func (mm *SPIntIntMap) Clear() {
+	*mm = make(map[*int]*int)
+}
+
 // Remove allows the removal of a single item from the map.
 func (mm SPIntIntMap) Remove(k *int) {
 	delete(mm, k)

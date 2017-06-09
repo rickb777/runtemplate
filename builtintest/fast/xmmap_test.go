@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestTxRemove(t *testing.T) {
+func TestMuMapRemove(t *testing.T) {
 	a := NewTXIntIntMap1(3, 1)
 
 	a.Put(1, 5)
@@ -27,7 +27,7 @@ func TestTxRemove(t *testing.T) {
 	}
 }
 
-func TestTxContainsKey(t *testing.T) {
+func TestMuMapContainsKey(t *testing.T) {
 	a := NewTXIntIntMap1(13, 1)
 
 	a.Put(71, 13)
@@ -49,7 +49,7 @@ func TestTxContainsKey(t *testing.T) {
 	}
 }
 
-func TestTxClear(t *testing.T) {
+func TestMuMapClear(t *testing.T) {
 	a := NewTXIntIntMap1(2, 5)
 
 	a.Clear()
@@ -59,7 +59,7 @@ func TestTxClear(t *testing.T) {
 	}
 }
 
-func TestTxClone(t *testing.T) {
+func TestMuMapClone(t *testing.T) {
 	a1 := NewTXIntIntMap(TXIntIntTuples{}.Append2(1, 9, 2, 8)...)
 	a2 := NewTXIntIntMap(TXIntIntTuples{}.Append3(1, 9, 2, 8, 3, 3)...)
 
@@ -82,16 +82,3 @@ func TestTxClone(t *testing.T) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", a2, c)
 	}
 }
-
-//func TestTxSend(t *testing.T) {
-//	a := NewTXIntIntMap(1, 2, 3, 4)
-//
-//	b := NewTXIntIntMap()
-//	for val := range a.Send() {
-//		b.Add(val)
-//	}
-//
-//	if !a.Equals(b) {
-//		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
-//	}
-//}

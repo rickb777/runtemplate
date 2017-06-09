@@ -36,11 +36,11 @@ func New{{.UPrefix}}{{.UType}}Set(a ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
 // Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix}}{{.UType}}Set {
-	result := New{{.UPrefix}}{{.UType}}Set()
+	set := New{{.UPrefix}}{{.UType}}Set()
 	for v := range source {
-		result.m[v] = struct{}{}
+		set.m[v] = struct{}{}
 	}
-	return result
+	return set
 }
 
 // ToSlice returns the elements of the current set as a slice
@@ -50,6 +50,11 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 		s = append(s, v)
 	}
 	return s
+}
+
+// Clone returns the same set, which is immutable.
+func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
+	return set
 }
 
 //-------------------------------------------------------------------------------------------------

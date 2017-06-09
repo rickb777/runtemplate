@@ -6,6 +6,10 @@
 
 package fast
 
+import (
+
+)
+
 // TXApplePearMap is the primary type that represents a thread-safe map
 type TXApplePearMap struct {
 	m map[Apple]Pear
@@ -135,6 +139,20 @@ func (mm TXApplePearMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TXApplePearMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TXApplePearMap) DropWhere(fn func(Apple, Pear) bool) TXApplePearTuples {
+
+	removed := make(TXApplePearTuples, 0)
+	for k, v := range mm.m {
+		if fn(k, v) {
+		    removed = append(removed, TXApplePearTuple{k, v})
+			delete(mm.m, k)
+		}
+	}
+	return removed
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

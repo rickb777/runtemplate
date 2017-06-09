@@ -59,6 +59,11 @@ func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 	return s
 }
 
+// Clone returns the same list, which is immutable.
+func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
+	return list
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
@@ -504,7 +509,7 @@ func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, fro
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) int {
-	return list.LastIndexWhere2(p, -1)
+	return list.LastIndexWhere2(p, len(list.m))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.

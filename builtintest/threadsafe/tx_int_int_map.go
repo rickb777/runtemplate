@@ -170,7 +170,7 @@ func (mm TXIntIntMap) DropWhere(fn func(int, int) bool) TXIntIntTuples {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    removed := make(TXIntIntTuples, 0)
+	removed := make(TXIntIntTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
 		    removed = append(removed, TXIntIntTuple{k, v})

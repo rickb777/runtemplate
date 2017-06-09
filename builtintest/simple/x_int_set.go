@@ -24,6 +24,16 @@ func NewXIntSet(a ...int) XIntSet {
 	return set
 }
 
+// BuildXIntSetFromChan constructs a new XIntSet from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildXIntSetFromChan(source <-chan int) XIntSet {
+	set := make(XIntSet)
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return set
+}
+
 // ToSlice returns the elements of the current set as a slice
 func (set XIntSet) ToSlice() []int {
 	var s []int

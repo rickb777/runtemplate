@@ -1,7 +1,8 @@
 #!/bin/bash -e
 rm -f builtintest/*/[px]_*.go builtintest/*/?[px]_*.go
+./copy-threadsafe-builtins+tests
+
 go install .
 go generate -v ./...
-./copy-shared-tests
 go test ./...
 #go test $coveralls_testflags $GOBUILDFLAG $@ .

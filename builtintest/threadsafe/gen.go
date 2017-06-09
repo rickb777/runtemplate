@@ -10,6 +10,10 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=X Type=Pear
 //go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=X Type=big.Int Import:"math/big"
 
+//go:generate runtemplate -tpl ../collection_test.tpl Type=int Mutable:true
+//go:generate runtemplate -tpl ../list_test.tpl       Type=int Mutable:true M:.m Append:true
+//go:generate runtemplate -tpl ../set_test.tpl        Type=int Mutable:true M:.m Append:true
+
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X Type=string Stringer:true  Comparable:true Ordered:false Numeric:false
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X Type=Apple  Stringer:false Comparable:true

@@ -52,6 +52,13 @@ func (list XStringList) Clone() XStringList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+// The simple list is a dressed-up slice and normal slice operations will also work.
+func (list XStringList) Get(i int) string {
+	return list[i]
+}
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list XStringList) Head() string {
@@ -116,6 +123,25 @@ func (list XStringList) Swap(i, j int) {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+
+// Contains determines if a given item is already in the list.
+func (list XStringList) Contains(v string) bool {
+	return list.Exists(func (x string) bool {
+		return x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list XStringList) ContainsAll(i ...string) bool {
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
 
 // Exists verifies that one or more elements of XStringList return true for the passed func.
 func (list XStringList) Exists(fn func(string) bool) bool {
@@ -197,12 +223,11 @@ func (list XStringList) Drop(n int) XStringList {
 		return list
 	}
 
-	result := list
 	l := list.Len()
 	if n < l {
-		result = list[n:]
+		return list[n:]
 	}
-	return result
+	return list[l:]
 }
 
 // TakeLast returns a slice of XStringList containing the trailing n elements of the source list.
@@ -378,12 +403,15 @@ func (list XStringList) IndexWhere2(p func(string) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list XStringList) LastIndexWhere(p func(string) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, list.Len())
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list XStringList) LastIndexWhere2(p func(string) bool, before int) int {
+	if before < 0 {
+		before = list.Len()
+	}
 	for i := list.Len() - 1; i >= 0; i-- {
 		v := list[i]
 		if i <= before && p(v) {

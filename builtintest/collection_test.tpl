@@ -1,4 +1,4 @@
-package immutable
+package {{.Package}}
 
 import (
 	"testing"
@@ -12,17 +12,12 @@ type Sizer interface {
 	Size() int
 }
 
-func TestNewXCollection(t *testing.T) {
-	testEmptyCollection(t, NewXIntSet())
-	testEmptyCollection(t, NewXIntList())
-	testEmptyCollection(t, NewXBigIntList())
-	testEmptyCollection(t, NewXStringSet())
-	testEmptyCollection(t, NewXStringList())
-	testEmptyCollection(t, NewXAppleList())
-	testEmptyCollection(t, NewXAppleSet())
+func TestNewX{{.UType}}Collection(t *testing.T) {
+	testEmpty{{.UType}}Collection(t, NewX{{.UType}}Set())
+	testEmpty{{.UType}}Collection(t, NewX{{.UType}}List())
 }
 
-func testEmptyCollection(t *testing.T, a Sizer) {
+func testEmpty{{.UType}}Collection(t *testing.T, a Sizer) {
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
 	}
@@ -34,12 +29,12 @@ func testEmptyCollection(t *testing.T, a Sizer) {
 	}
 }
 
-func TestToSlice(t *testing.T) {
-	testToSlice(t, NewXIntSet(1, 2, 3))
-	testToSlice(t, NewXIntList(1, 2, 3))
+func Test{{.UType}}ToSlice(t *testing.T) {
+	test{{.UType}}ToSlice(t, NewX{{.UType}}Set(1, 2, 3))
+	test{{.UType}}ToSlice(t, NewX{{.UType}}List(1, 2, 3))
 }
 
-func testToSlice(t *testing.T, a XIntCollection) {
+func test{{.UType}}ToSlice(t *testing.T, a X{{.UType}}Collection) {
 	s := a.ToSlice()
 
 	if a.Size() != 3 {
@@ -51,12 +46,12 @@ func testToSlice(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestExists(t *testing.T) {
-	testExists1(t, NewXIntSet(1, 2, 3))
-	testExists1(t, NewXIntList(1, 2, 3))
+func Test{{.UType}}Exists(t *testing.T) {
+	test{{.UType}}Exists1(t, NewX{{.UType}}Set(1, 2, 3))
+	test{{.UType}}Exists1(t, NewX{{.UType}}List(1, 2, 3))
 }
 
-func testExists1(t *testing.T, a XIntCollection) {
+func test{{.UType}}Exists1(t *testing.T, a X{{.UType}}Collection) {
 	has2 := a.Exists(func(v int) bool {
 		return v > 2
 	})
@@ -74,12 +69,12 @@ func testExists1(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestForall(t *testing.T) {
-	testForall(t, NewXIntSet(1, 2, 3))
-	testForall(t, NewXIntList(1, 2, 3))
+func Test{{.UType}}Forall(t *testing.T) {
+	test{{.UType}}Forall(t, NewX{{.UType}}Set(1, 2, 3))
+	test{{.UType}}Forall(t, NewX{{.UType}}List(1, 2, 3))
 }
 
-func testForall(t *testing.T, a XIntCollection) {
+func test{{.UType}}Forall(t *testing.T, a X{{.UType}}Collection) {
 	has1 := a.Forall(func(v int) bool {
 		return v >= 1
 	})
@@ -97,12 +92,12 @@ func testForall(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestCountBy(t *testing.T) {
-	testCountBy(t, NewXIntSet(1, 2, 3))
-	testCountBy(t, NewXIntList(1, 2, 3))
+func Test{{.UType}}CountBy(t *testing.T) {
+	test{{.UType}}CountBy(t, NewX{{.UType}}Set(1, 2, 3))
+	test{{.UType}}CountBy(t, NewX{{.UType}}List(1, 2, 3))
 }
 
-func testCountBy(t *testing.T, a XIntCollection) {
+func test{{.UType}}CountBy(t *testing.T, a X{{.UType}}Collection) {
 	n := a.CountBy(func(v int) bool {
 		return v >= 2
 	})
@@ -112,12 +107,12 @@ func testCountBy(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestForeach(t *testing.T) {
-	testForeach(t, NewXIntSet(1, 2, 3))
-	testForeach(t, NewXIntList(1, 2, 3))
+func Test{{.UType}}Foreach(t *testing.T) {
+	test{{.UType}}Foreach(t, NewX{{.UType}}Set(1, 2, 3))
+	test{{.UType}}Foreach(t, NewX{{.UType}}List(1, 2, 3))
 }
 
-func testForeach(t *testing.T, a XIntCollection) {
+func test{{.UType}}Foreach(t *testing.T, a X{{.UType}}Collection) {
 	sum1 := int(0)
 	a.Foreach(func(v int) {
 		sum1 += v
@@ -128,12 +123,12 @@ func testForeach(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestContains(t *testing.T) {
-	testContains(t, NewXIntSet(71, 1, 7, 13))
-	testContains(t, NewXIntList(71, 1, 7, 13))
+func Test{{.UType}}Contains(t *testing.T) {
+	test{{.UType}}Contains(t, NewX{{.UType}}Set(71, 1, 7, 13))
+	test{{.UType}}Contains(t, NewX{{.UType}}List(71, 1, 7, 13))
 }
 
-func testContains(t *testing.T, a XIntCollection) {
+func test{{.UType}}Contains(t *testing.T, a X{{.UType}}Collection) {
 	if !a.Contains(71) {
 		t.Error("should contain 71")
 	}
@@ -155,12 +150,12 @@ func testContains(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestMinMaxSum(t *testing.T) {
-	testMinMaxSum(t, NewXIntSet(10, 71, 3, 7, 13))
-	testMinMaxSum(t, NewXIntList(10, 71, 3, 7, 13))
+func Test{{.UType}}MinMaxSum(t *testing.T) {
+	test{{.UType}}MinMaxSum(t, NewX{{.UType}}Set(10, 71, 3, 7, 13))
+	test{{.UType}}MinMaxSum(t, NewX{{.UType}}List(10, 71, 3, 7, 13))
 }
 
-func testMinMaxSum(t *testing.T, a XIntCollection) {
+func test{{.UType}}MinMaxSum(t *testing.T, a X{{.UType}}Collection) {
 	if a.Min() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Min())
 	}
@@ -172,12 +167,12 @@ func testMinMaxSum(t *testing.T, a XIntCollection) {
 	}
 }
 
-func TestStringer(t *testing.T) {
-	testStringer(t, NewXIntSet(10, 71, 3, 7, 13), false)
-	testStringer(t, NewXIntList(10, 71, 3, 7, 13), true)
+func Test{{.UType}}Stringer(t *testing.T) {
+	test{{.UType}}Stringer(t, NewX{{.UType}}Set(10, 71, 3, 7, 13), false)
+	test{{.UType}}Stringer(t, NewX{{.UType}}List(10, 71, 3, 7, 13), true)
 }
 
-func testStringer(t *testing.T, a XIntCollection, ordered bool) {
+func test{{.UType}}Stringer(t *testing.T, a X{{.UType}}Collection, ordered bool) {
 	s1 := a.String()
 	if ordered && s1 != "[10, 71, 3, 7, 13]" {
 		t.Errorf("Got %s for %+v", s1, a)

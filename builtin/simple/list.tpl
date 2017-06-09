@@ -56,6 +56,13 @@ func (list {{.UPrefix}}{{.UType}}List) Clone() {{.UPrefix}}{{.UType}}List {
 
 //-------------------------------------------------------------------------------------------------
 
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+// The simple list is a dressed-up slice and normal slice operations will also work.
+func (list {{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
+	return list[i]
+}
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list {{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
@@ -121,6 +128,26 @@ func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
+{{if .Comparable}}
+// Contains determines if a given item is already in the list.
+func (list {{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
+	return list.Exists(func (x {{.PType}}) bool {
+		return {{.TypeStar}}x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list {{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
+{{end -}}
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list {{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
 	for _, v := range list {
@@ -201,12 +228,11 @@ func (list {{.UPrefix}}{{.UType}}List) Drop(n int) {{.UPrefix}}{{.UType}}List {
 		return list
 	}
 
-	result := list
 	l := list.Len()
 	if n < l {
-		result = list[n:]
+		return list[n:]
 	}
-	return result
+	return list[l:]
 }
 
 // TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
@@ -382,12 +408,15 @@ func (list {{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, list.Len())
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
+	if before < 0 {
+		before = list.Len()
+	}
 	for i := list.Len() - 1; i >= 0; i-- {
 		v := list[i]
 		if i <= before && p(v) {

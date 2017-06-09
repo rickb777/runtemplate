@@ -24,6 +24,16 @@ func NewXStringSet(a ...string) XStringSet {
 	return set
 }
 
+// BuildXStringSetFromChan constructs a new XStringSet from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildXStringSetFromChan(source <-chan string) XStringSet {
+	set := make(XStringSet)
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return set
+}
+
 // ToSlice returns the elements of the current set as a slice
 func (set XStringSet) ToSlice() []string {
 	var s []string

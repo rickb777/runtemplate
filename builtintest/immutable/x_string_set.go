@@ -32,11 +32,11 @@ func NewXStringSet(a ...string) XStringSet {
 // BuildXStringSetFromChan constructs a new XStringSet from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildXStringSetFromChan(source <-chan string) XStringSet {
-	result := NewXStringSet()
+	set := NewXStringSet()
 	for v := range source {
-		result.m[v] = struct{}{}
+		set.m[v] = struct{}{}
 	}
-	return result
+	return set
 }
 
 // ToSlice returns the elements of the current set as a slice
@@ -46,6 +46,11 @@ func (set XStringSet) ToSlice() []string {
 		s = append(s, v)
 	}
 	return s
+}
+
+// Clone returns the same set, which is immutable.
+func (set XStringSet) Clone() XStringSet {
+	return set
 }
 
 //-------------------------------------------------------------------------------------------------

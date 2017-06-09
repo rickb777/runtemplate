@@ -120,7 +120,7 @@ func SplitKeyValArgs(args []string) (Pairs, Pairs, []string) {
 			}
 		} else if co >= 0 {
 			k, v = a[:co], a[co+1:]
-			if k != "" && v != "" {
+			if k != "" {
 				p := Pair{a[:co], a[co+1:]}
 				others = append(others, p)
 				found = true

@@ -99,6 +99,11 @@ func (mm SPStringAppleMap) ContainsAllKeys(kk ...*string) bool {
 	return true
 }
 
+// Clear clears the entire map.
+func (mm *SPStringAppleMap) Clear() {
+	*mm = make(map[*string]*Apple)
+}
+
 // Remove allows the removal of a single item from the map.
 func (mm SPStringAppleMap) Remove(k *string) {
 	delete(mm, k)

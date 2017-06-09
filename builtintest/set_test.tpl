@@ -1,12 +1,12 @@
-package threadsafe
+package {{.Package}}
 
 import (
 	"testing"
 	"fmt"
 )
 
-func TestNewMutableSet(t *testing.T) {
-	a := NewXIntSet(1, 2, 3)
+func TestNew{{.UType}}Set(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -21,8 +21,8 @@ func TestNewMutableSet(t *testing.T) {
 	}
 }
 
-func TestNewMutableSetNoDuplicate(t *testing.T) {
-	a := NewXIntSet(7, 5, 3, 7)
+func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
+	a := NewX{{.UType}}Set(7, 5, 3, 7)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -33,8 +33,9 @@ func TestNewMutableSetNoDuplicate(t *testing.T) {
 	}
 }
 
-func TestMutableSetRemove(t *testing.T) {
-	a := NewXIntSet(6, 3, 1)
+{{if .Mutable}}
+func TestMutable{{.UType}}SetRemove(t *testing.T) {
+	a := NewX{{.UType}}Set(6, 3, 1)
 
 	a.Remove(3)
 
@@ -54,8 +55,9 @@ func TestMutableSetRemove(t *testing.T) {
 	}
 }
 
-func TestMutableSetContainsAll(t *testing.T) {
-	a := NewXIntSet(8, 6, 7, 5, 3, 0, 9)
+{{end}}
+func Test{{.UType}}SetContainsAll(t *testing.T) {
+	a := NewX{{.UType}}Set(8, 6, 7, 5, 3, 0, 9)
 
 	if !a.ContainsAll(8, 6, 7, 5, 3, 0, 9) {
 		t.Error("should contain phone number")
@@ -66,18 +68,9 @@ func TestMutableSetContainsAll(t *testing.T) {
 	}
 }
 
-func TestMutableSetClear(t *testing.T) {
-	a := NewXIntSet(2, 5, 9, 10)
-
-	a.Clear()
-
-	if a.Size() != 0 {
-		t.Errorf("Expected 0 but got %d", a.Size())
-	}
-}
-
-func TestMutableSetCardinality(t *testing.T) {
-	a := NewXIntSet()
+{{if .Mutable}}
+func TestMutable{{.UType}}SetCardinality(t *testing.T) {
+	a := NewX{{.UType}}Set()
 
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
@@ -103,50 +96,41 @@ func TestMutableSetCardinality(t *testing.T) {
 	if a.Size() != 1 {
 		t.Errorf("Expected 1 but got %d", a.Size())
 	}
-
-	a.Clear()
-
-	if a.Size() != 0 {
-		t.Errorf("Expected 0 but got %d", a.Size())
-	}
 }
 
-func TestMutableSetIsSubset(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 5, 7)
-
-	b := NewXIntSet(3, 5, 7)
+{{end}}
+func Test{{.UType}}SetIsSubset(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3, 5, 7)
+	b := NewX{{.UType}}Set(3, 5, 7)
+	c := NewX{{.UType}}Set(3, 5, 7, 72)
 
 	if !b.IsSubset(a) {
 		t.Errorf("Expected '%+v' to be a subset of '%+v'", b, a)
 	}
 
-	b.Add(72)
-
-	if b.IsSubset(a) {
-		t.Errorf("Expected '%+v' not to be a subset of '%+v'", b, a)
+	if c.IsSubset(a) {
+		t.Errorf("Expected '%+v' not to be a subset of '%+v'", c, a)
 	}
 }
 
-func TestMutableSetIsSuperSet(t *testing.T) {
-	a := NewXIntSet(9, 5, 2, 1, 11)
-
-	b := NewXIntSet(5, 2, 11)
+func Test{{.UType}}SetIsSuperSet(t *testing.T) {
+	a := NewX{{.UType}}Set(9, 5, 2, 1, 11)
+	b := NewX{{.UType}}Set(5, 2, 11)
+	c := NewX{{.UType}}Set(5, 2, 11, 42)
 
 	if !a.IsSuperset(b) {
 		t.Errorf("Expected '%+v' to be a superset of '%+v'", a, b)
 	}
 
-	b.Add(42)
-
-	if a.IsSuperset(b) {
+	if a.IsSuperset(c) {
 		t.Errorf("Expected '%+v' not to be a superset of '%+v'", a, b)
 	}
 }
 
-func TestMutableSetUnion(t *testing.T) {
-	a := NewXIntSet()
+func Test{{.UType}}SetUnion(t *testing.T) {
+	a := NewX{{.UType}}Set()
 
-	b := NewXIntSet(1, 2, 3, 4, 5)
+	b := NewX{{.UType}}Set(1, 2, 3, 4, 5)
 
 	c := a.Union(b)
 
@@ -154,14 +138,14 @@ func TestMutableSetUnion(t *testing.T) {
 		t.Errorf("Expected 5 but got %d", c.Size())
 	}
 
-	d := NewXIntSet(10, 14, 0)
+	d := NewX{{.UType}}Set(10, 14, 0)
 
 	e := c.Union(d)
 	if e.Size() != 8 {
 		t.Errorf("Expected 8 but got %d", e.Size())
 	}
 
-	f := NewXIntSet(14, 3)
+	f := NewX{{.UType}}Set(14, 3)
 
 	g := f.Union(e)
 	if g.Size() != 8 {
@@ -169,23 +153,22 @@ func TestMutableSetUnion(t *testing.T) {
 	}
 }
 
-func TestMutableSetIntersection(t *testing.T) {
-	a := NewXIntSet(1, 3, 5, 7)
+func Test{{.UType}}SetIntersection(t *testing.T) {
+	a1 := NewX{{.UType}}Set(1, 3, 5, 7)
+	a2 := NewX{{.UType}}Set(1, 3, 5, 7, 10)
 
-	b := NewXIntSet(2, 4, 6)
+	b1 := NewX{{.UType}}Set(2, 4, 6)
+	b2 := NewX{{.UType}}Set(2, 4, 6, 10)
 
-	c1 := a.Intersect(b)
-	c2 := b.Intersect(a)
+	c1 := a1.Intersect(b1)
+	c2 := b1.Intersect(a1)
 
 	if c1.NonEmpty() || c2.NonEmpty() {
 		t.Errorf("Expected 0 but got %d and %d", c1.Size(), c2.Size())
 	}
 
-	a.Add(10)
-	b.Add(10)
-
-	d1 := a.Intersect(b)
-	d2 := b.Intersect(a)
+	d1 := a2.Intersect(b2)
+	d2 := b2.Intersect(a2)
 
 	if !(d1.Size() == 1 && d1.Contains(10)) {
 		t.Errorf("d1 should have a size of 1 and contain 10: %+v", d1)
@@ -196,10 +179,10 @@ func TestMutableSetIntersection(t *testing.T) {
 	}
 }
 
-func TestMutableSetDifference(t *testing.T) {
-	a := NewXIntSet(1, 2, 3)
+func TestMutable{{.UType}}SetDifference(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3)
 
-	b := NewXIntSet(1, 3, 4, 5, 6, 99)
+	b := NewX{{.UType}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.Difference(b)
 
@@ -208,10 +191,10 @@ func TestMutableSetDifference(t *testing.T) {
 	}
 }
 
-func TestMutableSetSymmetricDifference(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 45)
+func TestMutable{{.UType}}SetSymmetricDifference(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3, 45)
 
-	b := NewXIntSet(1, 3, 4, 5, 6, 99)
+	b := NewX{{.UType}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.SymmetricDifference(b)
 
@@ -220,31 +203,86 @@ func TestMutableSetSymmetricDifference(t *testing.T) {
 	}
 }
 
-func TestMutableSetEqual(t *testing.T) {
-	a := NewXIntSet()
-	b := NewXIntSet()
+func TestMutable{{.UType}}SetEqual(t *testing.T) {
+	a := NewX{{.UType}}Set()
+	b := NewX{{.UType}}Set()
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
-	c := NewXIntSet(1, 3, 5, 6, 8)
-	d := NewXIntSet(1, 3, 5, 6, 9)
+	c := NewX{{.UType}}Set(1, 3, 5, 6, 8)
+	d := NewX{{.UType}}Set(1, 3, 5, 6, 9)
 
 	if c.Equals(d) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", c, d)
 	}
+}
 
-	c.Add(9)
-	d.Add(8)
+func TestMutable{{.UType}}SetSend(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3, 4)
 
-	if !c.Equals(d) {
-		t.Errorf("Expected '%+v' to equal '%+v'", c, d)
+	b := BuildX{{.UType}}SetFromChan(a.Send())
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 }
 
-func TestMutableSetClone(t *testing.T) {
-	a := NewXIntSet(1, 2)
+func TestMutable{{.UType}}SetFilter(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3, 4)
+
+	b := a.Filter(func(v int) bool {
+		return v > 2
+	})
+
+	if !b.Equals(NewX{{.UType}}Set(3, 4)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+}
+
+func TestMutable{{.UType}}SetPartition(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3, 4)
+
+	b, c := a.Partition(func(v int) bool {
+		return v > 2
+	})
+
+	if !b.Equals(NewX{{.UType}}Set(3, 4)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	if !c.Equals(NewX{{.UType}}Set(1, 2)) {
+		t.Errorf("Expected '1, 2' but got '%+v'", c)
+	}
+}
+
+func TestMutable{{.UType}}SetStringMap(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2, 3, 4)
+
+	b := a.StringMap()
+
+	for _, c := range a.ToSlice() {
+		s := fmt.Sprintf("%d", c)
+		if _, ok := b[s]; !ok {
+			t.Errorf("Expected '%s' but got '%+v'", s, b)
+		}
+	}
+}
+
+{{if .Mutable}}
+func TestMutable{{.UType}}SetClear(t *testing.T) {
+	a := NewX{{.UType}}Set(2, 5, 9, 10)
+
+	a.Clear()
+
+	if a.Size() != 0 {
+		t.Errorf("Expected 0 but got %d", a.Size())
+	}
+}
+
+func TestMutable{{.UType}}SetClone(t *testing.T) {
+	a := NewX{{.UType}}Set(1, 2)
 
 	b := a.Clone()
 
@@ -264,55 +302,4 @@ func TestMutableSetClone(t *testing.T) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", a, c)
 	}
 }
-
-func TestMutableSetSend(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
-
-	b := BuildXIntSetFromChan(a.Send())
-
-	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
-	}
-}
-
-func TestMutableSetFilter(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
-
-	b := a.Filter(func(v int) bool {
-		return v > 2
-	})
-
-	if !b.Equals(NewXIntSet(3, 4)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", b)
-	}
-}
-
-func TestMutableSetPartition(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
-
-	b, c := a.Partition(func(v int) bool {
-		return v > 2
-	})
-
-	if !b.Equals(NewXIntSet(3, 4)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", b)
-	}
-
-	if !c.Equals(NewXIntSet(1, 2)) {
-		t.Errorf("Expected '1, 2' but got '%+v'", c)
-	}
-}
-
-func TestMutableSetStringMap(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
-
-	b := a.StringMap()
-
-	for _, c := range a.ToSlice() {
-		s := fmt.Sprintf("%d", c)
-		if _, ok := b[s]; !ok {
-			t.Errorf("Expected '%s' but got '%+v'", s, b)
-		}
-	}
-}
-
+{{end}}

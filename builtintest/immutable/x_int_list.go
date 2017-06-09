@@ -56,6 +56,11 @@ func (list *XIntList) ToSlice() []int {
 	return s
 }
 
+// Clone returns the same list, which is immutable.
+func (list *XIntList) Clone() *XIntList {
+	return list
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
@@ -460,7 +465,7 @@ func (list *XIntList) IndexWhere2(p func(int) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *XIntList) LastIndexWhere(p func(int) bool) int {
-	return list.LastIndexWhere2(p, -1)
+	return list.LastIndexWhere2(p, len(list.m))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.

@@ -168,7 +168,7 @@ func (mm TXApplePearMap) DropWhere(fn func(Apple, Pear) bool) TXApplePearTuples 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    removed := make(TXApplePearTuples, 0)
+	removed := make(TXApplePearTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
 		    removed = append(removed, TXApplePearTuple{k, v})

@@ -69,7 +69,6 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 
 // Keys returns the keys of the current map as a slice.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
-
 	var s []{{.PKey}}
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -79,7 +78,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
-
 	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
 	for k, v := range mm.m {
 		s = append(s, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
@@ -89,21 +87,18 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{
 
 // Get returns one of the items in the map, if present.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool) {
-
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
-
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bool {
-
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -114,7 +109,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bo
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
-
 	return len(mm.m)
 }
 
@@ -135,7 +129,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}}) bool) bool {
-
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -148,7 +141,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}}) bool) bool {
-
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -192,7 +184,6 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PTy
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{{.UType}}Map) bool {
-
 	if mm.Size() != other.Size() {
 		return false
 	}
@@ -206,6 +197,11 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{
 }
 
 {{end -}}
+// Clone returns the same map, which is immutable.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+	return mm
+}
+
 {{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 

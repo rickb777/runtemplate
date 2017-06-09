@@ -65,7 +65,6 @@ func NewTXIntIntMap(kv ...TXIntIntTuple) TXIntIntMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TXIntIntMap) Keys() []int {
-
 	var s []int
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -75,7 +74,6 @@ func (mm TXIntIntMap) Keys() []int {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm TXIntIntMap) ToSlice() []TXIntIntTuple {
-
 	var s []TXIntIntTuple
 	for k, v := range mm.m {
 		s = append(s, TXIntIntTuple{k, v})
@@ -85,21 +83,18 @@ func (mm TXIntIntMap) ToSlice() []TXIntIntTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm TXIntIntMap) Get(k int) (int, bool) {
-
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
 func (mm TXIntIntMap) ContainsKey(k int) bool {
-
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
 func (mm TXIntIntMap) ContainsAllKeys(kk ...int) bool {
-
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -110,7 +105,6 @@ func (mm TXIntIntMap) ContainsAllKeys(kk ...int) bool {
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm TXIntIntMap) Size() int {
-
 	return len(mm.m)
 }
 
@@ -131,7 +125,6 @@ func (mm TXIntIntMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm TXIntIntMap) Forall(fn func(int, int) bool) bool {
-
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -144,7 +137,6 @@ func (mm TXIntIntMap) Forall(fn func(int, int) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm TXIntIntMap) Exists(fn func(int, int) bool) bool {
-
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -188,7 +180,6 @@ func (mm TXIntIntMap) Partition(fn func(int, int) bool) (matching TXIntIntMap, o
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
 func (mm TXIntIntMap) Equals(other TXIntIntMap) bool {
-
 	if mm.Size() != other.Size() {
 		return false
 	}
@@ -199,6 +190,11 @@ func (mm TXIntIntMap) Equals(other TXIntIntMap) bool {
 		}
 	}
 	return true
+}
+
+// Clone returns the same map, which is immutable.
+func (mm TXIntIntMap) Clone() TXIntIntMap {
+	return mm
 }
 
 

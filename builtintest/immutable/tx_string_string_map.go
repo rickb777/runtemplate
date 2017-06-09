@@ -58,7 +58,6 @@ func NewTXStringStringMap(kv ...TXStringStringTuple) TXStringStringMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TXStringStringMap) Keys() []string {
-
 	var s []string
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -68,7 +67,6 @@ func (mm TXStringStringMap) Keys() []string {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm TXStringStringMap) ToSlice() []TXStringStringTuple {
-
 	var s []TXStringStringTuple
 	for k, v := range mm.m {
 		s = append(s, TXStringStringTuple{k, v})
@@ -78,21 +76,18 @@ func (mm TXStringStringMap) ToSlice() []TXStringStringTuple {
 
 // Get returns one of the items in the map, if present.
 func (mm TXStringStringMap) Get(k string) (string, bool) {
-
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
 func (mm TXStringStringMap) ContainsKey(k string) bool {
-
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
 func (mm TXStringStringMap) ContainsAllKeys(kk ...string) bool {
-
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -103,7 +98,6 @@ func (mm TXStringStringMap) ContainsAllKeys(kk ...string) bool {
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm TXStringStringMap) Size() int {
-
 	return len(mm.m)
 }
 
@@ -124,7 +118,6 @@ func (mm TXStringStringMap) NonEmpty() bool {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm TXStringStringMap) Forall(fn func(string, string) bool) bool {
-
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -137,7 +130,6 @@ func (mm TXStringStringMap) Forall(fn func(string, string) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm TXStringStringMap) Exists(fn func(string, string) bool) bool {
-
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
@@ -181,7 +173,6 @@ func (mm TXStringStringMap) Partition(fn func(string, string) bool) (matching TX
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
 func (mm TXStringStringMap) Equals(other TXStringStringMap) bool {
-
 	if mm.Size() != other.Size() {
 		return false
 	}
@@ -192,6 +183,11 @@ func (mm TXStringStringMap) Equals(other TXStringStringMap) bool {
 		}
 	}
 	return true
+}
+
+// Clone returns the same map, which is immutable.
+func (mm TXStringStringMap) Clone() TXStringStringMap {
+	return mm
 }
 
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestTxToSlice(t *testing.T) {
+func TestImMapToSlice(t *testing.T) {
 	a := NewTXIntIntMap1(1, 2)
 	s := a.ToSlice()
 
@@ -17,19 +17,19 @@ func TestTxToSlice(t *testing.T) {
 	}
 }
 
-func TestTxContainsAllKeys(t *testing.T) {
+func TestImMapContainsAllKeys(t *testing.T) {
 	a := NewTXIntIntMap(TXIntIntTuple{8, 6}, TXIntIntTuple{1, 10}, TXIntIntTuple{2, 11})
 
 	if !a.ContainsAllKeys(8, 1, 2) {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a)
 	}
 
 	if a.ContainsAllKeys(8, 6, 11, 1, 2) {
-		t.Errorf("%+v", a.m)
+		t.Errorf("%+v", a)
 	}
 }
 
-func TestTxCardinality(t *testing.T) {
+func TestImMapCardinality(t *testing.T) {
 	a1 := NewTXIntIntMap()
 	a2 := NewTXIntIntMap1(1, 2)
 
@@ -42,7 +42,7 @@ func TestTxCardinality(t *testing.T) {
 	}
 }
 
-func TestTxEquals(t *testing.T) {
+func TestImMapEquals(t *testing.T) {
 	a1 := NewTXIntIntMap()
 	b1 := NewTXIntIntMap()
 	a2 := NewTXIntIntMap(TXIntIntTuples{}.Append2(10, 4, 8, 19)...)
@@ -78,7 +78,7 @@ func TestTxEquals(t *testing.T) {
 	}
 }
 
-//func TestTxSend(t *testing.T) {
+//func TestImMapSend(t *testing.T) {
 //	a := NewTXIntIntMap(1, 2, 3, 4)
 //
 //	b := NewTXIntIntMap()

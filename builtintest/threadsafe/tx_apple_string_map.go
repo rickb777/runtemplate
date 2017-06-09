@@ -168,7 +168,7 @@ func (mm TXAppleStringMap) DropWhere(fn func(Apple, string) bool) TXAppleStringT
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    removed := make(TXAppleStringTuples, 0)
+	removed := make(TXAppleStringTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
 		    removed = append(removed, TXAppleStringTuple{k, v})

@@ -54,6 +54,11 @@ func (list *XAppleList) ToSlice() []Apple {
 	return s
 }
 
+// Clone returns the same list, which is immutable.
+func (list *XAppleList) Clone() *XAppleList {
+	return list
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
@@ -445,7 +450,7 @@ func (list *XAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list *XAppleList) LastIndexWhere(p func(Apple) bool) int {
-	return list.LastIndexWhere2(p, -1)
+	return list.LastIndexWhere2(p, len(list.m))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.

@@ -6,7 +6,6 @@
 
 package fast
 
-
 import (
 
 	"bytes"
@@ -32,11 +31,11 @@ func NewXIntSet(a ...int) XIntSet {
 // BuildXIntSetFromChan constructs a new XIntSet from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildXIntSetFromChan(source <-chan int) XIntSet {
-	result := NewXIntSet()
+	set := NewXIntSet()
 	for v := range source {
-		result.m[v] = struct{}{}
+		set.m[v] = struct{}{}
 	}
-	return result
+	return set
 }
 
 // ToSlice returns the elements of the current set as a slice

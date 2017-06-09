@@ -52,6 +52,13 @@ func (list PIntList) Clone() PIntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Get gets the specified element in the list.
+// Panics if the index is out of range.
+// The simple list is a dressed-up slice and normal slice operations will also work.
+func (list PIntList) Get(i int) *int {
+	return list[i]
+}
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
 func (list PIntList) Head() *int {
@@ -116,6 +123,25 @@ func (list PIntList) Swap(i, j int) {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+
+// Contains determines if a given item is already in the list.
+func (list PIntList) Contains(v int) bool {
+	return list.Exists(func (x *int) bool {
+		return *x == v
+	})
+}
+
+// ContainsAll determines if the given items are all in the list.
+// This is potentially a slow method and should only be used rarely.
+func (list PIntList) ContainsAll(i ...int) bool {
+	for _, v := range i {
+		if !list.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
 
 // Exists verifies that one or more elements of PIntList return true for the passed func.
 func (list PIntList) Exists(fn func(*int) bool) bool {
@@ -197,12 +223,11 @@ func (list PIntList) Drop(n int) PIntList {
 		return list
 	}
 
-	result := list
 	l := list.Len()
 	if n < l {
-		result = list[n:]
+		return list[n:]
 	}
-	return result
+	return list[l:]
 }
 
 // TakeLast returns a slice of PIntList containing the trailing n elements of the source list.
@@ -378,12 +403,15 @@ func (list PIntList) IndexWhere2(p func(*int) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list PIntList) LastIndexWhere(p func(*int) bool) int {
-	return list.LastIndexWhere2(p, 0)
+	return list.LastIndexWhere2(p, list.Len())
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list PIntList) LastIndexWhere2(p func(*int) bool, before int) int {
+	if before < 0 {
+		before = list.Len()
+	}
 	for i := list.Len() - 1; i >= 0; i-- {
 		v := list[i]
 		if i <= before && p(v) {

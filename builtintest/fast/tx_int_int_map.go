@@ -6,7 +6,6 @@
 
 package fast
 
-
 import (
 
 	"bytes"
@@ -142,6 +141,20 @@ func (mm TXIntIntMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TXIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TXIntIntMap) DropWhere(fn func(int, int) bool) TXIntIntTuples {
+
+	removed := make(TXIntIntTuples, 0)
+	for k, v := range mm.m {
+		if fn(k, v) {
+		    removed = append(removed, TXIntIntTuple{k, v})
+			delete(mm.m, k)
+		}
+	}
+	return removed
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
