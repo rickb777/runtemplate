@@ -323,3 +323,32 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	return b
 }
 {{end}}
+
+//-------------------------------------------------------------------------------------------------
+// Lock Accessors
+
+// Lock locks the map for writing. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Lock() {
+	mm.s.Lock()
+}
+
+// Unlock unlocks the map's write-lock.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Unlock() {
+	mm.s.Unlock()
+}
+
+// RLock locks the map for reading. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) RLock() {
+	mm.s.RLock()
+}
+
+// RUnlock unlocks the map's read-lock.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) RUnlock() {
+	mm.s.RLock()
+}

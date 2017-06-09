@@ -284,3 +284,5 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	return b
 }
 {{end}}
+
+//-------------------------------------------------------------------------------------------------

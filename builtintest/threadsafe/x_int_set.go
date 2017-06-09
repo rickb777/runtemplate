@@ -497,3 +497,32 @@ func (set XIntSet) StringMap() map[string]bool {
 	return strings
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Lock Accessors
+
+// Lock locks the set for writing. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (set XIntSet) Lock() {
+	set.s.Lock()
+}
+
+// Unlock unlocks the set's write-lock.
+func (set XIntSet) Unlock() {
+	set.s.Unlock()
+}
+
+// RLock locks the set for reading. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (set XIntSet) RLock() {
+	set.s.RLock()
+}
+
+// RUnlock unlocks the set's read-lock.
+func (set XIntSet) RUnlock() {
+	set.s.RLock()
+}

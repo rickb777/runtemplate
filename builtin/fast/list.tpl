@@ -628,3 +628,5 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(pfx, mid, sfx string) *byt
 	return b
 }
 {{end}}
+
+//-------------------------------------------------------------------------------------------------

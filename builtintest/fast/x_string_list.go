@@ -555,3 +555,5 @@ func (list XStringList) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	return b
 }
 
+
+//-------------------------------------------------------------------------------------------------

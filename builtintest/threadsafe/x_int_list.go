@@ -653,3 +653,32 @@ func (list XIntList) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	return b
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Lock Accessors
+
+// Lock locks the list for writing. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (list XIntList) Lock() {
+	list.s.Lock()
+}
+
+// Unlock unlocks the list's write-lock.
+func (list XIntList) Unlock() {
+	list.s.Unlock()
+}
+
+// RLock locks the list for reading. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (list XIntList) RLock() {
+	list.s.RLock()
+}
+
+// RUnlock unlocks the list's read-lock.
+func (list XIntList) RUnlock() {
+	list.s.RLock()
+}

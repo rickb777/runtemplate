@@ -280,3 +280,32 @@ func (mm TXStringStringMap) Clone() TXStringStringMap {
 }
 
 
+
+//-------------------------------------------------------------------------------------------------
+// Lock Accessors
+
+// Lock locks the map for writing. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (mm TXStringStringMap) Lock() {
+	mm.s.Lock()
+}
+
+// Unlock unlocks the map's write-lock.
+func (mm TXStringStringMap) Unlock() {
+	mm.s.Unlock()
+}
+
+// RLock locks the map for reading. You can use this if the values are themselves datastructures
+// that need to be restricted within the same lock.
+//
+// Do not forget to unlock!
+func (mm TXStringStringMap) RLock() {
+	mm.s.RLock()
+}
+
+// RUnlock unlocks the map's read-lock.
+func (mm TXStringStringMap) RUnlock() {
+	mm.s.RLock()
+}
