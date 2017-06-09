@@ -9,9 +9,6 @@ package immutable
 //go:generate runtemplate -tpl immutable/collection.tpl Prefix=X Type=Pear
 //go:generate runtemplate -tpl immutable/collection.tpl Prefix=X Type=big.Int Import:"math/big"
 
-//go:generate runtemplate -tpl ../collection_test.tpl Type=int
-//go:generate runtemplate -tpl ../list_test.tpl       Type=int M:.m Append:true
-//go:generate runtemplate -tpl ../set_test.tpl        Type=int M:.m Append:true
 
 //go:generate runtemplate -tpl immutable/list.tpl       Prefix=X Type=string Stringer:true  Comparable:true Ordered:false Numeric:false
 //go:generate runtemplate -tpl immutable/list.tpl       Prefix=X Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true
@@ -30,6 +27,10 @@ package immutable
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX Key=Apple  Type=Pear
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX Key=Apple  Type=big.Int  Import:"math/big"
 
+//go:generate runtemplate -tpl ../collection_test.tpl   Type=int
+//go:generate runtemplate -tpl ../list_test.tpl         Type=int M:.m Append:true
+//go:generate runtemplate -tpl ../set_test.tpl          Type=int M:.m Append:true
+//go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int M:.m
 
 // Code generation with pointer values
 
