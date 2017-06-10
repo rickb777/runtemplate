@@ -20,19 +20,19 @@ func choosePackage(outputFile string) (string, string) {
 		Fail(err)
 	}
 
-	pkg := RichString(wd).RemoveBefore('/')
+	pkg := RichString(wd).RemoveBeforeLast('/')
 
 	if strings.IndexByte(outputFile, '/') > 0 {
-		dir, _ := RichString(outputFile).DivideOr0('/')
-		if strings.IndexByte(dir, '/') > 0 {
-			dir = RichString(dir).RemoveBefore('/')
+		dir, _ := RichString(outputFile).DivideLastOr0('/')
+		if dir.IndexByte('/') > 0 {
+			dir = RichString(dir).RemoveBeforeLast('/')
 		}
 		if dir != "." {
 			pkg = dir
 		}
 	}
 
-	return wd, pkg
+	return wd, pkg.String()
 }
 
 func setTypeInContext(k, v string, context map[string]interface{}) {
@@ -48,10 +48,10 @@ func setTypeInContext(k, v string, context map[string]interface{}) {
 
 	Debug("setTypeInContext %s=%s for %s, star=%s, amp=%s\n", k, v, p, star, amp)
 
-	rs := RichString(v).NoDots()
+	rs := RichString(v).RemoveBeforeLast('.')
 	context[k] = v
-	context["U"+k] = rs.FirstUpper()
-	context["L"+k] = rs.FirstLower()
+	context["U"+k] = rs.FirstUpper().String()
+	context["L"+k] = rs.FirstLower().String()
 
 	if !strings.HasSuffix(k, Prefix) {
 		context[k+"Star"] = star

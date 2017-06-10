@@ -54,24 +54,24 @@ func makeFuncMap() template.FuncMap {
 			}
 			return no
 		},
-		"firstLower": func(s string) string {
+		"firstLower": func(s string) RichString {
 			return RichString(s).FirstLower()
 		},
-		"firstUpper": func(s string) string {
+		"firstUpper": func(s string) RichString {
 			return RichString(s).FirstUpper()
 		},
 		// splitDotFirst returns the first part of a string split on a "."
 		// Useful for the case in which you want the package name from a passed value
 		// like "package.Type"
-		"splitDotFirst": func(s string) string {
-			first, _ := RichString(s).DivideOr0('.')
+		"splitDotFirst": func(s string) RichString {
+			first, _ := RichString(s).DivideLastOr0('.')
 			return first
 		},
 		// splitDotLast returns the last part of a string split on a "."
 		// Useful for the case in which you want the type name from a passed value
 		// like "package.Type"
-		"splitDotLast": func(s string) string {
-			_, second := RichString(s).DivideOr0('.')
+		"splitDotLast": func(s string) RichString {
+			_, second := RichString(s).DivideLastOr0('.')
 			return second
 		},
 	}
@@ -115,9 +115,9 @@ func generate(templateFile, outputFile string, force bool, deps []string, types,
 
 	if outputFile == "" {
 		keys := strings.Join(types.TValues(), "_")
-		tf, _ := RichString(templateFile).DivideOr0('.')
-		tf = RichString(tf).RemoveBefore('/')
-		outputFile = strings.ToLower(keys+"_"+tf) + ".go"
+		tf, _ := RichString(templateFile).DivideLastOr0('.')
+		tf = RichString(tf).RemoveBeforeLast('/').ToLower()
+		outputFile = (RichString(keys).ToLower() + "_" + tf + ".go").String()
 		Debug("default output now '%s'\n", outputFile)
 	}
 

@@ -27,64 +27,6 @@ func Debug(msg string, args ...interface{}) {
 	}
 }
 
-type RichString string
-
-func (rs RichString) NoDots() RichString {
-	if rs == "" {
-		return ""
-	}
-	s := string(rs)
-	d := strings.IndexByte(s, '.')
-	for d >= 0 {
-		s = s[:d] + s[d+1:]
-		d = strings.IndexByte(s, '.')
-	}
-	return RichString(s)
-}
-
-func (rs RichString) FirstUpper() string {
-	if rs == "" {
-		return ""
-	}
-	s := string(rs)
-	return strings.ToUpper(s[:1]) + s[1:]
-}
-
-func (rs RichString) FirstLower() string {
-	if rs == "" {
-		return ""
-	}
-	s := string(rs)
-	return strings.ToLower(s[:1]) + s[1:]
-}
-
-func (rs RichString) DivideOr0(c byte) (string, string) {
-	s := string(rs)
-	p := strings.LastIndexByte(s, c)
-	if p < 0 {
-		return s, ""
-	}
-	return s[:p], s[p+1:]
-}
-
-func (rs RichString) DivideOr1(c byte) (string, string) {
-	s := string(rs)
-	p := strings.LastIndexByte(s, c)
-	if p < 0 {
-		return "", s
-	}
-	return s[:p], s[p+1:]
-}
-
-func (rs RichString) RemoveBefore(c byte) string {
-	s := string(rs)
-	p := strings.LastIndexByte(s, c)
-	if p < 0 {
-		return s
-	}
-	return s[p+1:]
-}
-
 //-------------------------------------------------------------------------------------------------
 
 func FindTemplateArg(tpl string, args []string) (string, []string) {
