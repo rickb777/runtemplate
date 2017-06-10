@@ -342,32 +342,3 @@ func (mm TXIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	return b
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// Lock Accessors
-
-// Lock locks the map for writing. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
-func (mm TXIntIntMap) Lock() {
-	mm.s.Lock()
-}
-
-// Unlock unlocks the map's write-lock.
-func (mm TXIntIntMap) Unlock() {
-	mm.s.Unlock()
-}
-
-// RLock locks the map for reading. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
-func (mm TXIntIntMap) RLock() {
-	mm.s.RLock()
-}
-
-// RUnlock unlocks the map's read-lock.
-func (mm TXIntIntMap) RUnlock() {
-	mm.s.RLock()
-}

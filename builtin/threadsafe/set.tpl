@@ -552,32 +552,3 @@ func (set {{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 	return strings
 }
 {{end}}
-
-//-------------------------------------------------------------------------------------------------
-// Lock Accessors
-
-// Lock locks the set for writing. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
-func (set {{.UPrefix}}{{.UType}}Set) Lock() {
-	set.s.Lock()
-}
-
-// Unlock unlocks the set's write-lock.
-func (set {{.UPrefix}}{{.UType}}Set) Unlock() {
-	set.s.Unlock()
-}
-
-// RLock locks the set for reading. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
-func (set {{.UPrefix}}{{.UType}}Set) RLock() {
-	set.s.RLock()
-}
-
-// RUnlock unlocks the set's read-lock.
-func (set {{.UPrefix}}{{.UType}}Set) RUnlock() {
-	set.s.RLock()
-}

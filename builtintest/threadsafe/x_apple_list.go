@@ -572,32 +572,3 @@ func (list *XAppleList) Equals(other *XAppleList) bool {
 }
 
 
-
-//-------------------------------------------------------------------------------------------------
-// Lock Accessors
-
-// Lock locks the list for writing. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
-func (list XAppleList) Lock() {
-	list.s.Lock()
-}
-
-// Unlock unlocks the list's write-lock.
-func (list XAppleList) Unlock() {
-	list.s.Unlock()
-}
-
-// RLock locks the list for reading. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
-func (list XAppleList) RLock() {
-	list.s.RLock()
-}
-
-// RUnlock unlocks the list's read-lock.
-func (list XAppleList) RUnlock() {
-	list.s.RLock()
-}

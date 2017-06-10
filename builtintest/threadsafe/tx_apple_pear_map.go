@@ -281,32 +281,3 @@ func (mm TXApplePearMap) Clone() TXApplePearMap {
 }
 
 
-
-//-------------------------------------------------------------------------------------------------
-// Lock Accessors
-
-// Lock locks the map for writing. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
-func (mm TXApplePearMap) Lock() {
-	mm.s.Lock()
-}
-
-// Unlock unlocks the map's write-lock.
-func (mm TXApplePearMap) Unlock() {
-	mm.s.Unlock()
-}
-
-// RLock locks the map for reading. You can use this if the values are themselves datastructures
-// that need to be restricted within the same lock.
-//
-// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
-func (mm TXApplePearMap) RLock() {
-	mm.s.RLock()
-}
-
-// RUnlock unlocks the map's read-lock.
-func (mm TXApplePearMap) RUnlock() {
-	mm.s.RLock()
-}

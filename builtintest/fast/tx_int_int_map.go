@@ -299,5 +299,3 @@ func (mm TXIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	return b
 }
 
-
-//-------------------------------------------------------------------------------------------------
