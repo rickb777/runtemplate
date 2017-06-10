@@ -295,9 +295,10 @@ func (set XStringSet) Exists(fn func(string) bool) bool {
 }
 
 // Foreach iterates over stringSet and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (set XStringSet) Foreach(fn func(string)) {
-	set.s.RLock()
-	defer set.s.RUnlock()
+	set.s.Lock()
+	defer set.s.Unlock()
 
 	for v, _ := range set.m {
 		fn(v)
@@ -494,7 +495,7 @@ func (set XStringSet) StringMap() map[string]bool {
 // Lock locks the set for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (set XStringSet) Lock() {
 	set.s.Lock()
 }
@@ -507,7 +508,7 @@ func (set XStringSet) Unlock() {
 // RLock locks the set for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (set XStringSet) RLock() {
 	set.s.RLock()
 }

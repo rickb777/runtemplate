@@ -259,6 +259,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 }
 
 // Foreach iterates over {{.Type}}Set and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 
 	for v, _ := range set.m {

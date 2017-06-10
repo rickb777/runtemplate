@@ -254,6 +254,7 @@ func (set XAppleSet) Exists(fn func(Apple) bool) bool {
 }
 
 // Foreach iterates over AppleSet and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (set XAppleSet) Foreach(fn func(Apple)) {
 
 	for v, _ := range set.m {

@@ -191,6 +191,7 @@ func (list *XStringList) Forall(fn func(string) bool) bool {
 }
 
 // Foreach iterates over XStringList and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (list *XStringList) Foreach(fn func(string)) {
 
 	for _, v := range list.m {

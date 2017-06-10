@@ -189,6 +189,7 @@ func (list *XAppleList) Forall(fn func(Apple) bool) bool {
 }
 
 // Foreach iterates over XAppleList and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (list *XAppleList) Foreach(fn func(Apple)) {
 
 	for _, v := range list.m {

@@ -75,6 +75,18 @@ func (mm TXApplePearMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TXApplePearMap) Values() []Pear {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	var s []Pear
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TXApplePearMap) ToSlice() []TXApplePearTuple {
 	mm.s.RLock()
@@ -178,6 +190,17 @@ func (mm TXApplePearMap) DropWhere(fn func(Apple, Pear) bool) TXApplePearTuples 
 	return removed
 }
 
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm TXApplePearMap) Foreach(fn func(Apple, Pear)) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	for k, v := range mm.m {
+		fn(k, v)
+	}
+}
+
 // Forall applies a predicate function to every element in the map. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
@@ -265,7 +288,7 @@ func (mm TXApplePearMap) Clone() TXApplePearMap {
 // Lock locks the map for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (mm TXApplePearMap) Lock() {
 	mm.s.Lock()
 }
@@ -278,7 +301,7 @@ func (mm TXApplePearMap) Unlock() {
 // RLock locks the map for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (mm TXApplePearMap) RLock() {
 	mm.s.RLock()
 }

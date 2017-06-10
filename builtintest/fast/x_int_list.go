@@ -191,6 +191,7 @@ func (list *XIntList) Forall(fn func(int) bool) bool {
 }
 
 // Foreach iterates over XIntList and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (list *XIntList) Foreach(fn func(int)) {
 
 	for _, v := range list.m {

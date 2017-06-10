@@ -220,9 +220,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
 }
 
 // Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
-	list.s.RLock()
-	defer list.s.RUnlock()
+	list.s.Lock()
+	defer list.s.Unlock()
 
 	for _, v := range list.m {
 		fn(v)
@@ -710,7 +711,7 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(pfx, mid, sfx string) *byt
 // Lock locks the list for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (list {{.UPrefix}}{{.UType}}List) Lock() {
 	list.s.Lock()
 }
@@ -723,7 +724,7 @@ func (list {{.UPrefix}}{{.UType}}List) Unlock() {
 // RLock locks the list for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (list {{.UPrefix}}{{.UType}}List) RLock() {
 	list.s.RLock()
 }

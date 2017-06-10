@@ -256,6 +256,7 @@ func (set XStringSet) Exists(fn func(string) bool) bool {
 }
 
 // Foreach iterates over stringSet and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (set XStringSet) Foreach(fn func(string)) {
 
 	for v, _ := range set.m {

@@ -216,9 +216,10 @@ func (list *XIntList) Forall(fn func(int) bool) bool {
 }
 
 // Foreach iterates over XIntList and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (list *XIntList) Foreach(fn func(int)) {
-	list.s.RLock()
-	defer list.s.RUnlock()
+	list.s.Lock()
+	defer list.s.Unlock()
 
 	for _, v := range list.m {
 		fn(v)
@@ -660,7 +661,7 @@ func (list XIntList) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 // Lock locks the list for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (list XIntList) Lock() {
 	list.s.Lock()
 }
@@ -673,7 +674,7 @@ func (list XIntList) Unlock() {
 // RLock locks the list for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (list XIntList) RLock() {
 	list.s.RLock()
 }

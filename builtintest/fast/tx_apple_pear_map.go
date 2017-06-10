@@ -70,6 +70,16 @@ func (mm TXApplePearMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TXApplePearMap) Values() []Pear {
+
+	var s []Pear
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TXApplePearMap) ToSlice() []TXApplePearTuple {
 
@@ -153,6 +163,15 @@ func (mm TXApplePearMap) DropWhere(fn func(Apple, Pear) bool) TXApplePearTuples 
 		}
 	}
 	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm TXApplePearMap) Foreach(fn func(Apple, Pear)) {
+
+	for k, v := range mm.m {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

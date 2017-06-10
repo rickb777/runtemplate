@@ -195,6 +195,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
 }
 
 // Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 
 	for _, v := range list.m {

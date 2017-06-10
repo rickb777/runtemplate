@@ -80,6 +80,18 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() []{{.PType}} {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	var s []{{.PType}}
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 	mm.s.RLock()
@@ -181,6 +193,17 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PTy
 		}
 	}
 	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(fn func({{.PKey}}, {{.PType}})) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	for k, v := range mm.m {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -330,7 +353,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 // Lock locks the map for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Lock() {
 	mm.s.Lock()
 }
@@ -343,7 +366,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Unlock() {
 // RLock locks the map for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) RLock() {
 	mm.s.RLock()
 }

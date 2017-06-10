@@ -75,6 +75,16 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() []{{.PType}} {
+
+	var s []{{.PType}}
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 
@@ -158,6 +168,15 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PTy
 		}
 	}
 	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(fn func({{.PKey}}, {{.PType}})) {
+
+	for k, v := range mm.m {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

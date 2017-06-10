@@ -70,6 +70,16 @@ func (mm TXStringStringMap) Keys() []string {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TXStringStringMap) Values() []string {
+
+	var s []string
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TXStringStringMap) ToSlice() []TXStringStringTuple {
 
@@ -153,6 +163,15 @@ func (mm TXStringStringMap) DropWhere(fn func(string, string) bool) TXStringStri
 		}
 	}
 	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm TXStringStringMap) Foreach(fn func(string, string)) {
+
+	for k, v := range mm.m {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,

@@ -256,6 +256,7 @@ func (set XIntSet) Exists(fn func(int) bool) bool {
 }
 
 // Foreach iterates over intSet and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (set XIntSet) Foreach(fn func(int)) {
 
 	for v, _ := range set.m {

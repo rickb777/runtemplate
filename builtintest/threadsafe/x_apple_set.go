@@ -293,9 +293,10 @@ func (set XAppleSet) Exists(fn func(Apple) bool) bool {
 }
 
 // Foreach iterates over AppleSet and executes the passed func against each element.
+// The function can safely alter the values via side-effects.
 func (set XAppleSet) Foreach(fn func(Apple)) {
-	set.s.RLock()
-	defer set.s.RUnlock()
+	set.s.Lock()
+	defer set.s.Unlock()
 
 	for v, _ := range set.m {
 		fn(v)
@@ -429,7 +430,7 @@ func (set XAppleSet) Equals(other XAppleSet) bool {
 // Lock locks the set for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (set XAppleSet) Lock() {
 	set.s.Lock()
 }
@@ -442,7 +443,7 @@ func (set XAppleSet) Unlock() {
 // RLock locks the set for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (set XAppleSet) RLock() {
 	set.s.RLock()
 }

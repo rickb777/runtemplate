@@ -77,6 +77,18 @@ func (mm TXIntIntMap) Keys() []int {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TXIntIntMap) Values() []int {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	var s []int
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TXIntIntMap) ToSlice() []TXIntIntTuple {
 	mm.s.RLock()
@@ -178,6 +190,17 @@ func (mm TXIntIntMap) DropWhere(fn func(int, int) bool) TXIntIntTuples {
 		}
 	}
 	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm TXIntIntMap) Foreach(fn func(int, int)) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	for k, v := range mm.m {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -326,7 +349,7 @@ func (mm TXIntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 // Lock locks the map for writing. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this write lock then attempt any read-locked operations (e.g. Get).
 func (mm TXIntIntMap) Lock() {
 	mm.s.Lock()
 }
@@ -339,7 +362,7 @@ func (mm TXIntIntMap) Unlock() {
 // RLock locks the map for reading. You can use this if the values are themselves datastructures
 // that need to be restricted within the same lock.
 //
-// Do not forget to unlock!
+// Do not forget to unlock! Also, do not set this read lock then attempt any write-locked operations (e.g. Put).
 func (mm TXIntIntMap) RLock() {
 	mm.s.RLock()
 }
