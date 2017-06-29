@@ -289,6 +289,21 @@ func (list P1IntList) DropWhile(p func(*int) bool) P1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first int that returns true for some function.
+// False is returned if none match.
+func (list P1IntList) Find(fn func(*int) bool) (*int, bool) {
+
+	for _, v := range list {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+	return nil, false
+
+}
+
 // Filter returns a new P1IntList whose elements return true for func.
 func (list P1IntList) Filter(fn func(*int) bool) P1IntList {
 	result := newP1IntList(0, list.Len()/2)

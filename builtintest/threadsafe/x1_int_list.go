@@ -393,6 +393,24 @@ func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first int that returns true for some function.
+// False is returned if none match.
+func (list X1IntList) Find(fn func(int) bool) (int, bool) {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range list.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty int
+	return empty, false
+
+}
+
 // Filter returns a new X1IntList whose elements return true for func.
 func (list *X1IntList) Filter(fn func(int) bool) *X1IntList {
 	list.s.RLock()

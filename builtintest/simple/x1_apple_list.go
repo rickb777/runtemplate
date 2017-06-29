@@ -287,6 +287,22 @@ func (list X1AppleList) DropWhile(p func(Apple) bool) X1AppleList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first Apple that returns true for some function.
+// False is returned if none match.
+func (list X1AppleList) Find(fn func(Apple) bool) (Apple, bool) {
+
+	for _, v := range list {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty Apple
+	return empty, false
+
+}
+
 // Filter returns a new X1AppleList whose elements return true for func.
 func (list X1AppleList) Filter(fn func(Apple) bool) X1AppleList {
 	result := newX1AppleList(0, list.Len()/2)

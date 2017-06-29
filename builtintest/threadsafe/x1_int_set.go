@@ -307,6 +307,24 @@ func (set X1IntSet) Foreach(fn func(int)) {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first int that returns true for some function.
+// False is returned if none match.
+func (set X1IntSet) Find(fn func(int) bool) (int, bool) {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v, _ := range set.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty int
+	return empty, false
+
+}
+
 // Filter returns a new X1IntSet whose elements return true for func.
 func (set X1IntSet) Filter(fn func(int) bool) X1IntSet {
 	result := NewX1IntSet()

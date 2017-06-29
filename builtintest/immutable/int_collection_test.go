@@ -95,6 +95,34 @@ func testIntForall(t *testing.T, a X1IntCollection) {
 	}
 }
 
+func TestIntFind(t *testing.T) {
+	testIntFind(t, NewX1IntList(1, 2, 3, 4))
+	testIntFind(t, NewX1IntSet(1, 2, 3, 4))
+}
+
+func testIntFind(t *testing.T, a X1IntCollection) {
+	b, e := a.Find(func(v int) bool {
+		return v > 2
+	})
+
+	if !e {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	if b != 3 {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	c, e := a.Find(func(v int) bool {
+		return v > 20
+	})
+
+	if e {
+		t.Errorf("Expected false but got '%+v'", c)
+	}
+}
+
+
 func TestIntCountBy(t *testing.T) {
 	testIntCountBy(t, NewX1IntSet(1, 2, 3))
 	testIntCountBy(t, NewX1IntList(1, 2, 3))

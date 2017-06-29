@@ -266,6 +266,22 @@ func (set X2EmailSet) Foreach(fn func(testtypes.Email)) {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first testtypes.Email that returns true for some function.
+// False is returned if none match.
+func (set X2EmailSet) Find(fn func(testtypes.Email) bool) (testtypes.Email, bool) {
+
+	for v, _ := range set.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty testtypes.Email
+	return empty, false
+
+}
+
 // Filter returns a new X2EmailSet whose elements return true for func.
 func (set X2EmailSet) Filter(fn func(testtypes.Email) bool) X2EmailSet {
 	result := NewX2EmailSet()

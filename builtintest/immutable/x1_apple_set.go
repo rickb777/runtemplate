@@ -264,6 +264,22 @@ func (set X1AppleSet) Foreach(fn func(Apple)) {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first Apple that returns true for some function.
+// False is returned if none match.
+func (set X1AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
+
+	for v, _ := range set.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty Apple
+	return empty, false
+
+}
+
 // Filter returns a new X1AppleSet whose elements return true for func.
 func (set X1AppleSet) Filter(fn func(Apple) bool) X1AppleSet {
 	result := NewX1AppleSet()

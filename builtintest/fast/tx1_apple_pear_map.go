@@ -203,6 +203,19 @@ func (mm TX1ApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
 	return false
 }
 
+// Find returns the first Pear that returns true for some function.
+// False is returned if none match.
+func (mm TX1ApplePearMap) Find(fn func(Apple, Pear) bool) (TX1ApplePearTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1ApplePearTuple{k, v}, true
+		}
+	}
+
+	return TX1ApplePearTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1ApplePearMap) Filter(fn func(Apple, Pear) bool) TX1ApplePearMap {

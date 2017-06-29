@@ -205,6 +205,19 @@ func (mm TX1IntIntMap) Exists(fn func(int, int) bool) bool {
 	return false
 }
 
+// Find returns the first int that returns true for some function.
+// False is returned if none match.
+func (mm TX1IntIntMap) Find(fn func(int, int) bool) (TX1IntIntTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1IntIntTuple{k, v}, true
+		}
+	}
+
+	return TX1IntIntTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1IntIntMap) Filter(fn func(int, int) bool) TX1IntIntMap {

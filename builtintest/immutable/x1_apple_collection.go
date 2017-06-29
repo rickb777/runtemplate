@@ -38,6 +38,10 @@ type X1AppleCollection interface {
 	// Foreach iterates over X1AppleCollection and executes the passed func against each element.
 	Foreach(fn func(Apple))
 
+    // Find returns the first Apple that returns true for some function.
+    // False is returned if none match.
+    Find(fn func(Apple) bool) (Apple, bool)
+
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan Apple

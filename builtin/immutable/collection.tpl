@@ -67,6 +67,10 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// Foreach iterates over {{.UPrefix}}{{.UType}}Collection and executes the passed func against each element.
 	Foreach(fn func({{.PType}}))
 
+    // Find returns the first {{.Type}} that returns true for some function.
+    // False is returned if none match.
+    Find(fn func({{.PType}}) bool) ({{.PType}}, bool)
+
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan {{.PType}}

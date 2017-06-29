@@ -239,6 +239,21 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}
 	return false
 }
 
+// Find returns the first {{.Type}} that returns true for some function.
+// False is returned if none match.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v}, true
+		}
+	}
+
+	return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Map {

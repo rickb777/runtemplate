@@ -270,6 +270,21 @@ func (list P2IntList) DropWhile(p func(*big.Int) bool) P2IntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first big.Int that returns true for some function.
+// False is returned if none match.
+func (list P2IntList) Find(fn func(*big.Int) bool) (*big.Int, bool) {
+
+	for _, v := range list {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+	return nil, false
+
+}
+
 // Filter returns a new P2IntList whose elements return true for func.
 func (list P2IntList) Filter(fn func(*big.Int) bool) P2IntList {
 	result := newP2IntList(0, list.Len()/2)

@@ -236,6 +236,21 @@ func (mm TX2AppleIntMap) Exists(fn func(Apple, big.Int) bool) bool {
 	return false
 }
 
+// Find returns the first big.Int that returns true for some function.
+// False is returned if none match.
+func (mm TX2AppleIntMap) Find(fn func(Apple, big.Int) bool) (TX2AppleIntTuple, bool) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX2AppleIntTuple{k, v}, true
+		}
+	}
+
+	return TX2AppleIntTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX2AppleIntMap) Filter(fn func(Apple, big.Int) bool) TX2AppleIntMap {

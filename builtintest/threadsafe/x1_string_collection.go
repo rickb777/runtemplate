@@ -60,6 +60,10 @@ type X1StringCollection interface {
 	// Foreach iterates over X1StringCollection and executes the passed func against each element.
 	Foreach(fn func(string))
 
+    // Find returns the first string that returns true for some function.
+    // False is returned if none match.
+    Find(fn func(string) bool) (string, bool)
+
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan string

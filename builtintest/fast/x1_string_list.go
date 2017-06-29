@@ -348,6 +348,22 @@ func (list *X1StringList) DropWhile(p func(string) bool) *X1StringList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first string that returns true for some function.
+// False is returned if none match.
+func (list X1StringList) Find(fn func(string) bool) (string, bool) {
+
+	for _, v := range list.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty string
+	return empty, false
+
+}
+
 // Filter returns a new X1StringList whose elements return true for func.
 func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
 

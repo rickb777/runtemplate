@@ -269,6 +269,24 @@ func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first {{.Type}} that returns true for some function.
+// False is returned if none match.
+func (set {{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
+
+	for v, _ := range set.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+{{if eq .TypeStar "*"}}
+	return nil, false
+{{else}}
+    var empty {{.Type}}
+	return empty, false
+{{end}}
+}
+
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
 func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()

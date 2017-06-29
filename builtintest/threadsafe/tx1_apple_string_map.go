@@ -234,6 +234,21 @@ func (mm TX1AppleStringMap) Exists(fn func(Apple, string) bool) bool {
 	return false
 }
 
+// Find returns the first string that returns true for some function.
+// False is returned if none match.
+func (mm TX1AppleStringMap) Find(fn func(Apple, string) bool) (TX1AppleStringTuple, bool) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1AppleStringTuple{k, v}, true
+		}
+	}
+
+	return TX1AppleStringTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1AppleStringMap) Filter(fn func(Apple, string) bool) TX1AppleStringMap {

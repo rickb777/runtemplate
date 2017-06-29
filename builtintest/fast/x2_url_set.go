@@ -268,6 +268,22 @@ func (set X2URLSet) Foreach(fn func(url.URL)) {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first url.URL that returns true for some function.
+// False is returned if none match.
+func (set X2URLSet) Find(fn func(url.URL) bool) (url.URL, bool) {
+
+	for v, _ := range set.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty url.URL
+	return empty, false
+
+}
+
 // Filter returns a new X2URLSet whose elements return true for func.
 func (set X2URLSet) Filter(fn func(url.URL) bool) X2URLSet {
 	result := NewX2URLSet()

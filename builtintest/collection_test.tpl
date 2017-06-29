@@ -95,6 +95,34 @@ func test{{.UType}}Forall(t *testing.T, a X1{{.UType}}Collection) {
 	}
 }
 
+func Test{{.UType}}Find(t *testing.T) {
+	test{{.UType}}Find(t, NewX1{{.UType}}List(1, 2, 3, 4))
+	test{{.UType}}Find(t, NewX1{{.UType}}Set(1, 2, 3, 4))
+}
+
+func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection) {
+	b, e := a.Find(func(v int) bool {
+		return v > 2
+	})
+
+	if !e {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	if b != 3 {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
+	}
+
+	c, e := a.Find(func(v int) bool {
+		return v > 20
+	})
+
+	if e {
+		t.Errorf("Expected false but got '%+v'", c)
+	}
+}
+
+
 func Test{{.UType}}CountBy(t *testing.T) {
 	test{{.UType}}CountBy(t, NewX1{{.UType}}Set(1, 2, 3))
 	test{{.UType}}CountBy(t, NewX1{{.UType}}List(1, 2, 3))

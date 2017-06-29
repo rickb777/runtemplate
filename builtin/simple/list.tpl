@@ -294,6 +294,24 @@ func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPr
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first {{.Type}} that returns true for some function.
+// False is returned if none match.
+func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
+
+	for _, v := range list {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+{{if eq .TypeStar "*"}}
+	return nil, false
+{{else}}
+    var empty {{.Type}}
+	return empty, false
+{{end}}
+}
+
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
 func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)

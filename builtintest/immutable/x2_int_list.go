@@ -313,6 +313,22 @@ func (list *X2IntList) DropWhile(p func(big.Int) bool) *X2IntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first big.Int that returns true for some function.
+// False is returned if none match.
+func (list X2IntList) Find(fn func(big.Int) bool) (big.Int, bool) {
+
+	for _, v := range list.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty big.Int
+	return empty, false
+
+}
+
 // Filter returns a new X2IntList whose elements return true for func.
 func (list *X2IntList) Filter(fn func(big.Int) bool) *X2IntList {
 

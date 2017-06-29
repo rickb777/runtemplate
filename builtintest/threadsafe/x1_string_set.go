@@ -307,6 +307,24 @@ func (set X1StringSet) Foreach(fn func(string)) {
 
 //-------------------------------------------------------------------------------------------------
 
+// Find returns the first string that returns true for some function.
+// False is returned if none match.
+func (set X1StringSet) Find(fn func(string) bool) (string, bool) {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v, _ := range set.m {
+		if fn(v) {
+			return v, true
+		}
+	}
+
+
+    var empty string
+	return empty, false
+
+}
+
 // Filter returns a new X1StringSet whose elements return true for func.
 func (set X1StringSet) Filter(fn func(string) bool) X1StringSet {
 	result := NewX1StringSet()
