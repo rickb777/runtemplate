@@ -5,7 +5,7 @@ package simple
 //)
 
 //func TestSxToSlice(t *testing.T) {
-//	a := NewSXIntIntMap1(1, 2)
+//	a := NewSX1IntIntMap1(1, 2)
 //	s := a.ToSlice()
 //
 //	if a.Size() != 1 {
@@ -18,7 +18,7 @@ package simple
 //}
 //
 //func TestSxRemove(t *testing.T) {
-//	a := NewSXIntIntMap1(3, 1)
+//	a := NewSX1IntIntMap1(3, 1)
 //
 //	a.Put(1, 5)
 //	a.Put(2, 5)
@@ -41,7 +41,7 @@ package simple
 //}
 //
 //func TestSxContainsKey(t *testing.T) {
-//	a := NewSXIntIntMap1(13, 1)
+//	a := NewSX1IntIntMap1(13, 1)
 //
 //	a.Put(71, 13)
 //
@@ -63,7 +63,7 @@ package simple
 //}
 //
 //func TestSxContainsAllKeys(t *testing.T) {
-//	a := NewSXIntIntMap1(8, 6)
+//	a := NewSX1IntIntMap1(8, 6)
 //
 //	a.Put(1, 10)
 //	a.Put(2, 11)
@@ -78,7 +78,7 @@ package simple
 //}
 //
 //func TestSxCardinality(t *testing.T) {
-//	a := NewSXIntIntMap()
+//	a := NewSX1IntIntMap()
 //
 //	if a.Size() != 0 {
 //		t.Errorf("Expected 0 but got %d", a.Size())
@@ -104,8 +104,8 @@ package simple
 //}
 //
 //func TestSxEquals(t *testing.T) {
-//	a := NewSXIntIntMap()
-//	b := NewSXIntIntMap()
+//	a := NewSX1IntIntMap()
+//	b := NewSX1IntIntMap()
 //
 //	if !a.Equals(b) {
 //		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
@@ -147,7 +147,7 @@ package simple
 //}
 //
 //func TestSxClone(t *testing.T) {
-//	a := NewSXIntIntMap()
+//	a := NewSX1IntIntMap()
 //	a.Put(1, 9)
 //	a.Put(2, 8)
 //

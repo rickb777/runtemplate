@@ -1,3 +1,6 @@
+// Generated from {{.TemplateFile}} with Type={{.PType}}
+// options: Mutable:{{.Mutable}}
+
 package {{.Package}}
 
 import (
@@ -6,7 +9,7 @@ import (
 )
 
 func TestNew{{.UType}}Set(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3)
+	a := NewX1{{.UType}}Set(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -22,7 +25,7 @@ func TestNew{{.UType}}Set(t *testing.T) {
 }
 
 func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
-	a := NewX{{.UType}}Set(7, 5, 3, 7)
+	a := NewX1{{.UType}}Set(7, 5, 3, 7)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -35,7 +38,7 @@ func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
 
 {{if .Mutable}}
 func TestMutable{{.UType}}SetRemove(t *testing.T) {
-	a := NewX{{.UType}}Set(6, 3, 1)
+	a := NewX1{{.UType}}Set(6, 3, 1)
 
 	a.Remove(3)
 
@@ -57,7 +60,7 @@ func TestMutable{{.UType}}SetRemove(t *testing.T) {
 
 {{end}}
 func Test{{.UType}}SetContainsAll(t *testing.T) {
-	a := NewX{{.UType}}Set(8, 6, 7, 5, 3, 0, 9)
+	a := NewX1{{.UType}}Set(8, 6, 7, 5, 3, 0, 9)
 
 	if !a.ContainsAll(8, 6, 7, 5, 3, 0, 9) {
 		t.Error("should contain phone number")
@@ -70,7 +73,7 @@ func Test{{.UType}}SetContainsAll(t *testing.T) {
 
 {{if .Mutable}}
 func TestMutable{{.UType}}SetCardinality(t *testing.T) {
-	a := NewX{{.UType}}Set()
+	a := NewX1{{.UType}}Set()
 
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
@@ -100,9 +103,9 @@ func TestMutable{{.UType}}SetCardinality(t *testing.T) {
 
 {{end}}
 func Test{{.UType}}SetIsSubset(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3, 5, 7)
-	b := NewX{{.UType}}Set(3, 5, 7)
-	c := NewX{{.UType}}Set(3, 5, 7, 72)
+	a := NewX1{{.UType}}Set(1, 2, 3, 5, 7)
+	b := NewX1{{.UType}}Set(3, 5, 7)
+	c := NewX1{{.UType}}Set(3, 5, 7, 72)
 
 	if !b.IsSubset(a) {
 		t.Errorf("Expected '%+v' to be a subset of '%+v'", b, a)
@@ -114,9 +117,9 @@ func Test{{.UType}}SetIsSubset(t *testing.T) {
 }
 
 func Test{{.UType}}SetIsSuperSet(t *testing.T) {
-	a := NewX{{.UType}}Set(9, 5, 2, 1, 11)
-	b := NewX{{.UType}}Set(5, 2, 11)
-	c := NewX{{.UType}}Set(5, 2, 11, 42)
+	a := NewX1{{.UType}}Set(9, 5, 2, 1, 11)
+	b := NewX1{{.UType}}Set(5, 2, 11)
+	c := NewX1{{.UType}}Set(5, 2, 11, 42)
 
 	if !a.IsSuperset(b) {
 		t.Errorf("Expected '%+v' to be a superset of '%+v'", a, b)
@@ -128,9 +131,9 @@ func Test{{.UType}}SetIsSuperSet(t *testing.T) {
 }
 
 func Test{{.UType}}SetUnion(t *testing.T) {
-	a := NewX{{.UType}}Set()
+	a := NewX1{{.UType}}Set()
 
-	b := NewX{{.UType}}Set(1, 2, 3, 4, 5)
+	b := NewX1{{.UType}}Set(1, 2, 3, 4, 5)
 
 	c := a.Union(b)
 
@@ -138,14 +141,14 @@ func Test{{.UType}}SetUnion(t *testing.T) {
 		t.Errorf("Expected 5 but got %d", c.Size())
 	}
 
-	d := NewX{{.UType}}Set(10, 14, 0)
+	d := NewX1{{.UType}}Set(10, 14, 0)
 
 	e := c.Union(d)
 	if e.Size() != 8 {
 		t.Errorf("Expected 8 but got %d", e.Size())
 	}
 
-	f := NewX{{.UType}}Set(14, 3)
+	f := NewX1{{.UType}}Set(14, 3)
 
 	g := f.Union(e)
 	if g.Size() != 8 {
@@ -154,11 +157,11 @@ func Test{{.UType}}SetUnion(t *testing.T) {
 }
 
 func Test{{.UType}}SetIntersection(t *testing.T) {
-	a1 := NewX{{.UType}}Set(1, 3, 5, 7)
-	a2 := NewX{{.UType}}Set(1, 3, 5, 7, 10)
+	a1 := NewX1{{.UType}}Set(1, 3, 5, 7)
+	a2 := NewX1{{.UType}}Set(1, 3, 5, 7, 10)
 
-	b1 := NewX{{.UType}}Set(2, 4, 6)
-	b2 := NewX{{.UType}}Set(2, 4, 6, 10)
+	b1 := NewX1{{.UType}}Set(2, 4, 6)
+	b2 := NewX1{{.UType}}Set(2, 4, 6, 10)
 
 	c1 := a1.Intersect(b1)
 	c2 := b1.Intersect(a1)
@@ -180,9 +183,9 @@ func Test{{.UType}}SetIntersection(t *testing.T) {
 }
 
 func TestMutable{{.UType}}SetDifference(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3)
+	a := NewX1{{.UType}}Set(1, 2, 3)
 
-	b := NewX{{.UType}}Set(1, 3, 4, 5, 6, 99)
+	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.Difference(b)
 
@@ -192,9 +195,9 @@ func TestMutable{{.UType}}SetDifference(t *testing.T) {
 }
 
 func TestMutable{{.UType}}SetSymmetricDifference(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3, 45)
+	a := NewX1{{.UType}}Set(1, 2, 3, 45)
 
-	b := NewX{{.UType}}Set(1, 3, 4, 5, 6, 99)
+	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.SymmetricDifference(b)
 
@@ -204,15 +207,15 @@ func TestMutable{{.UType}}SetSymmetricDifference(t *testing.T) {
 }
 
 func TestMutable{{.UType}}SetEqual(t *testing.T) {
-	a := NewX{{.UType}}Set()
-	b := NewX{{.UType}}Set()
+	a := NewX1{{.UType}}Set()
+	b := NewX1{{.UType}}Set()
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
-	c := NewX{{.UType}}Set(1, 3, 5, 6, 8)
-	d := NewX{{.UType}}Set(1, 3, 5, 6, 9)
+	c := NewX1{{.UType}}Set(1, 3, 5, 6, 8)
+	d := NewX1{{.UType}}Set(1, 3, 5, 6, 9)
 
 	if c.Equals(d) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", c, d)
@@ -220,9 +223,9 @@ func TestMutable{{.UType}}SetEqual(t *testing.T) {
 }
 
 func TestMutable{{.UType}}SetSend(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
-	b := BuildX{{.UType}}SetFromChan(a.Send())
+	b := BuildX1{{.UType}}SetFromChan(a.Send())
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
@@ -230,35 +233,35 @@ func TestMutable{{.UType}}SetSend(t *testing.T) {
 }
 
 func TestMutable{{.UType}}SetFilter(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewX{{.UType}}Set(3, 4)) {
+	if !b.Equals(NewX1{{.UType}}Set(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b)
 	}
 }
 
 func TestMutable{{.UType}}SetPartition(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewX{{.UType}}Set(3, 4)) {
+	if !b.Equals(NewX1{{.UType}}Set(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b)
 	}
 
-	if !c.Equals(NewX{{.UType}}Set(1, 2)) {
+	if !c.Equals(NewX1{{.UType}}Set(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c)
 	}
 }
 
 func TestMutable{{.UType}}SetStringMap(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b := a.StringMap()
 
@@ -272,7 +275,7 @@ func TestMutable{{.UType}}SetStringMap(t *testing.T) {
 
 {{if .Mutable}}
 func TestMutable{{.UType}}SetClear(t *testing.T) {
-	a := NewX{{.UType}}Set(2, 5, 9, 10)
+	a := NewX1{{.UType}}Set(2, 5, 9, 10)
 
 	a.Clear()
 
@@ -282,7 +285,7 @@ func TestMutable{{.UType}}SetClear(t *testing.T) {
 }
 
 func TestMutable{{.UType}}SetClone(t *testing.T) {
-	a := NewX{{.UType}}Set(1, 2)
+	a := NewX1{{.UType}}Set(1, 2)
 
 	b := a.Clone()
 

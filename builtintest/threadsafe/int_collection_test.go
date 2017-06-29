@@ -1,3 +1,6 @@
+// Generated from ../collection_test.tpl with Type=int
+// options: Append:<no value>
+
 package threadsafe
 
 import (
@@ -13,8 +16,8 @@ type Sizer interface {
 }
 
 func TestNewXIntCollection(t *testing.T) {
-	testEmptyIntCollection(t, NewXIntSet())
-	testEmptyIntCollection(t, NewXIntList())
+	testEmptyIntCollection(t, NewX1IntSet())
+	testEmptyIntCollection(t, NewX1IntList())
 }
 
 func testEmptyIntCollection(t *testing.T, a Sizer) {
@@ -30,11 +33,11 @@ func testEmptyIntCollection(t *testing.T, a Sizer) {
 }
 
 func TestIntToSlice(t *testing.T) {
-	testIntToSlice(t, NewXIntSet(1, 2, 3))
-	testIntToSlice(t, NewXIntList(1, 2, 3))
+	testIntToSlice(t, NewX1IntSet(1, 2, 3))
+	testIntToSlice(t, NewX1IntList(1, 2, 3))
 }
 
-func testIntToSlice(t *testing.T, a XIntCollection) {
+func testIntToSlice(t *testing.T, a X1IntCollection) {
 	s := a.ToSlice()
 
 	if a.Size() != 3 {
@@ -47,11 +50,11 @@ func testIntToSlice(t *testing.T, a XIntCollection) {
 }
 
 func TestIntExists(t *testing.T) {
-	testIntExists1(t, NewXIntSet(1, 2, 3))
-	testIntExists1(t, NewXIntList(1, 2, 3))
+	testIntExists1(t, NewX1IntSet(1, 2, 3))
+	testIntExists1(t, NewX1IntList(1, 2, 3))
 }
 
-func testIntExists1(t *testing.T, a XIntCollection) {
+func testIntExists1(t *testing.T, a X1IntCollection) {
 	has2 := a.Exists(func(v int) bool {
 		return v > 2
 	})
@@ -70,11 +73,11 @@ func testIntExists1(t *testing.T, a XIntCollection) {
 }
 
 func TestIntForall(t *testing.T) {
-	testIntForall(t, NewXIntSet(1, 2, 3))
-	testIntForall(t, NewXIntList(1, 2, 3))
+	testIntForall(t, NewX1IntSet(1, 2, 3))
+	testIntForall(t, NewX1IntList(1, 2, 3))
 }
 
-func testIntForall(t *testing.T, a XIntCollection) {
+func testIntForall(t *testing.T, a X1IntCollection) {
 	has1 := a.Forall(func(v int) bool {
 		return v >= 1
 	})
@@ -93,11 +96,11 @@ func testIntForall(t *testing.T, a XIntCollection) {
 }
 
 func TestIntCountBy(t *testing.T) {
-	testIntCountBy(t, NewXIntSet(1, 2, 3))
-	testIntCountBy(t, NewXIntList(1, 2, 3))
+	testIntCountBy(t, NewX1IntSet(1, 2, 3))
+	testIntCountBy(t, NewX1IntList(1, 2, 3))
 }
 
-func testIntCountBy(t *testing.T, a XIntCollection) {
+func testIntCountBy(t *testing.T, a X1IntCollection) {
 	n := a.CountBy(func(v int) bool {
 		return v >= 2
 	})
@@ -108,11 +111,11 @@ func testIntCountBy(t *testing.T, a XIntCollection) {
 }
 
 func TestIntForeach(t *testing.T) {
-	testIntForeach(t, NewXIntSet(1, 2, 3))
-	testIntForeach(t, NewXIntList(1, 2, 3))
+	testIntForeach(t, NewX1IntSet(1, 2, 3))
+	testIntForeach(t, NewX1IntList(1, 2, 3))
 }
 
-func testIntForeach(t *testing.T, a XIntCollection) {
+func testIntForeach(t *testing.T, a X1IntCollection) {
 	sum1 := int(0)
 	a.Foreach(func(v int) {
 		sum1 += v
@@ -124,11 +127,11 @@ func testIntForeach(t *testing.T, a XIntCollection) {
 }
 
 func TestIntContains(t *testing.T) {
-	testIntContains(t, NewXIntSet(71, 1, 7, 13))
-	testIntContains(t, NewXIntList(71, 1, 7, 13))
+	testIntContains(t, NewX1IntSet(71, 1, 7, 13))
+	testIntContains(t, NewX1IntList(71, 1, 7, 13))
 }
 
-func testIntContains(t *testing.T, a XIntCollection) {
+func testIntContains(t *testing.T, a X1IntCollection) {
 	if !a.Contains(71) {
 		t.Error("should contain 71")
 	}
@@ -151,11 +154,11 @@ func testIntContains(t *testing.T, a XIntCollection) {
 }
 
 func TestIntMinMaxSum(t *testing.T) {
-	testIntMinMaxSum(t, NewXIntSet(10, 71, 3, 7, 13))
-	testIntMinMaxSum(t, NewXIntList(10, 71, 3, 7, 13))
+	testIntMinMaxSum(t, NewX1IntSet(10, 71, 3, 7, 13))
+	testIntMinMaxSum(t, NewX1IntList(10, 71, 3, 7, 13))
 }
 
-func testIntMinMaxSum(t *testing.T, a XIntCollection) {
+func testIntMinMaxSum(t *testing.T, a X1IntCollection) {
 	if a.Min() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Min())
 	}
@@ -168,11 +171,11 @@ func testIntMinMaxSum(t *testing.T, a XIntCollection) {
 }
 
 func TestIntStringer(t *testing.T) {
-	testIntStringer(t, NewXIntSet(10, 71, 3, 7, 13), false)
-	testIntStringer(t, NewXIntList(10, 71, 3, 7, 13), true)
+	testIntStringer(t, NewX1IntSet(10, 71, 3, 7, 13), false)
+	testIntStringer(t, NewX1IntList(10, 71, 3, 7, 13), true)
 }
 
-func testIntStringer(t *testing.T, a XIntCollection, ordered bool) {
+func testIntStringer(t *testing.T, a X1IntCollection, ordered bool) {
 	s1 := a.String()
 	if ordered && s1 != "[10, 71, 3, 7, 13]" {
 		t.Errorf("Got %s for %+v", s1, a)

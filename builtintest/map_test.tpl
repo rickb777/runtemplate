@@ -1,3 +1,6 @@
+// Generated from {{.TemplateFile}} with Type={{.PType}}
+// options: Mutable:{{.Mutable}}
+
 package {{.Package}}
 
 import (
@@ -5,7 +8,7 @@ import (
 )
 
 func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
-	a := NewTX{{.UKey}}{{.UType}}Map1(1, 2)
+	a := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
 	s := a.ToSlice()
 
 	if a.Size() != 1 {
@@ -18,7 +21,7 @@ func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
 }
 
 func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
-	a := NewTX{{.UKey}}{{.UType}}Map(TX{{.UKey}}{{.UType}}Tuple{8, 6}, TX{{.UKey}}{{.UType}}Tuple{1, 10}, TX{{.UKey}}{{.UType}}Tuple{2, 11})
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 6}, TX1{{.UKey}}{{.UType}}Tuple{1, 10}, TX1{{.UKey}}{{.UType}}Tuple{2, 11})
 
 	if !a.ContainsAllKeys(8, 1, 2) {
 		t.Errorf("%+v", a)
@@ -30,8 +33,8 @@ func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
 }
 
 func TestIm{{.UKey}}{{.UType}}MapCardinality(t *testing.T) {
-	a1 := NewTX{{.UKey}}{{.UType}}Map()
-	a2 := NewTX{{.UKey}}{{.UType}}Map1(1, 2)
+	a1 := NewTX1{{.UKey}}{{.UType}}Map()
+	a2 := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
 
 	if a1.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a1.Size())
@@ -43,11 +46,11 @@ func TestIm{{.UKey}}{{.UType}}MapCardinality(t *testing.T) {
 }
 
 func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
-	a1 := NewTX{{.UKey}}{{.UType}}Map()
-	b1 := NewTX{{.UKey}}{{.UType}}Map()
-	a2 := NewTX{{.UKey}}{{.UType}}Map(TX{{.UKey}}{{.UType}}Tuples{}.Append2(10, 4, 8, 19)...)
-	a3 := NewTX{{.UKey}}{{.UType}}Map(TX{{.UKey}}{{.UType}}Tuples{}.Append3(10, 4, 3, 1, 8, 19)...)
-	b3 := NewTX{{.UKey}}{{.UType}}Map(TX{{.UKey}}{{.UType}}Tuples{}.Append3(8, 19, 10, 4, 3, 1)...)
+	a1 := NewTX1{{.UKey}}{{.UType}}Map()
+	b1 := NewTX1{{.UKey}}{{.UType}}Map()
+	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append2(10, 4, 8, 19)...)
+	a3 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(10, 4, 3, 1, 8, 19)...)
+	b3 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(8, 19, 10, 4, 3, 1)...)
 
 	if !a1.Equals(b1) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a1, b1)
@@ -79,9 +82,9 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
 }
 
 //func TestIm{{.UKey}}{{.UType}}MapSend(t *testing.T) {
-//	a := NewTX{{.UKey}}{{.UType}}Map(1, 2, 3, 4)
+//	a := NewTX1{{.UKey}}{{.UType}}Map(1, 2, 3, 4)
 //
-//	b := NewTX{{.UKey}}{{.UType}}Map()
+//	b := NewTX1{{.UKey}}{{.UType}}Map()
 //	for val := range a.Send() {
 //		b.Add(val)
 //	}
@@ -94,7 +97,7 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
 {{if .Mutable}}
 
 func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
-	a := NewTX{{.UKey}}{{.UType}}Map1(3, 1)
+	a := NewTX1{{.UKey}}{{.UType}}Map1(3, 1)
 
 	a.Put(1, 5)
 	a.Put(2, 5)
@@ -117,7 +120,7 @@ func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
 }
 
 func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
-	a := NewTX{{.UKey}}{{.UType}}Map1(13, 1)
+	a := NewTX1{{.UKey}}{{.UType}}Map1(13, 1)
 
 	a.Put(71, 13)
 
@@ -139,7 +142,7 @@ func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
 }
 
 func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
-	a := NewTX{{.UKey}}{{.UType}}Map1(2, 5)
+	a := NewTX1{{.UKey}}{{.UType}}Map1(2, 5)
 
 	a.Clear()
 
@@ -149,8 +152,8 @@ func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
 }
 
 func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
-	a1 := NewTX{{.UKey}}{{.UType}}Map(TX{{.UKey}}{{.UType}}Tuples{}.Append2(1, 9, 2, 8)...)
-	a2 := NewTX{{.UKey}}{{.UType}}Map(TX{{.UKey}}{{.UType}}Tuples{}.Append3(1, 9, 2, 8, 3, 3)...)
+	a1 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append2(1, 9, 2, 8)...)
+	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(1, 9, 2, 8, 3, 3)...)
 
 	b := a1.Clone()
 

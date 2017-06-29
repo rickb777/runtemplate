@@ -1,3 +1,6 @@
+// Generated from ../map_test.tpl with Type=int
+// options: Mutable:true
+
 package threadsafe
 
 import (
@@ -5,7 +8,7 @@ import (
 )
 
 func TestImIntIntMapToSlice(t *testing.T) {
-	a := NewTXIntIntMap1(1, 2)
+	a := NewTX1IntIntMap1(1, 2)
 	s := a.ToSlice()
 
 	if a.Size() != 1 {
@@ -18,7 +21,7 @@ func TestImIntIntMapToSlice(t *testing.T) {
 }
 
 func TestImIntIntMapContainsAllKeys(t *testing.T) {
-	a := NewTXIntIntMap(TXIntIntTuple{8, 6}, TXIntIntTuple{1, 10}, TXIntIntTuple{2, 11})
+	a := NewTX1IntIntMap(TX1IntIntTuple{8, 6}, TX1IntIntTuple{1, 10}, TX1IntIntTuple{2, 11})
 
 	if !a.ContainsAllKeys(8, 1, 2) {
 		t.Errorf("%+v", a)
@@ -30,8 +33,8 @@ func TestImIntIntMapContainsAllKeys(t *testing.T) {
 }
 
 func TestImIntIntMapCardinality(t *testing.T) {
-	a1 := NewTXIntIntMap()
-	a2 := NewTXIntIntMap1(1, 2)
+	a1 := NewTX1IntIntMap()
+	a2 := NewTX1IntIntMap1(1, 2)
 
 	if a1.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a1.Size())
@@ -43,11 +46,11 @@ func TestImIntIntMapCardinality(t *testing.T) {
 }
 
 func TestImIntIntMapEquals(t *testing.T) {
-	a1 := NewTXIntIntMap()
-	b1 := NewTXIntIntMap()
-	a2 := NewTXIntIntMap(TXIntIntTuples{}.Append2(10, 4, 8, 19)...)
-	a3 := NewTXIntIntMap(TXIntIntTuples{}.Append3(10, 4, 3, 1, 8, 19)...)
-	b3 := NewTXIntIntMap(TXIntIntTuples{}.Append3(8, 19, 10, 4, 3, 1)...)
+	a1 := NewTX1IntIntMap()
+	b1 := NewTX1IntIntMap()
+	a2 := NewTX1IntIntMap(TX1IntIntTuples{}.Append2(10, 4, 8, 19)...)
+	a3 := NewTX1IntIntMap(TX1IntIntTuples{}.Append3(10, 4, 3, 1, 8, 19)...)
+	b3 := NewTX1IntIntMap(TX1IntIntTuples{}.Append3(8, 19, 10, 4, 3, 1)...)
 
 	if !a1.Equals(b1) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a1, b1)
@@ -79,9 +82,9 @@ func TestImIntIntMapEquals(t *testing.T) {
 }
 
 //func TestImIntIntMapSend(t *testing.T) {
-//	a := NewTXIntIntMap(1, 2, 3, 4)
+//	a := NewTX1IntIntMap(1, 2, 3, 4)
 //
-//	b := NewTXIntIntMap()
+//	b := NewTX1IntIntMap()
 //	for val := range a.Send() {
 //		b.Add(val)
 //	}
@@ -94,7 +97,7 @@ func TestImIntIntMapEquals(t *testing.T) {
 
 
 func TestMuIntIntMapRemove(t *testing.T) {
-	a := NewTXIntIntMap1(3, 1)
+	a := NewTX1IntIntMap1(3, 1)
 
 	a.Put(1, 5)
 	a.Put(2, 5)
@@ -117,7 +120,7 @@ func TestMuIntIntMapRemove(t *testing.T) {
 }
 
 func TestMuIntIntMapContainsKey(t *testing.T) {
-	a := NewTXIntIntMap1(13, 1)
+	a := NewTX1IntIntMap1(13, 1)
 
 	a.Put(71, 13)
 
@@ -139,7 +142,7 @@ func TestMuIntIntMapContainsKey(t *testing.T) {
 }
 
 func TestMuIntIntMapClear(t *testing.T) {
-	a := NewTXIntIntMap1(2, 5)
+	a := NewTX1IntIntMap1(2, 5)
 
 	a.Clear()
 
@@ -149,8 +152,8 @@ func TestMuIntIntMapClear(t *testing.T) {
 }
 
 func TestMuIntIntMapClone(t *testing.T) {
-	a1 := NewTXIntIntMap(TXIntIntTuples{}.Append2(1, 9, 2, 8)...)
-	a2 := NewTXIntIntMap(TXIntIntTuples{}.Append3(1, 9, 2, 8, 3, 3)...)
+	a1 := NewTX1IntIntMap(TX1IntIntTuples{}.Append2(1, 9, 2, 8)...)
+	a2 := NewTX1IntIntMap(TX1IntIntTuples{}.Append3(1, 9, 2, 8, 3, 3)...)
 
 	b := a1.Clone()
 

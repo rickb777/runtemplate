@@ -1,3 +1,6 @@
+// Generated from ../set_test.tpl with Type=int
+// options: Mutable:true
+
 package fast
 
 import (
@@ -6,7 +9,7 @@ import (
 )
 
 func TestNewIntSet(t *testing.T) {
-	a := NewXIntSet(1, 2, 3)
+	a := NewX1IntSet(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -22,7 +25,7 @@ func TestNewIntSet(t *testing.T) {
 }
 
 func TestNewIntSetNoDuplicate(t *testing.T) {
-	a := NewXIntSet(7, 5, 3, 7)
+	a := NewX1IntSet(7, 5, 3, 7)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -35,7 +38,7 @@ func TestNewIntSetNoDuplicate(t *testing.T) {
 
 
 func TestMutableIntSetRemove(t *testing.T) {
-	a := NewXIntSet(6, 3, 1)
+	a := NewX1IntSet(6, 3, 1)
 
 	a.Remove(3)
 
@@ -57,7 +60,7 @@ func TestMutableIntSetRemove(t *testing.T) {
 
 
 func TestIntSetContainsAll(t *testing.T) {
-	a := NewXIntSet(8, 6, 7, 5, 3, 0, 9)
+	a := NewX1IntSet(8, 6, 7, 5, 3, 0, 9)
 
 	if !a.ContainsAll(8, 6, 7, 5, 3, 0, 9) {
 		t.Error("should contain phone number")
@@ -70,7 +73,7 @@ func TestIntSetContainsAll(t *testing.T) {
 
 
 func TestMutableIntSetCardinality(t *testing.T) {
-	a := NewXIntSet()
+	a := NewX1IntSet()
 
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
@@ -100,9 +103,9 @@ func TestMutableIntSetCardinality(t *testing.T) {
 
 
 func TestIntSetIsSubset(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 5, 7)
-	b := NewXIntSet(3, 5, 7)
-	c := NewXIntSet(3, 5, 7, 72)
+	a := NewX1IntSet(1, 2, 3, 5, 7)
+	b := NewX1IntSet(3, 5, 7)
+	c := NewX1IntSet(3, 5, 7, 72)
 
 	if !b.IsSubset(a) {
 		t.Errorf("Expected '%+v' to be a subset of '%+v'", b, a)
@@ -114,9 +117,9 @@ func TestIntSetIsSubset(t *testing.T) {
 }
 
 func TestIntSetIsSuperSet(t *testing.T) {
-	a := NewXIntSet(9, 5, 2, 1, 11)
-	b := NewXIntSet(5, 2, 11)
-	c := NewXIntSet(5, 2, 11, 42)
+	a := NewX1IntSet(9, 5, 2, 1, 11)
+	b := NewX1IntSet(5, 2, 11)
+	c := NewX1IntSet(5, 2, 11, 42)
 
 	if !a.IsSuperset(b) {
 		t.Errorf("Expected '%+v' to be a superset of '%+v'", a, b)
@@ -128,9 +131,9 @@ func TestIntSetIsSuperSet(t *testing.T) {
 }
 
 func TestIntSetUnion(t *testing.T) {
-	a := NewXIntSet()
+	a := NewX1IntSet()
 
-	b := NewXIntSet(1, 2, 3, 4, 5)
+	b := NewX1IntSet(1, 2, 3, 4, 5)
 
 	c := a.Union(b)
 
@@ -138,14 +141,14 @@ func TestIntSetUnion(t *testing.T) {
 		t.Errorf("Expected 5 but got %d", c.Size())
 	}
 
-	d := NewXIntSet(10, 14, 0)
+	d := NewX1IntSet(10, 14, 0)
 
 	e := c.Union(d)
 	if e.Size() != 8 {
 		t.Errorf("Expected 8 but got %d", e.Size())
 	}
 
-	f := NewXIntSet(14, 3)
+	f := NewX1IntSet(14, 3)
 
 	g := f.Union(e)
 	if g.Size() != 8 {
@@ -154,11 +157,11 @@ func TestIntSetUnion(t *testing.T) {
 }
 
 func TestIntSetIntersection(t *testing.T) {
-	a1 := NewXIntSet(1, 3, 5, 7)
-	a2 := NewXIntSet(1, 3, 5, 7, 10)
+	a1 := NewX1IntSet(1, 3, 5, 7)
+	a2 := NewX1IntSet(1, 3, 5, 7, 10)
 
-	b1 := NewXIntSet(2, 4, 6)
-	b2 := NewXIntSet(2, 4, 6, 10)
+	b1 := NewX1IntSet(2, 4, 6)
+	b2 := NewX1IntSet(2, 4, 6, 10)
 
 	c1 := a1.Intersect(b1)
 	c2 := b1.Intersect(a1)
@@ -180,9 +183,9 @@ func TestIntSetIntersection(t *testing.T) {
 }
 
 func TestMutableIntSetDifference(t *testing.T) {
-	a := NewXIntSet(1, 2, 3)
+	a := NewX1IntSet(1, 2, 3)
 
-	b := NewXIntSet(1, 3, 4, 5, 6, 99)
+	b := NewX1IntSet(1, 3, 4, 5, 6, 99)
 
 	c := a.Difference(b)
 
@@ -192,9 +195,9 @@ func TestMutableIntSetDifference(t *testing.T) {
 }
 
 func TestMutableIntSetSymmetricDifference(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 45)
+	a := NewX1IntSet(1, 2, 3, 45)
 
-	b := NewXIntSet(1, 3, 4, 5, 6, 99)
+	b := NewX1IntSet(1, 3, 4, 5, 6, 99)
 
 	c := a.SymmetricDifference(b)
 
@@ -204,15 +207,15 @@ func TestMutableIntSetSymmetricDifference(t *testing.T) {
 }
 
 func TestMutableIntSetEqual(t *testing.T) {
-	a := NewXIntSet()
-	b := NewXIntSet()
+	a := NewX1IntSet()
+	b := NewX1IntSet()
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
 	}
 
-	c := NewXIntSet(1, 3, 5, 6, 8)
-	d := NewXIntSet(1, 3, 5, 6, 9)
+	c := NewX1IntSet(1, 3, 5, 6, 8)
+	d := NewX1IntSet(1, 3, 5, 6, 9)
 
 	if c.Equals(d) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", c, d)
@@ -220,9 +223,9 @@ func TestMutableIntSetEqual(t *testing.T) {
 }
 
 func TestMutableIntSetSend(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
+	a := NewX1IntSet(1, 2, 3, 4)
 
-	b := BuildXIntSetFromChan(a.Send())
+	b := BuildX1IntSetFromChan(a.Send())
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
@@ -230,35 +233,35 @@ func TestMutableIntSetSend(t *testing.T) {
 }
 
 func TestMutableIntSetFilter(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
+	a := NewX1IntSet(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewXIntSet(3, 4)) {
+	if !b.Equals(NewX1IntSet(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b)
 	}
 }
 
 func TestMutableIntSetPartition(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
+	a := NewX1IntSet(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewXIntSet(3, 4)) {
+	if !b.Equals(NewX1IntSet(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b)
 	}
 
-	if !c.Equals(NewXIntSet(1, 2)) {
+	if !c.Equals(NewX1IntSet(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c)
 	}
 }
 
 func TestMutableIntSetStringMap(t *testing.T) {
-	a := NewXIntSet(1, 2, 3, 4)
+	a := NewX1IntSet(1, 2, 3, 4)
 
 	b := a.StringMap()
 
@@ -272,7 +275,7 @@ func TestMutableIntSetStringMap(t *testing.T) {
 
 
 func TestMutableIntSetClear(t *testing.T) {
-	a := NewXIntSet(2, 5, 9, 10)
+	a := NewX1IntSet(2, 5, 9, 10)
 
 	a.Clear()
 
@@ -282,7 +285,7 @@ func TestMutableIntSetClear(t *testing.T) {
 }
 
 func TestMutableIntSetClone(t *testing.T) {
-	a := NewXIntSet(1, 2)
+	a := NewX1IntSet(1, 2)
 
 	b := a.Clone()
 

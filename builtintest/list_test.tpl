@@ -1,3 +1,6 @@
+// Generated from {{.TemplateFile}} with Type={{.PType}}
+// options: Append:{{.Append}} Find:{{.Find}} Mutable:{{.Mutable}}
+
 package {{.Package}}
 
 import (
@@ -17,7 +20,7 @@ func {{.LType}}RangeOf(from, to int) []int {
 }
 
 func TestNew{{.UType}}List(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2, 3)
+	a := NewX1{{.UType}}List(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -38,7 +41,7 @@ func TestNew{{.UType}}List(t *testing.T) {
 
 {{if .Append}}
 func Test{{.UType}}ListAppend(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2, 3)
+	a := NewX1{{.UType}}List(1, 2, 3)
 
 	b := a.Append(4, 5).Append(6, 7)
 
@@ -57,7 +60,7 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 
 {{end}}
 func Test{{.UType}}ListClone(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2)
+	a := NewX1{{.UType}}List(1, 2)
 
 	b := a.Clone()
 
@@ -73,9 +76,9 @@ func Test{{.UType}}ListClone(t *testing.T) {
 }
 
 func Test{{.UType}}ListSend(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
-	b := BuildX{{.UType}}ListFromChan(a.Send())
+	b := BuildX1{{.UType}}ListFromChan(a.Send())
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a{{.M}}, b{{.M}})
@@ -83,7 +86,7 @@ func Test{{.UType}}ListSend(t *testing.T) {
 }
 
 func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
 	if a.Head() != 1 {
 		t.Errorf("Expected 1 but got %d", a.Head())
@@ -94,57 +97,71 @@ func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
 	}
 
 	tail := a.Tail()
-	if !tail.Equals(NewX{{.UType}}List(2, 3, 4)) {
+	if !tail.Equals(NewX1{{.UType}}List(2, 3, 4)) {
 		t.Errorf("Expected '2, 3, 4' but got '%+v'", tail{{.M}})
 	}
 
 	init := a.Init()
-	if !init.Equals(NewX{{.UType}}List(1, 2, 3)) {
+	if !init.Equals(NewX1{{.UType}}List(1, 2, 3)) {
 		t.Errorf("Expected '1, 2, 3' but got '%+v'", init{{.M}})
 	}
 }
 
+{{if .Find}}
+func Test{{.UType}}ListFind(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+
+	b := a.Find(func(v int) bool {
+		return v > 2
+	})
+
+	if b != 3 {
+		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
+	}
+}
+
+{{end}}
 func Test{{.UType}}ListFilter(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewX{{.UType}}List(3, 4)) {
+	if !b.Equals(NewX1{{.UType}}List(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
 	}
 }
 
 func Test{{.UType}}ListPartition(t *testing.T) {
-	a := NewX{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewX{{.UType}}List(3, 4)) {
+	if !b.Equals(NewX1{{.UType}}List(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
 	}
 
-	if !c.Equals(NewX{{.UType}}List(1, 2)) {
+	if !c.Equals(NewX1{{.UType}}List(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c{{.M}})
 	}
 }
 
 {{if .Mutable}}
 func Test{{.UType}}ListSort(t *testing.T) {
-	a := NewX{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 
 	sort.Sort(a)
 
-	if !a.Equals(NewX{{.UType}}List(-2, 4, 7, 9, 13)) {
+	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
 	}
 }
 
 func Test{{.UType}}ListReverse(t *testing.T) {
-	a := NewX{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 
 	b := a.Reverse()
 
@@ -160,7 +177,7 @@ func Test{{.UType}}ListReverse(t *testing.T) {
 }
 
 func Test{{.UType}}ListShuffle(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 1000)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 1000)...)
 
 	b := a.Shuffle()
 
@@ -178,7 +195,7 @@ func Test{{.UType}}ListShuffle(t *testing.T) {
 
 {{end}}
 func Test{{.UType}}ListTake(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.Take(30)
 
@@ -206,7 +223,7 @@ func Test{{.UType}}ListTake(t *testing.T) {
 }
 
 func Test{{.UType}}ListDrop(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.Drop(70)
 
@@ -234,7 +251,7 @@ func Test{{.UType}}ListDrop(t *testing.T) {
 }
 
 func Test{{.UType}}ListTakeWhile(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.TakeWhile(func(v int) bool {
 		return v <= 20
@@ -254,7 +271,7 @@ func Test{{.UType}}ListTakeWhile(t *testing.T) {
 }
 
 func Test{{.UType}}ListDropWhile(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.DropWhile(func(v int) bool {
 		return v <= 80
@@ -274,19 +291,19 @@ func Test{{.UType}}ListDropWhile(t *testing.T) {
 }
 
 func Test{{.UType}}ListDistinctBy(t *testing.T) {
-	a := NewX{{.UType}}List(1, 1, 1, 2, 1, 2, 3, 4, 5, 3, 3, 5)
+	a := NewX1{{.UType}}List(1, 1, 1, 2, 1, 2, 3, 4, 5, 3, 3, 5)
 
 	c := a.DistinctBy(func(v1, v2 int) bool {
 		return v1 == v2
 	})
 
-	if !c.Equals(NewX{{.UType}}List(1, 2, 3, 4, 5)) {
+	if !c.Equals(NewX1{{.UType}}List(1, 2, 3, 4, 5)) {
 		t.Errorf("Expected 1 to 5 but got '%+v'", c{{.M}})
 	}
 }
 
 func Test{{.UType}}ListIndexWhere(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.IndexWhere(func(v int) bool {
 		return v >= 47
@@ -314,7 +331,7 @@ func Test{{.UType}}ListIndexWhere(t *testing.T) {
 }
 
 func Test{{.UType}}ListLastIndexWhere(t *testing.T) {
-	a := NewX{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.LastIndexWhere(func(v int) bool {
 		return v <= 47

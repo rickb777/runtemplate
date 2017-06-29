@@ -6,7 +6,7 @@ package {{.Package}}
 
 import (
 	"errors"
-	. "strings"
+	"strings"
 	"database/sql/driver"
 	"fmt"
 )
@@ -26,17 +26,17 @@ func ({{.LType}} {{.Type}}) String() string {
 
 // TrimSpace removes surrounding whitespace.
 func ({{.LType}} {{.Type}}) TrimSpace() {{.Type}} {
-	return {{.Type}}(TrimSpace(string({{.LType}})))
+	return {{.Type}}(strings.TrimSpace({{.LType}}.String()))
 }
 
 // ToLower converts the value to lowercase.
 func ({{.LType}} {{.Type}}) ToLower() {{.Type}} {
-	return {{.Type}}(ToLower(string({{.LType}})))
+	return {{.Type}}(strings.ToLower(string({{.LType}})))
 }
 
 // ToUpper converts the value to uppercase.
 func ({{.LType}} {{.Type}}) ToUpper() {{.Type}} {
-	return {{.Type}}(ToUpper(string({{.LType}})))
+	return {{.Type}}(strings.ToUpper(string({{.LType}})))
 }
 
 //-------------------------------------------------------------------------------------------------

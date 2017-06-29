@@ -5,7 +5,7 @@ import (
 )
 
 func TestMuMapRemove(t *testing.T) {
-	a := NewTXIntIntMap1(3, 1)
+	a := NewTX1IntIntMap1(3, 1)
 
 	a.Put(1, 5)
 	a.Put(2, 5)
@@ -28,7 +28,7 @@ func TestMuMapRemove(t *testing.T) {
 }
 
 func TestMuMapContainsKey(t *testing.T) {
-	a := NewTXIntIntMap1(13, 1)
+	a := NewTX1IntIntMap1(13, 1)
 
 	a.Put(71, 13)
 
@@ -50,7 +50,7 @@ func TestMuMapContainsKey(t *testing.T) {
 }
 
 func TestMuMapClear(t *testing.T) {
-	a := NewTXIntIntMap1(2, 5)
+	a := NewTX1IntIntMap1(2, 5)
 
 	a.Clear()
 
@@ -60,8 +60,8 @@ func TestMuMapClear(t *testing.T) {
 }
 
 func TestMuMapClone(t *testing.T) {
-	a1 := NewTXIntIntMap(TXIntIntTuples{}.Append2(1, 9, 2, 8)...)
-	a2 := NewTXIntIntMap(TXIntIntTuples{}.Append3(1, 9, 2, 8, 3, 3)...)
+	a1 := NewTX1IntIntMap(TX1IntIntTuples{}.Append2(1, 9, 2, 8)...)
+	a2 := NewTX1IntIntMap(TX1IntIntTuples{}.Append3(1, 9, 2, 8, 3, 3)...)
 
 	b := a1.Clone()
 

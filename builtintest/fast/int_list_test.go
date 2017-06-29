@@ -1,3 +1,6 @@
+// Generated from ../list_test.tpl with Type=int
+// options: Append:true Find:<no value> Mutable:true
+
 package fast
 
 import (
@@ -17,7 +20,7 @@ func intRangeOf(from, to int) []int {
 }
 
 func TestNewIntList(t *testing.T) {
-	a := NewXIntList(1, 2, 3)
+	a := NewX1IntList(1, 2, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("Expected 3 but got %d", a.Size())
@@ -38,7 +41,7 @@ func TestNewIntList(t *testing.T) {
 
 
 func TestIntListAppend(t *testing.T) {
-	a := NewXIntList(1, 2, 3)
+	a := NewX1IntList(1, 2, 3)
 
 	b := a.Append(4, 5).Append(6, 7)
 
@@ -57,7 +60,7 @@ func TestIntListAppend(t *testing.T) {
 
 
 func TestIntListClone(t *testing.T) {
-	a := NewXIntList(1, 2)
+	a := NewX1IntList(1, 2)
 
 	b := a.Clone()
 
@@ -73,9 +76,9 @@ func TestIntListClone(t *testing.T) {
 }
 
 func TestIntListSend(t *testing.T) {
-	a := NewXIntList(1, 2, 3, 4)
+	a := NewX1IntList(1, 2, 3, 4)
 
-	b := BuildXIntListFromChan(a.Send())
+	b := BuildX1IntListFromChan(a.Send())
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a.m, b.m)
@@ -83,7 +86,7 @@ func TestIntListSend(t *testing.T) {
 }
 
 func TestIntListHeadTailLastInit(t *testing.T) {
-	a := NewXIntList(1, 2, 3, 4)
+	a := NewX1IntList(1, 2, 3, 4)
 
 	if a.Head() != 1 {
 		t.Errorf("Expected 1 but got %d", a.Head())
@@ -94,57 +97,58 @@ func TestIntListHeadTailLastInit(t *testing.T) {
 	}
 
 	tail := a.Tail()
-	if !tail.Equals(NewXIntList(2, 3, 4)) {
+	if !tail.Equals(NewX1IntList(2, 3, 4)) {
 		t.Errorf("Expected '2, 3, 4' but got '%+v'", tail.m)
 	}
 
 	init := a.Init()
-	if !init.Equals(NewXIntList(1, 2, 3)) {
+	if !init.Equals(NewX1IntList(1, 2, 3)) {
 		t.Errorf("Expected '1, 2, 3' but got '%+v'", init.m)
 	}
 }
 
+
 func TestIntListFilter(t *testing.T) {
-	a := NewXIntList(1, 2, 3, 4)
+	a := NewX1IntList(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewXIntList(3, 4)) {
+	if !b.Equals(NewX1IntList(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b.m)
 	}
 }
 
 func TestIntListPartition(t *testing.T) {
-	a := NewXIntList(1, 2, 3, 4)
+	a := NewX1IntList(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
 
-	if !b.Equals(NewXIntList(3, 4)) {
+	if !b.Equals(NewX1IntList(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b.m)
 	}
 
-	if !c.Equals(NewXIntList(1, 2)) {
+	if !c.Equals(NewX1IntList(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c.m)
 	}
 }
 
 
 func TestIntListSort(t *testing.T) {
-	a := NewXIntList(13, 4, 7, -2, 9)
+	a := NewX1IntList(13, 4, 7, -2, 9)
 
 	sort.Sort(a)
 
-	if !a.Equals(NewXIntList(-2, 4, 7, 9, 13)) {
+	if !a.Equals(NewX1IntList(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a.m)
 	}
 }
 
 func TestIntListReverse(t *testing.T) {
-	a := NewXIntList(13, 4, 7, -2, 9)
+	a := NewX1IntList(13, 4, 7, -2, 9)
 
 	b := a.Reverse()
 
@@ -160,7 +164,7 @@ func TestIntListReverse(t *testing.T) {
 }
 
 func TestIntListShuffle(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 1000)...)
+	a := NewX1IntList(intRangeOf(1, 1000)...)
 
 	b := a.Shuffle()
 
@@ -178,7 +182,7 @@ func TestIntListShuffle(t *testing.T) {
 
 
 func TestIntListTake(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 100)...)
+	a := NewX1IntList(intRangeOf(1, 100)...)
 
 	b := a.Take(30)
 
@@ -206,7 +210,7 @@ func TestIntListTake(t *testing.T) {
 }
 
 func TestIntListDrop(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 100)...)
+	a := NewX1IntList(intRangeOf(1, 100)...)
 
 	b := a.Drop(70)
 
@@ -234,7 +238,7 @@ func TestIntListDrop(t *testing.T) {
 }
 
 func TestIntListTakeWhile(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 100)...)
+	a := NewX1IntList(intRangeOf(1, 100)...)
 
 	b := a.TakeWhile(func(v int) bool {
 		return v <= 20
@@ -254,7 +258,7 @@ func TestIntListTakeWhile(t *testing.T) {
 }
 
 func TestIntListDropWhile(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 100)...)
+	a := NewX1IntList(intRangeOf(1, 100)...)
 
 	b := a.DropWhile(func(v int) bool {
 		return v <= 80
@@ -274,19 +278,19 @@ func TestIntListDropWhile(t *testing.T) {
 }
 
 func TestIntListDistinctBy(t *testing.T) {
-	a := NewXIntList(1, 1, 1, 2, 1, 2, 3, 4, 5, 3, 3, 5)
+	a := NewX1IntList(1, 1, 1, 2, 1, 2, 3, 4, 5, 3, 3, 5)
 
 	c := a.DistinctBy(func(v1, v2 int) bool {
 		return v1 == v2
 	})
 
-	if !c.Equals(NewXIntList(1, 2, 3, 4, 5)) {
+	if !c.Equals(NewX1IntList(1, 2, 3, 4, 5)) {
 		t.Errorf("Expected 1 to 5 but got '%+v'", c.m)
 	}
 }
 
 func TestIntListIndexWhere(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 100)...)
+	a := NewX1IntList(intRangeOf(1, 100)...)
 
 	b := a.IndexWhere(func(v int) bool {
 		return v >= 47
@@ -314,7 +318,7 @@ func TestIntListIndexWhere(t *testing.T) {
 }
 
 func TestIntListLastIndexWhere(t *testing.T) {
-	a := NewXIntList(intRangeOf(1, 100)...)
+	a := NewX1IntList(intRangeOf(1, 100)...)
 
 	b := a.LastIndexWhere(func(v int) bool {
 		return v <= 47
