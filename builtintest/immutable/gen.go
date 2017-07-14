@@ -21,10 +21,10 @@ package immutable
 //go:generate runtemplate -tpl immutable/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/rickb777/runtemplate/builtintest/testtypes"
 
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true
-//go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=string Type=string  Comparable:true
-//go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=string Type=Apple
+//go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=string Type=string  Comparable:true Stringer:true
+//go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=string Type=Apple                   Stringer:true
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=Apple  Type=string
-//go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=Apple  Type=Pear
+//go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=Apple  Type=Pear                    Stringer:true
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX2 Key=Apple  Type=big.Int  Import:"math/big"
 
 //go:generate runtemplate -tpl ../collection_test.tpl   Type=int

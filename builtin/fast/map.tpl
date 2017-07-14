@@ -9,7 +9,10 @@ package {{.Package}}
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt" {{- end}}
+	"fmt"
+{{if and (eq .KeyStar "") (or (eq .Key "int") (eq .Key "string"))}}
+	"sort"
+	{{- end}}{{- end}}
 {{- if .HasImport}}
     {{.Import}}
 {{end}}
@@ -292,12 +295,14 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
-// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+{{if and (eq .KeyStar "") (or (eq .Key "int") (eq .Key "string")) -}}
+// The map entries are sorted by their keys.{{- end}}
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
@@ -307,12 +312,28 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	b.WriteString(pfx)
 	sep := ""
 
-	for k, v := range mm.m {
+{{if and (eq .KeyStar "") (or (eq .Key "int") (eq .Key "string")) -}}
+    keys := make([]{{.Key}}, 0, len(mm.m))
+    sort.{{.UKey}}s(keys)
+	for k, _ := range mm.m {
+	    keys  = append(keys, k)
+	}
+
+	for _, k := range keys {
+	    v := mm.m[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
-	b.WriteString(sfx)
+{{else}}
+	for k, v := range mm.m {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", k, v))
+		sep = mid
+    }
+{{- end}}
+
+    b.WriteString(sfx)
 	return b
 }
 {{end}}

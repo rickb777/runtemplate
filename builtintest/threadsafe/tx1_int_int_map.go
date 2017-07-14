@@ -10,6 +10,8 @@ import (
 
 	"bytes"
 	"fmt"
+
+	"sort"
 	"sync"
 )
 
@@ -331,12 +333,13 @@ func (mm TX1IntIntMap) String() string {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
-// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
 func (mm TX1IntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// The map entries are sorted by their keys.
 func (mm TX1IntIntMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
@@ -348,12 +351,21 @@ func (mm TX1IntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+keys := make([]int, 0, len(mm.m))
+    sort.Ints(keys)
+	for k, _ := range mm.m {
+	    keys  = append(keys, k)
+	}
+
+	for _, k := range keys {
+	    v := mm.m[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
-	b.WriteString(sfx)
+
+
+    b.WriteString(sfx)
 	return b
 }
 

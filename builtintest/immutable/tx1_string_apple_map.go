@@ -2,9 +2,18 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=string Type=Apple
-// options: Comparable:<no value> Stringer:<no value> Mutable:disabled
+// options: Comparable:<no value> Stringer:true Mutable:disabled
 
 package immutable
+
+
+import (
+
+	"bytes"
+	"fmt"
+
+	"sort"
+)
 
 // TX1StringAppleMap is the primary type that represents a thread-safe map
 type TX1StringAppleMap struct {
@@ -173,4 +182,49 @@ func (mm TX1StringAppleMap) Clone() TX1StringAppleMap {
 	return mm
 }
 
+
+//-------------------------------------------------------------------------------------------------
+
+func (mm TX1StringAppleMap) String() string {
+	return mm.MkString3("map[", ", ", "]")
+}
+
+// implements encoding.Marshaler interface {
+//func (mm TX1StringAppleMap) MarshalJSON() ([]byte, error) {
+//	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
+//}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (mm TX1StringAppleMap) MkString(sep string) string {
+	return mm.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// The map entries are sorted by their keys.
+func (mm TX1StringAppleMap) MkString3(pfx, mid, sfx string) string {
+	return mm.mkString3Bytes(pfx, mid, sfx).String()
+}
+
+func (mm TX1StringAppleMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(pfx)
+	sep := ""
+
+keys := make([]string, 0, len(mm.m))
+    sort.Strings(keys)
+	for k, _ := range mm.m {
+	    keys  = append(keys, k)
+	}
+
+	for _, k := range keys {
+	    v := mm.m[k]
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", k, v))
+		sep = mid
+	}
+
+
+	b.WriteString(sfx)
+	return b
+}
 
