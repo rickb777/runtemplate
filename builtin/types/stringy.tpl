@@ -6,6 +6,7 @@ package {{.Package}}
 
 import (
 	"errors"
+	"sort"
 	"strings"
 	"database/sql/driver"
 	"fmt"
@@ -75,3 +76,15 @@ func ({{.LType}} {{.Type}}) MarshalText() (text []byte, err error) {
 func ({{.LType}} *{{.Type}}) UnmarshalText(text []byte) error {
 	return {{.LType}}.Scan(text)
 }
+
+//-------------------------------------------------------------------------------------------------
+
+// {{.UType}}Slice attaches the methods of sort.Interface to []{{.Type}}, sorting in increasing order.
+type {{.UType}}Slice []{{.Type}}
+
+func (p {{.UType}}Slice) Len() int           { return len(p) }
+func (p {{.UType}}Slice) Less(i, j int) bool { return p[i] < p[j] }
+func (p {{.UType}}Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
+// Sort is a convenience method.
+func (p {{.UType}}Slice) Sort() { sort.Sort(p) }

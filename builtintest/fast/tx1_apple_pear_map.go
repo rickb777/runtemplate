@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from fast/map.tpl with Key=Apple Type=Pear
-// options: Comparable:<no value> Stringer:true Mutable:always
+// options: Comparable:<no value> Stringer:true KeySlice:<no value> Mutable:always
 
 package fast
 
@@ -10,7 +10,6 @@ import (
 
 	"bytes"
 	"fmt"
-
 )
 
 // TX1ApplePearMap is the primary type that represents a thread-safe map
@@ -277,7 +276,6 @@ func (mm TX1ApplePearMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-
 func (mm TX1ApplePearMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
@@ -286,7 +284,6 @@ func (mm TX1ApplePearMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-
 
 	for k, v := range mm.m {
 		b.WriteString(sep)

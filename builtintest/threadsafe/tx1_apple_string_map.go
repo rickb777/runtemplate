@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=Apple Type=string
-// options: Comparable:<no value> Stringer:<no value> Mutable:always
+// options: Comparable:<no value> Stringer:<no value> KeySlice:<no value> Mutable:always
 
 package threadsafe
 

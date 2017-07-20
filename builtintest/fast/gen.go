@@ -23,9 +23,12 @@ package fast
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string Type=string  Comparable:true Stringer:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string Type=Apple                   Stringer:true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Email  Type=string                  Stringer:true KeySlice:EmailSlice
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Apple  Type=string
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Apple  Type=Pear                    Stringer:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX2 Key=Apple  Type=big.Int  Import:"math/big"
+
+//go:generate runtemplate -tpl types/stringy.tpl   Prefix=X1 Type=Email
 
 //go:generate runtemplate -tpl ../collection_test.tpl  Type=int Mutable:true
 //go:generate runtemplate -tpl ../list_test.tpl        Type=int Mutable:true M:.m Append:true

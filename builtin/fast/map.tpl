@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} Mutable:always
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeySlice:{{.KeySlice}} Mutable:always
 
 package {{.Package}}
 
@@ -10,9 +10,9 @@ import (
 {{if .Stringer}}
 	"bytes"
 	"fmt"
-{{if and (eq .KeyStar "") (or (eq .Key "int") (eq .Key "string"))}}
+{{- if .HasKeySlice}}
 	"sort"
-	{{- end}}{{- end}}
+{{- end}}{{- end}}
 {{- if .HasImport}}
     {{.Import}}
 {{end}}
@@ -301,7 +301,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-{{if and (eq .KeyStar "") (or (eq .Key "int") (eq .Key "string")) -}}
+{{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
@@ -311,13 +311,12 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-
-{{if and (eq .KeyStar "") (or (eq .Key "int") (eq .Key "string")) -}}
-    keys := make([]{{.Key}}, 0, len(mm.m))
-    sort.{{.UKey}}s(keys)
+{{if .HasKeySlice}}
+    keys := make({{.KeySlice}}, 0, len(mm.m))
 	for k, _ := range mm.m {
 	    keys  = append(keys, k)
 	}
+    sort.Sort(keys)
 
 	for _, k := range keys {
 	    v := mm.m[k]
@@ -331,8 +330,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
     }
-{{- end}}
-
+{{end}}
     b.WriteString(sfx)
 	return b
 }

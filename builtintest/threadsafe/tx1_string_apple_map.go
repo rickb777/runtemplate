@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=string Type=Apple
-// options: Comparable:<no value> Stringer:true Mutable:always
+// options: Comparable:<no value> Stringer:true KeySlice:sort.StringSlice Mutable:always
 
 package threadsafe
 
@@ -10,7 +10,6 @@ import (
 
 	"bytes"
 	"fmt"
-
 	"sort"
 	"sync"
 )
@@ -329,11 +328,11 @@ func (mm TX1StringAppleMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-keys := make([]string, 0, len(mm.m))
-    sort.Strings(keys)
+    keys := make(sort.StringSlice, 0, len(mm.m))
 	for k, _ := range mm.m {
 	    keys  = append(keys, k)
 	}
+    sort.Sort(keys)
 
 	for _, k := range keys {
 	    v := mm.m[k]
@@ -341,7 +340,6 @@ keys := make([]string, 0, len(mm.m))
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
-
 
     b.WriteString(sfx)
 	return b

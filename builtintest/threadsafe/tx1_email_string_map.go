@@ -1,8 +1,8 @@
-// An encapsulated map[int]int.
+// An encapsulated map[Email]string.
 // Thread-safe.
 //
-// Generated from threadsafe/map.tpl with Key=int Type=int
-// options: Comparable:true Stringer:true KeySlice:<no value> Mutable:always
+// Generated from threadsafe/map.tpl with Key=Email Type=string
+// options: Comparable:<no value> Stringer:true KeySlice:EmailSlice Mutable:always
 
 package threadsafe
 
@@ -10,55 +10,56 @@ import (
 
 	"bytes"
 	"fmt"
+	"sort"
 	"sync"
 )
 
-// TX1IntIntMap is the primary type that represents a thread-safe map
-type TX1IntIntMap struct {
+// TX1EmailStringMap is the primary type that represents a thread-safe map
+type TX1EmailStringMap struct {
 	s *sync.RWMutex
-	m map[int]int
+	m map[Email]string
 }
 
-// TX1IntIntTuple represents a key/value pair.
-type TX1IntIntTuple struct {
-	Key int
-	Val int
+// TX1EmailStringTuple represents a key/value pair.
+type TX1EmailStringTuple struct {
+	Key Email
+	Val string
 }
 
-// TX1IntIntTuples can be used as a builder for unmodifiable maps.
-type TX1IntIntTuples []TX1IntIntTuple
+// TX1EmailStringTuples can be used as a builder for unmodifiable maps.
+type TX1EmailStringTuples []TX1EmailStringTuple
 
-func (ts TX1IntIntTuples) Append1(k int, v int) TX1IntIntTuples {
-	return append(ts, TX1IntIntTuple{k, v})
+func (ts TX1EmailStringTuples) Append1(k Email, v string) TX1EmailStringTuples {
+	return append(ts, TX1EmailStringTuple{k, v})
 }
 
-func (ts TX1IntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) TX1IntIntTuples {
-	return append(ts, TX1IntIntTuple{k1, v1}, TX1IntIntTuple{k2, v2})
+func (ts TX1EmailStringTuples) Append2(k1 Email, v1 string, k2 Email, v2 string) TX1EmailStringTuples {
+	return append(ts, TX1EmailStringTuple{k1, v1}, TX1EmailStringTuple{k2, v2})
 }
 
-func (ts TX1IntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) TX1IntIntTuples {
-	return append(ts, TX1IntIntTuple{k1, v1}, TX1IntIntTuple{k2, v2}, TX1IntIntTuple{k3, v3})
+func (ts TX1EmailStringTuples) Append3(k1 Email, v1 string, k2 Email, v2 string, k3 Email, v3 string) TX1EmailStringTuples {
+	return append(ts, TX1EmailStringTuple{k1, v1}, TX1EmailStringTuple{k2, v2}, TX1EmailStringTuple{k3, v3})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newTX1IntIntMap() TX1IntIntMap {
-	return TX1IntIntMap{
+func newTX1EmailStringMap() TX1EmailStringMap {
+	return TX1EmailStringMap{
 		s: &sync.RWMutex{},
-		m: make(map[int]int),
+		m: make(map[Email]string),
 	}
 }
 
-// NewTX1IntIntMap creates and returns a reference to a map containing one item.
-func NewTX1IntIntMap1(k int, v int) TX1IntIntMap {
-	mm := newTX1IntIntMap()
+// NewTX1EmailStringMap creates and returns a reference to a map containing one item.
+func NewTX1EmailStringMap1(k Email, v string) TX1EmailStringMap {
+	mm := newTX1EmailStringMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewTX1IntIntMap creates and returns a reference to a map, optionally containing some items.
-func NewTX1IntIntMap(kv ...TX1IntIntTuple) TX1IntIntMap {
-	mm := newTX1IntIntMap()
+// NewTX1EmailStringMap creates and returns a reference to a map, optionally containing some items.
+func NewTX1EmailStringMap(kv ...TX1EmailStringTuple) TX1EmailStringMap {
+	mm := newTX1EmailStringMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -66,11 +67,11 @@ func NewTX1IntIntMap(kv ...TX1IntIntTuple) TX1IntIntMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm TX1IntIntMap) Keys() []int {
+func (mm TX1EmailStringMap) Keys() []Email {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []int
+	var s []Email
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -78,11 +79,11 @@ func (mm TX1IntIntMap) Keys() []int {
 }
 
 // Values returns the values of the current map as a slice.
-func (mm TX1IntIntMap) Values() []int {
+func (mm TX1EmailStringMap) Values() []string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []int
+	var s []string
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -90,19 +91,19 @@ func (mm TX1IntIntMap) Values() []int {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm TX1IntIntMap) ToSlice() []TX1IntIntTuple {
+func (mm TX1EmailStringMap) ToSlice() []TX1EmailStringTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []TX1IntIntTuple
+	var s []TX1EmailStringTuple
 	for k, v := range mm.m {
-		s = append(s, TX1IntIntTuple{k, v})
+		s = append(s, TX1EmailStringTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm TX1IntIntMap) Get(k int) (int, bool) {
+func (mm TX1EmailStringMap) Get(k Email) (string, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -111,7 +112,7 @@ func (mm TX1IntIntMap) Get(k int) (int, bool) {
 }
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm TX1IntIntMap) Put(k int, v int) bool {
+func (mm TX1EmailStringMap) Put(k Email, v string) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -121,7 +122,7 @@ func (mm TX1IntIntMap) Put(k int, v int) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm TX1IntIntMap) ContainsKey(k int) bool {
+func (mm TX1EmailStringMap) ContainsKey(k Email) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -130,7 +131,7 @@ func (mm TX1IntIntMap) ContainsKey(k int) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm TX1IntIntMap) ContainsAllKeys(kk ...int) bool {
+func (mm TX1EmailStringMap) ContainsAllKeys(kk ...Email) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -143,15 +144,15 @@ func (mm TX1IntIntMap) ContainsAllKeys(kk ...int) bool {
 }
 
 // Clear clears the entire map.
-func (mm *TX1IntIntMap) Clear() {
+func (mm *TX1EmailStringMap) Clear() {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-	mm.m = make(map[int]int)
+	mm.m = make(map[Email]string)
 }
 
 // Remove allows the removal of a single item from the map.
-func (mm TX1IntIntMap) Remove(k int) {
+func (mm TX1EmailStringMap) Remove(k Email) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -159,7 +160,7 @@ func (mm TX1IntIntMap) Remove(k int) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm TX1IntIntMap) Size() int {
+func (mm TX1EmailStringMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -167,25 +168,25 @@ func (mm TX1IntIntMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm TX1IntIntMap) IsEmpty() bool {
+func (mm TX1EmailStringMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm TX1IntIntMap) NonEmpty() bool {
+func (mm TX1EmailStringMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
-func (mm TX1IntIntMap) DropWhere(fn func(int, int) bool) TX1IntIntTuples {
+func (mm TX1EmailStringMap) DropWhere(fn func(Email, string) bool) TX1EmailStringTuples {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	removed := make(TX1IntIntTuples, 0)
+	removed := make(TX1EmailStringTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, TX1IntIntTuple{k, v})
+		    removed = append(removed, TX1EmailStringTuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -194,7 +195,7 @@ func (mm TX1IntIntMap) DropWhere(fn func(int, int) bool) TX1IntIntTuples {
 
 // Foreach applies a function to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm TX1IntIntMap) Foreach(fn func(int, int)) {
+func (mm TX1EmailStringMap) Foreach(fn func(Email, string)) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -209,7 +210,7 @@ func (mm TX1IntIntMap) Foreach(fn func(int, int)) {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm TX1IntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm TX1EmailStringMap) Forall(fn func(Email, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -224,7 +225,7 @@ func (mm TX1IntIntMap) Forall(fn func(int, int) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm TX1IntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm TX1EmailStringMap) Exists(fn func(Email, string) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -236,25 +237,25 @@ func (mm TX1IntIntMap) Exists(fn func(int, int) bool) bool {
 	return false
 }
 
-// Find returns the first int that returns true for some function.
+// Find returns the first string that returns true for some function.
 // False is returned if none match.
-func (mm TX1IntIntMap) Find(fn func(int, int) bool) (TX1IntIntTuple, bool) {
+func (mm TX1EmailStringMap) Find(fn func(Email, string) bool) (TX1EmailStringTuple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
 		if fn(k, v) {
-			return TX1IntIntTuple{k, v}, true
+			return TX1EmailStringTuple{k, v}, true
 		}
 	}
 
-	return TX1IntIntTuple{}, false
+	return TX1EmailStringTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm TX1IntIntMap) Filter(fn func(int, int) bool) TX1IntIntMap {
-	result := NewTX1IntIntMap()
+func (mm TX1EmailStringMap) Filter(fn func(Email, string) bool) TX1EmailStringMap {
+	result := NewTX1EmailStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -269,9 +270,9 @@ func (mm TX1IntIntMap) Filter(fn func(int, int) bool) TX1IntIntMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm TX1IntIntMap) Partition(fn func(int, int) bool) (matching TX1IntIntMap, others TX1IntIntMap) {
-	matching = NewTX1IntIntMap()
-	others = NewTX1IntIntMap()
+func (mm TX1EmailStringMap) Partition(fn func(Email, string) bool) (matching TX1EmailStringMap, others TX1EmailStringMap) {
+	matching = NewTX1EmailStringMap()
+	others = NewTX1EmailStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -285,31 +286,9 @@ func (mm TX1IntIntMap) Partition(fn func(int, int) bool) (matching TX1IntIntMap,
 	return
 }
 
-
-// Equals determines if two maps are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for maps to be equal.
-func (mm TX1IntIntMap) Equals(other TX1IntIntMap) bool {
-	mm.s.RLock()
-	other.s.RLock()
-	defer mm.s.RUnlock()
-	defer other.s.RUnlock()
-
-	if mm.Size() != other.Size() {
-		return false
-	}
-	for k, v1 := range mm.m {
-		v2, found := other.m[k]
-		if !found || v1 != v2 {
-			return false
-		}
-	}
-	return true
-}
-
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm TX1IntIntMap) Clone() TX1IntIntMap {
-	result := NewTX1IntIntMap()
+func (mm TX1EmailStringMap) Clone() TX1EmailStringMap {
+	result := NewTX1EmailStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -322,37 +301,45 @@ func (mm TX1IntIntMap) Clone() TX1IntIntMap {
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm TX1IntIntMap) String() string {
+func (mm TX1EmailStringMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm TX1IntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm TX1EmailStringMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm TX1IntIntMap) MkString(sep string) string {
+func (mm TX1EmailStringMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm TX1IntIntMap) MkString3(pfx, mid, sfx string) string {
+// The map entries are sorted by their keys.
+func (mm TX1EmailStringMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
 
-func (mm TX1IntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1EmailStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	for k, v := range mm.m {
+    keys := make(EmailSlice, 0, len(mm.m))
+	for k, _ := range mm.m {
+	    keys  = append(keys, k)
+	}
+    sort.Sort(keys)
+
+	for _, k := range keys {
+	    v := mm.m[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 
     b.WriteString(sfx)
 	return b

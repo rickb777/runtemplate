@@ -11,8 +11,6 @@ import (
 
 	"bytes"
 	"fmt"
-
-	"sort"
 )
 
 // TX1StringStringMap is the primary type that represents a thread-safe map
@@ -217,7 +215,6 @@ func (mm TX1StringStringMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-// The map entries are sorted by their keys.
 func (mm TX1StringStringMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
@@ -227,19 +224,11 @@ func (mm TX1StringStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer 
 	b.WriteString(pfx)
 	sep := ""
 
-keys := make([]string, 0, len(mm.m))
-    sort.Strings(keys)
-	for k, _ := range mm.m {
-	    keys  = append(keys, k)
-	}
-
-	for _, k := range keys {
-	    v := mm.m[k]
+	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
-
 
 	b.WriteString(sfx)
 	return b

@@ -20,10 +20,11 @@ The built-in collections support a flag that allow you to control the generated 
 
 The built-in collections support a small number of flags that allow you to control whether extra methods are generated or not.
 
- * `Comparable=true` - use this for types that are comparable (== and !=), such as strings, ints, floats and structs.
- * `Ordered=true` - use this for types that are ordered (<, <=, >=, >), such as strings, ints and floats (but not structs).
- * `Numeric=true` - use this for types that support arithmetic operations, such as ints and floats (but not structs).
- * `Stringer=true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
+ * `Comparable:true` - use this for types that are comparable (== and !=), such as strings, ints, floats and structs.
+ * `Ordered:true` - use this for types that are ordered (<, <=, >=, >), such as strings, ints and floats (but not structs).
+ * `Numeric:true` - use this for types that support arithmetic operations, such as ints and floats (but not structs).
+ * `Stringer:true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
+ * `KeySlice:sort.StringSlice` - for maps only, use this for sorting the output of the stringer methods by the keys. This affects `MkString3(...)`, `MkString()` and `String()`. Any `sort.Interface` implementation can be used.
 
 The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators). If you set a flag that is impossible for the chosen data type, the generated code won't compile, but no other bad thing will happen; so it will soon become obvious.
@@ -51,7 +52,7 @@ The supported options are: Comparable, Ordered, Numeric, Stringer. The generated
 Example use:
 
 ```
-//go:generate runtemplate -tpl simple/list.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl simple/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
@@ -67,7 +68,7 @@ The supported options are: Numeric, Stringer. The generated types are always mut
 
 Example use:
 ```
-//go:generate runtemplate -tpl simple/set.tpl Type=int Stringer=true Numeric=true
+//go:generate runtemplate -tpl simple/set.tpl Type=int Stringer:true Numeric:true
 ```
 
 The generated code is simple wrapper around a map of the type: the set elements are used as map keys; the map uses zero-size values. It is not suitable for access by more than one goroutine at a time.
@@ -83,7 +84,7 @@ The supported options are: Comparable, Numeric, Stringer. The generated types ar
 
 Example use:
 ```
-//go:generate runtemplate -tpl simple/map.tpl Key=string Type=int Stringer=true Comparable=true Numeric=true
+//go:generate runtemplate -tpl simple/map.tpl Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
 ```
 
 The generated code is a simple wrapper around a map of the key and type. It not suitable for access by more than one goroutine at a time.
@@ -115,8 +116,8 @@ The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/list.tpl       Type=int Stringer=true Comparable=true Ordered=true Numeric=true
-//go:generate runtemplate -tpl threadsafe/list.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl fast/list.tpl       Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 Examples: 
@@ -132,8 +133,8 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/set.tpl       Type=int Stringer=true Comparable=true Ordered=true Numeric=true
-//go:generate runtemplate -tpl threadsafe/set.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl fast/set.tpl       Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/set.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 Examples:
@@ -149,8 +150,8 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/map.tpl       Key=string Type=int Stringer=true Comparable=true Numeric=true
-//go:generate runtemplate -tpl threadsafe/map.tpl Key=string Type=int Stringer=true Comparable=true Numeric=true
+//go:generate runtemplate -tpl fast/map.tpl       Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
+//go:generate runtemplate -tpl threadsafe/map.tpl Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
 ```
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
@@ -168,8 +169,8 @@ The **list** and **set** templates (above) both implement this interface.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/collection.tpl       Type=int Stringer=true Comparable=true Ordered=true Numeric=true
-//go:generate runtemplate -tpl threadsafe/collection.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl fast/collection.tpl       Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/collection.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 Examples:
 Fast:       [IntCollection](builtintest/fast/x_int_collection.go),       [StringCollection](builtintest/fast/x_string_collection.go),
@@ -191,7 +192,7 @@ The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/list.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl immutable/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 Examples: [IntList](builtintest/immutable/x_int_list.go), [StringList](builtintest/immutable/x_string_list.go).
@@ -205,7 +206,7 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/set.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl immutable/set.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 Examples: [IntSet](builtintest/immutable/x_int_set.go), [StringSet](builtintest/immutable/x_string_set.go).
@@ -219,7 +220,7 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/map.tpl Key=string Type=int Stringer=true Comparable=true Numeric=true
+//go:generate runtemplate -tpl immutable/map.tpl Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
 ```
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
@@ -235,7 +236,7 @@ The **list** and **set** templates (above) both implement this interface.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/collection.tpl Type=int Stringer=true Comparable=true Ordered=true Numeric=true
+//go:generate runtemplate -tpl immutable/collection.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 Examples: [IntCollection](builtintest/immutable/x_int_collection.go), [StringCollection](builtintest/immutable/x_string_collection.go),
 

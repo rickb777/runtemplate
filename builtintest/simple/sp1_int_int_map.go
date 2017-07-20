@@ -11,7 +11,6 @@ import (
 
 	"bytes"
 	"fmt"
-
 )
 
 // SP1IntIntMap is the primary type that represents a map
@@ -231,7 +230,6 @@ func (mm SP1IntIntMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-
 func (mm SP1IntIntMap) MkString3(pfx, mid, sfx string) string {
 	return mm.mkString3Bytes(pfx, mid, sfx).String()
 }
@@ -240,7 +238,6 @@ func (mm SP1IntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-
 
 	for k, v := range mm {
 		b.WriteString(sep)
