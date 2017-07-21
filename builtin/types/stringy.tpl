@@ -6,7 +6,9 @@ package {{.Package}}
 
 import (
 	"errors"
+{{- if .SortableSlice}}
 	"sort"
+{{- end}}
 	"strings"
 	"database/sql/driver"
 	"fmt"
@@ -78,7 +80,7 @@ func ({{.LType}} *{{.Type}}) UnmarshalText(text []byte) error {
 }
 
 //-------------------------------------------------------------------------------------------------
-
+{{if .SortableSlice}}
 // {{.UType}}Slice attaches the methods of sort.Interface to []{{.Type}}, sorting in increasing order.
 type {{.UType}}Slice []{{.Type}}
 
@@ -88,3 +90,4 @@ func (p {{.UType}}Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // Sort is a convenience method.
 func (p {{.UType}}Slice) Sort() { sort.Sort(p) }
+{{end}}

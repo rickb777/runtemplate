@@ -281,3 +281,15 @@ Example use:
 ```
 Example: [ApplePearMapTo](builtintest/threadsafe/x_apple_x_pear_mapto.go).
 
+
+## 5. Stringy Types
+
+### types/stringy.tpl
+
+This template allows you to name different kinds of string types. You might want to do this because it can greatly increase the type-safety of any code that manipulates a lot of string values. It prevents incompatible string values being assigned to each other.
+
+The stringy types provide some of the stanrdard `strings` functions as methods. 
+
+They also provide methods to make them compatible with the SQL and marshalling APIs, just like ordinary strings.
+
+Finally, they can provide a sorting utility `sort.Interface` implementation. This is only generated when `SortableSlice:true` is specified.
