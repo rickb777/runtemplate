@@ -29,7 +29,7 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=Apple  Type=Pear                    Stringer:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX2 Key=Apple  Type=big.Int  Import:"math/big"
 
-//go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email
+//go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email SortableSlice:true
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=X1 Type=Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 

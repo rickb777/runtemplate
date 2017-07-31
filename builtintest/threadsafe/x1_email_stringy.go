@@ -88,3 +88,4 @@ func (p EmailSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // Sort is a convenience method.
 func (p EmailSlice) Sort() { sort.Sort(p) }
+

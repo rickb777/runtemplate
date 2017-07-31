@@ -69,6 +69,15 @@ func (mm TX1EmailStringMap) Keys() []Email {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1EmailStringMap) Values() []string {
+	var s []string
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1EmailStringMap) ToSlice() []TX1EmailStringTuple {
 	var s []TX1EmailStringTuple

@@ -61,6 +61,15 @@ func (mm SP1AppleStringMap) Keys() []*Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm SP1AppleStringMap) Values() []*string {
+	var s []*string
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm SP1AppleStringMap) ToSlice() []SP1AppleStringTuple {
 	var s []SP1AppleStringTuple

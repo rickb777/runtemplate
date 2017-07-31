@@ -68,6 +68,15 @@ func (mm TX1AppleIntMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1AppleIntMap) Values() []big.Int {
+	var s []big.Int
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1AppleIntMap) ToSlice() []TX1AppleIntTuple {
 	var s []TX1AppleIntTuple

@@ -61,6 +61,15 @@ func (mm TX1AppleStringMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1AppleStringMap) Values() []string {
+	var s []string
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1AppleStringMap) ToSlice() []TX1AppleStringTuple {
 	var s []TX1AppleStringTuple

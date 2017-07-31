@@ -28,7 +28,7 @@ package immutable
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=Apple  Type=Pear                    Stringer:true
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX2 Key=Apple  Type=big.Int  Import:"math/big"
 
-//go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email
+//go:generate runtemplate -tpl types/stringy.tpl        Prefix=X1 Type=Email SortableSlice:true
 
 //go:generate runtemplate -tpl ../collection_test.tpl   Type=int
 //go:generate runtemplate -tpl ../list_test.tpl         Type=int M:.m Append:true

@@ -68,6 +68,15 @@ func (mm TX1IntIntMap) Keys() []int {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1IntIntMap) Values() []int {
+	var s []int
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1IntIntMap) ToSlice() []TX1IntIntTuple {
 	var s []TX1IntIntTuple

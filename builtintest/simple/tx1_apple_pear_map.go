@@ -68,6 +68,15 @@ func (mm TX1ApplePearMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1ApplePearMap) Values() []Pear {
+	var s []Pear
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1ApplePearMap) ToSlice() []TX1ApplePearTuple {
 	var s []TX1ApplePearTuple

@@ -68,6 +68,15 @@ func (mm SP1StringIntMap) Keys() []*string {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm SP1StringIntMap) Values() []*big.Int {
+	var s []*big.Int
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm SP1StringIntMap) ToSlice() []SP1StringIntTuple {
 	var s []SP1StringIntTuple

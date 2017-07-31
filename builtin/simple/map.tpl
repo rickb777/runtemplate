@@ -75,6 +75,15 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() []{{.PType}} {
+	var s []{{.PType}}
+	for _, v := range mm {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
