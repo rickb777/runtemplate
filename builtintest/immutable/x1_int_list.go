@@ -572,7 +572,7 @@ func (sl sortableX1IntList) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
-// SortBy alters the list so that the elements are sorted by a specified ordering.
+// SortBy returns a new list in which the elements are sorted by a specified ordering.
 func (list *X1IntList) SortBy(less func(i, j int) bool) *X1IntList {
 
 	result := NewX1IntList(list.m...)
@@ -580,7 +580,7 @@ func (list *X1IntList) SortBy(less func(i, j int) bool) *X1IntList {
     return result
 }
 
-// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
 func (list *X1IntList) StableSortBy(less func(i, j int) bool) *X1IntList {
 
@@ -593,14 +593,14 @@ func (list *X1IntList) StableSortBy(less func(i, j int) bool) *X1IntList {
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
 
-// Sorted alters the list so that the elements are sorted by their natural ordering.
+// Sorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *X1IntList) Sorted() *X1IntList {
     return list.SortBy(func(a, b int) bool {
         return a < b
     })
 }
 
-// StableSorted alters the list so that the elements are sorted by their natural ordering.
+// StableSorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *X1IntList) StableSorted() *X1IntList {
     return list.StableSortBy(func(a, b int) bool {
         return a < b

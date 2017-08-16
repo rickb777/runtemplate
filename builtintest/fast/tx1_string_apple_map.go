@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from fast/map.tpl with Key=string Type=Apple
-// options: Comparable:<no value> Stringer:true KeySlice:<no value> Mutable:always
+// options: Comparable:<no value> Stringer:true KeyList:<no value> Mutable:always
 
 package fast
 
@@ -160,7 +160,7 @@ func (mm TX1StringAppleMap) DropWhere(fn func(string, Apple) bool) TX1StringAppl
 	removed := make(TX1StringAppleTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, TX1StringAppleTuple{k, v})
+			removed = append(removed, TX1StringAppleTuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -289,9 +289,9 @@ func (mm TX1StringAppleMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 
-    b.WriteString(sfx)
+	b.WriteString(sfx)
 	return b
 }
 

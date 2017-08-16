@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=Email Type=string
-// options: Comparable:<no value> Stringer:true Mutable:disabled
+// options: Comparable:<no value> Stringer:true KeyList:<no value> Mutable:disabled
 
 package immutable
 
@@ -11,7 +11,6 @@ import (
 
 	"bytes"
 	"fmt"
-	"sort"
 )
 
 // TX1EmailStringMap is the primary type that represents a thread-safe map
@@ -209,14 +208,7 @@ func (mm TX1EmailStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b.WriteString(pfx)
 	sep := ""
 
-    keys := make(EmailSlice, 0, len(mm.m))
-	for k, _ := range mm.m {
-	    keys  = append(keys, k)
-	}
-    sort.Sort(keys)
-
-	for _, k := range keys {
-	    v := mm.m[k]
+	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid

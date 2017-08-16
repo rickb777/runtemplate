@@ -45,10 +45,10 @@ func ConvertP1IntList(values ...interface{}) (P1IntList, bool) {
 	for _, i := range values {
 		v, ok := i.(*int)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result = append(result, v)
-	    }
+			result = append(result, v)
+		}
 	}
 
 	return result, good
@@ -501,8 +501,8 @@ func (list P1IntList) Equals(other P1IntList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableP1IntList struct {
-    less func(i, j int) bool
-    m []*int
+	less func(i, j int) bool
+	m []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {
@@ -518,16 +518,20 @@ func (sl sortableP1IntList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list P1IntList) SortBy(less func(i, j int) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list P1IntList) SortBy(less func(i, j int) bool) P1IntList {
 
-    sort.Sort(sortableP1IntList{less, list})
+	sort.Sort(sortableP1IntList{less, list})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list P1IntList) StableSortBy(less func(i, j int) bool) {
+func (list P1IntList) StableSortBy(less func(i, j int) bool) P1IntList {
 
-    sort.Stable(sortableP1IntList{less, list})
+	sort.Stable(sortableP1IntList{less, list})
+	return list
 }
 
 
@@ -535,17 +539,17 @@ func (list P1IntList) StableSortBy(less func(i, j int) bool) {
 // These methods are included when int is ordered.
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
-func (list P1IntList) Sorted() {
-    list.SortBy(func(a, b int) bool {
-        return a < b
-    })
+func (list P1IntList) Sorted() P1IntList {
+	return list.SortBy(func(a, b int) bool {
+		return a < b
+	})
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
-func (list P1IntList) StableSorted() {
-    list.StableSortBy(func(a, b int) bool {
-        return a < b
-    })
+func (list P1IntList) StableSorted() P1IntList {
+	return list.StableSortBy(func(a, b int) bool {
+		return a < b
+	})
 }
 
 // Min returns the first element containing the minimum value, when compared to other elements.

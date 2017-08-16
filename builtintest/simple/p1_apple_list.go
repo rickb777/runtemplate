@@ -43,10 +43,10 @@ func ConvertP1AppleList(values ...interface{}) (P1AppleList, bool) {
 	for _, i := range values {
 		v, ok := i.(*Apple)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result = append(result, v)
-	    }
+			result = append(result, v)
+		}
 	}
 
 	return result, good
@@ -486,8 +486,8 @@ func (list P1AppleList) Equals(other P1AppleList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableP1AppleList struct {
-    less func(i, j Apple) bool
-    m []*Apple
+	less func(i, j Apple) bool
+	m []*Apple
 }
 
 func (sl sortableP1AppleList) Less(i, j int) bool {
@@ -503,16 +503,20 @@ func (sl sortableP1AppleList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list P1AppleList) SortBy(less func(i, j Apple) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list P1AppleList) SortBy(less func(i, j Apple) bool) P1AppleList {
 
-    sort.Sort(sortableP1AppleList{less, list})
+	sort.Sort(sortableP1AppleList{less, list})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list P1AppleList) StableSortBy(less func(i, j Apple) bool) {
+func (list P1AppleList) StableSortBy(less func(i, j Apple) bool) P1AppleList {
 
-    sort.Stable(sortableP1AppleList{less, list})
+	sort.Stable(sortableP1AppleList{less, list})
+	return list
 }
 
 

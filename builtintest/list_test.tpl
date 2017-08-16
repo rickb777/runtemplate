@@ -172,20 +172,28 @@ func Test{{.UType}}ListPartition(t *testing.T) {
 func Test{{.UType}}ListSort(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 
-	a.Sorted()
+	b := a.Sorted()
 
 	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
+	}
+
+	if !b.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
 	}
 }
 
 func Test{{.UType}}ListStableSort(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 
-	a.StableSorted()
+	b := a.StableSorted()
 
 	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
+	}
+
+	if !b.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
 	}
 }
 

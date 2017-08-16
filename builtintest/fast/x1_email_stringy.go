@@ -86,6 +86,6 @@ func (p EmailSlice) Len() int           { return len(p) }
 func (p EmailSlice) Less(i, j int) bool { return p[i] < p[j] }
 func (p EmailSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
-// Sort is a convenience method.
-func (p EmailSlice) Sort() { sort.Sort(p) }
+// SortedN is a convenience method.
+func (p EmailSlice) Sorted() { sort.Sort(p) }
 

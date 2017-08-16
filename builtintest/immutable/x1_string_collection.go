@@ -51,6 +51,9 @@ type X1StringCollection interface {
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []string
 
+	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
+	ToInterfaceSlice() []interface{}
+
 	// Exists verifies that one or more elements of X1StringCollection return true for the passed func.
 	Exists(fn func(string) bool) bool
 
@@ -60,9 +63,9 @@ type X1StringCollection interface {
 	// Foreach iterates over X1StringCollection and executes the passed func against each element.
 	Foreach(fn func(string))
 
-    // Find returns the first string that returns true for some function.
-    // False is returned if none match.
-    Find(fn func(string) bool) (string, bool)
+	// Find returns the first string that returns true for some function.
+	// False is returned if none match.
+	Find(fn func(string) bool) (string, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

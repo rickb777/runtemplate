@@ -29,6 +29,9 @@ type X1AppleCollection interface {
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []Apple
 
+	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
+	ToInterfaceSlice() []interface{}
+
 	// Exists verifies that one or more elements of X1AppleCollection return true for the passed func.
 	Exists(fn func(Apple) bool) bool
 
@@ -38,9 +41,9 @@ type X1AppleCollection interface {
 	// Foreach iterates over X1AppleCollection and executes the passed func against each element.
 	Foreach(fn func(Apple))
 
-    // Find returns the first Apple that returns true for some function.
-    // False is returned if none match.
-    Find(fn func(Apple) bool) (Apple, bool)
+	// Find returns the first Apple that returns true for some function.
+	// False is returned if none match.
+	Find(fn func(Apple) bool) (Apple, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

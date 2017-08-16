@@ -9,7 +9,7 @@ package immutable
 
 import (
 
-    "github.com/rickb777/runtemplate/builtintest/testtypes"
+	"github.com/rickb777/runtemplate/builtintest/testtypes"
 
 )
 
@@ -39,9 +39,9 @@ func ConvertX2EmailSet(values ...interface{}) (X2EmailSet, bool) {
 	for _, i := range values {
 		v, ok := i.(testtypes.Email)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -68,7 +68,7 @@ func (set X2EmailSet) ToSlice() []testtypes.Email {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set *X2EmailSet) ToInterfaceSlice() []interface{} {
+func (set X2EmailSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
 	for _, v := range set.m {
@@ -310,7 +310,7 @@ func (set X2EmailSet) Find(fn func(testtypes.Email) bool) (testtypes.Email, bool
 	}
 
 
-    var empty testtypes.Email
+	var empty testtypes.Email
 	return empty, false
 
 }

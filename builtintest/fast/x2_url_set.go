@@ -10,7 +10,7 @@ import (
 
 	"bytes"
 	"fmt"
-    "net/url"
+	"net/url"
 
 )
 
@@ -40,9 +40,9 @@ func ConvertX2URLSet(values ...interface{}) (X2URLSet, bool) {
 	for _, i := range values {
 		v, ok := i.(url.URL)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -307,7 +307,7 @@ func (set X2URLSet) Find(fn func(url.URL) bool) (url.URL, bool) {
 	}
 
 
-    var empty url.URL
+	var empty url.URL
 	return empty, false
 
 }

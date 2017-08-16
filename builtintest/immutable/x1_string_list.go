@@ -558,7 +558,7 @@ func (sl sortableX1StringList) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
-// SortBy alters the list so that the elements are sorted by a specified ordering.
+// SortBy returns a new list in which the elements are sorted by a specified ordering.
 func (list *X1StringList) SortBy(less func(i, j string) bool) *X1StringList {
 
 	result := NewX1StringList(list.m...)
@@ -566,7 +566,7 @@ func (list *X1StringList) SortBy(less func(i, j string) bool) *X1StringList {
     return result
 }
 
-// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
 func (list *X1StringList) StableSortBy(less func(i, j string) bool) *X1StringList {
 

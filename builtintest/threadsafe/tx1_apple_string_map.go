@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=Apple Type=string
-// options: Comparable:<no value> Stringer:<no value> KeySlice:<no value> Mutable:always
+// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> Mutable:always
 
 package threadsafe
 
@@ -183,7 +183,7 @@ func (mm TX1AppleStringMap) DropWhere(fn func(Apple, string) bool) TX1AppleStrin
 	removed := make(TX1AppleStringTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, TX1AppleStringTuple{k, v})
+			removed = append(removed, TX1AppleStringTuple{k, v})
 			delete(mm.m, k)
 		}
 	}

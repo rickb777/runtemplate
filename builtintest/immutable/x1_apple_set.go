@@ -32,9 +32,9 @@ func ConvertX1AppleSet(values ...interface{}) (X1AppleSet, bool) {
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -61,7 +61,7 @@ func (set X1AppleSet) ToSlice() []Apple {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set *X1AppleSet) ToInterfaceSlice() []interface{} {
+func (set X1AppleSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
 	for _, v := range set.m {
@@ -303,7 +303,7 @@ func (set X1AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 	}
 
 
-    var empty Apple
+	var empty Apple
 	return empty, false
 
 }

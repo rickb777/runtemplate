@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from fast/map.tpl with Key=Email Type=string
-// options: Comparable:<no value> Stringer:true KeySlice:EmailSlice Mutable:always
+// options: Comparable:<no value> Stringer:true KeyList:<no value> Mutable:always
 
 package fast
 
@@ -10,7 +10,6 @@ import (
 
 	"bytes"
 	"fmt"
-	"sort"
 )
 
 // TX1EmailStringMap is the primary type that represents a thread-safe map
@@ -161,7 +160,7 @@ func (mm TX1EmailStringMap) DropWhere(fn func(Email, string) bool) TX1EmailStrin
 	removed := make(TX1EmailStringTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, TX1EmailStringTuple{k, v})
+			removed = append(removed, TX1EmailStringTuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -287,20 +286,13 @@ func (mm TX1EmailStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	b.WriteString(pfx)
 	sep := ""
 
-    keys := make(EmailSlice, 0, len(mm.m))
-	for k, _ := range mm.m {
-	    keys  = append(keys, k)
-	}
-    sort.Sort(keys)
-
-	for _, k := range keys {
-	    v := mm.m[k]
+	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
 	}
 
-    b.WriteString(sfx)
+	b.WriteString(sfx)
 	return b
 }
 

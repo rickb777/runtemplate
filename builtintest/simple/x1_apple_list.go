@@ -43,10 +43,10 @@ func ConvertX1AppleList(values ...interface{}) (X1AppleList, bool) {
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result = append(result, v)
-	    }
+			result = append(result, v)
+		}
 	}
 
 	return result, good
@@ -326,7 +326,7 @@ func (list X1AppleList) Find(fn func(Apple) bool) (Apple, bool) {
 	}
 
 
-    var empty Apple
+	var empty Apple
 	return empty, false
 
 }
@@ -487,8 +487,8 @@ func (list X1AppleList) Equals(other X1AppleList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableX1AppleList struct {
-    less func(i, j Apple) bool
-    m []Apple
+	less func(i, j Apple) bool
+	m []Apple
 }
 
 func (sl sortableX1AppleList) Less(i, j int) bool {
@@ -504,16 +504,20 @@ func (sl sortableX1AppleList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list X1AppleList) SortBy(less func(i, j Apple) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list X1AppleList) SortBy(less func(i, j Apple) bool) X1AppleList {
 
-    sort.Sort(sortableX1AppleList{less, list})
+	sort.Sort(sortableX1AppleList{less, list})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list X1AppleList) StableSortBy(less func(i, j Apple) bool) {
+func (list X1AppleList) StableSortBy(less func(i, j Apple) bool) X1AppleList {
 
-    sort.Stable(sortableX1AppleList{less, list})
+	sort.Stable(sortableX1AppleList{less, list})
+	return list
 }
 
 

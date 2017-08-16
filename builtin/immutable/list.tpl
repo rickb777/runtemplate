@@ -580,7 +580,7 @@ func (sl sortable{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
-// SortBy alters the list so that the elements are sorted by a specified ordering.
+// SortBy returns a new list in which the elements are sorted by a specified ordering.
 func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := New{{.UPrefix}}{{.UType}}List(list.m...)
@@ -588,7 +588,7 @@ func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) *
     return result
 }
 
-// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
 func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bool) *{{.UPrefix}}{{.UType}}List {
 
@@ -601,14 +601,14 @@ func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) b
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
 
-// Sorted alters the list so that the elements are sorted by their natural ordering.
+// Sorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *{{.UPrefix}}{{.UType}}List) Sorted() *{{.UPrefix}}{{.UType}}List {
     return list.SortBy(func(a, b {{.Type}}) bool {
         return a < b
     })
 }
 
-// StableSorted alters the list so that the elements are sorted by their natural ordering.
+// StableSorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *{{.UPrefix}}{{.UType}}List) StableSorted() *{{.UPrefix}}{{.UType}}List {
     return list.StableSortBy(func(a, b {{.Type}}) bool {
         return a < b

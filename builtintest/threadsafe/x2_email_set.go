@@ -9,7 +9,7 @@ package threadsafe
 import (
 
 	"sync"
-    "github.com/rickb777/runtemplate/builtintest/testtypes"
+	"github.com/rickb777/runtemplate/builtintest/testtypes"
 
 )
 
@@ -41,9 +41,9 @@ func ConvertX2EmailSet(values ...interface{}) (X2EmailSet, bool) {
 	for _, i := range values {
 		v, ok := i.(testtypes.Email)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -350,7 +350,7 @@ func (set X2EmailSet) Find(fn func(testtypes.Email) bool) (testtypes.Email, bool
 	}
 
 
-    var empty testtypes.Email
+	var empty testtypes.Email
 	return empty, false
 
 }

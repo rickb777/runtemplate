@@ -5,7 +5,7 @@ package immutable
 
 
 import (
-    "math/big"
+	"math/big"
 )
 
 // X2IntSizer defines an interface for sizing methods on big.Int collections.
@@ -34,6 +34,9 @@ type X2IntCollection interface {
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []big.Int
 
+	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
+	ToInterfaceSlice() []interface{}
+
 	// Exists verifies that one or more elements of X2IntCollection return true for the passed func.
 	Exists(fn func(big.Int) bool) bool
 
@@ -43,9 +46,9 @@ type X2IntCollection interface {
 	// Foreach iterates over X2IntCollection and executes the passed func against each element.
 	Foreach(fn func(big.Int))
 
-    // Find returns the first big.Int that returns true for some function.
-    // False is returned if none match.
-    Find(fn func(big.Int) bool) (big.Int, bool)
+	// Find returns the first big.Int that returns true for some function.
+	// False is returned if none match.
+	Find(fn func(big.Int) bool) (big.Int, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

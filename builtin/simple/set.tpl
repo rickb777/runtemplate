@@ -12,7 +12,7 @@ import (
 	"bytes"
 	"fmt" {{- end}}
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end -}}
 )
 
@@ -36,7 +36,7 @@ func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UTy
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if !ok {
-		    return set, false
+			return set, false
 		}
 		set[v] = struct{}{}
 	}

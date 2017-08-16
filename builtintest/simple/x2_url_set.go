@@ -11,7 +11,7 @@ import (
 
 	"bytes"
 	"fmt"
-    "net/url"
+	"net/url"
 )
 
 // X2URLSet is the primary type that represents a set
@@ -33,7 +33,7 @@ func ConvertX2URLSet(values ...interface{}) (X2URLSet, bool) {
 	for _, i := range values {
 		v, ok := i.(url.URL)
 		if !ok {
-		    return set, false
+			return set, false
 		}
 		set[v] = struct{}{}
 	}

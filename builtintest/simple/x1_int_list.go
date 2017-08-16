@@ -45,10 +45,10 @@ func ConvertX1IntList(values ...interface{}) (X1IntList, bool) {
 	for _, i := range values {
 		v, ok := i.(int)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result = append(result, v)
-	    }
+			result = append(result, v)
+		}
 	}
 
 	return result, good
@@ -328,7 +328,7 @@ func (list X1IntList) Find(fn func(int) bool) (int, bool) {
 	}
 
 
-    var empty int
+	var empty int
 	return empty, false
 
 }
@@ -502,8 +502,8 @@ func (list X1IntList) Equals(other X1IntList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableX1IntList struct {
-    less func(i, j int) bool
-    m []int
+	less func(i, j int) bool
+	m []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {
@@ -519,16 +519,20 @@ func (sl sortableX1IntList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list X1IntList) SortBy(less func(i, j int) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list X1IntList) SortBy(less func(i, j int) bool) X1IntList {
 
-    sort.Sort(sortableX1IntList{less, list})
+	sort.Sort(sortableX1IntList{less, list})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list X1IntList) StableSortBy(less func(i, j int) bool) {
+func (list X1IntList) StableSortBy(less func(i, j int) bool) X1IntList {
 
-    sort.Stable(sortableX1IntList{less, list})
+	sort.Stable(sortableX1IntList{less, list})
+	return list
 }
 
 
@@ -536,17 +540,17 @@ func (list X1IntList) StableSortBy(less func(i, j int) bool) {
 // These methods are included when int is ordered.
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
-func (list X1IntList) Sorted() {
-    list.SortBy(func(a, b int) bool {
-        return a < b
-    })
+func (list X1IntList) Sorted() X1IntList {
+	return list.SortBy(func(a, b int) bool {
+		return a < b
+	})
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
-func (list X1IntList) StableSorted() {
-    list.StableSortBy(func(a, b int) bool {
-        return a < b
-    })
+func (list X1IntList) StableSorted() X1IntList {
+	return list.StableSortBy(func(a, b int) bool {
+		return a < b
+	})
 }
 
 // Min returns the first element containing the minimum value, when compared to other elements.

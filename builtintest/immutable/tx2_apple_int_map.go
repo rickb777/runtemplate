@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=Apple Type=big.Int
-// options: Comparable:<no value> Stringer:<no value> Mutable:disabled
+// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> Mutable:disabled
 
 package immutable
 

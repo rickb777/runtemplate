@@ -11,7 +11,7 @@ import (
 	"bytes"
 	"fmt" {{- end}}
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end}}
 )
 
@@ -41,9 +41,9 @@ func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UTy
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -310,7 +310,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}},
 {{if eq .TypeStar "*"}}
 	return nil, false
 {{else}}
-    var empty {{.Type}}
+	var empty {{.Type}}
 	return empty, false
 {{end}}
 }

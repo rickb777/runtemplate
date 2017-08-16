@@ -39,9 +39,9 @@ func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
 	for _, i := range values {
 		v, ok := i.(string)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -68,7 +68,7 @@ func (set X1StringSet) ToSlice() []string {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set *X1StringSet) ToInterfaceSlice() []interface{} {
+func (set X1StringSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
 	for _, v := range set.m {
@@ -310,7 +310,7 @@ func (set X1StringSet) Find(fn func(string) bool) (string, bool) {
 	}
 
 
-    var empty string
+	var empty string
 	return empty, false
 
 }

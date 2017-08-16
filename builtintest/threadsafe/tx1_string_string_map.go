@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=string Type=string
-// options: Comparable:true Stringer:true KeySlice:<no value> Mutable:always
+// options: Comparable:true Stringer:true KeyList:<no value> Mutable:always
 
 package threadsafe
 
@@ -185,7 +185,7 @@ func (mm TX1StringStringMap) DropWhere(fn func(string, string) bool) TX1StringSt
 	removed := make(TX1StringStringTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, TX1StringStringTuple{k, v})
+			removed = append(removed, TX1StringStringTuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -352,9 +352,9 @@ func (mm TX1StringStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer 
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 
-    b.WriteString(sfx)
+	b.WriteString(sfx)
 	return b
 }
 

@@ -25,7 +25,7 @@ func ConvertX1AppleSet(values ...interface{}) (X1AppleSet, bool) {
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if !ok {
-		    return set, false
+			return set, false
 		}
 		set[v] = struct{}{}
 	}

@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} Mutable:disabled
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} Mutable:disabled
 
 package {{.Package}}
 
@@ -10,10 +10,7 @@ package {{.Package}}
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt"
-{{- if .HasKeySlice}}
-	"sort"
-{{- end}}{{- end}}
+	"fmt"{{- end}}
 {{- if .HasImport}}
     {{.Import}}
 {{end}}
@@ -233,12 +230,12 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-{{if .HasKeySlice}}
-    keys := make({{.KeySlice}}, 0, len(mm.m))
+{{if .HasKeyList}}
+    keys := make({{.KeyList}}, 0, len(mm.m))
 	for k, _ := range mm.m {
 	    keys  = append(keys, k)
 	}
-    sort.Sort(keys)
+    keys.Sorted()
 
 	for _, k := range keys {
 	    v := mm.m[k]

@@ -2,20 +2,17 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeySlice:{{.KeySlice}} Mutable:always
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} Mutable:always
 
 package {{.Package}}
 
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt"
-{{- if .HasKeySlice}}
-	"sort"
-{{- end}}{{- end}}
+	"fmt" {{- end}}
 	"sync"
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end}}
 )
 
@@ -191,7 +188,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PTy
 	removed := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+			removed = append(removed, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -356,15 +353,15 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	sep := ""
 	mm.s.RLock()
 	defer mm.s.RUnlock()
-{{if .HasKeySlice}}
-    keys := make({{.KeySlice}}, 0, len(mm.m))
+{{if .HasKeyList}}
+	keys := make({{.KeyList}}, 0, len(mm.m))
 	for k, _ := range mm.m {
-	    keys  = append(keys, k)
+		keys  = append(keys, k)
 	}
-    sort.Sort(keys)
+	keys.Sorted()
 
 	for _, k := range keys {
-	    v := mm.m[k]
+		v := mm.m[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
@@ -374,9 +371,9 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 {{end}}
-    b.WriteString(sfx)
+	b.WriteString(sfx)
 	return b
 }
 {{end}}

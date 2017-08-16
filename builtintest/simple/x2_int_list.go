@@ -10,7 +10,7 @@ import (
 
 	"math/rand"
 	"sort"
-    "math/big"
+	"math/big"
 
 )
 
@@ -45,10 +45,10 @@ func ConvertX2IntList(values ...interface{}) (X2IntList, bool) {
 	for _, i := range values {
 		v, ok := i.(big.Int)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result = append(result, v)
-	    }
+			result = append(result, v)
+		}
 	}
 
 	return result, good
@@ -309,7 +309,7 @@ func (list X2IntList) Find(fn func(big.Int) bool) (big.Int, bool) {
 	}
 
 
-    var empty big.Int
+	var empty big.Int
 	return empty, false
 
 }
@@ -449,8 +449,8 @@ func (list X2IntList) LastIndexWhere2(p func(big.Int) bool, before int) int {
 //-------------------------------------------------------------------------------------------------
 
 type sortableX2IntList struct {
-    less func(i, j big.Int) bool
-    m []big.Int
+	less func(i, j big.Int) bool
+	m []big.Int
 }
 
 func (sl sortableX2IntList) Less(i, j int) bool {
@@ -466,16 +466,20 @@ func (sl sortableX2IntList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list X2IntList) SortBy(less func(i, j big.Int) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list X2IntList) SortBy(less func(i, j big.Int) bool) X2IntList {
 
-    sort.Sort(sortableX2IntList{less, list})
+	sort.Sort(sortableX2IntList{less, list})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list X2IntList) StableSortBy(less func(i, j big.Int) bool) {
+func (list X2IntList) StableSortBy(less func(i, j big.Int) bool) X2IntList {
 
-    sort.Stable(sortableX2IntList{less, list})
+	sort.Stable(sortableX2IntList{less, list})
+	return list
 }
 
 

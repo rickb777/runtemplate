@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=string Type=string
-// options: Comparable:true Stringer:true Mutable:always
+// options: Comparable:true Stringer:true KeyList:<no value> Mutable:always
 
 package simple
 
@@ -252,7 +252,7 @@ func (mm TX1StringStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer 
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 
 	b.WriteString(sfx)
 	return b

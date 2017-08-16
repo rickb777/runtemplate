@@ -31,7 +31,7 @@ func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
 	for _, i := range values {
 		v, ok := i.(string)
 		if !ok {
-		    return set, false
+			return set, false
 		}
 		set[v] = struct{}{}
 	}

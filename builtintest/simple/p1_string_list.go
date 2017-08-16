@@ -45,10 +45,10 @@ func ConvertP1StringList(values ...interface{}) (P1StringList, bool) {
 	for _, i := range values {
 		v, ok := i.(*string)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result = append(result, v)
-	    }
+			result = append(result, v)
+		}
 	}
 
 	return result, good
@@ -488,8 +488,8 @@ func (list P1StringList) Equals(other P1StringList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableP1StringList struct {
-    less func(i, j string) bool
-    m []*string
+	less func(i, j string) bool
+	m []*string
 }
 
 func (sl sortableP1StringList) Less(i, j int) bool {
@@ -505,16 +505,20 @@ func (sl sortableP1StringList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list P1StringList) SortBy(less func(i, j string) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list P1StringList) SortBy(less func(i, j string) bool) P1StringList {
 
-    sort.Sort(sortableP1StringList{less, list})
+	sort.Sort(sortableP1StringList{less, list})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list P1StringList) StableSortBy(less func(i, j string) bool) {
+func (list P1StringList) StableSortBy(less func(i, j string) bool) P1StringList {
 
-    sort.Stable(sortableP1StringList{less, list})
+	sort.Stable(sortableP1StringList{less, list})
+	return list
 }
 
 

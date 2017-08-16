@@ -38,9 +38,9 @@ func ConvertX1IntSet(values ...interface{}) (X1IntSet, bool) {
 	for _, i := range values {
 		v, ok := i.(int)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -305,7 +305,7 @@ func (set X1IntSet) Find(fn func(int) bool) (int, bool) {
 	}
 
 
-    var empty int
+	var empty int
 	return empty, false
 
 }

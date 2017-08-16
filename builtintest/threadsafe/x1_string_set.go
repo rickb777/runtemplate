@@ -41,9 +41,9 @@ func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
 	for _, i := range values {
 		v, ok := i.(string)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -350,7 +350,7 @@ func (set X1StringSet) Find(fn func(string) bool) (string, bool) {
 	}
 
 
-    var empty string
+	var empty string
 	return empty, false
 
 }

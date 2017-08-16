@@ -140,20 +140,28 @@ func TestIntListPartition(t *testing.T) {
 func TestIntListSort(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
 
-	a.Sorted()
+	b := a.Sorted()
 
 	if !a.Equals(NewX1IntList(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a)
+	}
+
+	if !b.Equals(NewX1IntList(-2, 4, 7, 9, 13)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
 	}
 }
 
 func TestIntListStableSort(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
 
-	a.StableSorted()
+	b := a.StableSorted()
 
 	if !a.Equals(NewX1IntList(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a)
+	}
+
+	if !b.Equals(NewX1IntList(-2, 4, 7, 9, 13)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", b)
 	}
 }
 

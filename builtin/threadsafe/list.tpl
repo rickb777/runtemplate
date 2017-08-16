@@ -11,10 +11,10 @@ import (
 	"bytes"
 	"fmt" {{- end}}
 	"math/rand"
-    "sort"
+	"sort"
 	"sync"
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end}}
 )
 
@@ -56,10 +56,10 @@ func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.U
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result.m = append(result.m, v)
-	    }
+			result.m = append(result.m, v)
+		}
 	}
 
 	return result, good
@@ -432,7 +432,7 @@ func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}
 {{if eq .TypeStar "*"}}
 	return nil, false
 {{else}}
-    var empty {{.Type}}
+	var empty {{.Type}}
 	return empty, false
 {{end}}
 }
@@ -638,8 +638,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 //-------------------------------------------------------------------------------------------------
 
 type sortable{{.UPrefix}}{{.UType}}List struct {
-    less func(i, j {{.Type}}) bool
-    m []{{.PType}}
+	less func(i, j {{.Type}}) bool
+	m []{{.PType}}
 }
 
 func (sl sortable{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
@@ -655,20 +655,24 @@ func (sl sortable{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) *{{.UPrefix}}{{.UType}}List {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
+	sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bool) {
+func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bool) *{{.UPrefix}}{{.UType}}List {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
+	sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
+	return list
 }
 
 {{if .Ordered}}
@@ -676,17 +680,19 @@ func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) b
 // These methods are included when {{.Type}} is ordered.
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
-func (list *{{.UPrefix}}{{.UType}}List) Sorted() {
-    list.SortBy(func(a, b {{.Type}}) bool {
-        return a < b
-    })
+// Sorting happens in-place; the modified list is returned.
+func (list *{{.UPrefix}}{{.UType}}List) Sorted() *{{.UPrefix}}{{.UType}}List {
+	return list.SortBy(func(a, b {{.Type}}) bool {
+		return a < b
+	})
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
-func (list *{{.UPrefix}}{{.UType}}List) StableSorted() {
-    list.StableSortBy(func(a, b {{.Type}}) bool {
-        return a < b
-    })
+// Sorting happens in-place; the modified list is returned.
+func (list *{{.UPrefix}}{{.UType}}List) StableSorted() *{{.UPrefix}}{{.UType}}List {
+	return list.StableSortBy(func(a, b {{.Type}}) bool {
+		return a < b
+	})
 }
 
 // Min returns the first element containing the minimum value, when compared to other elements.

@@ -516,7 +516,7 @@ func (sl sortableX2IntList) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
-// SortBy alters the list so that the elements are sorted by a specified ordering.
+// SortBy returns a new list in which the elements are sorted by a specified ordering.
 func (list *X2IntList) SortBy(less func(i, j big.Int) bool) *X2IntList {
 
 	result := NewX2IntList(list.m...)
@@ -524,7 +524,7 @@ func (list *X2IntList) SortBy(less func(i, j big.Int) bool) *X2IntList {
     return result
 }
 
-// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
 func (list *X2IntList) StableSortBy(less func(i, j big.Int) bool) *X2IntList {
 

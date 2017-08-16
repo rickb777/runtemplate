@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} Mutable:always
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} Mutable:always
 
 package {{.Package}}
 
@@ -10,12 +10,9 @@ package {{.Package}}
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt"
-{{- if .HasKeySlice}}
-	"sort"
-{{- end}}{{- end}}
+	"fmt"{{- end}}
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end}}
 )
 
@@ -257,15 +254,15 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	b := &bytes.Buffer{}
 	b.WriteString(pfx)
 	sep := ""
-{{if .HasKeySlice}}
-    keys := make({{.KeySlice}}, 0, len(mm))
+{{if .HasKeyList}}
+	keys := make({{.KeyList}}, 0, len(mm))
 	for k, _ := range mm {
-	    keys  = append(keys, k)
+		keys  = append(keys, k)
 	}
-    sort.Sort(keys)
+	keys.Sorted()
 
 	for _, k := range keys {
-	    v := mm[k]
+		v := mm[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
@@ -275,7 +272,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 {{end}}
 	b.WriteString(sfx)
 	return b

@@ -41,9 +41,9 @@ type X1PearCollection interface {
 	// Foreach iterates over X1PearCollection and executes the passed func against each element.
 	Foreach(fn func(Pear))
 
-    // Find returns the first Pear that returns true for some function.
-    // False is returned if none match.
-    Find(fn func(Pear) bool) (Pear, bool)
+	// Find returns the first Pear that returns true for some function.
+	// False is returned if none match.
+	Find(fn func(Pear) bool) (Pear, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

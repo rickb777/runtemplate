@@ -2,13 +2,13 @@
 // Thread-safe.
 //
 // Generated from fast/map.tpl with Key=Apple Type=big.Int
-// options: Comparable:<no value> Stringer:<no value> KeySlice:<no value> Mutable:always
+// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> Mutable:always
 
 package fast
 
 import (
 
-    "math/big"
+	"math/big"
 
 )
 
@@ -160,7 +160,7 @@ func (mm TX2AppleIntMap) DropWhere(fn func(Apple, big.Int) bool) TX2AppleIntTupl
 	removed := make(TX2AppleIntTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-		    removed = append(removed, TX2AppleIntTuple{k, v})
+			removed = append(removed, TX2AppleIntTuple{k, v})
 			delete(mm.m, k)
 		}
 	}

@@ -36,9 +36,9 @@ func ConvertX1AppleSet(values ...interface{}) (X1AppleSet, bool) {
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	set.m[v] = struct{}{}
+			set.m[v] = struct{}{}
 		}
 	}
 	return set, good
@@ -303,7 +303,7 @@ func (set X1AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 	}
 
 
-    var empty Apple
+	var empty Apple
 	return empty, false
 
 }

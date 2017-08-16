@@ -88,6 +88,6 @@ func (p {{.UType}}Slice) Len() int           { return len(p) }
 func (p {{.UType}}Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p {{.UType}}Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
-// Sort is a convenience method.
-func (p {{.UType}}Slice) Sort() { sort.Sort(p) }
+// SortedN is a convenience method.
+func (p {{.UType}}Slice) Sorted() { sort.Sort(p) }
 {{end}}

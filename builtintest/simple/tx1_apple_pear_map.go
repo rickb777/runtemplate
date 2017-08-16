@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=Apple Type=Pear
-// options: Comparable:<no value> Stringer:true Mutable:always
+// options: Comparable:<no value> Stringer:true KeyList:<no value> Mutable:always
 
 package simple
 
@@ -235,7 +235,7 @@ func (mm TX1ApplePearMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = mid
-    }
+	}
 
 	b.WriteString(sfx)
 	return b

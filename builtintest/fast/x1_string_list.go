@@ -11,7 +11,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
-    "sort"
+	"sort"
 )
 
 // X1StringList contains a slice of type string. Use it where you would use []string.
@@ -50,10 +50,10 @@ func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
 	for _, i := range values {
 		v, ok := i.(string)
 		if !ok {
-		    good = false
+			good = false
 		} else {
-	    	result.m = append(result.m, v)
-	    }
+			result.m = append(result.m, v)
+		}
 	}
 
 	return result, good
@@ -379,7 +379,7 @@ func (list X1StringList) Find(fn func(string) bool) (string, bool) {
 	}
 
 
-    var empty string
+	var empty string
 	return empty, false
 
 }
@@ -547,8 +547,8 @@ func (list *X1StringList) Equals(other *X1StringList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableX1StringList struct {
-    less func(i, j string) bool
-    m []string
+	less func(i, j string) bool
+	m []string
 }
 
 func (sl sortableX1StringList) Less(i, j int) bool {
@@ -564,16 +564,20 @@ func (sl sortableX1StringList) Swap(i, j int) {
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
-func (list *X1StringList) SortBy(less func(i, j string) bool) {
+// Sorting happens in-place; the modified list is returned.
+func (list *X1StringList) SortBy(less func(i, j string) bool) *X1StringList {
 
-    sort.Sort(sortableX1StringList{less, list.m})
+	sort.Sort(sortableX1StringList{less, list.m})
+	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list *X1StringList) StableSortBy(less func(i, j string) bool) {
+func (list *X1StringList) StableSortBy(less func(i, j string) bool) *X1StringList {
 
-    sort.Stable(sortableX1StringList{less, list.m})
+	sort.Stable(sortableX1StringList{less, list.m})
+	return list
 }
 
 
