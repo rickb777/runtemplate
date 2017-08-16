@@ -40,18 +40,15 @@ func NewP1IntList(values ...*int) P1IntList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertP1IntList(values ...interface{}) (P1IntList, bool) {
 	result := newP1IntList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(*int)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // BuildP1IntListFromChan constructs a new P1IntList from a channel that supplies a sequence

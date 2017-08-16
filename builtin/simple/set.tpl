@@ -33,14 +33,15 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set
 // The returned boolean will be false if any of the values could not be converted correctly.
 func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UType}}Set, bool) {
 	set := make({{.UPrefix}}{{.UType}}Set)
+
 	for _, i := range values {
 		v, ok := i.({{.PType}})
-		if !ok {
-			return set, false
+		if ok {
+		    set[v] = struct{}{}
 		}
-		set[v] = struct{}{}
 	}
-	return set, true
+
+	return set, len(set) == len(values)
 }
 
 // Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence

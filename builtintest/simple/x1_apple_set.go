@@ -22,14 +22,15 @@ func NewX1AppleSet(values ...Apple) X1AppleSet {
 // The returned boolean will be false if any of the values could not be converted correctly.
 func ConvertX1AppleSet(values ...interface{}) (X1AppleSet, bool) {
 	set := make(X1AppleSet)
+
 	for _, i := range values {
 		v, ok := i.(Apple)
-		if !ok {
-			return set, false
+		if ok {
+		    set[v] = struct{}{}
 		}
-		set[v] = struct{}{}
 	}
-	return set, true
+
+	return set, len(set) == len(values)
 }
 
 // BuildX1AppleSetFromChan constructs a new X1AppleSet from a channel that supplies a sequence

@@ -40,18 +40,15 @@ func NewX1StringList(values ...string) X1StringList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertX1StringList(values ...interface{}) (X1StringList, bool) {
 	result := newX1StringList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(string)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // BuildX1StringListFromChan constructs a new X1StringList from a channel that supplies a sequence

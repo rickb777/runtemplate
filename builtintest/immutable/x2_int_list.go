@@ -45,18 +45,15 @@ func NewX2IntList(values ...big.Int) *X2IntList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertX2IntList(values ...interface{}) (*X2IntList, bool) {
 	result := newX2IntList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(big.Int)
-		if !ok {
-		    good = false
-		} else {
+		if ok {
 	    	result.m = append(result.m, v)
 	    }
 	}
 
-	return result, good
+	return result, len(result.m) == len(values)
 }
 
 // BuildX2IntListFromChan constructs a new X2IntList from a channel that supplies a sequence

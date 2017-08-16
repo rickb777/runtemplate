@@ -36,17 +36,14 @@ func NewX2URLSet(values ...url.URL) X2URLSet {
 // The returned set will contain all the values that were correctly converted.
 func ConvertX2URLSet(values ...interface{}) (X2URLSet, bool) {
 	set := NewX2URLSet()
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(url.URL)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			set.m[v] = struct{}{}
 		}
 	}
-	return set, good
+	return set, len(set.m) == len(values)
 }
 
 // BuildX2URLSetFromChan constructs a new X2URLSet from a channel that supplies a sequence

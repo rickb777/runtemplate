@@ -33,17 +33,14 @@ func NewX2EmailSet(values ...testtypes.Email) X2EmailSet {
 // The returned set will contain all the values that were correctly converted.
 func ConvertX2EmailSet(values ...interface{}) (X2EmailSet, bool) {
 	set := NewX2EmailSet()
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(testtypes.Email)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			set.m[v] = struct{}{}
 		}
 	}
-	return set, good
+	return set, len(set.m) == len(values)
 }
 
 // BuildX2EmailSetFromChan constructs a new X2EmailSet from a channel that supplies a sequence

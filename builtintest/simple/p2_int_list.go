@@ -40,18 +40,15 @@ func NewP2IntList(values ...*big.Int) P2IntList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertP2IntList(values ...interface{}) (P2IntList, bool) {
 	result := newP2IntList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(*big.Int)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // BuildP2IntListFromChan constructs a new P2IntList from a channel that supplies a sequence

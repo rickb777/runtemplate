@@ -40,18 +40,15 @@ func NewX1IntList(values ...int) X1IntList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertX1IntList(values ...interface{}) (X1IntList, bool) {
 	result := newX1IntList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(int)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // BuildX1IntListFromChan constructs a new X1IntList from a channel that supplies a sequence

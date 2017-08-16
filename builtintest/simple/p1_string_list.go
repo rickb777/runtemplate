@@ -40,18 +40,15 @@ func NewP1StringList(values ...*string) P1StringList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertP1StringList(values ...interface{}) (P1StringList, bool) {
 	result := newP1StringList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(*string)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // BuildP1StringListFromChan constructs a new P1StringList from a channel that supplies a sequence

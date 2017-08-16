@@ -43,18 +43,15 @@ func NewX1AppleList(values ...Apple) *X1AppleList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertX1AppleList(values ...interface{}) (*X1AppleList, bool) {
 	result := newX1AppleList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(Apple)
-		if !ok {
-		    good = false
-		} else {
+		if ok {
 	    	result.m = append(result.m, v)
 	    }
 	}
 
-	return result, good
+	return result, len(result.m) == len(values)
 }
 
 // BuildX1AppleListFromChan constructs a new X1AppleList from a channel that supplies a sequence

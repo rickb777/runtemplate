@@ -36,17 +36,14 @@ func NewX1StringSet(values ...string) X1StringSet {
 // The returned set will contain all the values that were correctly converted.
 func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
 	set := NewX1StringSet()
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(string)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			set.m[v] = struct{}{}
 		}
 	}
-	return set, good
+	return set, len(set.m) == len(values)
 }
 
 // BuildX1StringSetFromChan constructs a new X1StringSet from a channel that supplies a sequence

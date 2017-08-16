@@ -43,18 +43,15 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}L
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) ({{.UPrefix}}{{.UType}}List, bool) {
 	result := new{{.UPrefix}}{{.UType}}List(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.({{.PType}})
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence

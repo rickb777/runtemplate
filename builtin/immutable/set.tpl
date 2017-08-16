@@ -38,17 +38,14 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set
 // The returned set will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UType}}Set, bool) {
 	set := New{{.UPrefix}}{{.UType}}Set()
-	good := true
 
 	for _, i := range values {
 		v, ok := i.({{.PType}})
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			set.m[v] = struct{}{}
 		}
 	}
-	return set, good
+	return set, len(set.m) == len(values)
 }
 
 // Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence

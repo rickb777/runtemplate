@@ -28,14 +28,15 @@ func NewX1IntSet(values ...int) X1IntSet {
 // The returned boolean will be false if any of the values could not be converted correctly.
 func ConvertX1IntSet(values ...interface{}) (X1IntSet, bool) {
 	set := make(X1IntSet)
+
 	for _, i := range values {
 		v, ok := i.(int)
-		if !ok {
-			return set, false
+		if ok {
+		    set[v] = struct{}{}
 		}
-		set[v] = struct{}{}
 	}
-	return set, true
+
+	return set, len(set) == len(values)
 }
 
 // BuildX1IntSetFromChan constructs a new X1IntSet from a channel that supplies a sequence

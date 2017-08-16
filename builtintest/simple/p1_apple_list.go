@@ -38,18 +38,15 @@ func NewP1AppleList(values ...*Apple) P1AppleList {
 // The returned list will contain all the values that were correctly converted.
 func ConvertP1AppleList(values ...interface{}) (P1AppleList, bool) {
 	result := newP1AppleList(0, len(values))
-	good := true
 
 	for _, i := range values {
 		v, ok := i.(*Apple)
-		if !ok {
-			good = false
-		} else {
+		if ok {
 			result = append(result, v)
 		}
 	}
 
-	return result, good
+	return result, len(result) == len(values)
 }
 
 // BuildP1AppleListFromChan constructs a new P1AppleList from a channel that supplies a sequence
