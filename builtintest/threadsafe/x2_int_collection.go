@@ -34,6 +34,9 @@ type X2IntCollection interface {
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []big.Int
 
+	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
+	ToInterfaceSlice() []interface{}
+
 	// Exists verifies that one or more elements of X2IntCollection return true for the passed func.
 	Exists(fn func(big.Int) bool) bool
 

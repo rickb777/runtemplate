@@ -19,14 +19,32 @@ type X1StringSet struct {
 }
 
 // NewX1StringSet creates and returns a reference to an empty set.
-func NewX1StringSet(a ...string) X1StringSet {
+func NewX1StringSet(values ...string) X1StringSet {
 	set := X1StringSet{
 		m: make(map[string]struct{}),
 	}
-	for _, i := range a {
+	for _, i := range values {
 		set.m[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX1StringSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
+func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
+	set := NewX1StringSet()
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(string)
+		if !ok {
+		    good = false
+		} else {
+	    	set.m[v] = struct{}{}
+		}
+	}
+	return set, good
 }
 
 // BuildX1StringSetFromChan constructs a new X1StringSet from a channel that supplies a sequence
@@ -39,10 +57,21 @@ func BuildX1StringSetFromChan(source <-chan string) X1StringSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X1StringSet) ToSlice() []string {
+
 	var s []string
 	for v, _ := range set.m {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set *X1StringSet) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
+	for _, v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -109,6 +138,7 @@ func (set X1StringSet) doAdd(i string) {
 
 // Contains determines if a given item is already in the set.
 func (set X1StringSet) Contains(i string) bool {
+
 	_, found := set.m[i]
 	return found
 }
@@ -121,7 +151,6 @@ func (set X1StringSet) ContainsAll(i ...string) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -135,7 +164,6 @@ func (set X1StringSet) IsSubset(other X1StringSet) bool {
 			return false
 		}
 	}
-
 	return true
 }
 

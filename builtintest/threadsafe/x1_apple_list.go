@@ -8,8 +8,9 @@ package threadsafe
 
 import (
 
-	"sync"
 	"math/rand"
+    "sort"
+	"sync"
 )
 
 // X1AppleList contains a slice of type Apple. Use it where you would use []Apple.
@@ -40,6 +41,25 @@ func NewX1AppleList(values ...Apple) *X1AppleList {
 	return result
 }
 
+// ConvertX1AppleList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertX1AppleList(values ...interface{}) (*X1AppleList, bool) {
+	result := newX1AppleList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(Apple)
+		if !ok {
+		    good = false
+		} else {
+	    	result.m = append(result.m, v)
+	    }
+	}
+
+	return result, good
+}
+
 // BuildX1AppleListFromChan constructs a new X1AppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildX1AppleListFromChan(source <-chan Apple) *X1AppleList {
@@ -50,12 +70,22 @@ func BuildX1AppleListFromChan(source <-chan Apple) *X1AppleList {
 	return result
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current list as a slice.
 func (list *X1AppleList) ToSlice() []Apple {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []Apple
+	s := make([]Apple, len(list.m), len(list.m))
+	copy(s, list.m)
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list *X1AppleList) ToInterfaceSlice() []interface{} {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []interface{}
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -117,12 +147,12 @@ func (list *X1AppleList) Init() *X1AppleList {
 
 // IsEmpty tests whether X1AppleList is empty.
 func (list *X1AppleList) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether X1AppleList is empty.
 func (list *X1AppleList) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -137,7 +167,7 @@ func (list *X1AppleList) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list - an alias of Len().
+// Size returns the number of items in the list.
 func (list *X1AppleList) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -145,17 +175,7 @@ func (list *X1AppleList) Size() int {
 	return len(list.m)
 }
 
-// Len returns the number of items in the list - an alias of Size().
-// This implements one of the methods needed by sort.Interface (along with Less and Swap).
-func (list *X1AppleList) Len() int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return len(list.m)
-}
-
-// Swap exchanges two elements, which is necessary during sorting etc.
-// This implements one of the methods needed by sort.Interface (along with Len and Less).
+// Swap exchanges two elements.
 func (list *X1AppleList) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -291,7 +311,7 @@ func (list *X1AppleList) Take(n int) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	if n > list.Len() {
+	if n > len(list.m) {
 		return list
 	}
 	result := newX1AppleList(0, 0)
@@ -310,7 +330,7 @@ func (list *X1AppleList) Drop(n int) *X1AppleList {
 	defer list.s.RUnlock()
 
 	result := newX1AppleList(0, 0)
-	l := list.Len()
+	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
 	}
@@ -323,7 +343,7 @@ func (list *X1AppleList) TakeLast(n int) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		return list
 	}
@@ -342,7 +362,7 @@ func (list *X1AppleList) DropLast(n int) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		list.m = list.m[l:]
 	} else {
@@ -414,7 +434,7 @@ func (list *X1AppleList) Filter(fn func(Apple) bool) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newX1AppleList(0, list.Len()/2)
+	result := newX1AppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if fn(v) {
@@ -433,8 +453,8 @@ func (list *X1AppleList) Partition(p func(Apple) bool) (*X1AppleList, *X1AppleLi
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := newX1AppleList(0, list.Len()/2)
-	others := newX1AppleList(0, list.Len()/2)
+	matching := newX1AppleList(0, len(list.m)/2)
+	others := newX1AppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -467,7 +487,7 @@ func (list *X1AppleList) MinBy(less func(Apple, Apple) bool) Apple {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -488,7 +508,7 @@ func (list *X1AppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -507,7 +527,7 @@ func (list *X1AppleList) DistinctBy(equal func(Apple, Apple) bool) *X1AppleList 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newX1AppleList(0, list.Len())
+	result := newX1AppleList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -576,7 +596,7 @@ func (list *X1AppleList) Equals(other *X1AppleList) bool {
 	defer list.s.RUnlock()
 	defer other.s.RUnlock()
 
-	if list.Size() != other.Size() {
+	if len(list.m) != len(other.m) {
 		return false
 	}
 
@@ -587,6 +607,42 @@ func (list *X1AppleList) Equals(other *X1AppleList) bool {
 	}
 
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type sortableX1AppleList struct {
+    less func(i, j Apple) bool
+    m []Apple
+}
+
+func (sl sortableX1AppleList) Less(i, j int) bool {
+	return sl.less(sl.m[i], sl.m[j])
+}
+
+func (sl sortableX1AppleList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableX1AppleList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list *X1AppleList) SortBy(less func(i, j Apple) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Sort(sortableX1AppleList{less, list.m})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list *X1AppleList) StableSortBy(less func(i, j Apple) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Stable(sortableX1AppleList{less, list.m})
 }
 
 

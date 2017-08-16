@@ -10,8 +10,9 @@ import (
 
 	"bytes"
 	"fmt"
-	"sync"
 	"math/rand"
+    "sort"
+	"sync"
 )
 
 // X1IntList contains a slice of type int. Use it where you would use []int.
@@ -42,6 +43,25 @@ func NewX1IntList(values ...int) *X1IntList {
 	return result
 }
 
+// ConvertX1IntList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertX1IntList(values ...interface{}) (*X1IntList, bool) {
+	result := newX1IntList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(int)
+		if !ok {
+		    good = false
+		} else {
+	    	result.m = append(result.m, v)
+	    }
+	}
+
+	return result, good
+}
+
 // BuildX1IntListFromChan constructs a new X1IntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildX1IntListFromChan(source <-chan int) *X1IntList {
@@ -52,12 +72,22 @@ func BuildX1IntListFromChan(source <-chan int) *X1IntList {
 	return result
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current list as a slice.
 func (list *X1IntList) ToSlice() []int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []int
+	s := make([]int, len(list.m), len(list.m))
+	copy(s, list.m)
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list *X1IntList) ToInterfaceSlice() []interface{} {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []interface{}
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -119,12 +149,12 @@ func (list *X1IntList) Init() *X1IntList {
 
 // IsEmpty tests whether X1IntList is empty.
 func (list *X1IntList) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether X1IntList is empty.
 func (list *X1IntList) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -139,7 +169,7 @@ func (list *X1IntList) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list - an alias of Len().
+// Size returns the number of items in the list.
 func (list *X1IntList) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -147,17 +177,7 @@ func (list *X1IntList) Size() int {
 	return len(list.m)
 }
 
-// Len returns the number of items in the list - an alias of Size().
-// This implements one of the methods needed by sort.Interface (along with Less and Swap).
-func (list *X1IntList) Len() int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return len(list.m)
-}
-
-// Swap exchanges two elements, which is necessary during sorting etc.
-// This implements one of the methods needed by sort.Interface (along with Len and Less).
+// Swap exchanges two elements.
 func (list *X1IntList) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -293,7 +313,7 @@ func (list *X1IntList) Take(n int) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	if n > list.Len() {
+	if n > len(list.m) {
 		return list
 	}
 	result := newX1IntList(0, 0)
@@ -312,7 +332,7 @@ func (list *X1IntList) Drop(n int) *X1IntList {
 	defer list.s.RUnlock()
 
 	result := newX1IntList(0, 0)
-	l := list.Len()
+	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
 	}
@@ -325,7 +345,7 @@ func (list *X1IntList) TakeLast(n int) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		return list
 	}
@@ -344,7 +364,7 @@ func (list *X1IntList) DropLast(n int) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		list.m = list.m[l:]
 	} else {
@@ -416,7 +436,7 @@ func (list *X1IntList) Filter(fn func(int) bool) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newX1IntList(0, list.Len()/2)
+	result := newX1IntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if fn(v) {
@@ -435,8 +455,8 @@ func (list *X1IntList) Partition(p func(int) bool) (*X1IntList, *X1IntList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := newX1IntList(0, list.Len()/2)
-	others := newX1IntList(0, list.Len()/2)
+	matching := newX1IntList(0, len(list.m)/2)
+	others := newX1IntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -462,59 +482,46 @@ func (list *X1IntList) CountBy(predicate func(int) bool) (result int) {
 	return
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// These methods are included when int is ordered.
-
-// Less returns true if the element at index i is less than the element at index j.
-// This implements one of the methods needed by sort.Interface (along with Len and Swap).
-// Panics if i or j is out of range.
-func (list *X1IntList) Less(i, j int) bool {
-	return list.m[i] < list.m[j]
-}
-
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *X1IntList) Min() int {
+// MinBy returns an element of X1IntList containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (list *X1IntList) MinBy(less func(int, int) bool) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
 
-	v := list.m[0]
-	m := v
+	m := 0
 	for i := 1; i < l; i++ {
-		v := list.m[i]
-		if v < m {
-			m = v
+		if less(list.m[i], list.m[m]) {
+			m = i
 		}
 	}
-	return m
+	return list.m[m]
 }
 
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *X1IntList) Max() (result int) {
+// MaxBy returns an element of X1IntList containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (list *X1IntList) MaxBy(less func(int, int) bool) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
-
-	v := list.m[0]
-	m := v
+	m := 0
 	for i := 1; i < l; i++ {
-		v := list.m[i]
-		if v > m {
-			m = v
+		if less(list.m[m], list.m[i]) {
+			m = i
 		}
 	}
-	return m
+
+	return list.m[m]
 }
 
 // DistinctBy returns a new X1IntList whose elements are unique, where equality is defined by a passed func.
@@ -522,7 +529,7 @@ func (list *X1IntList) DistinctBy(equal func(int, int) bool) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newX1IntList(0, list.Len())
+	result := newX1IntList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -607,7 +614,7 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 	defer list.s.RUnlock()
 	defer other.s.RUnlock()
 
-	if list.Size() != other.Size() {
+	if len(list.m) != len(other.m) {
 		return false
 	}
 
@@ -618,6 +625,104 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 	}
 
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type sortableX1IntList struct {
+    less func(i, j int) bool
+    m []int
+}
+
+func (sl sortableX1IntList) Less(i, j int) bool {
+	return sl.less(sl.m[i], sl.m[j])
+}
+
+func (sl sortableX1IntList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableX1IntList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list *X1IntList) SortBy(less func(i, j int) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Sort(sortableX1IntList{less, list.m})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list *X1IntList) StableSortBy(less func(i, j int) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Stable(sortableX1IntList{less, list.m})
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int is ordered.
+
+// Sorted alters the list so that the elements are sorted by their natural ordering.
+func (list *X1IntList) Sorted() {
+    list.SortBy(func(a, b int) bool {
+        return a < b
+    })
+}
+
+// StableSorted alters the list so that the elements are sorted by their natural ordering.
+func (list *X1IntList) StableSorted() {
+    list.StableSortBy(func(a, b int) bool {
+        return a < b
+    })
+}
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *X1IntList) Min() int {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if l == 0 {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *X1IntList) Max() (result int) {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if v > m {
+			m = v
+		}
+	}
+	return m
 }
 
 

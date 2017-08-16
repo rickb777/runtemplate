@@ -19,14 +19,32 @@ type X1IntSet struct {
 }
 
 // NewX1IntSet creates and returns a reference to an empty set.
-func NewX1IntSet(a ...int) X1IntSet {
+func NewX1IntSet(values ...int) X1IntSet {
 	set := X1IntSet{
 		m: make(map[int]struct{}),
 	}
-	for _, i := range a {
+	for _, i := range values {
 		set.m[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX1IntSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
+func ConvertX1IntSet(values ...interface{}) (X1IntSet, bool) {
+	set := NewX1IntSet()
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(int)
+		if !ok {
+		    good = false
+		} else {
+	    	set.m[v] = struct{}{}
+		}
+	}
+	return set, good
 }
 
 // BuildX1IntSetFromChan constructs a new X1IntSet from a channel that supplies a sequence
@@ -39,10 +57,21 @@ func BuildX1IntSetFromChan(source <-chan int) X1IntSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X1IntSet) ToSlice() []int {
+
 	var s []int
 	for v, _ := range set.m {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set *X1IntSet) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
+	for _, v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -109,6 +138,7 @@ func (set X1IntSet) doAdd(i int) {
 
 // Contains determines if a given item is already in the set.
 func (set X1IntSet) Contains(i int) bool {
+
 	_, found := set.m[i]
 	return found
 }
@@ -121,7 +151,6 @@ func (set X1IntSet) ContainsAll(i ...int) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -135,7 +164,6 @@ func (set X1IntSet) IsSubset(other X1IntSet) bool {
 			return false
 		}
 	}
-
 	return true
 }
 

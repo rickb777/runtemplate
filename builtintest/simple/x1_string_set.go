@@ -16,12 +16,26 @@ import (
 type X1StringSet map[string]struct{}
 
 // NewX1StringSet creates and returns a reference to an empty set.
-func NewX1StringSet(a ...string) X1StringSet {
+func NewX1StringSet(values ...string) X1StringSet {
 	set := make(X1StringSet)
-	for _, i := range a {
+	for _, i := range values {
 		set[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX1StringSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
+	set := make(X1StringSet)
+	for _, i := range values {
+		v, ok := i.(string)
+		if !ok {
+		    return set, false
+		}
+		set[v] = struct{}{}
+	}
+	return set, true
 }
 
 // BuildX1StringSetFromChan constructs a new X1StringSet from a channel that supplies a sequence
@@ -34,9 +48,18 @@ func BuildX1StringSetFromChan(source <-chan string) X1StringSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X1StringSet) ToSlice() []string {
 	var s []string
+	for v := range set {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set X1StringSet) ToInterfaceSlice() []interface{} {
+	var s []interface{}
 	for v := range set {
 		s = append(s, v)
 	}

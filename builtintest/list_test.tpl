@@ -5,9 +5,6 @@ package {{.Package}}
 
 import (
 	"testing"
-{{if .Mutable}}
-	"sort"
-{{end}}
 )
 
 func {{.LType}}RangeOf(from, to int) []int {
@@ -36,6 +33,28 @@ func TestNew{{.UType}}List(t *testing.T) {
 
 	if !a.IsSequence() {
 		t.Error("Expected a sequence")
+	}
+}
+
+func TestConvert{{.UType}}List(t *testing.T) {
+	a, ok := ConvertX1{{.UType}}List(1, 5, 2, 7, 3)
+
+	if !ok {
+		t.Errorf("Not ok")
+	}
+
+	if !a.Equals(NewX1{{.UType}}List(1, 5, 2, 7, 3)) {
+		t.Errorf("Expected 1,5,2,7,3 but got %v", a)
+	}
+
+    b, ok := ConvertX1{{.UType}}List(a.ToInterfaceSlice()...)
+
+	if !ok {
+		t.Errorf("Not ok")
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected %v but got %v", a, b)
 	}
 }
 
@@ -153,7 +172,17 @@ func Test{{.UType}}ListPartition(t *testing.T) {
 func Test{{.UType}}ListSort(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 
-	sort.Sort(a)
+	a.Sorted()
+
+	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
+		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
+	}
+}
+
+func Test{{.UType}}ListStableSort(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+
+	a.StableSorted()
 
 	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
@@ -186,7 +215,7 @@ func Test{{.UType}}ListShuffle(t *testing.T) {
 	}
 
 	// prove that the same set of numbers is present
-	sort.Sort(b)
+	b.Sorted()
 
 	if !b.Equals(a) {
 		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
@@ -199,25 +228,25 @@ func Test{{.UType}}ListTake(t *testing.T) {
 
 	b := a.Take(30)
 
-	if b.Len() != 30 || b.Head() != 1 || b.Last() != 30 {
+	if b.Size() != 30 || b.Head() != 1 || b.Last() != 30 {
 		t.Errorf("Expected list from 1 to 30 but got '%+v'", b{{.M}})
 	}
 
 	c := a.TakeLast(30)
 
-	if c.Len() != 30 || c.Head() != 71 || c.Last() != 100 {
+	if c.Size() != 30 || c.Head() != 71 || c.Last() != 100 {
 		t.Errorf("Expected list from 71 to 100 but got '%+v'", c{{.M}})
 	}
 
 	d := a.Take(101)
 
-	if d.Len() != 100 || d.Head() != 1 || d.Last() != 100 {
+	if d.Size() != 100 || d.Head() != 1 || d.Last() != 100 {
 		t.Errorf("Expected list from 1 to 100 but got '%+v'", d{{.M}})
 	}
 
 	e := a.TakeLast(101)
 
-	if e.Len() != 100 || e.Head() != 1 || e.Last() != 100 {
+	if e.Size() != 100 || e.Head() != 1 || e.Last() != 100 {
 		t.Errorf("Expected list from 1 to 100 but got '%+v'", e{{.M}})
 	}
 }
@@ -227,25 +256,25 @@ func Test{{.UType}}ListDrop(t *testing.T) {
 
 	b := a.Drop(70)
 
-	if b.Len() != 30 || b.Head() != 71 || b.Last() != 100 {
+	if b.Size() != 30 || b.Head() != 71 || b.Last() != 100 {
 		t.Errorf("Expected list from 1 to 100 but got '%+v'", b{{.M}})
 	}
 
 	c := a.DropLast(75)
 
-	if c.Len() != 25 || c.Head() != 1 || c.Last() != 25 {
+	if c.Size() != 25 || c.Head() != 1 || c.Last() != 25 {
 		t.Errorf("Expected list from 1 to 25 but got '%+v'", c{{.M}})
 	}
 
 	d := a.Drop(101)
 
-	if d.Len() != 0 {
+	if d.Size() != 0 {
 		t.Errorf("Expected empty list but got '%+v'", d{{.M}})
 	}
 
 	e := a.DropLast(101)
 
-	if e.Len() != 0 {
+	if e.Size() != 0 {
 		t.Errorf("Expected empty list but got '%+v'", e{{.M}})
 	}
 }
@@ -257,7 +286,7 @@ func Test{{.UType}}ListTakeWhile(t *testing.T) {
 		return v <= 20
 	})
 
-	if b.Len() != 20 || b.Head() != 1 || b.Last() != 20 {
+	if b.Size() != 20 || b.Head() != 1 || b.Last() != 20 {
 		t.Errorf("Expected list from 1 to 20 but got '%+v'", b{{.M}})
 	}
 
@@ -265,7 +294,7 @@ func Test{{.UType}}ListTakeWhile(t *testing.T) {
 		return true
 	})
 
-	if c.Len() != 100 || c.Head() != 1 || c.Last() != 100 {
+	if c.Size() != 100 || c.Head() != 1 || c.Last() != 100 {
 		t.Errorf("Expected list from 1 to 100 but got '%+v'", b{{.M}})
 	}
 }
@@ -277,7 +306,7 @@ func Test{{.UType}}ListDropWhile(t *testing.T) {
 		return v <= 80
 	})
 
-	if b.Len() != 20 || b.Head() != 81 || b.Last() != 100 {
+	if b.Size() != 20 || b.Head() != 81 || b.Last() != 100 {
 		t.Errorf("Expected list from 81 to 100 but got '%+v'", b{{.M}})
 	}
 
@@ -285,7 +314,7 @@ func Test{{.UType}}ListDropWhile(t *testing.T) {
 		return true
 	})
 
-	if c.Len() != 0 {
+	if c.Size() != 0 {
 		t.Errorf("Expected empty list but got '%+v'", b{{.M}})
 	}
 }
@@ -355,6 +384,30 @@ func Test{{.UType}}ListLastIndexWhere(t *testing.T) {
 
 	if d != 59 {
 		t.Errorf("Expected 59 but got %d", d)
+	}
+}
+
+func Test{{.UType}}ListMinBy(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+
+	c := a.MinBy(func(v1, v2 int) bool {
+		return v1 > v2
+	})
+
+	if c != 13 {
+		t.Errorf("Expected 13 but got '%+v'", c)
+	}
+}
+
+func Test{{.UType}}ListMaxBy(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+
+	c := a.MaxBy(func(v1, v2 int) bool {
+		return v1 > v2
+	})
+
+	if c != -2 {
+		t.Errorf("Expected -2 but got '%+v'", c)
 	}
 }
 

@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+    "sort"
 )
 
 // X1StringList contains a slice of type string. Use it where you would use []string.
@@ -39,6 +40,25 @@ func NewX1StringList(values ...string) *X1StringList {
 	return result
 }
 
+// ConvertX1StringList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
+	result := newX1StringList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(string)
+		if !ok {
+		    good = false
+		} else {
+	    	result.m = append(result.m, v)
+	    }
+	}
+
+	return result, good
+}
+
 // BuildX1StringListFromChan constructs a new X1StringList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildX1StringListFromChan(source <-chan string) *X1StringList {
@@ -49,10 +69,18 @@ func BuildX1StringListFromChan(source <-chan string) *X1StringList {
 	return result
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current list as a slice.
 func (list *X1StringList) ToSlice() []string {
 
-	var s []string
+	s := make([]string, len(list.m), len(list.m))
+	copy(s, list.m)
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list *X1StringList) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -106,12 +134,12 @@ func (list *X1StringList) Init() *X1StringList {
 
 // IsEmpty tests whether X1StringList is empty.
 func (list *X1StringList) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether X1StringList is empty.
 func (list *X1StringList) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -126,21 +154,13 @@ func (list *X1StringList) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list - an alias of Len().
+// Size returns the number of items in the list.
 func (list *X1StringList) Size() int {
 
 	return len(list.m)
 }
 
-// Len returns the number of items in the list - an alias of Size().
-// This implements one of the methods needed by sort.Interface (along with Less and Swap).
-func (list *X1StringList) Len() int {
-
-	return len(list.m)
-}
-
-// Swap exchanges two elements, which is necessary during sorting etc.
-// This implements one of the methods needed by sort.Interface (along with Len and Less).
+// Swap exchanges two elements.
 func (list *X1StringList) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
@@ -258,7 +278,7 @@ func (list *X1StringList) doAppend(more ...string) {
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *X1StringList) Take(n int) *X1StringList {
 
-	if n > list.Len() {
+	if n > len(list.m) {
 		return list
 	}
 	result := newX1StringList(0, 0)
@@ -275,7 +295,7 @@ func (list *X1StringList) Drop(n int) *X1StringList {
 
 
 	result := newX1StringList(0, 0)
-	l := list.Len()
+	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
 	}
@@ -286,7 +306,7 @@ func (list *X1StringList) Drop(n int) *X1StringList {
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *X1StringList) TakeLast(n int) *X1StringList {
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		return list
 	}
@@ -303,7 +323,7 @@ func (list *X1StringList) DropLast(n int) *X1StringList {
 	}
 
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		list.m = list.m[l:]
 	} else {
@@ -367,7 +387,7 @@ func (list X1StringList) Find(fn func(string) bool) (string, bool) {
 // Filter returns a new X1StringList whose elements return true for func.
 func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
 
-	result := newX1StringList(0, list.Len()/2)
+	result := newX1StringList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if fn(v) {
@@ -384,8 +404,8 @@ func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
 // original list.
 func (list *X1StringList) Partition(p func(string) bool) (*X1StringList, *X1StringList) {
 
-	matching := newX1StringList(0, list.Len()/2)
-	others := newX1StringList(0, list.Len()/2)
+	matching := newX1StringList(0, len(list.m)/2)
+	others := newX1StringList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -414,7 +434,7 @@ func (list *X1StringList) CountBy(predicate func(string) bool) (result int) {
 // element is returned. Panics if there are no elements.
 func (list *X1StringList) MinBy(less func(string, string) bool) string {
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -433,7 +453,7 @@ func (list *X1StringList) MinBy(less func(string, string) bool) string {
 // element is returned. Panics if there are no elements.
 func (list *X1StringList) MaxBy(less func(string, string) bool) string {
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -450,7 +470,7 @@ func (list *X1StringList) MaxBy(less func(string, string) bool) string {
 // DistinctBy returns a new X1StringList whose elements are unique, where equality is defined by a passed func.
 func (list *X1StringList) DistinctBy(equal func(string, string) bool) *X1StringList {
 
-	result := newX1StringList(0, list.Len())
+	result := newX1StringList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -511,7 +531,7 @@ func (list *X1StringList) LastIndexWhere2(p func(string) bool, before int) int {
 // Order of items is not relevent for sets to be equal.
 func (list *X1StringList) Equals(other *X1StringList) bool {
 
-	if list.Size() != other.Size() {
+	if len(list.m) != len(other.m) {
 		return false
 	}
 
@@ -522,6 +542,38 @@ func (list *X1StringList) Equals(other *X1StringList) bool {
 	}
 
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type sortableX1StringList struct {
+    less func(i, j string) bool
+    m []string
+}
+
+func (sl sortableX1StringList) Less(i, j int) bool {
+	return sl.less(sl.m[i], sl.m[j])
+}
+
+func (sl sortableX1StringList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableX1StringList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list *X1StringList) SortBy(less func(i, j string) bool) {
+
+    sort.Sort(sortableX1StringList{less, list.m})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list *X1StringList) StableSortBy(less func(i, j string) bool) {
+
+    sort.Stable(sortableX1StringList{less, list.m})
 }
 
 

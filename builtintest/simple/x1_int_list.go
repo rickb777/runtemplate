@@ -7,9 +7,11 @@
 package simple
 
 import (
-	"math/rand"
+
 	"bytes"
 	"fmt"
+	"math/rand"
+	"sort"
 )
 
 // X1IntList is a slice of type int. Use it where you would use []int.
@@ -29,10 +31,27 @@ func newX1IntList(len, cap int) X1IntList {
 // NewX1IntList constructs a new list containing the supplied values, if any.
 func NewX1IntList(values ...int) X1IntList {
 	result := newX1IntList(len(values), len(values))
-	for i, v := range values {
-		result[i] = v
-	}
+	copy(result, values)
 	return result
+}
+
+// ConvertX1IntList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertX1IntList(values ...interface{}) (X1IntList, bool) {
+	result := newX1IntList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(int)
+		if !ok {
+		    good = false
+		} else {
+	    	result = append(result, v)
+	    }
+	}
+
+	return result, good
 }
 
 // BuildX1IntListFromChan constructs a new X1IntList from a channel that supplies a sequence
@@ -43,6 +62,15 @@ func BuildX1IntListFromChan(source <-chan int) X1IntList {
 		result = append(result, v)
 	}
 	return result
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list X1IntList) ToInterfaceSlice() []interface{} {
+	var s []interface{}
+	for _, v := range list {
+		s = append(s, v)
+	}
+	return s
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
@@ -80,7 +108,7 @@ func (list X1IntList) Tail() X1IntList {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list X1IntList) Init() X1IntList {
-	return X1IntList(list[:list.Len()-1])
+	return X1IntList(list[:len(list)-1])
 }
 
 // IsEmpty tests whether X1IntList is empty.
@@ -185,7 +213,7 @@ func (list X1IntList) Send() <-chan int {
 
 // Reverse returns a copy of X1IntList with all elements in the reverse order.
 func (list X1IntList) Reverse() X1IntList {
-	numItems := list.Len()
+	numItems := len(list)
 	result := newX1IntList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list {
@@ -196,8 +224,8 @@ func (list X1IntList) Reverse() X1IntList {
 
 // Shuffle returns a shuffled copy of X1IntList, using a version of the Fisher-Yates shuffle.
 func (list X1IntList) Shuffle() X1IntList {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(list)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result[i], result[r] = result[r], result[i]
@@ -210,7 +238,7 @@ func (list X1IntList) Shuffle() X1IntList {
 // Take returns a slice of X1IntList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list X1IntList) Take(n int) X1IntList {
-	if n > list.Len() {
+	if n > len(list) {
 		return list
 	}
 	return list[0:n]
@@ -223,7 +251,7 @@ func (list X1IntList) Drop(n int) X1IntList {
 		return list
 	}
 
-	l := list.Len()
+	l := len(list)
 	if n < l {
 		return list[n:]
 	}
@@ -233,7 +261,7 @@ func (list X1IntList) Drop(n int) X1IntList {
 // TakeLast returns a slice of X1IntList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list X1IntList) TakeLast(n int) X1IntList {
-	l := list.Len()
+	l := len(list)
 	if n > l {
 		return list
 	}
@@ -247,7 +275,7 @@ func (list X1IntList) DropLast(n int) X1IntList {
 		return list
 	}
 
-	l := list.Len()
+	l := len(list)
 	if n > l {
 		return list[l:]
 	} else {
@@ -307,7 +335,7 @@ func (list X1IntList) Find(fn func(int) bool) (int, bool) {
 
 // Filter returns a new X1IntList whose elements return true for func.
 func (list X1IntList) Filter(fn func(int) bool) X1IntList {
-	result := newX1IntList(0, list.Len()/2)
+	result := newX1IntList(0, len(list)/2)
 
 	for _, v := range list {
 		if fn(v) {
@@ -323,8 +351,8 @@ func (list X1IntList) Filter(fn func(int) bool) X1IntList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list X1IntList) Partition(p func(int) bool) (X1IntList, X1IntList) {
-	matching := newX1IntList(0, list.Len()/2)
-	others := newX1IntList(0, list.Len()/2)
+	matching := newX1IntList(0, len(list)/2)
+	others := newX1IntList(0, len(list)/2)
 
 	for _, v := range list {
 		if p(v) {
@@ -351,7 +379,7 @@ func (list X1IntList) CountBy(predicate func(int) bool) (result int) {
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list X1IntList) MinBy(less func(int, int) bool) int {
-	l := list.Len()
+	l := len(list)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -370,7 +398,7 @@ func (list X1IntList) MinBy(less func(int, int) bool) int {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list X1IntList) MaxBy(less func(int, int) bool) int {
-	l := list.Len()
+	l := len(list)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -387,7 +415,7 @@ func (list X1IntList) MaxBy(less func(int, int) bool) int {
 
 // DistinctBy returns a new X1IntList whose elements are unique, where equality is defined by a passed func.
 func (list X1IntList) DistinctBy(equal func(int, int) bool) X1IntList {
-	result := newX1IntList(0, list.Len())
+	result := newX1IntList(0, len(list))
 Outer:
 	for _, v := range list {
 		for _, r := range result {
@@ -419,16 +447,16 @@ func (list X1IntList) IndexWhere2(p func(int) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list X1IntList) LastIndexWhere(p func(int) bool) int {
-	return list.LastIndexWhere2(p, list.Len())
+	return list.LastIndexWhere2(p, len(list))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list X1IntList) LastIndexWhere2(p func(int) bool, before int) int {
 	if before < 0 {
-		before = list.Len()
+		before = len(list)
 	}
-	for i := list.Len() - 1; i >= 0; i-- {
+	for i := len(list) - 1; i >= 0; i-- {
 		v := list[i]
 		if i <= before && p(v) {
 			return i
@@ -455,7 +483,7 @@ func (list X1IntList) Sum() int {
 // These methods are included when int is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list X1IntList) Equals(other X1IntList) bool {
 	if list.Size() != other.Size() {
@@ -471,9 +499,55 @@ func (list X1IntList) Equals(other X1IntList) bool {
 	return true
 }
 
+//-------------------------------------------------------------------------------------------------
+
+type sortableX1IntList struct {
+    less func(i, j int) bool
+    m []int
+}
+
+func (sl sortableX1IntList) Less(i, j int) bool {
+	return sl.less(sl.m[i], sl.m[j])
+}
+
+func (sl sortableX1IntList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableX1IntList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list X1IntList) SortBy(less func(i, j int) bool) {
+
+    sort.Sort(sortableX1IntList{less, list})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list X1IntList) StableSortBy(less func(i, j int) bool) {
+
+    sort.Stable(sortableX1IntList{less, list})
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
+
+// Sorted alters the list so that the elements are sorted by their natural ordering.
+func (list X1IntList) Sorted() {
+    list.SortBy(func(a, b int) bool {
+        return a < b
+    })
+}
+
+// StableSorted alters the list so that the elements are sorted by their natural ordering.
+func (list X1IntList) StableSorted() {
+    list.StableSortBy(func(a, b int) bool {
+        return a < b
+    })
+}
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
@@ -493,13 +567,6 @@ func (list X1IntList) Max() (result int) {
 	return m
 }
 
-// Less returns true if the element at index i is less than the element at index j. This implements
-// one of the methods needed by sort.Interface.
-// Panics if i or j is out of range.
-func (list X1IntList) Less(i, j int) bool {
-	return list[i] < list[j]
-}
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -517,7 +584,7 @@ func (list X1IntList) MkString(sep string) string {
 func (list X1IntList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
-	l := list.Len()
+	l := len(list)
 	if l > 0 {
 		v := list[0]
 		b.WriteString(fmt.Sprintf("%v", v))

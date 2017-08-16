@@ -16,14 +16,32 @@ type X1AppleSet struct {
 }
 
 // NewX1AppleSet creates and returns a reference to an empty set.
-func NewX1AppleSet(a ...Apple) X1AppleSet {
+func NewX1AppleSet(values ...Apple) X1AppleSet {
 	set := X1AppleSet{
 		m: make(map[Apple]struct{}),
 	}
-	for _, i := range a {
+	for _, i := range values {
 		set.m[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX1AppleSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
+func ConvertX1AppleSet(values ...interface{}) (X1AppleSet, bool) {
+	set := NewX1AppleSet()
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(Apple)
+		if !ok {
+		    good = false
+		} else {
+	    	set.m[v] = struct{}{}
+		}
+	}
+	return set, good
 }
 
 // BuildX1AppleSetFromChan constructs a new X1AppleSet from a channel that supplies a sequence
@@ -36,11 +54,21 @@ func BuildX1AppleSetFromChan(source <-chan Apple) X1AppleSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X1AppleSet) ToSlice() []Apple {
 
 	var s []Apple
 	for v, _ := range set.m {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set X1AppleSet) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
+	for _, v := range set.m {
 		s = append(s, v)
 	}
 	return s

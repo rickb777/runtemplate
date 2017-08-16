@@ -7,7 +7,9 @@
 package simple
 
 import (
+
 	"math/rand"
+	"sort"
 )
 
 // P1AppleList is a slice of type *Apple. Use it where you would use []*Apple.
@@ -27,10 +29,27 @@ func newP1AppleList(len, cap int) P1AppleList {
 // NewP1AppleList constructs a new list containing the supplied values, if any.
 func NewP1AppleList(values ...*Apple) P1AppleList {
 	result := newP1AppleList(len(values), len(values))
-	for i, v := range values {
-		result[i] = v
-	}
+	copy(result, values)
 	return result
+}
+
+// ConvertP1AppleList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertP1AppleList(values ...interface{}) (P1AppleList, bool) {
+	result := newP1AppleList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(*Apple)
+		if !ok {
+		    good = false
+		} else {
+	    	result = append(result, v)
+	    }
+	}
+
+	return result, good
 }
 
 // BuildP1AppleListFromChan constructs a new P1AppleList from a channel that supplies a sequence
@@ -41,6 +60,15 @@ func BuildP1AppleListFromChan(source <-chan *Apple) P1AppleList {
 		result = append(result, v)
 	}
 	return result
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list P1AppleList) ToInterfaceSlice() []interface{} {
+	var s []interface{}
+	for _, v := range list {
+		s = append(s, v)
+	}
+	return s
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
@@ -78,7 +106,7 @@ func (list P1AppleList) Tail() P1AppleList {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list P1AppleList) Init() P1AppleList {
-	return P1AppleList(list[:list.Len()-1])
+	return P1AppleList(list[:len(list)-1])
 }
 
 // IsEmpty tests whether P1AppleList is empty.
@@ -183,7 +211,7 @@ func (list P1AppleList) Send() <-chan *Apple {
 
 // Reverse returns a copy of P1AppleList with all elements in the reverse order.
 func (list P1AppleList) Reverse() P1AppleList {
-	numItems := list.Len()
+	numItems := len(list)
 	result := newP1AppleList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list {
@@ -194,8 +222,8 @@ func (list P1AppleList) Reverse() P1AppleList {
 
 // Shuffle returns a shuffled copy of P1AppleList, using a version of the Fisher-Yates shuffle.
 func (list P1AppleList) Shuffle() P1AppleList {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(list)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result[i], result[r] = result[r], result[i]
@@ -208,7 +236,7 @@ func (list P1AppleList) Shuffle() P1AppleList {
 // Take returns a slice of P1AppleList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list P1AppleList) Take(n int) P1AppleList {
-	if n > list.Len() {
+	if n > len(list) {
 		return list
 	}
 	return list[0:n]
@@ -221,7 +249,7 @@ func (list P1AppleList) Drop(n int) P1AppleList {
 		return list
 	}
 
-	l := list.Len()
+	l := len(list)
 	if n < l {
 		return list[n:]
 	}
@@ -231,7 +259,7 @@ func (list P1AppleList) Drop(n int) P1AppleList {
 // TakeLast returns a slice of P1AppleList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list P1AppleList) TakeLast(n int) P1AppleList {
-	l := list.Len()
+	l := len(list)
 	if n > l {
 		return list
 	}
@@ -245,7 +273,7 @@ func (list P1AppleList) DropLast(n int) P1AppleList {
 		return list
 	}
 
-	l := list.Len()
+	l := len(list)
 	if n > l {
 		return list[l:]
 	} else {
@@ -304,7 +332,7 @@ func (list P1AppleList) Find(fn func(*Apple) bool) (*Apple, bool) {
 
 // Filter returns a new P1AppleList whose elements return true for func.
 func (list P1AppleList) Filter(fn func(*Apple) bool) P1AppleList {
-	result := newP1AppleList(0, list.Len()/2)
+	result := newP1AppleList(0, len(list)/2)
 
 	for _, v := range list {
 		if fn(v) {
@@ -320,8 +348,8 @@ func (list P1AppleList) Filter(fn func(*Apple) bool) P1AppleList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list P1AppleList) Partition(p func(*Apple) bool) (P1AppleList, P1AppleList) {
-	matching := newP1AppleList(0, list.Len()/2)
-	others := newP1AppleList(0, list.Len()/2)
+	matching := newP1AppleList(0, len(list)/2)
+	others := newP1AppleList(0, len(list)/2)
 
 	for _, v := range list {
 		if p(v) {
@@ -348,7 +376,7 @@ func (list P1AppleList) CountBy(predicate func(*Apple) bool) (result int) {
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list P1AppleList) MinBy(less func(*Apple, *Apple) bool) *Apple {
-	l := list.Len()
+	l := len(list)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -367,7 +395,7 @@ func (list P1AppleList) MinBy(less func(*Apple, *Apple) bool) *Apple {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list P1AppleList) MaxBy(less func(*Apple, *Apple) bool) *Apple {
-	l := list.Len()
+	l := len(list)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -384,7 +412,7 @@ func (list P1AppleList) MaxBy(less func(*Apple, *Apple) bool) *Apple {
 
 // DistinctBy returns a new P1AppleList whose elements are unique, where equality is defined by a passed func.
 func (list P1AppleList) DistinctBy(equal func(*Apple, *Apple) bool) P1AppleList {
-	result := newP1AppleList(0, list.Len())
+	result := newP1AppleList(0, len(list))
 Outer:
 	for _, v := range list {
 		for _, r := range result {
@@ -416,16 +444,16 @@ func (list P1AppleList) IndexWhere2(p func(*Apple) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list P1AppleList) LastIndexWhere(p func(*Apple) bool) int {
-	return list.LastIndexWhere2(p, list.Len())
+	return list.LastIndexWhere2(p, len(list))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list P1AppleList) LastIndexWhere2(p func(*Apple) bool, before int) int {
 	if before < 0 {
-		before = list.Len()
+		before = len(list)
 	}
-	for i := list.Len() - 1; i >= 0; i-- {
+	for i := len(list) - 1; i >= 0; i-- {
 		v := list[i]
 		if i <= before && p(v) {
 			return i
@@ -439,7 +467,7 @@ func (list P1AppleList) LastIndexWhere2(p func(*Apple) bool, before int) int {
 // These methods are included when Apple is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list P1AppleList) Equals(other P1AppleList) bool {
 	if list.Size() != other.Size() {
@@ -453,6 +481,38 @@ func (list P1AppleList) Equals(other P1AppleList) bool {
 	}
 
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type sortableP1AppleList struct {
+    less func(i, j Apple) bool
+    m []*Apple
+}
+
+func (sl sortableP1AppleList) Less(i, j int) bool {
+	return sl.less(*sl.m[i], *sl.m[j])
+}
+
+func (sl sortableP1AppleList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableP1AppleList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list P1AppleList) SortBy(less func(i, j Apple) bool) {
+
+    sort.Sort(sortableP1AppleList{less, list})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list P1AppleList) StableSortBy(less func(i, j Apple) bool) {
+
+    sort.Stable(sortableP1AppleList{less, list})
 }
 
 

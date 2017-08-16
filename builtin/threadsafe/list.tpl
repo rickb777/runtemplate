@@ -10,8 +10,9 @@ import (
 {{if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
-	"sync"
 	"math/rand"
+    "sort"
+	"sync"
 {{- if .HasImport}}
     {{.Import}}
 {{end}}
@@ -45,6 +46,25 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}
 	return result
 }
 
+// Convert{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.UType}}List, bool) {
+	result := new{{.UPrefix}}{{.UType}}List(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.({{.PType}})
+		if !ok {
+		    good = false
+		} else {
+	    	result.m = append(result.m, v)
+	    }
+	}
+
+	return result, good
+}
+
 // Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}List {
@@ -55,12 +75,22 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 	return result
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current list as a slice.
 func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []{{.PType}}
+	s := make([]{{.PType}}, len(list.m), len(list.m))
+	copy(s, list.m)
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []interface{}
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -122,12 +152,12 @@ func (list *{{.UPrefix}}{{.UType}}List) Init() *{{.UPrefix}}{{.UType}}List {
 
 // IsEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
 func (list *{{.UPrefix}}{{.UType}}List) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
 func (list *{{.UPrefix}}{{.UType}}List) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -142,7 +172,7 @@ func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list - an alias of Len().
+// Size returns the number of items in the list.
 func (list *{{.UPrefix}}{{.UType}}List) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -150,17 +180,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Size() int {
 	return len(list.m)
 }
 
-// Len returns the number of items in the list - an alias of Size().
-// This implements one of the methods needed by sort.Interface (along with Less and Swap).
-func (list *{{.UPrefix}}{{.UType}}List) Len() int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return len(list.m)
-}
-
-// Swap exchanges two elements, which is necessary during sorting etc.
-// This implements one of the methods needed by sort.Interface (along with Len and Less).
+// Swap exchanges two elements.
 func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -297,7 +317,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	if n > list.Len() {
+	if n > len(list.m) {
 		return list
 	}
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
@@ -316,7 +336,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 	defer list.s.RUnlock()
 
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	l := list.Len()
+	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
 	}
@@ -329,7 +349,7 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}L
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		return list
 	}
@@ -348,7 +368,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		list.m = list.m[l:]
 	} else {
@@ -422,7 +442,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) *{{.UPr
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
+	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if fn(v) {
@@ -441,8 +461,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
-	others := new{{.UPrefix}}{{.UType}}List(0, list.Len()/2)
+	matching := new{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
+	others := new{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -468,62 +488,6 @@ func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool)
 	return
 }
 
-{{if .Ordered}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
-
-// Less returns true if the element at index i is less than the element at index j.
-// This implements one of the methods needed by sort.Interface (along with Len and Swap).
-// Panics if i or j is out of range.
-func (list *{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
-	return {{.TypeStar}}list.m[i] < {{.TypeStar}}list.m[j]
-}
-
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	l := list.Len()
-	if l == 0 {
-		panic("Cannot determine the minimum of an empty list.")
-	}
-
-	v := list.m[0]
-	m := {{.TypeStar}}v
-	for i := 1; i < l; i++ {
-		v := list.m[i]
-		if {{.TypeStar}}v < m {
-			m = {{.TypeStar}}v
-		}
-	}
-	return m
-}
-
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	l := list.Len()
-	if l == 0 {
-		panic("Cannot determine the maximum of an empty list.")
-	}
-
-	v := list.m[0]
-	m := {{.TypeStar}}v
-	for i := 1; i < l; i++ {
-		v := list.m[i]
-		if {{.TypeStar}}v > m {
-			m = {{.TypeStar}}v
-		}
-	}
-	return m
-}
-
-{{else -}}
 // MinBy returns an element of {{.UPrefix}}{{.UType}}List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
@@ -531,7 +495,7 @@ func (list *{{.UPrefix}}{{.UType}}List) MinBy(less func({{.PType}}, {{.PType}}) 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -552,7 +516,7 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -566,13 +530,12 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 	return list.m[m]
 }
 
-{{end -}}
 // DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
 func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := new{{.UPrefix}}{{.UType}}List(0, list.Len())
+	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -658,7 +621,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 	defer list.s.RUnlock()
 	defer other.s.RUnlock()
 
-	if list.Size() != other.Size() {
+	if len(list.m) != len(other.m) {
 		return false
 	}
 
@@ -669,6 +632,105 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 	}
 
 	return true
+}
+
+{{end -}}
+//-------------------------------------------------------------------------------------------------
+
+type sortable{{.UPrefix}}{{.UType}}List struct {
+    less func(i, j {{.Type}}) bool
+    m []{{.PType}}
+}
+
+func (sl sortable{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
+	return sl.less({{.TypeStar}}sl.m[i], {{.TypeStar}}sl.m[j])
+}
+
+func (sl sortable{{.UPrefix}}{{.UType}}List) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortable{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
+}
+
+{{if .Ordered}}
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is ordered.
+
+// Sorted alters the list so that the elements are sorted by their natural ordering.
+func (list *{{.UPrefix}}{{.UType}}List) Sorted() {
+    list.SortBy(func(a, b {{.Type}}) bool {
+        return a < b
+    })
+}
+
+// StableSorted alters the list so that the elements are sorted by their natural ordering.
+func (list *{{.UPrefix}}{{.UType}}List) StableSorted() {
+    list.StableSortBy(func(a, b {{.Type}}) bool {
+        return a < b
+    })
+}
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *{{.UPrefix}}{{.UType}}List) Min() {{.Type}} {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if l == 0 {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := {{.TypeStar}}v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if {{.TypeStar}}v < m {
+			m = {{.TypeStar}}v
+		}
+	}
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := {{.TypeStar}}v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if {{.TypeStar}}v > m {
+			m = {{.TypeStar}}v
+		}
+	}
+	return m
 }
 
 {{end -}}

@@ -51,6 +51,9 @@ type X1StringCollection interface {
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []string
 
+	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
+	ToInterfaceSlice() []interface{}
+
 	// Exists verifies that one or more elements of X1StringCollection return true for the passed func.
 	Exists(fn func(string) bool) bool
 

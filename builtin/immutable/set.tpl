@@ -23,14 +23,32 @@ type {{.UPrefix}}{{.UType}}Set struct {
 }
 
 // New{{.UPrefix}}{{.UType}}Set creates and returns a reference to an empty set.
-func New{{.UPrefix}}{{.UType}}Set(a ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
+func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
 	set := {{.UPrefix}}{{.UType}}Set{
 		m: make(map[{{.Type}}]struct{}),
 	}
-	for _, i := range a {
+	for _, i := range values {
 		set.m[i] = struct{}{}
 	}
 	return set
+}
+
+// Convert{{.UPrefix}}{{.UType}}Set constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
+func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UType}}Set, bool) {
+	set := New{{.UPrefix}}{{.UType}}Set()
+	good := true
+
+	for _, i := range values {
+		v, ok := i.({{.PType}})
+		if !ok {
+		    good = false
+		} else {
+	    	set.m[v] = struct{}{}
+		}
+	}
+	return set, good
 }
 
 // Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence
@@ -43,10 +61,21 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
+
 	var s []{{.Type}}
 	for v, _ := range set.m {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
+	for _, v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -113,6 +142,7 @@ func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 
 // Contains determines if a given item is already in the set.
 func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
+
 	_, found := set.m[i]
 	return found
 }
@@ -125,7 +155,6 @@ func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -139,7 +168,6 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) b
 			return false
 		}
 	}
-
 	return true
 }
 

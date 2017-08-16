@@ -19,14 +19,32 @@ type X2EmailSet struct {
 }
 
 // NewX2EmailSet creates and returns a reference to an empty set.
-func NewX2EmailSet(a ...testtypes.Email) X2EmailSet {
+func NewX2EmailSet(values ...testtypes.Email) X2EmailSet {
 	set := X2EmailSet{
 		m: make(map[testtypes.Email]struct{}),
 	}
-	for _, i := range a {
+	for _, i := range values {
 		set.m[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX2EmailSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
+func ConvertX2EmailSet(values ...interface{}) (X2EmailSet, bool) {
+	set := NewX2EmailSet()
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(testtypes.Email)
+		if !ok {
+		    good = false
+		} else {
+	    	set.m[v] = struct{}{}
+		}
+	}
+	return set, good
 }
 
 // BuildX2EmailSetFromChan constructs a new X2EmailSet from a channel that supplies a sequence
@@ -39,10 +57,21 @@ func BuildX2EmailSetFromChan(source <-chan testtypes.Email) X2EmailSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X2EmailSet) ToSlice() []testtypes.Email {
+
 	var s []testtypes.Email
 	for v, _ := range set.m {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set *X2EmailSet) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
+	for _, v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -109,6 +138,7 @@ func (set X2EmailSet) doAdd(i testtypes.Email) {
 
 // Contains determines if a given item is already in the set.
 func (set X2EmailSet) Contains(i testtypes.Email) bool {
+
 	_, found := set.m[i]
 	return found
 }
@@ -121,7 +151,6 @@ func (set X2EmailSet) ContainsAll(i ...testtypes.Email) bool {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -135,7 +164,6 @@ func (set X2EmailSet) IsSubset(other X2EmailSet) bool {
 			return false
 		}
 	}
-
 	return true
 }
 

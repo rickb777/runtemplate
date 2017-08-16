@@ -20,14 +20,32 @@ type X2URLSet struct {
 }
 
 // NewX2URLSet creates and returns a reference to an empty set.
-func NewX2URLSet(a ...url.URL) X2URLSet {
+func NewX2URLSet(values ...url.URL) X2URLSet {
 	set := X2URLSet{
 		m: make(map[url.URL]struct{}),
 	}
-	for _, i := range a {
+	for _, i := range values {
 		set.m[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX2URLSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
+func ConvertX2URLSet(values ...interface{}) (X2URLSet, bool) {
+	set := NewX2URLSet()
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(url.URL)
+		if !ok {
+		    good = false
+		} else {
+	    	set.m[v] = struct{}{}
+		}
+	}
+	return set, good
 }
 
 // BuildX2URLSetFromChan constructs a new X2URLSet from a channel that supplies a sequence
@@ -40,11 +58,21 @@ func BuildX2URLSetFromChan(source <-chan url.URL) X2URLSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X2URLSet) ToSlice() []url.URL {
 
 	var s []url.URL
 	for v, _ := range set.m {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set X2URLSet) ToInterfaceSlice() []interface{} {
+
+	var s []interface{}
+	for _, v := range set.m {
 		s = append(s, v)
 	}
 	return s

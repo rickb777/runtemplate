@@ -7,7 +7,9 @@
 package simple
 
 import (
+
 	"math/rand"
+	"sort"
     "math/big"
 
 )
@@ -29,10 +31,27 @@ func newX2IntList(len, cap int) X2IntList {
 // NewX2IntList constructs a new list containing the supplied values, if any.
 func NewX2IntList(values ...big.Int) X2IntList {
 	result := newX2IntList(len(values), len(values))
-	for i, v := range values {
-		result[i] = v
-	}
+	copy(result, values)
 	return result
+}
+
+// ConvertX2IntList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertX2IntList(values ...interface{}) (X2IntList, bool) {
+	result := newX2IntList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(big.Int)
+		if !ok {
+		    good = false
+		} else {
+	    	result = append(result, v)
+	    }
+	}
+
+	return result, good
 }
 
 // BuildX2IntListFromChan constructs a new X2IntList from a channel that supplies a sequence
@@ -43,6 +62,15 @@ func BuildX2IntListFromChan(source <-chan big.Int) X2IntList {
 		result = append(result, v)
 	}
 	return result
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list X2IntList) ToInterfaceSlice() []interface{} {
+	var s []interface{}
+	for _, v := range list {
+		s = append(s, v)
+	}
+	return s
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
@@ -80,7 +108,7 @@ func (list X2IntList) Tail() X2IntList {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
 func (list X2IntList) Init() X2IntList {
-	return X2IntList(list[:list.Len()-1])
+	return X2IntList(list[:len(list)-1])
 }
 
 // IsEmpty tests whether X2IntList is empty.
@@ -166,7 +194,7 @@ func (list X2IntList) Send() <-chan big.Int {
 
 // Reverse returns a copy of X2IntList with all elements in the reverse order.
 func (list X2IntList) Reverse() X2IntList {
-	numItems := list.Len()
+	numItems := len(list)
 	result := newX2IntList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list {
@@ -177,8 +205,8 @@ func (list X2IntList) Reverse() X2IntList {
 
 // Shuffle returns a shuffled copy of X2IntList, using a version of the Fisher-Yates shuffle.
 func (list X2IntList) Shuffle() X2IntList {
-	numItems := list.Len()
 	result := list.Clone()
+	numItems := len(list)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
 		result[i], result[r] = result[r], result[i]
@@ -191,7 +219,7 @@ func (list X2IntList) Shuffle() X2IntList {
 // Take returns a slice of X2IntList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list X2IntList) Take(n int) X2IntList {
-	if n > list.Len() {
+	if n > len(list) {
 		return list
 	}
 	return list[0:n]
@@ -204,7 +232,7 @@ func (list X2IntList) Drop(n int) X2IntList {
 		return list
 	}
 
-	l := list.Len()
+	l := len(list)
 	if n < l {
 		return list[n:]
 	}
@@ -214,7 +242,7 @@ func (list X2IntList) Drop(n int) X2IntList {
 // TakeLast returns a slice of X2IntList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list X2IntList) TakeLast(n int) X2IntList {
-	l := list.Len()
+	l := len(list)
 	if n > l {
 		return list
 	}
@@ -228,7 +256,7 @@ func (list X2IntList) DropLast(n int) X2IntList {
 		return list
 	}
 
-	l := list.Len()
+	l := len(list)
 	if n > l {
 		return list[l:]
 	} else {
@@ -288,7 +316,7 @@ func (list X2IntList) Find(fn func(big.Int) bool) (big.Int, bool) {
 
 // Filter returns a new X2IntList whose elements return true for func.
 func (list X2IntList) Filter(fn func(big.Int) bool) X2IntList {
-	result := newX2IntList(0, list.Len()/2)
+	result := newX2IntList(0, len(list)/2)
 
 	for _, v := range list {
 		if fn(v) {
@@ -304,8 +332,8 @@ func (list X2IntList) Filter(fn func(big.Int) bool) X2IntList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list X2IntList) Partition(p func(big.Int) bool) (X2IntList, X2IntList) {
-	matching := newX2IntList(0, list.Len()/2)
-	others := newX2IntList(0, list.Len()/2)
+	matching := newX2IntList(0, len(list)/2)
+	others := newX2IntList(0, len(list)/2)
 
 	for _, v := range list {
 		if p(v) {
@@ -332,7 +360,7 @@ func (list X2IntList) CountBy(predicate func(big.Int) bool) (result int) {
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list X2IntList) MinBy(less func(big.Int, big.Int) bool) big.Int {
-	l := list.Len()
+	l := len(list)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -351,7 +379,7 @@ func (list X2IntList) MinBy(less func(big.Int, big.Int) bool) big.Int {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list X2IntList) MaxBy(less func(big.Int, big.Int) bool) big.Int {
-	l := list.Len()
+	l := len(list)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -368,7 +396,7 @@ func (list X2IntList) MaxBy(less func(big.Int, big.Int) bool) big.Int {
 
 // DistinctBy returns a new X2IntList whose elements are unique, where equality is defined by a passed func.
 func (list X2IntList) DistinctBy(equal func(big.Int, big.Int) bool) X2IntList {
-	result := newX2IntList(0, list.Len())
+	result := newX2IntList(0, len(list))
 Outer:
 	for _, v := range list {
 		for _, r := range result {
@@ -400,22 +428,54 @@ func (list X2IntList) IndexWhere2(p func(big.Int) bool, from int) int {
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
 func (list X2IntList) LastIndexWhere(p func(big.Int) bool) int {
-	return list.LastIndexWhere2(p, list.Len())
+	return list.LastIndexWhere2(p, len(list))
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
 func (list X2IntList) LastIndexWhere2(p func(big.Int) bool, before int) int {
 	if before < 0 {
-		before = list.Len()
+		before = len(list)
 	}
-	for i := list.Len() - 1; i >= 0; i-- {
+	for i := len(list) - 1; i >= 0; i-- {
 		v := list[i]
 		if i <= before && p(v) {
 			return i
 		}
 	}
 	return -1
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type sortableX2IntList struct {
+    less func(i, j big.Int) bool
+    m []big.Int
+}
+
+func (sl sortableX2IntList) Less(i, j int) bool {
+	return sl.less(sl.m[i], sl.m[j])
+}
+
+func (sl sortableX2IntList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableX2IntList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list X2IntList) SortBy(less func(i, j big.Int) bool) {
+
+    sort.Sort(sortableX2IntList{less, list})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list X2IntList) StableSortBy(less func(i, j big.Int) bool) {
+
+    sort.Stable(sortableX2IntList{less, list})
 }
 
 

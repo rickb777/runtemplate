@@ -16,12 +16,26 @@ import (
 type X1IntSet map[int]struct{}
 
 // NewX1IntSet creates and returns a reference to an empty set.
-func NewX1IntSet(a ...int) X1IntSet {
+func NewX1IntSet(values ...int) X1IntSet {
 	set := make(X1IntSet)
-	for _, i := range a {
+	for _, i := range values {
 		set[i] = struct{}{}
 	}
 	return set
+}
+
+// ConvertX1IntSet constructs a new set containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+func ConvertX1IntSet(values ...interface{}) (X1IntSet, bool) {
+	set := make(X1IntSet)
+	for _, i := range values {
+		v, ok := i.(int)
+		if !ok {
+		    return set, false
+		}
+		set[v] = struct{}{}
+	}
+	return set, true
 }
 
 // BuildX1IntSetFromChan constructs a new X1IntSet from a channel that supplies a sequence
@@ -34,9 +48,18 @@ func BuildX1IntSetFromChan(source <-chan int) X1IntSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current set as a slice.
 func (set X1IntSet) ToSlice() []int {
 	var s []int
+	for v := range set {
+		s = append(s, v)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
+func (set X1IntSet) ToInterfaceSlice() []interface{} {
+	var s []interface{}
 	for v := range set {
 		s = append(s, v)
 	}

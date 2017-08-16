@@ -58,6 +58,9 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []{{.PType}}
 
+	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
+	ToInterfaceSlice() []interface{}
+
 	// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}Collection return true for the passed func.
 	Exists(fn func({{.PType}}) bool) bool
 

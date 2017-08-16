@@ -8,8 +8,9 @@ package threadsafe
 
 import (
 
-	"sync"
 	"math/rand"
+    "sort"
+	"sync"
     "math/big"
 
 )
@@ -42,6 +43,25 @@ func NewX2IntList(values ...big.Int) *X2IntList {
 	return result
 }
 
+// ConvertX2IntList constructs a new list containing the supplied values, if any.
+// The returned boolean will be false if any of the values could not be converted correctly.
+// The returned list will contain all the values that were correctly converted.
+func ConvertX2IntList(values ...interface{}) (*X2IntList, bool) {
+	result := newX2IntList(0, len(values))
+	good := true
+
+	for _, i := range values {
+		v, ok := i.(big.Int)
+		if !ok {
+		    good = false
+		} else {
+	    	result.m = append(result.m, v)
+	    }
+	}
+
+	return result, good
+}
+
 // BuildX2IntListFromChan constructs a new X2IntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildX2IntListFromChan(source <-chan big.Int) *X2IntList {
@@ -52,12 +72,22 @@ func BuildX2IntListFromChan(source <-chan big.Int) *X2IntList {
 	return result
 }
 
-// ToSlice returns the elements of the current set as a slice
+// ToSlice returns the elements of the current list as a slice.
 func (list *X2IntList) ToSlice() []big.Int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []big.Int
+	s := make([]big.Int, len(list.m), len(list.m))
+	copy(s, list.m)
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
+func (list *X2IntList) ToInterfaceSlice() []interface{} {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	var s []interface{}
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -119,12 +149,12 @@ func (list *X2IntList) Init() *X2IntList {
 
 // IsEmpty tests whether X2IntList is empty.
 func (list *X2IntList) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether X2IntList is empty.
 func (list *X2IntList) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -139,7 +169,7 @@ func (list *X2IntList) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list - an alias of Len().
+// Size returns the number of items in the list.
 func (list *X2IntList) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -147,17 +177,7 @@ func (list *X2IntList) Size() int {
 	return len(list.m)
 }
 
-// Len returns the number of items in the list - an alias of Size().
-// This implements one of the methods needed by sort.Interface (along with Less and Swap).
-func (list *X2IntList) Len() int {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	return len(list.m)
-}
-
-// Swap exchanges two elements, which is necessary during sorting etc.
-// This implements one of the methods needed by sort.Interface (along with Len and Less).
+// Swap exchanges two elements.
 func (list *X2IntList) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -271,7 +291,7 @@ func (list *X2IntList) Take(n int) *X2IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	if n > list.Len() {
+	if n > len(list.m) {
 		return list
 	}
 	result := newX2IntList(0, 0)
@@ -290,7 +310,7 @@ func (list *X2IntList) Drop(n int) *X2IntList {
 	defer list.s.RUnlock()
 
 	result := newX2IntList(0, 0)
-	l := list.Len()
+	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
 	}
@@ -303,7 +323,7 @@ func (list *X2IntList) TakeLast(n int) *X2IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		return list
 	}
@@ -322,7 +342,7 @@ func (list *X2IntList) DropLast(n int) *X2IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if n > l {
 		list.m = list.m[l:]
 	} else {
@@ -394,7 +414,7 @@ func (list *X2IntList) Filter(fn func(big.Int) bool) *X2IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newX2IntList(0, list.Len()/2)
+	result := newX2IntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if fn(v) {
@@ -413,8 +433,8 @@ func (list *X2IntList) Partition(p func(big.Int) bool) (*X2IntList, *X2IntList) 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := newX2IntList(0, list.Len()/2)
-	others := newX2IntList(0, list.Len()/2)
+	matching := newX2IntList(0, len(list.m)/2)
+	others := newX2IntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -447,7 +467,7 @@ func (list *X2IntList) MinBy(less func(big.Int, big.Int) bool) big.Int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -468,7 +488,7 @@ func (list *X2IntList) MaxBy(less func(big.Int, big.Int) bool) big.Int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	l := list.Len()
+	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
@@ -487,7 +507,7 @@ func (list *X2IntList) DistinctBy(equal func(big.Int, big.Int) bool) *X2IntList 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newX2IntList(0, list.Len())
+	result := newX2IntList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -541,6 +561,42 @@ func (list *X2IntList) LastIndexWhere2(p func(big.Int) bool, before int) int {
 		}
 	}
 	return -1
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type sortableX2IntList struct {
+    less func(i, j big.Int) bool
+    m []big.Int
+}
+
+func (sl sortableX2IntList) Less(i, j int) bool {
+	return sl.less(sl.m[i], sl.m[j])
+}
+
+func (sl sortableX2IntList) Len() int {
+	return len(sl.m)
+}
+
+func (sl sortableX2IntList) Swap(i, j int) {
+	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
+}
+
+// SortBy alters the list so that the elements are sorted by a specified ordering.
+func (list *X2IntList) SortBy(less func(i, j big.Int) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Sort(sortableX2IntList{less, list.m})
+}
+
+// StableSortBy alters the list so that the elements are sorted by a specified ordering.
+// The algorithm keeps the original order of equal elements.
+func (list *X2IntList) StableSortBy(less func(i, j big.Int) bool) {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    sort.Stable(sortableX2IntList{less, list.m})
 }
 
 
