@@ -3,6 +3,14 @@ language: go
 go:
   - tip
 
+install:
+  - rm -f builtintest/*/[px]_*.go builtintest/*/?[px]_*.go
+  - rm -f builtintest/*/[px][12]_*.go builtintest/*/?[px][12]_*.go
+  - ./copy-threadsafe-builtins+tests
+
 script:
-  - ./build
+  - go install .
+  - go generate -v ./...
+  - go test ./...
+
 
