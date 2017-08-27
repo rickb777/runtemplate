@@ -17,6 +17,8 @@ It is intended to be used directly from the command-line and also with `go gener
 
 It supports light-weight dependency checking, i.e. less work is done when the generated output file already exists and is up to date.
 
+A selection of [built-in templates](BUILTIN.md) is included with `runtemplate`. These provide type-safe collection types etc.
+
 ## Command-Line
 
 Flexible option parsing is provided. Example

@@ -16,7 +16,9 @@ If you want to mix both categories, you will need to generate the output code wi
 
 The built-in collections support a flag that allow you to control the generated names.
 
+ * `Type=T` - use this to specify the name of the generated type
  * `Prefix=X` - use this to prefix the name of the generated type
+ * `Key=K` - use this to specify the name of the generated key type (for maps only, see below)
 
 The built-in collections support a small number of flags that allow you to control whether extra methods are generated or not.
 
