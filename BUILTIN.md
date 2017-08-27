@@ -10,7 +10,8 @@ There are several main categories:
 
 The threadsafe collections and non-threadsafe collections are generally not intended to be used together directly, although it is possible to transfer content from either collections of one category to collections of the other category.
 
-If you want to mix both categories, you will need to generate the output code with different prefixes or in different packages. To set a prefix, pass `Prefix=Abc` or simiilar to `runtemplate`. To do the latter, specify different directories for the generated code via `-output`.
+If you want to mix both categories, you will need to generate the output code with different prefixes or in different packages. To set a prefix, pass `Prefix=Abc` or similar to `runtemplate`. To do the latter, specify different directories for the generated code via `-output`.
+
 
 ## General Flags
 
