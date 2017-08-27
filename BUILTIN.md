@@ -14,7 +14,7 @@ If you want to mix both categories, you will need to generate the output code wi
 
 ## General Flags
 
-The built-in collections support a flag that allow you to control the generated names.
+The built-in collections support flags that allow you to control the generated names.
 
  * `Type=T` - use this to specify the name of the generated type
  * `Prefix=X` - use this to prefix the name of the generated type
