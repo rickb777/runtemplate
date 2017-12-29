@@ -1,4 +1,5 @@
 #!/bin/bash -e
+cd $(dirname $0)
 rm -f builtintest/*/[px]_*.go builtintest/*/?[px]_*.go
 rm -f builtintest/*/[px][12]_*.go builtintest/*/?[px][12]_*.go
 ./copy-threadsafe-builtins+tests
