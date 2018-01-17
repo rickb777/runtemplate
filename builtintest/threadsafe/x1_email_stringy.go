@@ -45,6 +45,10 @@ func (email Email) ToUpper() Email {
 // Scan parses some value. It implements sql.Scanner,
 // https://golang.org/pkg/database/sql/#Scanner
 func (email *Email) Scan(value interface{}) (err error) {
+    if value == nil {
+        return nil
+    }
+
 	err = nil
 	switch value.(type) {
 	case string:

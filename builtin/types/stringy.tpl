@@ -47,6 +47,10 @@ func ({{.LType}} {{.Type}}) ToUpper() {{.Type}} {
 // Scan parses some value. It implements sql.Scanner,
 // https://golang.org/pkg/database/sql/#Scanner
 func ({{.LType}} *{{.Type}}) Scan(value interface{}) (err error) {
+    if value == nil {
+        return nil
+    }
+
 	err = nil
 	switch value.(type) {
 	case string:
