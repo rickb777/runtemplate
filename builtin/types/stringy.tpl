@@ -46,21 +46,22 @@ func ({{.LType}} {{.Type}}) ToUpper() {{.Type}} {
 
 // Scan parses some value. It implements sql.Scanner,
 // https://golang.org/pkg/database/sql/#Scanner
-func ({{.LType}} *{{.Type}}) Scan(value interface{}) (err error) {
-    if value == nil {
-        return nil
-    }
+func ({{.LType}} *{{.Type}}) Scan(value interface{}) error {
+	if value == nil {
+        *{{.LType}} = {{.Type}}("")
+		return nil
+	}
 
-	err = nil
 	switch value.(type) {
 	case string:
 		*{{.LType}} = {{.Type}}(value.(string))
 	case []byte:
 		*{{.LType}} = {{.Type}}(string(value.([]byte)))
+	case nil:
 	default:
-		err = errors.New(fmt.Sprintf("%+v", value))
+		return errors.New(fmt.Sprintf("{{.Type}}.Scan(%#v)", value))
 	}
-	return
+	return nil
 }
 
 // Value converts the value to a string. It implements driver.Valuer,

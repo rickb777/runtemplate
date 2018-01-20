@@ -44,21 +44,22 @@ func (email Email) ToUpper() Email {
 
 // Scan parses some value. It implements sql.Scanner,
 // https://golang.org/pkg/database/sql/#Scanner
-func (email *Email) Scan(value interface{}) (err error) {
-    if value == nil {
-        return nil
-    }
+func (email *Email) Scan(value interface{}) error {
+	if value == nil {
+        *email = Email("")
+		return nil
+	}
 
-	err = nil
 	switch value.(type) {
 	case string:
 		*email = Email(value.(string))
 	case []byte:
 		*email = Email(string(value.([]byte)))
+	case nil:
 	default:
-		err = errors.New(fmt.Sprintf("%+v", value))
+		return errors.New(fmt.Sprintf("Email.Scan(%#v)", value))
 	}
-	return
+	return nil
 }
 
 // Value converts the value to a string. It implements driver.Valuer,
