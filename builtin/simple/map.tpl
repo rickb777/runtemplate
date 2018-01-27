@@ -302,7 +302,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, aft
 		v := mm[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 {{else}}
 	for k, v := range mm {
