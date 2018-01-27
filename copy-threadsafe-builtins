@@ -1,0 +1,16 @@
+#!/bin/bash -e
+# The builtin/threadsafe templates provide the primary 'source of truth'.
+# This script creates the builtin/fast templates automatically.
+# Then manually verify that the immutable and simple templates are consistent.
+
+cd builtin
+
+cat threadsafe/collection.tpl > fast/collection.tpl
+
+for tpl in list.tpl map.tpl set.tpl; do
+  echo $tpl
+  cat threadsafe/$tpl | \
+      fgrep -v '"sync"' | fgrep -v 'sync.RWMutex' | \
+      fgrep -v 's.Lock()' | fgrep -v 's.Unlock()' | \
+      fgrep -v 's.RLock()' | fgrep -v 's.RUnlock()' > fast/$tpl
+done

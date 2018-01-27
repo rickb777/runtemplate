@@ -65,6 +65,16 @@ func (mm TX1AppleStringMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1AppleStringMap) Values() []string {
+
+	var s []string
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1AppleStringMap) ToSlice() []TX1AppleStringTuple {
 	var s []TX1AppleStringTuple
@@ -138,6 +148,19 @@ func (mm TX1AppleStringMap) Exists(fn func(Apple, string) bool) bool {
 	return false
 }
 
+// Find returns the first string that returns true for some function.
+// False is returned if none match.
+func (mm TX1AppleStringMap) Find(fn func(Apple, string) bool) (TX1AppleStringTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1AppleStringTuple{k, v}, true
+		}
+	}
+
+	return TX1AppleStringTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1AppleStringMap) Filter(fn func(Apple, string) bool) TX1AppleStringMap {
@@ -166,6 +189,21 @@ func (mm TX1AppleStringMap) Partition(fn func(Apple, string) bool) (matching TX1
 		}
 	}
 	return
+}
+
+// Transform returns a new TX1StringMap by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1AppleStringMap) Transform(fn func(Apple, string) (Apple, string)) TX1AppleStringMap {
+	result := NewTX1AppleStringMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
 }
 
 // Clone returns the same map, which is immutable.

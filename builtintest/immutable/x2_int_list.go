@@ -390,6 +390,20 @@ func (list *X2IntList) Partition(p func(big.Int) bool) (*X2IntList, *X2IntList) 
 	return matching, others
 }
 
+// Transform returns a new X2IntList by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X2IntList) Transform(fn func(big.Int) big.Int) *X2IntList {
+	result := newX2IntList(len(list.m), len(list.m))
+
+	for i, v := range list.m {
+		result.m[i] = fn(v)
+	}
+
+	return result
+}
+
 // CountBy gives the number elements of X2IntList that return true for the passed predicate.
 func (list *X2IntList) CountBy(predicate func(big.Int) bool) (result int) {
 

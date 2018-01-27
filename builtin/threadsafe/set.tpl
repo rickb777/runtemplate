@@ -358,6 +358,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}},
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
+// The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
@@ -375,6 +376,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
 	matching := New{{.UPrefix}}{{.UType}}Set()
 	others := New{{.UPrefix}}{{.UType}}Set()
@@ -389,6 +391,22 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 		}
 	}
 	return matching, others
+}
+
+// Transform returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn.
+// The original set is not modified.
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set {{.UPrefix}}{{.UType}}Set) Transform(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+	result := New{{.UPrefix}}{{.UType}}Set()
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v := range set.m {
+        result.m[fn(v)] = struct{}{}
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the passed predicate.
@@ -568,13 +586,13 @@ func (set {{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set {{.UPrefix}}{{.UType}}Set) MkString3(pfx, mid, sfx string) string {
-	return set.mkString3Bytes(pfx, mid, sfx).String()
+func (set {{.UPrefix}}{{.UType}}Set) MkString3(before, between, after string) string {
+	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	set.s.RLock()
@@ -583,9 +601,9 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(pfx, mid, sfx string) *bytes
 	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		sep = mid
+		sep = between
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

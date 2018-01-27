@@ -162,6 +162,7 @@ func (mm SP1StringAppleMap) Exists(fn func(*string, *Apple) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified
 func (mm SP1StringAppleMap) Filter(fn func(*string, *Apple) bool) SP1StringAppleMap {
 	result := NewSP1StringAppleMap()
 	for k, v := range mm {
@@ -175,6 +176,7 @@ func (mm SP1StringAppleMap) Filter(fn func(*string, *Apple) bool) SP1StringApple
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified
 func (mm SP1StringAppleMap) Partition(fn func(*string, *Apple) bool) (matching SP1StringAppleMap, others SP1StringAppleMap) {
 	matching = NewSP1StringAppleMap()
 	others = NewSP1StringAppleMap()
@@ -186,6 +188,22 @@ func (mm SP1StringAppleMap) Partition(fn func(*string, *Apple) bool) (matching S
 		}
 	}
 	return
+}
+
+// Transform returns a new SP1AppleMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm SP1StringAppleMap) Transform(fn func(*string, *Apple) (*string, *Apple)) SP1StringAppleMap {
+	result := NewSP1StringAppleMap()
+
+	for k1, v1 := range mm {
+	    k2, v2 := fn(k1, v1)
+	    result[k2] = v2
+	}
+
+	return result
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.

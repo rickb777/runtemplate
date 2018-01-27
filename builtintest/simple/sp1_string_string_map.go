@@ -162,6 +162,7 @@ func (mm SP1StringStringMap) Exists(fn func(*string, *string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified
 func (mm SP1StringStringMap) Filter(fn func(*string, *string) bool) SP1StringStringMap {
 	result := NewSP1StringStringMap()
 	for k, v := range mm {
@@ -175,6 +176,7 @@ func (mm SP1StringStringMap) Filter(fn func(*string, *string) bool) SP1StringStr
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified
 func (mm SP1StringStringMap) Partition(fn func(*string, *string) bool) (matching SP1StringStringMap, others SP1StringStringMap) {
 	matching = NewSP1StringStringMap()
 	others = NewSP1StringStringMap()
@@ -186,6 +188,22 @@ func (mm SP1StringStringMap) Partition(fn func(*string, *string) bool) (matching
 		}
 	}
 	return
+}
+
+// Transform returns a new SP1StringMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm SP1StringStringMap) Transform(fn func(*string, *string) (*string, *string)) SP1StringStringMap {
+	result := NewSP1StringStringMap()
+
+	for k1, v1 := range mm {
+	    k2, v2 := fn(k1, v1)
+	    result[k2] = v2
+	}
+
+	return result
 }
 
 

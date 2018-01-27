@@ -72,6 +72,16 @@ func (mm TX1IntIntMap) Keys() []int {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1IntIntMap) Values() []int {
+
+	var s []int
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1IntIntMap) ToSlice() []TX1IntIntTuple {
 	var s []TX1IntIntTuple
@@ -145,6 +155,19 @@ func (mm TX1IntIntMap) Exists(fn func(int, int) bool) bool {
 	return false
 }
 
+// Find returns the first int that returns true for some function.
+// False is returned if none match.
+func (mm TX1IntIntMap) Find(fn func(int, int) bool) (TX1IntIntTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1IntIntTuple{k, v}, true
+		}
+	}
+
+	return TX1IntIntTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1IntIntMap) Filter(fn func(int, int) bool) TX1IntIntMap {
@@ -173,6 +196,21 @@ func (mm TX1IntIntMap) Partition(fn func(int, int) bool) (matching TX1IntIntMap,
 		}
 	}
 	return
+}
+
+// Transform returns a new TX1IntMap by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1IntIntMap) Transform(fn func(int, int) (int, int)) TX1IntIntMap {
+	result := NewTX1IntIntMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
 }
 
 
@@ -215,22 +253,22 @@ func (mm TX1IntIntMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm TX1IntIntMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1IntIntMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1IntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

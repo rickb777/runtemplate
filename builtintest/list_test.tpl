@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Append:{{.Append}} Find:{{.Find}} Mutable:{{.Mutable}}
+// options: Append:{{.Append}} Find:{{.Find}} Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
 
@@ -165,6 +165,18 @@ func Test{{.UType}}ListPartition(t *testing.T) {
 
 	if !c.Equals(NewX1{{.UType}}List(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c{{.M}})
+	}
+}
+
+func Test{{.UType}}ListTransform(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+
+	b := a.Transform(func(v int) int {
+		return v * v
+	})
+
+	if !b.Equals(NewX1{{.UType}}List(1, 4, 9, 16)) {
+		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b{{.M}})
 	}
 }
 
@@ -416,6 +428,26 @@ func Test{{.UType}}ListMaxBy(t *testing.T) {
 
 	if c != -2 {
 		t.Errorf("Expected -2 but got '%+v'", c)
+	}
+}
+
+func Test{{.UType}}ListMkString(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+
+	c := a.MkString("|")
+
+	if c != "13|4|7|-2|9" {
+		t.Errorf("Expected '13|4|7|-2|9' but got %q", c)
+	}
+}
+
+func Test{{.UType}}ListMkString3(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+
+	c := a.MkString3("<", ", ", ">")
+
+	if c != "<13, 4, 7, -2, 9>" {
+		t.Errorf("Expected '<13, 4, 7, -2, 9>' but got %q", c)
 	}
 }
 

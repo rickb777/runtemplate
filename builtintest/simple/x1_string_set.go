@@ -276,6 +276,7 @@ func (set X1StringSet) Foreach(fn func(string)) {
 //-------------------------------------------------------------------------------------------------
 
 // Filter returns a new X1StringSet whose elements return true for func.
+// The original set is not modified
 func (set X1StringSet) Filter(fn func(string) bool) X1StringSet {
 	result := NewX1StringSet()
 	for v := range set {
@@ -286,10 +287,11 @@ func (set X1StringSet) Filter(fn func(string) bool) X1StringSet {
 	return result
 }
 
-// Partition returns two new stringLists whose elements return true or false for the predicate, p.
+// Partition returns two new stringSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original set is not modified
 func (set X1StringSet) Partition(p func(string) bool) (X1StringSet, X1StringSet) {
 	matching := NewX1StringSet()
 	others := NewX1StringSet()
@@ -301,6 +303,21 @@ func (set X1StringSet) Partition(p func(string) bool) (X1StringSet, X1StringSet)
 		}
 	}
 	return matching, others
+}
+
+// Transform returns a new X1StringSet by transforming every element with a function fn.
+// The original set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X1StringSet) Transform(fn func(string) string) X1StringSet {
+	result := NewX1StringSet()
+
+	for v := range set {
+        result[fn(v)] = struct{}{}
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of X1StringSet that return true for the passed predicate.
@@ -396,20 +413,20 @@ func (set X1StringSet) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set X1StringSet) MkString3(pfx, mid, sfx string) string {
-	return set.mkString3Bytes(pfx, mid, sfx).String()
+func (set X1StringSet) MkString3(before, between, after string) string {
+	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set X1StringSet) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (set X1StringSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 	for v := range set {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		sep = mid
+		sep = between
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

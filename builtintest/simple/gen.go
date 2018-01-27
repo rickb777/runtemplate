@@ -27,7 +27,7 @@ package simple
 
 //go:generate runtemplate -tpl ../list_test.tpl         Type=int Mutable:true M:
 //go:generate runtemplate -tpl ../set_test.tpl          Type=int Mutable:true M:
-//go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int Mutable:true M:.m
+//go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int Mutable:true M:
 
 // Code generation with pointer values
 

@@ -1,5 +1,5 @@
 // Generated from ../list_test.tpl with Type=int
-// options: Append:true Find:false Mutable:true
+// options: Append:true Find:false Mutable:true M:.m
 
 package threadsafe
 
@@ -152,6 +152,18 @@ func TestIntListPartition(t *testing.T) {
 
 	if !c.Equals(NewX1IntList(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c.m)
+	}
+}
+
+func TestIntListTransform(t *testing.T) {
+	a := NewX1IntList(1, 2, 3, 4)
+
+	b := a.Transform(func(v int) int {
+		return v * v
+	})
+
+	if !b.Equals(NewX1IntList(1, 4, 9, 16)) {
+		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b.m)
 	}
 }
 
@@ -403,6 +415,26 @@ func TestIntListMaxBy(t *testing.T) {
 
 	if c != -2 {
 		t.Errorf("Expected -2 but got '%+v'", c)
+	}
+}
+
+func TestIntListMkString(t *testing.T) {
+	a := NewX1IntList(13, 4, 7, -2, 9)
+
+	c := a.MkString("|")
+
+	if c != "13|4|7|-2|9" {
+		t.Errorf("Expected '13|4|7|-2|9' but got %q", c)
+	}
+}
+
+func TestIntListMkString3(t *testing.T) {
+	a := NewX1IntList(13, 4, 7, -2, 9)
+
+	c := a.MkString3("<", ", ", ">")
+
+	if c != "<13, 4, 7, -2, 9>" {
+		t.Errorf("Expected '<13, 4, 7, -2, 9>' but got %q", c)
 	}
 }
 

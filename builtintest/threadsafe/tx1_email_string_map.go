@@ -285,6 +285,24 @@ func (mm TX1EmailStringMap) Partition(fn func(Email, string) bool) (matching TX1
 	return
 }
 
+// Transform returns a new TX1StringMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1EmailStringMap) Transform(fn func(Email, string) (Email, string)) TX1EmailStringMap {
+	result := NewTX1EmailStringMap()
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm TX1EmailStringMap) Clone() TX1EmailStringMap {
 	result := NewTX1EmailStringMap()
@@ -316,13 +334,13 @@ func (mm TX1EmailStringMap) MkString(sep string) string {
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 // The map entries are sorted by their keys.
-func (mm TX1EmailStringMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1EmailStringMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1EmailStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1EmailStringMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -330,10 +348,10 @@ func (mm TX1EmailStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

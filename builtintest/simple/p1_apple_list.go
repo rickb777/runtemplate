@@ -328,6 +328,7 @@ func (list P1AppleList) Find(fn func(*Apple) bool) (*Apple, bool) {
 }
 
 // Filter returns a new P1AppleList whose elements return true for func.
+// The original list is not modified
 func (list P1AppleList) Filter(fn func(*Apple) bool) P1AppleList {
 	result := newP1AppleList(0, len(list)/2)
 
@@ -344,6 +345,7 @@ func (list P1AppleList) Filter(fn func(*Apple) bool) P1AppleList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original list is not modified
 func (list P1AppleList) Partition(p func(*Apple) bool) (P1AppleList, P1AppleList) {
 	matching := newP1AppleList(0, len(list)/2)
 	others := newP1AppleList(0, len(list)/2)
@@ -357,6 +359,21 @@ func (list P1AppleList) Partition(p func(*Apple) bool) (P1AppleList, P1AppleList
 	}
 
 	return matching, others
+}
+
+// Transform returns a new P1AppleList by transforming every element with a function fn.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list P1AppleList) Transform(fn func(*Apple) *Apple) P1AppleList {
+	result := newP1AppleList(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v))
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of P1AppleList that return true for the passed predicate.

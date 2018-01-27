@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Mutable:{{.Mutable}}
+// options: Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
 
@@ -94,6 +94,50 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
 //	}
 //}
 
+func Test{{.UType}}MapFilter(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 1}, TX1{{.UKey}}{{.UType}}Tuple{1, 2}, TX1{{.UKey}}{{.UType}}Tuple{2, 3})
+
+	b := a.Filter(func(k, v int) bool {
+		return v > 2
+	})
+
+	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{2, 3})
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp, b)
+	}
+}
+
+func Test{{.UType}}MapPartition(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{2, 11}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+
+	b, c := a.Partition(func(k, v int) bool {
+		return v > 5
+	})
+
+	exp1 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{2, 11})
+	if !b.Equals(exp1) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp1{{.M}}, b{{.M}})
+	}
+
+	exp2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+	if !c.Equals(exp2) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp2{{.M}}, c{{.M}})
+	}
+}
+
+func Test{{.UType}}MapTransform(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 6}, TX1{{.UKey}}{{.UType}}Tuple{9, 10}, TX1{{.UKey}}{{.UType}}Tuple{10, 5})
+
+	b := a.Transform(func(k, v int) (int, int) {
+		return k + 1, v * v
+	})
+
+	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{9, 36}, TX1{{.UKey}}{{.UType}}Tuple{10, 100}, TX1{{.UKey}}{{.UType}}Tuple{11, 25})
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp{{.M}}, b{{.M}})
+	}
+}
+
 {{if .Mutable}}
 
 func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
@@ -176,3 +220,23 @@ func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
 }
 
 {{end}}
+
+func Test{{.UType}}MapMkString(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+
+	c := a.MkString("|")
+
+	if c != "8:4|4:0" && c != "4:0|8:4" {
+		t.Errorf("Expected '8:4|4:0' but got %q", c)
+	}
+}
+
+func Test{{.UType}}MapMkString3(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+
+	c := a.MkString3("<", ",", ">")
+
+	if c != "<8:4,4:0>" && c != "<4:0,8:4>" {
+		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
+	}
+}

@@ -416,6 +416,20 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 	return matching, others
 }
 
+// Transform returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *{{.UPrefix}}{{.UType}}List) Transform(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	result := new{{.UPrefix}}{{.UType}}List(len(list.m), len(list.m))
+
+	for i, v := range list.m {
+		result.m[i] = fn(v)
+	}
+
+	return result
+}
+
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
 func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) (result int) {
 
@@ -682,22 +696,22 @@ func (list *{{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list *{{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
-	return list.mkString3Bytes(pfx, mid, sfx).String()
+func (list *{{.UPrefix}}{{.UType}}List) MkString3(before, between, after string) string {
+	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 
 	for _, v := range list.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		sep = mid
+		sep = between
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 {{end}}

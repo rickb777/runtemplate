@@ -429,6 +429,7 @@ func (list X1StringList) Find(fn func(string) bool) (string, bool) {
 }
 
 // Filter returns a new X1StringList whose elements return true for func.
+// The original list is not modified
 func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -448,6 +449,7 @@ func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original list is not modified
 func (list *X1StringList) Partition(p func(string) bool) (*X1StringList, *X1StringList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -464,6 +466,23 @@ func (list *X1StringList) Partition(p func(string) bool) (*X1StringList, *X1Stri
 	}
 
 	return matching, others
+}
+
+// Transform returns a new X1StringList by transforming every element with a function fn.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1StringList) Transform(fn func(string) string) *X1StringList {
+	result := newX1StringList(len(list.m), len(list.m))
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for i, v := range list.m {
+		result.m[i] = fn(v)
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of X1StringList that return true for the passed predicate.
@@ -679,13 +698,13 @@ func (list *X1StringList) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list *X1StringList) MkString3(pfx, mid, sfx string) string {
-	return list.mkString3Bytes(pfx, mid, sfx).String()
+func (list *X1StringList) MkString3(before, between, after string) string {
+	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list X1StringList) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (list X1StringList) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	list.s.RLock()
@@ -694,9 +713,9 @@ func (list X1StringList) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
 	for _, v := range list.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		sep = mid
+		sep = between
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

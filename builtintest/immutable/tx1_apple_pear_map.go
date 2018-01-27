@@ -72,6 +72,16 @@ func (mm TX1ApplePearMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1ApplePearMap) Values() []Pear {
+
+	var s []Pear
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1ApplePearMap) ToSlice() []TX1ApplePearTuple {
 	var s []TX1ApplePearTuple
@@ -145,6 +155,19 @@ func (mm TX1ApplePearMap) Exists(fn func(Apple, Pear) bool) bool {
 	return false
 }
 
+// Find returns the first Pear that returns true for some function.
+// False is returned if none match.
+func (mm TX1ApplePearMap) Find(fn func(Apple, Pear) bool) (TX1ApplePearTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1ApplePearTuple{k, v}, true
+		}
+	}
+
+	return TX1ApplePearTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1ApplePearMap) Filter(fn func(Apple, Pear) bool) TX1ApplePearMap {
@@ -175,6 +198,21 @@ func (mm TX1ApplePearMap) Partition(fn func(Apple, Pear) bool) (matching TX1Appl
 	return
 }
 
+// Transform returns a new TX1PearMap by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1ApplePearMap) Transform(fn func(Apple, Pear) (Apple, Pear)) TX1ApplePearMap {
+	result := NewTX1ApplePearMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
+}
+
 // Clone returns the same map, which is immutable.
 func (mm TX1ApplePearMap) Clone() TX1ApplePearMap {
 	return mm
@@ -198,22 +236,22 @@ func (mm TX1ApplePearMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm TX1ApplePearMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1ApplePearMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1ApplePearMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1ApplePearMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

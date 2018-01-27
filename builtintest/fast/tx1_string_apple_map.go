@@ -248,6 +248,22 @@ func (mm TX1StringAppleMap) Partition(fn func(string, Apple) bool) (matching TX1
 	return
 }
 
+// Transform returns a new TX1AppleMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1StringAppleMap) Transform(fn func(string, Apple) (string, Apple)) TX1StringAppleMap {
+	result := NewTX1StringAppleMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm TX1StringAppleMap) Clone() TX1StringAppleMap {
 	result := NewTX1StringAppleMap()
@@ -276,22 +292,22 @@ func (mm TX1StringAppleMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm TX1StringAppleMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1StringAppleMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1StringAppleMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1StringAppleMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

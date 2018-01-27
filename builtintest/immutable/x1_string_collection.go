@@ -26,7 +26,7 @@ type X1StringMkStringer interface {
 	MkString(sep string) string
 
 	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-	MkString3(pfx, mid, sfx string) string
+	MkString3(before, between, after string) string
 
 	// implements json.Marshaler interface {
 	MarshalJSON() ([]byte, error)

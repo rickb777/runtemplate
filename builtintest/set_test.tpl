@@ -1,11 +1,11 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Mutable:{{.Mutable}}
+// options: Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestNew{{.UType}}Set(t *testing.T) {
@@ -182,7 +182,7 @@ func Test{{.UType}}SetIntersection(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetDifference(t *testing.T) {
+func Test{{.UType}}SetDifference(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3)
 
 	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
@@ -194,7 +194,7 @@ func TestMutable{{.UType}}SetDifference(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetSymmetricDifference(t *testing.T) {
+func Test{{.UType}}SetSymmetricDifference(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 45)
 
 	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
@@ -206,7 +206,7 @@ func TestMutable{{.UType}}SetSymmetricDifference(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetEqual(t *testing.T) {
+func Test{{.UType}}SetEqual(t *testing.T) {
 	a := NewX1{{.UType}}Set()
 	b := NewX1{{.UType}}Set()
 
@@ -222,7 +222,7 @@ func TestMutable{{.UType}}SetEqual(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetSend(t *testing.T) {
+func Test{{.UType}}SetSend(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b := BuildX1{{.UType}}SetFromChan(a.Send())
@@ -232,7 +232,7 @@ func TestMutable{{.UType}}SetSend(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetFilter(t *testing.T) {
+func Test{{.UType}}SetFilter(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
@@ -244,7 +244,7 @@ func TestMutable{{.UType}}SetFilter(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetPartition(t *testing.T) {
+func Test{{.UType}}SetPartition(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
@@ -260,7 +260,19 @@ func TestMutable{{.UType}}SetPartition(t *testing.T) {
 	}
 }
 
-func TestMutable{{.UType}}SetStringMap(t *testing.T) {
+func Test{{.UType}}SetTransform(t *testing.T) {
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+
+	b := a.Transform(func(v int) int {
+		return v * v
+	})
+
+	if !b.Equals(NewX1{{.UType}}Set(1, 4, 9, 16)) {
+		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b{{.M}})
+	}
+}
+
+func Test{{.UType}}SetStringMap(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 4)
 
 	b := a.StringMap()
@@ -306,3 +318,24 @@ func TestMutable{{.UType}}SetClone(t *testing.T) {
 	}
 }
 {{end}}
+
+func Test{{.UType}}SetMkString(t *testing.T) {
+	a := NewX1{{.UType}}Set(13, 4)
+
+	c := a.MkString("|")
+
+	if c != "13|4" && c != "4|13" {
+		t.Errorf("Expected '13|4' but got %q", c)
+	}
+}
+
+func Test{{.UType}}SetMkString3(t *testing.T) {
+	a := NewX1{{.UType}}Set(13, 4)
+
+	c := a.MkString3("<", ", ", ">")
+
+	if c != "<13, 4>" && c != "<4, 13>" {
+		t.Errorf("Expected '13|4' but got %q", c)
+	}
+}
+

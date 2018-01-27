@@ -72,6 +72,16 @@ func (mm TX2AppleIntMap) Keys() []Apple {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX2AppleIntMap) Values() []big.Int {
+
+	var s []big.Int
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX2AppleIntMap) ToSlice() []TX2AppleIntTuple {
 	var s []TX2AppleIntTuple
@@ -145,6 +155,19 @@ func (mm TX2AppleIntMap) Exists(fn func(Apple, big.Int) bool) bool {
 	return false
 }
 
+// Find returns the first big.Int that returns true for some function.
+// False is returned if none match.
+func (mm TX2AppleIntMap) Find(fn func(Apple, big.Int) bool) (TX2AppleIntTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX2AppleIntTuple{k, v}, true
+		}
+	}
+
+	return TX2AppleIntTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX2AppleIntMap) Filter(fn func(Apple, big.Int) bool) TX2AppleIntMap {
@@ -173,6 +196,21 @@ func (mm TX2AppleIntMap) Partition(fn func(Apple, big.Int) bool) (matching TX2Ap
 		}
 	}
 	return
+}
+
+// Transform returns a new TX2IntMap by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX2AppleIntMap) Transform(fn func(Apple, big.Int) (Apple, big.Int)) TX2AppleIntMap {
+	result := NewTX2AppleIntMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
 }
 
 // Clone returns the same map, which is immutable.

@@ -335,6 +335,20 @@ func (set X1AppleSet) Partition(p func(Apple) bool) (X1AppleSet, X1AppleSet) {
 	return matching, others
 }
 
+// Transform returns a new X1AppleSet by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X1AppleSet) Transform(fn func(Apple) Apple) X1AppleSet {
+	result := NewX1AppleSet()
+
+	for v := range set.m {
+        result.m[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
 // CountBy gives the number elements of X1AppleSet that return true for the passed predicate.
 func (set X1AppleSet) CountBy(predicate func(Apple) bool) (result int) {
 

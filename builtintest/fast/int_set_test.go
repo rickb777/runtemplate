@@ -1,11 +1,11 @@
 // Generated from ../set_test.tpl with Type=int
-// options: Mutable:true
+// options: Mutable:true M:.m
 
 package fast
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestNewIntSet(t *testing.T) {
@@ -182,7 +182,7 @@ func TestIntSetIntersection(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetDifference(t *testing.T) {
+func TestIntSetDifference(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3)
 
 	b := NewX1IntSet(1, 3, 4, 5, 6, 99)
@@ -194,7 +194,7 @@ func TestMutableIntSetDifference(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetSymmetricDifference(t *testing.T) {
+func TestIntSetSymmetricDifference(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3, 45)
 
 	b := NewX1IntSet(1, 3, 4, 5, 6, 99)
@@ -206,7 +206,7 @@ func TestMutableIntSetSymmetricDifference(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetEqual(t *testing.T) {
+func TestIntSetEqual(t *testing.T) {
 	a := NewX1IntSet()
 	b := NewX1IntSet()
 
@@ -222,7 +222,7 @@ func TestMutableIntSetEqual(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetSend(t *testing.T) {
+func TestIntSetSend(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3, 4)
 
 	b := BuildX1IntSetFromChan(a.Send())
@@ -232,7 +232,7 @@ func TestMutableIntSetSend(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetFilter(t *testing.T) {
+func TestIntSetFilter(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
@@ -244,7 +244,7 @@ func TestMutableIntSetFilter(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetPartition(t *testing.T) {
+func TestIntSetPartition(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
@@ -260,7 +260,19 @@ func TestMutableIntSetPartition(t *testing.T) {
 	}
 }
 
-func TestMutableIntSetStringMap(t *testing.T) {
+func TestIntSetTransform(t *testing.T) {
+	a := NewX1IntSet(1, 2, 3, 4)
+
+	b := a.Transform(func(v int) int {
+		return v * v
+	})
+
+	if !b.Equals(NewX1IntSet(1, 4, 9, 16)) {
+		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b.m)
+	}
+}
+
+func TestIntSetStringMap(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3, 4)
 
 	b := a.StringMap()
@@ -303,6 +315,27 @@ func TestMutableIntSetClone(t *testing.T) {
 
 	if a.Equals(c) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", a, c)
+	}
+}
+
+
+func TestIntSetMkString(t *testing.T) {
+	a := NewX1IntSet(13, 4)
+
+	c := a.MkString("|")
+
+	if c != "13|4" && c != "4|13" {
+		t.Errorf("Expected '13|4' but got %q", c)
+	}
+}
+
+func TestIntSetMkString3(t *testing.T) {
+	a := NewX1IntSet(13, 4)
+
+	c := a.MkString3("<", ", ", ">")
+
+	if c != "<13, 4>" && c != "<4, 13>" {
+		t.Errorf("Expected '13|4' but got %q", c)
 	}
 }
 

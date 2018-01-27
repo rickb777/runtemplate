@@ -1,5 +1,5 @@
 // Generated from ../map_test.tpl with Type=int
-// options: Mutable:<no value>
+// options: Mutable:<no value> M:.m
 
 package immutable
 
@@ -94,3 +94,68 @@ func TestImIntIntMapEquals(t *testing.T) {
 //	}
 //}
 
+func TestIntMapFilter(t *testing.T) {
+	a := NewTX1IntIntMap(TX1IntIntTuple{8, 1}, TX1IntIntTuple{1, 2}, TX1IntIntTuple{2, 3})
+
+	b := a.Filter(func(k, v int) bool {
+		return v > 2
+	})
+
+	exp := NewTX1IntIntMap(TX1IntIntTuple{2, 3})
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp, b)
+	}
+}
+
+func TestIntMapPartition(t *testing.T) {
+	a := NewTX1IntIntMap(TX1IntIntTuple{8, 4}, TX1IntIntTuple{2, 11}, TX1IntIntTuple{4, 0})
+
+	b, c := a.Partition(func(k, v int) bool {
+		return v > 5
+	})
+
+	exp1 := NewTX1IntIntMap(TX1IntIntTuple{2, 11})
+	if !b.Equals(exp1) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp1.m, b.m)
+	}
+
+	exp2 := NewTX1IntIntMap(TX1IntIntTuple{8, 4}, TX1IntIntTuple{4, 0})
+	if !c.Equals(exp2) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp2.m, c.m)
+	}
+}
+
+func TestIntMapTransform(t *testing.T) {
+	a := NewTX1IntIntMap(TX1IntIntTuple{8, 6}, TX1IntIntTuple{9, 10}, TX1IntIntTuple{10, 5})
+
+	b := a.Transform(func(k, v int) (int, int) {
+		return k + 1, v * v
+	})
+
+	exp := NewTX1IntIntMap(TX1IntIntTuple{9, 36}, TX1IntIntTuple{10, 100}, TX1IntIntTuple{11, 25})
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp.m, b.m)
+	}
+}
+
+
+
+func TestIntMapMkString(t *testing.T) {
+	a := NewTX1IntIntMap(TX1IntIntTuple{8, 4}, TX1IntIntTuple{4, 0})
+
+	c := a.MkString("|")
+
+	if c != "8:4|4:0" && c != "4:0|8:4" {
+		t.Errorf("Expected '8:4|4:0' but got %q", c)
+	}
+}
+
+func TestIntMapMkString3(t *testing.T) {
+	a := NewTX1IntIntMap(TX1IntIntTuple{8, 4}, TX1IntIntTuple{4, 0})
+
+	c := a.MkString3("<", ",", ">")
+
+	if c != "<8:4,4:0>" && c != "<4:0,8:4>" {
+		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
+	}
+}

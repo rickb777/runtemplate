@@ -248,6 +248,22 @@ func (mm TX1IntIntMap) Partition(fn func(int, int) bool) (matching TX1IntIntMap,
 	return
 }
 
+// Transform returns a new TX1IntMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1IntIntMap) Transform(fn func(int, int) (int, int)) TX1IntIntMap {
+	result := NewTX1IntIntMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
+}
+
 
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
@@ -294,22 +310,22 @@ func (mm TX1IntIntMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm TX1IntIntMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1IntIntMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1IntIntMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

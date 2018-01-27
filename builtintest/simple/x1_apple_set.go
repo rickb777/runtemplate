@@ -270,6 +270,7 @@ func (set X1AppleSet) Foreach(fn func(Apple)) {
 //-------------------------------------------------------------------------------------------------
 
 // Filter returns a new X1AppleSet whose elements return true for func.
+// The original set is not modified
 func (set X1AppleSet) Filter(fn func(Apple) bool) X1AppleSet {
 	result := NewX1AppleSet()
 	for v := range set {
@@ -280,10 +281,11 @@ func (set X1AppleSet) Filter(fn func(Apple) bool) X1AppleSet {
 	return result
 }
 
-// Partition returns two new AppleLists whose elements return true or false for the predicate, p.
+// Partition returns two new AppleSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original set is not modified
 func (set X1AppleSet) Partition(p func(Apple) bool) (X1AppleSet, X1AppleSet) {
 	matching := NewX1AppleSet()
 	others := NewX1AppleSet()
@@ -295,6 +297,21 @@ func (set X1AppleSet) Partition(p func(Apple) bool) (X1AppleSet, X1AppleSet) {
 		}
 	}
 	return matching, others
+}
+
+// Transform returns a new X1AppleSet by transforming every element with a function fn.
+// The original set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X1AppleSet) Transform(fn func(Apple) Apple) X1AppleSet {
+	result := NewX1AppleSet()
+
+	for v := range set {
+        result[fn(v)] = struct{}{}
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of X1AppleSet that return true for the passed predicate.

@@ -311,6 +311,7 @@ func (list P2IntList) Find(fn func(*big.Int) bool) (*big.Int, bool) {
 }
 
 // Filter returns a new P2IntList whose elements return true for func.
+// The original list is not modified
 func (list P2IntList) Filter(fn func(*big.Int) bool) P2IntList {
 	result := newP2IntList(0, len(list)/2)
 
@@ -327,6 +328,7 @@ func (list P2IntList) Filter(fn func(*big.Int) bool) P2IntList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original list is not modified
 func (list P2IntList) Partition(p func(*big.Int) bool) (P2IntList, P2IntList) {
 	matching := newP2IntList(0, len(list)/2)
 	others := newP2IntList(0, len(list)/2)
@@ -340,6 +342,21 @@ func (list P2IntList) Partition(p func(*big.Int) bool) (P2IntList, P2IntList) {
 	}
 
 	return matching, others
+}
+
+// Transform returns a new P2IntList by transforming every element with a function fn.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list P2IntList) Transform(fn func(*big.Int) *big.Int) P2IntList {
+	result := newP2IntList(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v))
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of P2IntList that return true for the passed predicate.

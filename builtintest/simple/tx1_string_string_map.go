@@ -169,6 +169,7 @@ func (mm TX1StringStringMap) Exists(fn func(string, string) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified
 func (mm TX1StringStringMap) Filter(fn func(string, string) bool) TX1StringStringMap {
 	result := NewTX1StringStringMap()
 	for k, v := range mm {
@@ -182,6 +183,7 @@ func (mm TX1StringStringMap) Filter(fn func(string, string) bool) TX1StringStrin
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified
 func (mm TX1StringStringMap) Partition(fn func(string, string) bool) (matching TX1StringStringMap, others TX1StringStringMap) {
 	matching = NewTX1StringStringMap()
 	others = NewTX1StringStringMap()
@@ -193,6 +195,22 @@ func (mm TX1StringStringMap) Partition(fn func(string, string) bool) (matching T
 		}
 	}
 	return
+}
+
+// Transform returns a new TX1StringMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1StringStringMap) Transform(fn func(string, string) (string, string)) TX1StringStringMap {
+	result := NewTX1StringStringMap()
+
+	for k1, v1 := range mm {
+	    k2, v2 := fn(k1, v1)
+	    result[k2] = v2
+	}
+
+	return result
 }
 
 
@@ -239,22 +257,22 @@ func (mm TX1StringStringMap) MkString(sep string) string {
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm TX1StringStringMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1StringStringMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1StringStringMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1StringStringMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

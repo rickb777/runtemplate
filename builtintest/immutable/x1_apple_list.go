@@ -408,6 +408,20 @@ func (list *X1AppleList) Partition(p func(Apple) bool) (*X1AppleList, *X1AppleLi
 	return matching, others
 }
 
+// Transform returns a new X1AppleList by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1AppleList) Transform(fn func(Apple) Apple) *X1AppleList {
+	result := newX1AppleList(len(list.m), len(list.m))
+
+	for i, v := range list.m {
+		result.m[i] = fn(v)
+	}
+
+	return result
+}
+
 // CountBy gives the number elements of X1AppleList that return true for the passed predicate.
 func (list *X1AppleList) CountBy(predicate func(Apple) bool) (result int) {
 

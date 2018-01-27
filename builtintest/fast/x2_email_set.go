@@ -308,6 +308,7 @@ func (set X2EmailSet) Find(fn func(testtypes.Email) bool) (testtypes.Email, bool
 }
 
 // Filter returns a new X2EmailSet whose elements return true for func.
+// The original set is not modified
 func (set X2EmailSet) Filter(fn func(testtypes.Email) bool) X2EmailSet {
 	result := NewX2EmailSet()
 
@@ -323,6 +324,7 @@ func (set X2EmailSet) Filter(fn func(testtypes.Email) bool) X2EmailSet {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original set is not modified
 func (set X2EmailSet) Partition(p func(testtypes.Email) bool) (X2EmailSet, X2EmailSet) {
 	matching := NewX2EmailSet()
 	others := NewX2EmailSet()
@@ -335,6 +337,20 @@ func (set X2EmailSet) Partition(p func(testtypes.Email) bool) (X2EmailSet, X2Ema
 		}
 	}
 	return matching, others
+}
+
+// Transform returns a new X2EmailSet by transforming every element with a function fn.
+// The original set is not modified.
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X2EmailSet) Transform(fn func(testtypes.Email) testtypes.Email) X2EmailSet {
+	result := NewX2EmailSet()
+
+	for v := range set.m {
+        result.m[fn(v)] = struct{}{}
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of X2EmailSet that return true for the passed predicate.

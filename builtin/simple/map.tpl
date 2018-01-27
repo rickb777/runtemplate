@@ -173,6 +173,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	for k, v := range mm {
@@ -186,6 +187,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching {{.UPrefix}}{{.UKey}}{{.UType}}Map, others {{.UPrefix}}{{.UKey}}{{.UType}}Map) {
 	matching = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	others = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
@@ -197,6 +199,22 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PTy
 		}
 	}
 	return
+}
+
+// Transform returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Transform(fn func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+
+	for k1, v1 := range mm {
+	    k2, v2 := fn(k1, v1)
+	    result[k2] = v2
+	}
+
+	return result
 }
 
 {{if .Comparable}}
@@ -246,13 +264,13 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 {{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 {{if .HasKeyList}}
 	keys := make({{.KeyList}}, 0, len(mm))
@@ -271,10 +289,10 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	for k, v := range mm {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 {{end}}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 {{end}}

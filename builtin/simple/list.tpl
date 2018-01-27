@@ -337,6 +337,7 @@ func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
+// The original list is not modified
 func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(0, len(list)/2)
 
@@ -353,6 +354,7 @@ func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPref
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original list is not modified
 func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UPrefix}}{{.UType}}List, {{.UPrefix}}{{.UType}}List) {
 	matching := new{{.UPrefix}}{{.UType}}List(0, len(list)/2)
 	others := new{{.UPrefix}}{{.UType}}List(0, len(list)/2)
@@ -366,6 +368,21 @@ func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UP
 	}
 
 	return matching, others
+}
+
+// Transform returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list {{.UPrefix}}{{.UType}}List) Transform(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}List {
+	result := new{{.UPrefix}}{{.UType}}List(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v))
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
@@ -591,20 +608,20 @@ func (list {{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list {{.UPrefix}}{{.UType}}List) MkString3(pfx, mid, sfx string) string {
+func (list {{.UPrefix}}{{.UType}}List) MkString3(before, between, after string) string {
 	b := bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	l := len(list)
 	if l > 0 {
 		v := list[0]
 		b.WriteString(fmt.Sprintf("%v", v))
 		for i := 1; i < l; i++ {
 			v := list[i]
-			b.WriteString(mid)
+			b.WriteString(between)
 			b.WriteString(fmt.Sprintf("%v", v))
 		}
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b.String()
 }
 {{end}}

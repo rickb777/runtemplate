@@ -331,6 +331,7 @@ func (list X1StringList) Find(fn func(string) bool) (string, bool) {
 }
 
 // Filter returns a new X1StringList whose elements return true for func.
+// The original list is not modified
 func (list X1StringList) Filter(fn func(string) bool) X1StringList {
 	result := newX1StringList(0, len(list)/2)
 
@@ -347,6 +348,7 @@ func (list X1StringList) Filter(fn func(string) bool) X1StringList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+// The original list is not modified
 func (list X1StringList) Partition(p func(string) bool) (X1StringList, X1StringList) {
 	matching := newX1StringList(0, len(list)/2)
 	others := newX1StringList(0, len(list)/2)
@@ -360,6 +362,21 @@ func (list X1StringList) Partition(p func(string) bool) (X1StringList, X1StringL
 	}
 
 	return matching, others
+}
+
+// Transform returns a new X1StringList by transforming every element with a function fn.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1StringList) Transform(fn func(string) string) X1StringList {
+	result := newX1StringList(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v))
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of X1StringList that return true for the passed predicate.
@@ -533,20 +550,20 @@ func (list X1StringList) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list X1StringList) MkString3(pfx, mid, sfx string) string {
+func (list X1StringList) MkString3(before, between, after string) string {
 	b := bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	l := len(list)
 	if l > 0 {
 		v := list[0]
 		b.WriteString(fmt.Sprintf("%v", v))
 		for i := 1; i < l; i++ {
 			v := list[i]
-			b.WriteString(mid)
+			b.WriteString(between)
 			b.WriteString(fmt.Sprintf("%v", v))
 		}
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b.String()
 }
 

@@ -72,6 +72,16 @@ func (mm TX1StringAppleMap) Keys() []string {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm TX1StringAppleMap) Values() []Apple {
+
+	var s []Apple
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm TX1StringAppleMap) ToSlice() []TX1StringAppleTuple {
 	var s []TX1StringAppleTuple
@@ -145,6 +155,19 @@ func (mm TX1StringAppleMap) Exists(fn func(string, Apple) bool) bool {
 	return false
 }
 
+// Find returns the first Apple that returns true for some function.
+// False is returned if none match.
+func (mm TX1StringAppleMap) Find(fn func(string, Apple) bool) (TX1StringAppleTuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return TX1StringAppleTuple{k, v}, true
+		}
+	}
+
+	return TX1StringAppleTuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm TX1StringAppleMap) Filter(fn func(string, Apple) bool) TX1StringAppleMap {
@@ -175,6 +198,21 @@ func (mm TX1StringAppleMap) Partition(fn func(string, Apple) bool) (matching TX1
 	return
 }
 
+// Transform returns a new TX1AppleMap by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1StringAppleMap) Transform(fn func(string, Apple) (string, Apple)) TX1StringAppleMap {
+	result := NewTX1StringAppleMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
+}
+
 // Clone returns the same map, which is immutable.
 func (mm TX1StringAppleMap) Clone() TX1StringAppleMap {
 	return mm
@@ -199,22 +237,22 @@ func (mm TX1StringAppleMap) MkString(sep string) string {
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 // The map entries are sorted by their keys.
-func (mm TX1StringAppleMap) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm TX1StringAppleMap) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm TX1StringAppleMap) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm TX1StringAppleMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

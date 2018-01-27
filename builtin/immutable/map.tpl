@@ -76,6 +76,16 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 	return s
 }
 
+// Values returns the values of the current map as a slice.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() []{{.PType}} {
+
+	var s []{{.PType}}
+	for _, v := range mm.m {
+		s = append(s, v)
+	}
+	return s
+}
+
 // ToSlice returns the key/value pairs as a slice
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
@@ -149,6 +159,19 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}
 	return false
 }
 
+// Find returns the first {{.Type}} that returns true for some function.
+// False is returned if none match.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
+
+	for k, v := range mm.m {
+		if fn(k, v) {
+			return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v}, true
+		}
+	}
+
+	return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
+}
+
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
@@ -177,6 +200,21 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PTy
 		}
 	}
 	return
+}
+
+// Transform returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Transform(fn func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
 }
 
 {{if .Comparable}}
@@ -222,13 +260,13 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 {{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(pfx, mid, sfx string) string {
-	return mm.mkString3Bytes(pfx, mid, sfx).String()
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(before, between, after string) string {
+	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 {{if .HasKeyList}}
     keys := make({{.KeyList}}, 0, len(mm.m))
@@ -241,16 +279,16 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(pfx, mid, sfx string
 	    v := mm.m[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 {{else}}
 	for k, v := range mm.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = mid
+		sep = between
 	}
 {{end}}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 {{end}}

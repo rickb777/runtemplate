@@ -344,6 +344,20 @@ func (set X2URLSet) Partition(p func(url.URL) bool) (X2URLSet, X2URLSet) {
 	return matching, others
 }
 
+// Transform returns a new X2URLSet by transforming every element with a function fn.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X2URLSet) Transform(fn func(url.URL) url.URL) X2URLSet {
+	result := NewX2URLSet()
+
+	for v := range set.m {
+        result.m[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
 // CountBy gives the number elements of X2URLSet that return true for the passed predicate.
 func (set X2URLSet) CountBy(predicate func(url.URL) bool) (result int) {
 
@@ -448,22 +462,22 @@ func (set X2URLSet) MkString(sep string) string {
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set X2URLSet) MkString3(pfx, mid, sfx string) string {
-	return set.mkString3Bytes(pfx, mid, sfx).String()
+func (set X2URLSet) MkString3(before, between, after string) string {
+	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set X2URLSet) mkString3Bytes(pfx, mid, sfx string) *bytes.Buffer {
+func (set X2URLSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	b.WriteString(pfx)
+	b.WriteString(before)
 	sep := ""
 
 
 	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		sep = mid
+		sep = between
 	}
-	b.WriteString(sfx)
+	b.WriteString(after)
 	return b
 }
 

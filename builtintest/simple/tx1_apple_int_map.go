@@ -169,6 +169,7 @@ func (mm TX1AppleIntMap) Exists(fn func(Apple, big.Int) bool) bool {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified
 func (mm TX1AppleIntMap) Filter(fn func(Apple, big.Int) bool) TX1AppleIntMap {
 	result := NewTX1AppleIntMap()
 	for k, v := range mm {
@@ -182,6 +183,7 @@ func (mm TX1AppleIntMap) Filter(fn func(Apple, big.Int) bool) TX1AppleIntMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified
 func (mm TX1AppleIntMap) Partition(fn func(Apple, big.Int) bool) (matching TX1AppleIntMap, others TX1AppleIntMap) {
 	matching = NewTX1AppleIntMap()
 	others = NewTX1AppleIntMap()
@@ -193,6 +195,22 @@ func (mm TX1AppleIntMap) Partition(fn func(Apple, big.Int) bool) (matching TX1Ap
 		}
 	}
 	return
+}
+
+// Transform returns a new TX1IntMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1AppleIntMap) Transform(fn func(Apple, big.Int) (Apple, big.Int)) TX1AppleIntMap {
+	result := NewTX1AppleIntMap()
+
+	for k1, v1 := range mm {
+	    k2, v2 := fn(k1, v1)
+	    result[k2] = v2
+	}
+
+	return result
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.

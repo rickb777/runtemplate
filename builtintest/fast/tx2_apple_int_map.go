@@ -248,6 +248,22 @@ func (mm TX2AppleIntMap) Partition(fn func(Apple, big.Int) bool) (matching TX2Ap
 	return
 }
 
+// Transform returns a new TX2IntMap by transforming every element with a function fn.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX2AppleIntMap) Transform(fn func(Apple, big.Int) (Apple, big.Int)) TX2AppleIntMap {
+	result := NewTX2AppleIntMap()
+
+	for k1, v1 := range mm.m {
+	    k2, v2 := fn(k1, v1)
+	    result.m[k2] = v2
+	}
+
+	return result
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm TX2AppleIntMap) Clone() TX2AppleIntMap {
 	result := NewTX2AppleIntMap()
