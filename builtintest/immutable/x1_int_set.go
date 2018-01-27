@@ -342,15 +342,32 @@ func (set X1IntSet) Partition(p func(int) bool) (X1IntSet, X1IntSet) {
 	return matching, others
 }
 
-// Transform returns a new X1IntSet by transforming every element with a function fn.
+// Map returns a new X1IntSet by transforming every element with a function fn.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set X1IntSet) Transform(fn func(int) int) X1IntSet {
+func (set X1IntSet) Map(fn func(int) int) X1IntSet {
 	result := NewX1IntSet()
 
 	for v := range set.m {
         result.m[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new X1IntSet by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting set may have a different size to the original set.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X1IntSet) FlatMap(fn func(int) []int) X1IntSet {
+	result := NewX1IntSet()
+
+	for v, _ := range set.m {
+	    for _, x := range fn(v) {
+            result.m[x] = struct{}{}
+	    }
 	}
 
 	return result

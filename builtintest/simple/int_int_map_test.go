@@ -128,11 +128,31 @@ func TestIntMapPartition(t *testing.T) {
 func TestIntMapTransform(t *testing.T) {
 	a := NewTX1IntIntMap(TX1IntIntTuple{8, 6}, TX1IntIntTuple{9, 10}, TX1IntIntTuple{10, 5})
 
-	b := a.Transform(func(k, v int) (int, int) {
+	b := a.Map(func(k, v int) (int, int) {
 		return k + 1, v * v
 	})
 
 	exp := NewTX1IntIntMap(TX1IntIntTuple{9, 36}, TX1IntIntTuple{10, 100}, TX1IntIntTuple{11, 25})
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp, b)
+	}
+}
+
+func TestIntMapFlatMap(t *testing.T) {
+	a := NewTX1IntIntMap(TX1IntIntTuple{2, 6}, TX1IntIntTuple{1, 10}, TX1IntIntTuple{10, 5})
+
+	b := a.FlatMap(func(k int, v int) []TX1IntIntTuple {
+	    if k > 3 {
+	        return nil
+	    }
+		return []TX1IntIntTuple{
+		    {k-1, v+1},
+		    {k+1, v+2},
+		}
+	})
+
+	exp := NewTX1IntIntMap(TX1IntIntTuple{1, 7}, TX1IntIntTuple{3, 8},
+	    TX1IntIntTuple{0, 11}, TX1IntIntTuple{2, 12})
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp, b)
 	}

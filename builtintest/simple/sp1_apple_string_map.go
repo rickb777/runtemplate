@@ -190,17 +190,36 @@ func (mm SP1AppleStringMap) Partition(fn func(*Apple, *string) bool) (matching S
 	return
 }
 
-// Transform returns a new SP1StringMap by transforming every element with a function fn.
+// Map returns a new SP1StringMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SP1AppleStringMap) Transform(fn func(*Apple, *string) (*Apple, *string)) SP1AppleStringMap {
+func (mm SP1AppleStringMap) Map(fn func(*Apple, *string) (*Apple, *string)) SP1AppleStringMap {
 	result := NewSP1AppleStringMap()
 
 	for k1, v1 := range mm {
 	    k2, v2 := fn(k1, v1)
 	    result[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new SP1StringMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm SP1AppleStringMap) FlatMap(fn func(*Apple, *string) []SP1AppleStringTuple) SP1AppleStringMap {
+	result := NewSP1AppleStringMap()
+
+	for k1, v1 := range mm {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result[t.Key] = t.Val
+	    }
 	}
 
 	return result

@@ -263,12 +263,28 @@ func TestIntSetPartition(t *testing.T) {
 func TestIntSetTransform(t *testing.T) {
 	a := NewX1IntSet(1, 2, 3, 4)
 
-	b := a.Transform(func(v int) int {
+	b := a.Map(func(v int) int {
 		return v * v
 	})
 
 	if !b.Equals(NewX1IntSet(1, 4, 9, 16)) {
 		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b.m)
+	}
+}
+
+func TestIntSetFlatMap(t *testing.T) {
+	a := NewX1IntSet(1, 2, 3, 4)
+
+	b := a.FlatMap(func(v int) []int {
+	    if v > 3 {
+	        return nil
+	    }
+		return []int{v * 2, v * 3}
+	})
+
+    exp := NewX1IntSet(2, 3, 4, 6, 6, 9)
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp, b.m)
 	}
 }
 

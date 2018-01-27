@@ -288,12 +288,12 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PTy
 	return
 }
 
-// Transform returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Transform(fn func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -301,6 +301,27 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Transform(fn func({{.PKey}}, {{.PTy
 	for k1, v1 := range mm.m {
 	    k2, v2 := fn(k1, v1)
 	    result.m[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType}}) []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
+	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k1, v1 := range mm.m {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result.m[t.Key] = t.Val
+	    }
 	}
 
 	return result

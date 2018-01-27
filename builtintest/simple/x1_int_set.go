@@ -305,16 +305,34 @@ func (set X1IntSet) Partition(p func(int) bool) (X1IntSet, X1IntSet) {
 	return matching, others
 }
 
-// Transform returns a new X1IntSet by transforming every element with a function fn.
+// Map returns a new X1IntSet by transforming every element with a function fn.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set X1IntSet) Transform(fn func(int) int) X1IntSet {
+func (set X1IntSet) Map(fn func(int) int) X1IntSet {
 	result := NewX1IntSet()
 
 	for v := range set {
         result[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new X1IntSet by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X1IntSet) FlatMap(fn func(int) []int) X1IntSet {
+	result := NewX1IntSet()
+
+	for v, _ := range set {
+	    for _, x := range fn(v) {
+            result[x] = struct{}{}
+	    }
 	}
 
 	return result
@@ -328,6 +346,26 @@ func (set X1IntSet) CountBy(predicate func(int) bool) (result int) {
 		}
 	}
 	return
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int is ordered.
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list X1IntSet) Min() int {
+	return list.MinBy(func(a int, b int) bool {
+		return a < b
+	})
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list X1IntSet) Max() (result int) {
+	return list.MaxBy(func(a int, b int) bool {
+		return a < b
+	})
 }
 
 // MinBy returns an element of X1IntSet containing the minimum value, when compared to other elements
@@ -368,26 +406,6 @@ func (set X1IntSet) MaxBy(less func(int, int) bool) int {
 		}
 	}
 	return m
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// These methods are included when int is ordered.
-
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list X1IntSet) Min() int {
-	return list.MinBy(func(a int, b int) bool {
-		return a < b
-	})
-}
-
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list X1IntSet) Max() (result int) {
-	return list.MaxBy(func(a int, b int) bool {
-		return a < b
-	})
 }
 
 

@@ -361,16 +361,33 @@ func (list P1AppleList) Partition(p func(*Apple) bool) (P1AppleList, P1AppleList
 	return matching, others
 }
 
-// Transform returns a new P1AppleList by transforming every element with a function fn.
+// Map returns a new P1AppleList by transforming every element with a function fn.
+// The resulting list is the same size as the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list P1AppleList) Transform(fn func(*Apple) *Apple) P1AppleList {
+func (list P1AppleList) Map(fn func(*Apple) *Apple) P1AppleList {
 	result := newP1AppleList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v))
+	}
+
+	return result
+}
+
+// FlatMap returns a new P1AppleList by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list P1AppleList) FlatMap(fn func(*Apple) []*Apple) P1AppleList {
+	result := newP1AppleList(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v)...)
 	}
 
 	return result

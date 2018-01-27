@@ -364,16 +364,33 @@ func (list X1StringList) Partition(p func(string) bool) (X1StringList, X1StringL
 	return matching, others
 }
 
-// Transform returns a new X1StringList by transforming every element with a function fn.
+// Map returns a new X1StringList by transforming every element with a function fn.
+// The resulting list is the same size as the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list X1StringList) Transform(fn func(string) string) X1StringList {
+func (list X1StringList) Map(fn func(string) string) X1StringList {
 	result := newX1StringList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v))
+	}
+
+	return result
+}
+
+// FlatMap returns a new X1StringList by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1StringList) FlatMap(fn func(string) []string) X1StringList {
+	result := newX1StringList(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v)...)
 	}
 
 	return result

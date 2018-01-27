@@ -171,12 +171,29 @@ func Test{{.UType}}ListPartition(t *testing.T) {
 func Test{{.UType}}ListTransform(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
-	b := a.Transform(func(v int) int {
+	b := a.Map(func(v int) int {
 		return v * v
 	})
 
-	if !b.Equals(NewX1{{.UType}}List(1, 4, 9, 16)) {
-		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b{{.M}})
+    exp := NewX1{{.UType}}List(1, 4, 9, 16)
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp, b{{.M}})
+	}
+}
+
+func Test{{.UType}}ListFlatMap(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4, 5)
+
+	b := a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	    if v > 3 {
+	        return nil
+	    }
+		return []{{.Type}}{v * 2, v * 3}
+	})
+
+    exp := NewX1{{.UType}}List(2, 3, 4, 6, 6, 9)
+	if !b.Equals(exp) {
+		t.Errorf("Expected '%+v' but got '%+v'", exp, b{{.M}})
 	}
 }
 

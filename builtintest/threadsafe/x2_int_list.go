@@ -446,18 +446,37 @@ func (list *X2IntList) Partition(p func(big.Int) bool) (*X2IntList, *X2IntList) 
 	return matching, others
 }
 
-// Transform returns a new X2IntList by transforming every element with a function fn.
+// Map returns a new X2IntList by transforming every element with a function fn.
+// The resulting list is the same size as the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X2IntList) Transform(fn func(big.Int) big.Int) *X2IntList {
+func (list *X2IntList) Map(fn func(big.Int) big.Int) *X2IntList {
 	result := newX2IntList(len(list.m), len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for i, v := range list.m {
 		result.m[i] = fn(v)
+	}
+
+	return result
+}
+
+// FlatMap returns a new X2IntList by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X2IntList) FlatMap(fn func(big.Int) []big.Int) *X2IntList {
+	result := newX2IntList(0, len(list.m))
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range list.m {
+		result.m = append(result.m, fn(v)...)
 	}
 
 	return result

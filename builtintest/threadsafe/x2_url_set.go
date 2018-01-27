@@ -390,17 +390,38 @@ func (set X2URLSet) Partition(p func(url.URL) bool) (X2URLSet, X2URLSet) {
 	return matching, others
 }
 
-// Transform returns a new X2URLSet by transforming every element with a function fn.
+// Map returns a new X2URLSet by transforming every element with a function fn.
 // The original set is not modified.
+//
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set X2URLSet) Transform(fn func(url.URL) url.URL) X2URLSet {
+func (set X2URLSet) Map(fn func(url.URL) url.URL) X2URLSet {
 	result := NewX2URLSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
         result.m[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new X2URLSet by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting set may have a different size to the original set.
+// The original set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X2URLSet) FlatMap(fn func(url.URL) []url.URL) X2URLSet {
+	result := NewX2URLSet()
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v, _ := range set.m {
+	    for _, x := range fn(v) {
+            result.m[x] = struct{}{}
+	    }
 	}
 
 	return result

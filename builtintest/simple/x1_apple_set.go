@@ -299,16 +299,34 @@ func (set X1AppleSet) Partition(p func(Apple) bool) (X1AppleSet, X1AppleSet) {
 	return matching, others
 }
 
-// Transform returns a new X1AppleSet by transforming every element with a function fn.
+// Map returns a new X1AppleSet by transforming every element with a function fn.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set X1AppleSet) Transform(fn func(Apple) Apple) X1AppleSet {
+func (set X1AppleSet) Map(fn func(Apple) Apple) X1AppleSet {
 	result := NewX1AppleSet()
 
 	for v := range set {
         result[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new X1AppleSet by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X1AppleSet) FlatMap(fn func(Apple) []Apple) X1AppleSet {
+	result := NewX1AppleSet()
+
+	for v, _ := range set {
+	    for _, x := range fn(v) {
+            result[x] = struct{}{}
+	    }
 	}
 
 	return result

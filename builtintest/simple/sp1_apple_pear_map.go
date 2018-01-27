@@ -190,17 +190,36 @@ func (mm SP1ApplePearMap) Partition(fn func(*Apple, *Pear) bool) (matching SP1Ap
 	return
 }
 
-// Transform returns a new SP1PearMap by transforming every element with a function fn.
+// Map returns a new SP1PearMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SP1ApplePearMap) Transform(fn func(*Apple, *Pear) (*Apple, *Pear)) SP1ApplePearMap {
+func (mm SP1ApplePearMap) Map(fn func(*Apple, *Pear) (*Apple, *Pear)) SP1ApplePearMap {
 	result := NewSP1ApplePearMap()
 
 	for k1, v1 := range mm {
 	    k2, v2 := fn(k1, v1)
 	    result[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new SP1PearMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm SP1ApplePearMap) FlatMap(fn func(*Apple, *Pear) []SP1ApplePearTuple) SP1ApplePearMap {
+	result := NewSP1ApplePearMap()
+
+	for k1, v1 := range mm {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result[t.Key] = t.Val
+	    }
 	}
 
 	return result

@@ -248,17 +248,36 @@ func (mm TX2AppleIntMap) Partition(fn func(Apple, big.Int) bool) (matching TX2Ap
 	return
 }
 
-// Transform returns a new TX2IntMap by transforming every element with a function fn.
+// Map returns a new TX2IntMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm TX2AppleIntMap) Transform(fn func(Apple, big.Int) (Apple, big.Int)) TX2AppleIntMap {
+func (mm TX2AppleIntMap) Map(fn func(Apple, big.Int) (Apple, big.Int)) TX2AppleIntMap {
 	result := NewTX2AppleIntMap()
 
 	for k1, v1 := range mm.m {
 	    k2, v2 := fn(k1, v1)
 	    result.m[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new TX2IntMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX2AppleIntMap) FlatMap(fn func(Apple, big.Int) []TX2AppleIntTuple) TX2AppleIntMap {
+	result := NewTX2AppleIntMap()
+
+	for k1, v1 := range mm.m {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result.m[t.Key] = t.Val
+	    }
 	}
 
 	return result

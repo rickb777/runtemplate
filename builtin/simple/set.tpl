@@ -310,16 +310,34 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 	return matching, others
 }
 
-// Transform returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set {{.UPrefix}}{{.UType}}Set) Transform(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 
 	for v := range set {
         result[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}Set {
+	result := New{{.UPrefix}}{{.UType}}Set()
+
+	for v, _ := range set {
+	    for _, x := range fn(v) {
+            result[x] = struct{}{}
+	    }
 	}
 
 	return result
@@ -335,6 +353,27 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 	return
 }
 
+{{if .Ordered}}
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is ordered.
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list {{.UPrefix}}{{.UType}}Set) Min() {{.PType}} {
+	return list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
+		return a < b
+	})
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
+	return list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
+		return a < b
+	})
+}
+
+{{end -}}
 // MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
@@ -375,27 +414,6 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	return m
 }
 
-{{if .Ordered}}
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
-
-// Min returns the first element containing the minimum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}Set) Min() {{.PType}} {
-	return list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return a < b
-	})
-}
-
-// Max returns the first element containing the maximum value, when compared to other elements.
-// Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
-	return list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
-		return a < b
-	})
-}
-
-{{end -}}
 {{if .Numeric}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is numeric.

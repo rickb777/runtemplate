@@ -197,17 +197,36 @@ func (mm TX1StringAppleMap) Partition(fn func(string, Apple) bool) (matching TX1
 	return
 }
 
-// Transform returns a new TX1AppleMap by transforming every element with a function fn.
+// Map returns a new TX1AppleMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm TX1StringAppleMap) Transform(fn func(string, Apple) (string, Apple)) TX1StringAppleMap {
+func (mm TX1StringAppleMap) Map(fn func(string, Apple) (string, Apple)) TX1StringAppleMap {
 	result := NewTX1StringAppleMap()
 
 	for k1, v1 := range mm {
 	    k2, v2 := fn(k1, v1)
 	    result[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new TX1AppleMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1StringAppleMap) FlatMap(fn func(string, Apple) []TX1StringAppleTuple) TX1StringAppleMap {
+	result := NewTX1StringAppleMap()
+
+	for k1, v1 := range mm {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result[t.Key] = t.Val
+	    }
 	}
 
 	return result

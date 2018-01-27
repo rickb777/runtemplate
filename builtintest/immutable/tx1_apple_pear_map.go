@@ -198,16 +198,34 @@ func (mm TX1ApplePearMap) Partition(fn func(Apple, Pear) bool) (matching TX1Appl
 	return
 }
 
-// Transform returns a new TX1PearMap by transforming every element with a function fn.
+// Map returns a new TX1PearMap by transforming every element with a function fn.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm TX1ApplePearMap) Transform(fn func(Apple, Pear) (Apple, Pear)) TX1ApplePearMap {
+func (mm TX1ApplePearMap) Map(fn func(Apple, Pear) (Apple, Pear)) TX1ApplePearMap {
 	result := NewTX1ApplePearMap()
 
 	for k1, v1 := range mm.m {
 	    k2, v2 := fn(k1, v1)
 	    result.m[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new TX1PearMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1ApplePearMap) FlatMap(fn func(Apple, Pear) []TX1ApplePearTuple) TX1ApplePearMap {
+	result := NewTX1ApplePearMap()
+
+	for k1, v1 := range mm.m {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result.m[t.Key] = t.Val
+	    }
 	}
 
 	return result

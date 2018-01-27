@@ -388,17 +388,38 @@ func (set X2EmailSet) Partition(p func(testtypes.Email) bool) (X2EmailSet, X2Ema
 	return matching, others
 }
 
-// Transform returns a new X2EmailSet by transforming every element with a function fn.
+// Map returns a new X2EmailSet by transforming every element with a function fn.
 // The original set is not modified.
+//
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set X2EmailSet) Transform(fn func(testtypes.Email) testtypes.Email) X2EmailSet {
+func (set X2EmailSet) Map(fn func(testtypes.Email) testtypes.Email) X2EmailSet {
 	result := NewX2EmailSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
         result.m[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new X2EmailSet by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting set may have a different size to the original set.
+// The original set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set X2EmailSet) FlatMap(fn func(testtypes.Email) []testtypes.Email) X2EmailSet {
+	result := NewX2EmailSet()
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v, _ := range set.m {
+	    for _, x := range fn(v) {
+            result.m[x] = struct{}{}
+	    }
 	}
 
 	return result

@@ -348,15 +348,32 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 	return matching, others
 }
 
-// Transform returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set {{.UPrefix}}{{.UType}}Set) Transform(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 
 	for v := range set.m {
         result.m[fn(v)] = struct{}{}
+	}
+
+	return result
+}
+
+// FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting set may have a different size to the original set.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}Set {
+	result := New{{.UPrefix}}{{.UType}}Set()
+
+	for v, _ := range set.m {
+	    for _, x := range fn(v) {
+            result.m[x] = struct{}{}
+	    }
 	}
 
 	return result

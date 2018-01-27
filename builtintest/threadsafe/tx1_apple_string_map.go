@@ -283,12 +283,12 @@ func (mm TX1AppleStringMap) Partition(fn func(Apple, string) bool) (matching TX1
 	return
 }
 
-// Transform returns a new TX1StringMap by transforming every element with a function fn.
+// Map returns a new TX1StringMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm TX1AppleStringMap) Transform(fn func(Apple, string) (Apple, string)) TX1AppleStringMap {
+func (mm TX1AppleStringMap) Map(fn func(Apple, string) (Apple, string)) TX1AppleStringMap {
 	result := NewTX1AppleStringMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -296,6 +296,27 @@ func (mm TX1AppleStringMap) Transform(fn func(Apple, string) (Apple, string)) TX
 	for k1, v1 := range mm.m {
 	    k2, v2 := fn(k1, v1)
 	    result.m[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new TX1StringMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+// The original map is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1AppleStringMap) FlatMap(fn func(Apple, string) []TX1AppleStringTuple) TX1AppleStringMap {
+	result := NewTX1AppleStringMap()
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k1, v1 := range mm.m {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result.m[t.Key] = t.Val
+	    }
 	}
 
 	return result

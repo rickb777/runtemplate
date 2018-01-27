@@ -416,15 +416,31 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 	return matching, others
 }
 
-// Transform returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn.
+// The resulting list is the same size as the original list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *{{.UPrefix}}{{.UType}}List) Transform(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(len(list.m), len(list.m))
 
 	for i, v := range list.m {
 		result.m[i] = fn(v)
+	}
+
+	return result
+}
+
+// FlatMap returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m))
+
+	for _, v := range list.m {
+		result.m = append(result.m, fn(v)...)
 	}
 
 	return result

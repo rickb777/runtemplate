@@ -364,16 +364,33 @@ func (list X1IntList) Partition(p func(int) bool) (X1IntList, X1IntList) {
 	return matching, others
 }
 
-// Transform returns a new X1IntList by transforming every element with a function fn.
+// Map returns a new X1IntList by transforming every element with a function fn.
+// The resulting list is the same size as the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list X1IntList) Transform(fn func(int) int) X1IntList {
+func (list X1IntList) Map(fn func(int) int) X1IntList {
 	result := newX1IntList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v))
+	}
+
+	return result
+}
+
+// FlatMap returns a new X1IntList by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// The original list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1IntList) FlatMap(fn func(int) []int) X1IntList {
+	result := newX1IntList(0, len(list))
+
+	for _, v := range list {
+		result = append(result, fn(v)...)
 	}
 
 	return result

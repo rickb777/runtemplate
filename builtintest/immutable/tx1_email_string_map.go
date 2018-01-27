@@ -198,16 +198,34 @@ func (mm TX1EmailStringMap) Partition(fn func(Email, string) bool) (matching TX1
 	return
 }
 
-// Transform returns a new TX1StringMap by transforming every element with a function fn.
+// Map returns a new TX1StringMap by transforming every element with a function fn.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm TX1EmailStringMap) Transform(fn func(Email, string) (Email, string)) TX1EmailStringMap {
+func (mm TX1EmailStringMap) Map(fn func(Email, string) (Email, string)) TX1EmailStringMap {
 	result := NewTX1EmailStringMap()
 
 	for k1, v1 := range mm.m {
 	    k2, v2 := fn(k1, v1)
 	    result.m[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new TX1StringMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1EmailStringMap) FlatMap(fn func(Email, string) []TX1EmailStringTuple) TX1EmailStringMap {
+	result := NewTX1EmailStringMap()
+
+	for k1, v1 := range mm.m {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result.m[t.Key] = t.Val
+	    }
 	}
 
 	return result

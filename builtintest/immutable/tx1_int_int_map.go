@@ -198,16 +198,34 @@ func (mm TX1IntIntMap) Partition(fn func(int, int) bool) (matching TX1IntIntMap,
 	return
 }
 
-// Transform returns a new TX1IntMap by transforming every element with a function fn.
+// Map returns a new TX1IntMap by transforming every element with a function fn.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm TX1IntIntMap) Transform(fn func(int, int) (int, int)) TX1IntIntMap {
+func (mm TX1IntIntMap) Map(fn func(int, int) (int, int)) TX1IntIntMap {
 	result := NewTX1IntIntMap()
 
 	for k1, v1 := range mm.m {
 	    k2, v2 := fn(k1, v1)
 	    result.m[k2] = v2
+	}
+
+	return result
+}
+
+// FlatMap returns a new TX1IntMap by transforming every element with a function fn that
+// returns zero or more items in a slice. The resulting map may have a different size to the original map.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (mm TX1IntIntMap) FlatMap(fn func(int, int) []TX1IntIntTuple) TX1IntIntMap {
+	result := NewTX1IntIntMap()
+
+	for k1, v1 := range mm.m {
+	    ts := fn(k1, v1)
+	    for _, t := range ts {
+            result.m[t.Key] = t.Val
+	    }
 	}
 
 	return result
