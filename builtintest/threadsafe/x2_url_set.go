@@ -45,6 +45,7 @@ func ConvertX2URLSet(values ...interface{}) (X2URLSet, bool) {
 			set.m[v] = struct{}{}
 		}
 	}
+
 	return set, len(set.m) == len(values)
 }
 
@@ -76,7 +77,7 @@ func (set X2URLSet) ToInterfaceSlice() []interface{} {
 	defer set.s.RUnlock()
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

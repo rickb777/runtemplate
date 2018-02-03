@@ -36,6 +36,28 @@ func TestNewIntSetNoDuplicate(t *testing.T) {
 	}
 }
 
+func TestConvertIntSet(t *testing.T) {
+	a, ok := ConvertX1IntSet(1, 5.1, uint8(2), 7, 3)
+
+	if !ok {
+		t.Errorf("Not ok")
+	}
+
+	if !a.Equals(NewX1IntSet(1, 5, 2, 7, 3)) {
+		t.Errorf("Expected 1,5,2,7,3 but got %v", a)
+	}
+
+    b, ok := ConvertX1IntSet(a.ToInterfaceSlice()...)
+
+	if !ok {
+		t.Errorf("Not ok")
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected %v but got %v", a, b)
+	}
+}
+
 
 func TestMutableIntSetRemove(t *testing.T) {
 	a := NewX1IntSet(6, 3, 1)

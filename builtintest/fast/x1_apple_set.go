@@ -38,6 +38,7 @@ func ConvertX1AppleSet(values ...interface{}) (X1AppleSet, bool) {
 			set.m[v] = struct{}{}
 		}
 	}
+
 	return set, len(set.m) == len(values)
 }
 
@@ -65,7 +66,7 @@ func (set X1AppleSet) ToSlice() []Apple {
 func (set X1AppleSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

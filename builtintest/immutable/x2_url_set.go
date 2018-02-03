@@ -43,6 +43,7 @@ func ConvertX2URLSet(values ...interface{}) (X2URLSet, bool) {
 			set.m[v] = struct{}{}
 		}
 	}
+
 	return set, len(set.m) == len(values)
 }
 
@@ -70,7 +71,7 @@ func (set X2URLSet) ToSlice() []url.URL {
 func (set X2URLSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

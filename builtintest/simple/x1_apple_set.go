@@ -55,7 +55,7 @@ func (set X1AppleSet) ToSlice() []Apple {
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set X1AppleSet) ToInterfaceSlice() []interface{} {
 	var s []interface{}
-	for v := range set {
+	for v, _ := range set {
 		s = append(s, v)
 	}
 	return s

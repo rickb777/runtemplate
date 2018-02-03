@@ -38,13 +38,43 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set
 // The returned set will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UType}}Set, bool) {
 	set := New{{.UPrefix}}{{.UType}}Set()
-
+{{if and .Numeric (eq .Type .PType)}}
+	for _, i := range values {
+		switch i.(type) {
+		case int:
+			set.m[{{.PType}}(i.(int))] = struct{}{}
+		case int8:
+			set.m[{{.PType}}(i.(int8))] = struct{}{}
+		case int16:
+			set.m[{{.PType}}(i.(int16))] = struct{}{}
+		case int32:
+			set.m[{{.PType}}(i.(int32))] = struct{}{}
+		case int64:
+			set.m[{{.PType}}(i.(int64))] = struct{}{}
+		case uint:
+			set.m[{{.PType}}(i.(uint))] = struct{}{}
+		case uint8:
+			set.m[{{.PType}}(i.(uint8))] = struct{}{}
+		case uint16:
+			set.m[{{.PType}}(i.(uint16))] = struct{}{}
+		case uint32:
+			set.m[{{.PType}}(i.(uint32))] = struct{}{}
+		case uint64:
+			set.m[{{.PType}}(i.(uint64))] = struct{}{}
+		case float32:
+			set.m[{{.PType}}(i.(float32))] = struct{}{}
+		case float64:
+			set.m[{{.PType}}(i.(float64))] = struct{}{}
+		}
+	}
+{{else}}
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if ok {
 			set.m[v] = struct{}{}
 		}
 	}
+{{end}}
 	return set, len(set.m) == len(values)
 }
 
@@ -72,7 +102,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 func (set {{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

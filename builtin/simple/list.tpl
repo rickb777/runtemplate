@@ -43,14 +43,43 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}L
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) ({{.UPrefix}}{{.UType}}List, bool) {
 	result := new{{.UPrefix}}{{.UType}}List(0, len(values))
-
+{{if and .Numeric (eq .Type .PType)}}
+	for _, i := range values {
+		switch i.(type) {
+		case int:
+			result = append(result, {{.PType}}(i.(int)))
+		case int8:
+			result = append(result, {{.PType}}(i.(int8)))
+		case int16:
+			result = append(result, {{.PType}}(i.(int16)))
+		case int32:
+			result = append(result, {{.PType}}(i.(int32)))
+		case int64:
+			result = append(result, {{.PType}}(i.(int64)))
+		case uint:
+			result = append(result, {{.PType}}(i.(uint)))
+		case uint8:
+			result = append(result, {{.PType}}(i.(uint8)))
+		case uint16:
+			result = append(result, {{.PType}}(i.(uint16)))
+		case uint32:
+			result = append(result, {{.PType}}(i.(uint32)))
+		case uint64:
+			result = append(result, {{.PType}}(i.(uint64)))
+		case float32:
+			result = append(result, {{.PType}}(i.(float32)))
+		case float64:
+			result = append(result, {{.PType}}(i.(float64)))
+		}
+	}
+{{else}}
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if ok {
 			result = append(result, v)
 		}
 	}
-
+{{end}}
 	return result, len(result) == len(values)
 }
 

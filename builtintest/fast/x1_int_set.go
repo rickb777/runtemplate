@@ -35,11 +35,34 @@ func ConvertX1IntSet(values ...interface{}) (X1IntSet, bool) {
 	set := NewX1IntSet()
 
 	for _, i := range values {
-		v, ok := i.(int)
-		if ok {
-			set.m[v] = struct{}{}
+		switch i.(type) {
+		case int:
+			set.m[int(i.(int))] = struct{}{}
+		case int8:
+			set.m[int(i.(int8))] = struct{}{}
+		case int16:
+			set.m[int(i.(int16))] = struct{}{}
+		case int32:
+			set.m[int(i.(int32))] = struct{}{}
+		case int64:
+			set.m[int(i.(int64))] = struct{}{}
+		case uint:
+			set.m[int(i.(uint))] = struct{}{}
+		case uint8:
+			set.m[int(i.(uint8))] = struct{}{}
+		case uint16:
+			set.m[int(i.(uint16))] = struct{}{}
+		case uint32:
+			set.m[int(i.(uint32))] = struct{}{}
+		case uint64:
+			set.m[int(i.(uint64))] = struct{}{}
+		case float32:
+			set.m[int(i.(float32))] = struct{}{}
+		case float64:
+			set.m[int(i.(float64))] = struct{}{}
 		}
 	}
+
 	return set, len(set.m) == len(values)
 }
 
@@ -67,7 +90,7 @@ func (set X1IntSet) ToSlice() []int {
 func (set X1IntSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

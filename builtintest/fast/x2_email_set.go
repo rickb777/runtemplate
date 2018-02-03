@@ -40,6 +40,7 @@ func ConvertX2EmailSet(values ...interface{}) (X2EmailSet, bool) {
 			set.m[v] = struct{}{}
 		}
 	}
+
 	return set, len(set.m) == len(values)
 }
 
@@ -67,7 +68,7 @@ func (set X2EmailSet) ToSlice() []testtypes.Email {
 func (set X2EmailSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

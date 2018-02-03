@@ -47,10 +47,32 @@ func ConvertX1IntList(values ...interface{}) (*X1IntList, bool) {
 	result := newX1IntList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(int)
-		if ok {
-	    	result.m = append(result.m, v)
-	    }
+		switch i.(type) {
+		case int:
+			result.m = append(result.m, int(i.(int)))
+		case int8:
+			result.m = append(result.m, int(i.(int8)))
+		case int16:
+			result.m = append(result.m, int(i.(int16)))
+		case int32:
+			result.m = append(result.m, int(i.(int32)))
+		case int64:
+			result.m = append(result.m, int(i.(int64)))
+		case uint:
+			result.m = append(result.m, int(i.(uint)))
+		case uint8:
+			result.m = append(result.m, int(i.(uint8)))
+		case uint16:
+			result.m = append(result.m, int(i.(uint16)))
+		case uint32:
+			result.m = append(result.m, int(i.(uint32)))
+		case uint64:
+			result.m = append(result.m, int(i.(uint64)))
+		case float32:
+			result.m = append(result.m, int(i.(float32)))
+		case float64:
+			result.m = append(result.m, int(i.(float64)))
+		}
 	}
 
 	return result, len(result.m) == len(values)

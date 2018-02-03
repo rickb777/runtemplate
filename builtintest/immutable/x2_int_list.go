@@ -49,8 +49,8 @@ func ConvertX2IntList(values ...interface{}) (*X2IntList, bool) {
 	for _, i := range values {
 		v, ok := i.(big.Int)
 		if ok {
-	    	result.m = append(result.m, v)
-	    }
+			result.m = append(result.m, v)
+		}
 	}
 
 	return result, len(result.m) == len(values)

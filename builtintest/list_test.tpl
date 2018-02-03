@@ -37,7 +37,7 @@ func TestNew{{.UType}}List(t *testing.T) {
 }
 
 func TestConvert{{.UType}}List(t *testing.T) {
-	a, ok := ConvertX1{{.UType}}List(1, 5, 2, 7, 3)
+	a, ok := ConvertX1{{.UType}}List(1, 5.1, uint8(2), 7, 3)
 
 	if !ok {
 		t.Errorf("Not ok")

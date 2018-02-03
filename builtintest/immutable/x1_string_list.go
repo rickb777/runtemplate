@@ -49,8 +49,8 @@ func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
 	for _, i := range values {
 		v, ok := i.(string)
 		if ok {
-	    	result.m = append(result.m, v)
-	    }
+			result.m = append(result.m, v)
+		}
 	}
 
 	return result, len(result.m) == len(values)

@@ -42,9 +42,31 @@ func ConvertX1IntList(values ...interface{}) (X1IntList, bool) {
 	result := newX1IntList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(int)
-		if ok {
-			result = append(result, v)
+		switch i.(type) {
+		case int:
+			result = append(result, int(i.(int)))
+		case int8:
+			result = append(result, int(i.(int8)))
+		case int16:
+			result = append(result, int(i.(int16)))
+		case int32:
+			result = append(result, int(i.(int32)))
+		case int64:
+			result = append(result, int(i.(int64)))
+		case uint:
+			result = append(result, int(i.(uint)))
+		case uint8:
+			result = append(result, int(i.(uint8)))
+		case uint16:
+			result = append(result, int(i.(uint16)))
+		case uint32:
+			result = append(result, int(i.(uint32)))
+		case uint64:
+			result = append(result, int(i.(uint64)))
+		case float32:
+			result = append(result, int(i.(float32)))
+		case float64:
+			result = append(result, int(i.(float64)))
 		}
 	}
 

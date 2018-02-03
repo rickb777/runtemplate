@@ -36,6 +36,28 @@ func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
 	}
 }
 
+func TestConvert{{.UType}}Set(t *testing.T) {
+	a, ok := ConvertX1{{.UType}}Set(1, 5.1, uint8(2), 7, 3)
+
+	if !ok {
+		t.Errorf("Not ok")
+	}
+
+	if !a.Equals(NewX1{{.UType}}Set(1, 5, 2, 7, 3)) {
+		t.Errorf("Expected 1,5,2,7,3 but got %v", a)
+	}
+
+    b, ok := ConvertX1{{.UType}}Set(a.ToInterfaceSlice()...)
+
+	if !ok {
+		t.Errorf("Not ok")
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected %v but got %v", a, b)
+	}
+}
+
 {{if .Mutable}}
 func TestMutable{{.UType}}SetRemove(t *testing.T) {
 	a := NewX1{{.UType}}Set(6, 3, 1)

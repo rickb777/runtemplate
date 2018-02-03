@@ -40,6 +40,7 @@ func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
 			set.m[v] = struct{}{}
 		}
 	}
+
 	return set, len(set.m) == len(values)
 }
 
@@ -67,7 +68,7 @@ func (set X1StringSet) ToSlice() []string {
 func (set X1StringSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for _, v := range set.m {
+	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s

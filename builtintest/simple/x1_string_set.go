@@ -61,7 +61,7 @@ func (set X1StringSet) ToSlice() []string {
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set X1StringSet) ToInterfaceSlice() []interface{} {
 	var s []interface{}
-	for v := range set {
+	for v, _ := range set {
 		s = append(s, v)
 	}
 	return s

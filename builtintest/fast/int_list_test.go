@@ -37,7 +37,7 @@ func TestNewIntList(t *testing.T) {
 }
 
 func TestConvertIntList(t *testing.T) {
-	a, ok := ConvertX1IntList(1, 5, 2, 7, 3)
+	a, ok := ConvertX1IntList(1, 5.1, uint8(2), 7, 3)
 
 	if !ok {
 		t.Errorf("Not ok")
