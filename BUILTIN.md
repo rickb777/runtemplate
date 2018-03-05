@@ -27,7 +27,9 @@ The built-in collections support a small number of flags that allow you to contr
  * `Ordered:true` - use this for types that are ordered (<, <=, >=, >), such as strings, ints and floats (but not structs).
  * `Numeric:true` - use this for types that support arithmetic operations, such as ints and floats (but not structs).
  * `Stringer:true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
- * `KeySlice:sort.StringSlice` - for maps only, use this for sorting the output of the stringer methods by the keys. This affects `MkString3(...)`, `MkString()` and `String()`. Any `sort.Interface` implementation can be used.
+ * `KeyList:<type>` - for maps only, this provides a slice type for the keys in this map. This is returned from the `Keys()` method. It is also used for sorting the output of the stringer methods by the keys, which affects `MkString3(...)`, `MkString()` and `String()`.
+ * `ValueList:<type>` - for maps only, this provides a slice type for the values in this map. This is returned from the `Values()` method.
+ * `Imports:<imports>` - extra Go imports; the literals `\n` and `\t` are replaced with their character equivalent, allowing multiple imports.
 
 The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators). If you set a flag that is impossible for the chosen data type, the generated code won't compile, but no other bad thing will happen; so it will soon become obvious.

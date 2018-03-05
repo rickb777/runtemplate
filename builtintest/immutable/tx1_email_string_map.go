@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=Email Type=string
-// options: Comparable:<no value> Stringer:true KeyList:<no value> Mutable:disabled
+// options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:disabled
 
 package immutable
 

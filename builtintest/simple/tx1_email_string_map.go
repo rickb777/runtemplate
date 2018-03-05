@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=Email Type=string
-// options: Comparable:<no value> Stringer:true KeyList:<no value> Mutable:always
+// options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
 
 package simple
 

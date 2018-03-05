@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=string Type=string
-// options: Comparable:true Stringer:true KeyList:<no value> Mutable:always
+// options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
 
 package threadsafe
 

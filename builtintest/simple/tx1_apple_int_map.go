@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=Apple Type=big.Int
-// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> Mutable:always
+// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
 
 package simple
 

@@ -39,11 +39,11 @@ func TestSplitKeyValArgs1(t *testing.T) {
 }
 
 func TestSplitKeyValArgs2(t *testing.T) {
-	types, others, left := SplitKeyValArgs([]string{"x=t1", "y=t2", "foo", "a:v1", "z=t3", "b:v2", ""})
+	types, others, left := SplitKeyValArgs([]string{"x=t1", "y=t2", "foo", "a:v1", "z=t3", "b:v2", `c:a\n\tb`, ""})
 	if !reflect.DeepEqual(types, Pairs([]Pair{{"x", "t1"}, {"y", "t2"}, {"z", "t3"}})) {
 		t.Fatalf("Got types %+v", types)
 	}
-	if !reflect.DeepEqual(others, Pairs([]Pair{{"a", "v1"}, {"b", "v2"}})) {
+	if !reflect.DeepEqual(others, Pairs([]Pair{{"a", "v1"}, {"b", "v2"}, {"c", "a\n\tb"}})) {
 		t.Fatalf("Got others %+v", others)
 	}
 	if !reflect.DeepEqual(left, []string{"foo", ""}) {

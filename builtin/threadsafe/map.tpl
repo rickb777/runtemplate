@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
-// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} Mutable:always
+// options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} ValueList:{{.ValueList}} Mutable:always
 
 package {{.Package}}
 
@@ -69,11 +69,11 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}} {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []{{.PKey}}
+	var s {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
@@ -81,11 +81,11 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() []{{.PKey}} {
 }
 
 // Values returns the values of the current map as a slice.
-func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() []{{.PType}} {
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}} {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []{{.PType}}
+	var s {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}
 	for _, v := range mm.m {
 		s = append(s, v)
 	}

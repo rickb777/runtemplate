@@ -44,6 +44,11 @@ func FindTemplateArg(tpl string, args []string) (string, []string) {
 	return tpl, left
 }
 
+func expandSpecialChars(s string) string {
+	s2 := strings.Replace(s, `\n`, "\n", -1)
+	return strings.Replace(s2, `\t`, "\t", -1)
+}
+
 func SplitKeyValArgs(args []string) (Pairs, Pairs, []string) {
 	var types []Pair
 	var others []Pair
@@ -63,7 +68,7 @@ func SplitKeyValArgs(args []string) (Pairs, Pairs, []string) {
 		} else if co >= 0 {
 			k, v = a[:co], a[co+1:]
 			if k != "" {
-				p := Pair{a[:co], a[co+1:]}
+				p := Pair{a[:co], expandSpecialChars(a[co+1:])}
 				others = append(others, p)
 				found = true
 			}
