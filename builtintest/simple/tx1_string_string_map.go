@@ -120,9 +120,16 @@ func (mm *TX1StringStringMap) Clear() {
 	*mm = make(map[string]string)
 }
 
-// Remove allows the removal of a single item from the map.
+// Remove a single item from the map.
 func (mm TX1StringStringMap) Remove(k string) {
 	delete(mm, k)
+}
+
+// Pop removes a single item from the map, returning the value present until removal.
+func (mm TX1StringStringMap) Pop(k string) (string, bool) {
+	v, found := mm[k]
+	delete(mm, k)
+	return v, found
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
@@ -138,6 +145,27 @@ func (mm TX1StringStringMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TX1StringStringMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TX1StringStringMap) DropWhere(fn func(string, string) bool) TX1StringStringTuples {
+	removed := make(TX1StringStringTuples, 0)
+	for k, v := range mm {
+		if fn(k, v) {
+			removed = append(removed, TX1StringStringTuple{k, v})
+			delete(mm, k)
+		}
+	}
+	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm TX1StringStringMap) Foreach(fn func(string, string)) {
+	for k, v := range mm {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -165,6 +193,19 @@ func (mm TX1StringStringMap) Exists(fn func(string, string) bool) bool {
 		}
 	}
 	return false
+}
+
+// Find returns the first string that returns true for some function.
+// False is returned if none match.
+// The original map is not modified
+func (mm TX1StringStringMap) Find(fn func(string, string) bool) (TX1StringStringTuple, bool) {
+	for k, v := range mm {
+		if fn(k, v) {
+			return TX1StringStringTuple{k, v}, true
+		}
+	}
+
+	return TX1StringStringTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing

@@ -120,9 +120,16 @@ func (mm *TX1StringAppleMap) Clear() {
 	*mm = make(map[string]Apple)
 }
 
-// Remove allows the removal of a single item from the map.
+// Remove a single item from the map.
 func (mm TX1StringAppleMap) Remove(k string) {
 	delete(mm, k)
+}
+
+// Pop removes a single item from the map, returning the value present until removal.
+func (mm TX1StringAppleMap) Pop(k string) (Apple, bool) {
+	v, found := mm[k]
+	delete(mm, k)
+	return v, found
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
@@ -138,6 +145,27 @@ func (mm TX1StringAppleMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm TX1StringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm TX1StringAppleMap) DropWhere(fn func(string, Apple) bool) TX1StringAppleTuples {
+	removed := make(TX1StringAppleTuples, 0)
+	for k, v := range mm {
+		if fn(k, v) {
+			removed = append(removed, TX1StringAppleTuple{k, v})
+			delete(mm, k)
+		}
+	}
+	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm TX1StringAppleMap) Foreach(fn func(string, Apple)) {
+	for k, v := range mm {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -165,6 +193,19 @@ func (mm TX1StringAppleMap) Exists(fn func(string, Apple) bool) bool {
 		}
 	}
 	return false
+}
+
+// Find returns the first Apple that returns true for some function.
+// False is returned if none match.
+// The original map is not modified
+func (mm TX1StringAppleMap) Find(fn func(string, Apple) bool) (TX1StringAppleTuple, bool) {
+	for k, v := range mm {
+		if fn(k, v) {
+			return TX1StringAppleTuple{k, v}, true
+		}
+	}
+
+	return TX1StringAppleTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing

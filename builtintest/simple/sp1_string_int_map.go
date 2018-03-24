@@ -120,9 +120,16 @@ func (mm *SP1StringIntMap) Clear() {
 	*mm = make(map[*string]*big.Int)
 }
 
-// Remove allows the removal of a single item from the map.
+// Remove a single item from the map.
 func (mm SP1StringIntMap) Remove(k *string) {
 	delete(mm, k)
+}
+
+// Pop removes a single item from the map, returning the value present until removal.
+func (mm SP1StringIntMap) Pop(k *string) (*big.Int, bool) {
+	v, found := mm[k]
+	delete(mm, k)
+	return v, found
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
@@ -138,6 +145,27 @@ func (mm SP1StringIntMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm SP1StringIntMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm SP1StringIntMap) DropWhere(fn func(*string, *big.Int) bool) SP1StringIntTuples {
+	removed := make(SP1StringIntTuples, 0)
+	for k, v := range mm {
+		if fn(k, v) {
+			removed = append(removed, SP1StringIntTuple{k, v})
+			delete(mm, k)
+		}
+	}
+	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm SP1StringIntMap) Foreach(fn func(*string, *big.Int)) {
+	for k, v := range mm {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -165,6 +193,19 @@ func (mm SP1StringIntMap) Exists(fn func(*string, *big.Int) bool) bool {
 		}
 	}
 	return false
+}
+
+// Find returns the first big.Int that returns true for some function.
+// False is returned if none match.
+// The original map is not modified
+func (mm SP1StringIntMap) Find(fn func(*string, *big.Int) bool) (SP1StringIntTuple, bool) {
+	for k, v := range mm {
+		if fn(k, v) {
+			return SP1StringIntTuple{k, v}, true
+		}
+	}
+
+	return SP1StringIntTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing

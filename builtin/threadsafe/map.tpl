@@ -153,12 +153,22 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clear() {
 	mm.m = make(map[{{.PKey}}]{{.PType}})
 }
 
-// Remove allows the removal of a single item from the map.
+// Remove a single item from the map.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
 	delete(mm.m, k)
+}
+
+// Pop removes a single item from the map, returning the value present until removal.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Pop(k {{.PKey}}) ({{.PType}}, bool) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	v, found := mm.m[k]
+	delete(mm.m, k)
+	return v, found
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.

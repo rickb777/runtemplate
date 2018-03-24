@@ -113,9 +113,16 @@ func (mm *SP1ApplePearMap) Clear() {
 	*mm = make(map[*Apple]*Pear)
 }
 
-// Remove allows the removal of a single item from the map.
+// Remove a single item from the map.
 func (mm SP1ApplePearMap) Remove(k *Apple) {
 	delete(mm, k)
+}
+
+// Pop removes a single item from the map, returning the value present until removal.
+func (mm SP1ApplePearMap) Pop(k *Apple) (*Pear, bool) {
+	v, found := mm[k]
+	delete(mm, k)
+	return v, found
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
@@ -131,6 +138,27 @@ func (mm SP1ApplePearMap) IsEmpty() bool {
 // NonEmpty returns true if the map is not empty.
 func (mm SP1ApplePearMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// DropWhere applies a predicate function to every element in the map. If the function returns true,
+// the element is dropped from the map.
+func (mm SP1ApplePearMap) DropWhere(fn func(*Apple, *Pear) bool) SP1ApplePearTuples {
+	removed := make(SP1ApplePearTuples, 0)
+	for k, v := range mm {
+		if fn(k, v) {
+			removed = append(removed, SP1ApplePearTuple{k, v})
+			delete(mm, k)
+		}
+	}
+	return removed
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm SP1ApplePearMap) Foreach(fn func(*Apple, *Pear)) {
+	for k, v := range mm {
+		fn(k, v)
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -158,6 +186,19 @@ func (mm SP1ApplePearMap) Exists(fn func(*Apple, *Pear) bool) bool {
 		}
 	}
 	return false
+}
+
+// Find returns the first Pear that returns true for some function.
+// False is returned if none match.
+// The original map is not modified
+func (mm SP1ApplePearMap) Find(fn func(*Apple, *Pear) bool) (SP1ApplePearTuple, bool) {
+	for k, v := range mm {
+		if fn(k, v) {
+			return SP1ApplePearTuple{k, v}, true
+		}
+	}
+
+	return SP1ApplePearTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing

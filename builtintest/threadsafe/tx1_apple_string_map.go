@@ -148,12 +148,22 @@ func (mm *TX1AppleStringMap) Clear() {
 	mm.m = make(map[Apple]string)
 }
 
-// Remove allows the removal of a single item from the map.
+// Remove a single item from the map.
 func (mm TX1AppleStringMap) Remove(k Apple) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
 	delete(mm.m, k)
+}
+
+// Pop removes a single item from the map, returning the value present until removal.
+func (mm TX1AppleStringMap) Pop(k Apple) (string, bool) {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	v, found := mm.m[k]
+	delete(mm.m, k)
+	return v, found
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
