@@ -31,9 +31,10 @@ func failIfLeftoversExist(leftover []string) {
 }
 
 func main() {
-	var tpl, output string
+	var tpl, output1, output2 string
 	flag.StringVar(&tpl, "tpl", "", "Name of template file; this must be available locally or be on TEMPLATEPATH.")
-	flag.StringVar(&output, "output", "", "Name of the output file.")
+	flag.StringVar(&output1, "output", "", "Name of the output file.")
+	flag.StringVar(&output2, "o", "", "Alias for -output.")
 
 	var depsList Strings
 	flag.Var(&depsList, "deps", "List of other dependent files (separated by commas). May appear several times.")
@@ -52,7 +53,11 @@ func main() {
 		deps = append(deps, strings.Split(s, ",")...)
 	}
 
+	if len(output1) == 0 && len(output2) > 0 {
+		output1 = output2
+	}
+
 	types, others, leftover := SplitKeyValArgs(args)
 	failIfLeftoversExist(leftover)
-	generate(tpl, output, force, deps, types, others)
+	generate(tpl, output1, force, deps, types, others)
 }

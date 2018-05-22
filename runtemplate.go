@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"io"
 )
 
 const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
@@ -92,14 +93,18 @@ func runTheTemplate(foundTemplate, outputFile string, context map[string]interfa
 	}
 
 	Debug("Create %s\n", outputFile)
-	f, err := os.Create(outputFile)
-	if err != nil {
-		Fail(err)
+	var w io.Writer = os.Stdout
+	if len(outputFile) > 0 {
+		f, err := os.Create(outputFile)
+		if err != nil {
+			Fail(err)
+		}
+		defer f.Close()
+		w = f
 	}
-	defer f.Close()
 
 	Debug("Execute template\n")
-	err = tmpl.Execute(f, context)
+	err = tmpl.Execute(w, context)
 	if err != nil {
 		Fail(err)
 	}
@@ -113,12 +118,14 @@ func generate(templateFile, outputFile string, force bool, deps []string, types,
 
 	youngestDep := foundTemplate
 
-	if outputFile == "" {
+	if outputFile == "" && len(types.TValues()) > 0 {
 		keys := strings.Join(types.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideLastOr0('.')
 		tf = RichString(tf).RemoveBeforeLast('/').ToLower()
 		outputFile = (RichString(keys).ToLower() + "_" + tf + ".go").String()
 		Debug("default output now '%s'\n", outputFile)
+	} else if outputFile == "-" {
+		outputFile = "" // implies stdout
 	}
 
 	otherDeps := NewFileMeta(false, deps...)

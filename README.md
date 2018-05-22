@@ -31,7 +31,8 @@ runtemplate -tpl filename.tpl -output outfile.go -deps foo.go,bar.go Type=MyStru
    - (required) the name of the input template.
 
  * `-output <name>`
-   - the name of the output file. If `-tpl` is not specifed, `-output` is required, otherwise it is optional.
+   `-o <name>`
+   - the name of the output file. If `-tpl` is not specifed, `-output` is required, otherwise it is optional. The name `-` causes writing to standard out instead of a file. Standard out is also used if this flag is unspecified and there are no `key=value` types.
 
  * `-deps <name>,<name>,...`
    - adds more dependencies to be checked in addition to the template itself and the 'type' file (if any).
@@ -44,13 +45,10 @@ runtemplate -tpl filename.tpl -output outfile.go -deps foo.go,bar.go Type=MyStru
    - verbose info messages
 
  * key:value ...
-   - (optional) supply a (list of) key/value pairs that are passed in to the template. `true` and `false` are
-     converted to booleans, allowing conditional blocks within your templates.
+   - (optional) supply a (list of) simple key/value pairs that are passed in to the template. `true` and `false` are converted to booleans, allowing conditional blocks within your templates.
 
  * key=value ...
-   - (optional) supply a (list of) key/value pairs that are passed in to the template. `true` and `false` are
-     converted to booleans, allowing conditional blocks within your templates. Extra synthetic values are also
-     added, making it really easy to generate source code. This is described further below.
+   - (optional) supply a (list of) key/value pairs that are passed in to the template. These are often Go types; extra synthetic values are also added, making it really easy to generate source code. This is described further below. `true` and `false` are converted to booleans, allowing conditional blocks within your templates
 
 The option parser will also infer the template and output file names, so it is also permitted to use
 
