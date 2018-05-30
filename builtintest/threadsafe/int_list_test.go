@@ -77,6 +77,60 @@ func TestIntListAppend(t *testing.T) {
 	}
 }
 
+func TestIntListDeleteAt(t *testing.T) {
+    cases := []struct{
+        i, n int
+        act, exp *X1IntList
+    }{
+        {
+            0, 2,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(3, 4, 5, 6),
+        },
+        {
+            2, 2,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 5, 6),
+        },
+        {
+            4, 2,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 3, 4),
+        },
+    }
+
+    for i, c := range cases {
+        c.act.DeleteAt(c.i, c.n)
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+        }
+    }
+}
+
+
+
+func TestIntListKeepWhere(t *testing.T) {
+    cases := []struct{
+        act, exp *X1IntList
+    }{
+        {
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(2, 4, 6),
+        },
+    }
+
+    for i, c := range cases {
+        c.act.KeepWhere(func (v int) bool {
+            return v % 2 == 0
+        })
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+        }
+    }
+}
+
 
 func TestIntListClone(t *testing.T) {
 	a := NewX1IntList(1, 2)

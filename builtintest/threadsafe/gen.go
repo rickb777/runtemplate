@@ -21,7 +21,7 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=url.URL Stringer:true  Comparable:true Import:"net/url"
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/rickb777/runtemplate/builtintest/testtypes"
 
-//go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true
+//go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true Numeric:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=string Type=string  Comparable:true Stringer:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=string Type=Apple                   Stringer:true KeySlice:sort.StringSlice
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=Email  Type=string                  Stringer:true KeySlice:EmailSlice
@@ -33,10 +33,10 @@ package threadsafe
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=X1 Type=Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 
-//go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true
-//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true M:.m Append:true Find:false
-//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true M:.m Append:true
-//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true M:.m
+//go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true
+//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true M:.m Append:true Find:false
+//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true M:.m Append:true
+//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true M:.m
 
 // Code generation with pointer values
 

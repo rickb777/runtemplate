@@ -204,33 +204,33 @@ func (list *X1AppleList) ContainsAll(i ...Apple) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of X1AppleList return true for the passed func.
-func (list *X1AppleList) Exists(fn func(Apple) bool) bool {
+// Exists verifies that one or more elements of X1AppleList return true for the predicate p.
+func (list *X1AppleList) Exists(p func(Apple) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of X1AppleList return true for the passed func.
-func (list *X1AppleList) Forall(fn func(Apple) bool) bool {
+// Forall verifies that all elements of X1AppleList return true for the predicate p.
+func (list *X1AppleList) Forall(p func(Apple) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over X1AppleList and executes the passed func against each element.
+// Foreach iterates over X1AppleList and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *X1AppleList) Foreach(fn func(Apple)) {
 	list.s.Lock()
@@ -370,7 +370,7 @@ func (list *X1AppleList) DropLast(n int) *X1AppleList {
 
 // TakeWhile returns a new X1AppleList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *X1AppleList) TakeWhile(p func(Apple) bool) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -388,7 +388,7 @@ func (list *X1AppleList) TakeWhile(p func(Apple) bool) *X1AppleList {
 
 // DropWhile returns a new X1AppleList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *X1AppleList) DropWhile(p func(Apple) bool) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -408,14 +408,57 @@ func (list *X1AppleList) DropWhile(p func(Apple) bool) *X1AppleList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function.
+// DeleteAt modifies a X1AppleList by deleting n elements from a given index.
+// The modified list is returned.
+// Panics if the index is out of range or n is large enough to take the index out of range.
+func (list *X1AppleList) DeleteAt(index, n int) *X1AppleList {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	newlist := make([]Apple, 0, len(list.m) - n)
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    index += n
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
+// KeepWhere modifies a X1AppleList by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the list in place.
+func (list *X1AppleList) KeepWhere(p func(Apple) bool) *X1AppleList {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	result := make([]Apple, 0, len(list.m))
+
+	for _, v := range list.m {
+		if p(v) {
+			result = append(result, v)
+		}
+	}
+
+    list.m = result
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
-func (list X1AppleList) Find(fn func(Apple) bool) (Apple, bool) {
+func (list X1AppleList) Find(p func(Apple) bool) (Apple, bool) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -426,16 +469,17 @@ func (list X1AppleList) Find(fn func(Apple) bool) (Apple, bool) {
 
 }
 
-// Filter returns a new X1AppleList whose elements return true for func.
-// The original list is not modified
-func (list *X1AppleList) Filter(fn func(Apple) bool) *X1AppleList {
+// Filter returns a new X1AppleList whose elements return true for predicate p.
+//
+// The original list is not modified. See also KeepWhere (which does modify the original list).
+func (list *X1AppleList) Filter(p func(Apple) bool) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	result := newX1AppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}
@@ -447,6 +491,7 @@ func (list *X1AppleList) Filter(fn func(Apple) bool) *X1AppleList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original list is not modified
 func (list *X1AppleList) Partition(p func(Apple) bool) (*X1AppleList, *X1AppleList) {
 	list.s.RLock()

@@ -218,29 +218,29 @@ func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 }
 
 {{end -}}
-// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
-func (list *{{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
+// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) Exists(p func({{.PType}}) bool) bool {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
-func (list *{{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
+// Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.PType}}) bool) bool {
 
 	for _, v := range list.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
+// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 
@@ -364,7 +364,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
@@ -380,7 +380,7 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.U
 
 // DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
@@ -398,12 +398,51 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for some function.
-// False is returned if none match.
-func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
+// DeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
+// The modified list is returned.
+// Panics if the index is out of range or n is large enough to take the index out of range.
+func (list *{{.UPrefix}}{{.UType}}List) DeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
+
+	newlist := make([]{{.PType}}, 0, len(list.m) - n)
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    index += n
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
+// KeepWhere modifies a {{.UPrefix}}{{.UType}}List by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the list in place.
+func (list *{{.UPrefix}}{{.UType}}List) KeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
+	result := make([]{{.PType}}, 0, len(list.m))
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
+			result = append(result, v)
+		}
+	}
+
+    list.m = result
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Find returns the first {{.Type}} that returns true for predicate p.
+// False is returned if none match.
+func (list {{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
+
+	for _, v := range list.m {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -416,14 +455,15 @@ func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}
 {{end}}
 }
 
-// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
-// The original list is not modified
-func (list *{{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for predicate p.
+//
+// The original list is not modified. See also KeepWhere (which does modify the original list).
+func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}
@@ -435,6 +475,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) *{{.UPr
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original list is not modified
 func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.UPrefix}}{{.UType}}List, *{{.UPrefix}}{{.UType}}List) {
 

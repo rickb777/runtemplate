@@ -185,29 +185,29 @@ func (list *X1StringList) ContainsAll(i ...string) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of X1StringList return true for the passed func.
-func (list *X1StringList) Exists(fn func(string) bool) bool {
+// Exists verifies that one or more elements of X1StringList return true for the predicate p.
+func (list *X1StringList) Exists(p func(string) bool) bool {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of X1StringList return true for the passed func.
-func (list *X1StringList) Forall(fn func(string) bool) bool {
+// Forall verifies that all elements of X1StringList return true for the predicate p.
+func (list *X1StringList) Forall(p func(string) bool) bool {
 
 	for _, v := range list.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over X1StringList and executes the passed func against each element.
+// Foreach iterates over X1StringList and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *X1StringList) Foreach(fn func(string)) {
 
@@ -331,7 +331,7 @@ func (list *X1StringList) DropLast(n int) *X1StringList {
 
 // TakeWhile returns a new X1StringList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *X1StringList) TakeWhile(p func(string) bool) *X1StringList {
 
 	result := newX1StringList(0, 0)
@@ -347,7 +347,7 @@ func (list *X1StringList) TakeWhile(p func(string) bool) *X1StringList {
 
 // DropWhile returns a new X1StringList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *X1StringList) DropWhile(p func(string) bool) *X1StringList {
 
 	result := newX1StringList(0, 0)
@@ -365,12 +365,51 @@ func (list *X1StringList) DropWhile(p func(string) bool) *X1StringList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first string that returns true for some function.
-// False is returned if none match.
-func (list X1StringList) Find(fn func(string) bool) (string, bool) {
+// DeleteAt modifies a X1StringList by deleting n elements from a given index.
+// The modified list is returned.
+// Panics if the index is out of range or n is large enough to take the index out of range.
+func (list *X1StringList) DeleteAt(index, n int) *X1StringList {
+
+	newlist := make([]string, 0, len(list.m) - n)
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    index += n
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
+// KeepWhere modifies a X1StringList by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the list in place.
+func (list *X1StringList) KeepWhere(p func(string) bool) *X1StringList {
+
+	result := make([]string, 0, len(list.m))
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
+			result = append(result, v)
+		}
+	}
+
+    list.m = result
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Find returns the first string that returns true for predicate p.
+// False is returned if none match.
+func (list X1StringList) Find(p func(string) bool) (string, bool) {
+
+	for _, v := range list.m {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -381,14 +420,15 @@ func (list X1StringList) Find(fn func(string) bool) (string, bool) {
 
 }
 
-// Filter returns a new X1StringList whose elements return true for func.
-// The original list is not modified
-func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
+// Filter returns a new X1StringList whose elements return true for predicate p.
+//
+// The original list is not modified. See also KeepWhere (which does modify the original list).
+func (list *X1StringList) Filter(p func(string) bool) *X1StringList {
 
 	result := newX1StringList(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}
@@ -400,6 +440,7 @@ func (list *X1StringList) Filter(fn func(string) bool) *X1StringList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original list is not modified
 func (list *X1StringList) Partition(p func(string) bool) (*X1StringList, *X1StringList) {
 

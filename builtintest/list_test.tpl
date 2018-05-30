@@ -77,6 +77,60 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 	}
 }
 
+func Test{{.UType}}ListDeleteAt(t *testing.T) {
+    cases := []struct{
+        i, n int
+        act, exp *X1{{.UType}}List
+    }{
+        {
+            0, 2,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(3, 4, 5, 6),
+        },
+        {
+            2, 2,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 5, 6),
+        },
+        {
+            4, 2,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 3, 4),
+        },
+    }
+
+    for i, c := range cases {
+        c.act.DeleteAt(c.i, c.n)
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+        }
+    }
+}
+
+{{end}}
+{{if and .Mutable .Numeric}}
+func Test{{.UType}}ListKeepWhere(t *testing.T) {
+    cases := []struct{
+        act, exp *X1{{.UType}}List
+    }{
+        {
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(2, 4, 6),
+        },
+    }
+
+    for i, c := range cases {
+        c.act.KeepWhere(func (v {{.PType}}) bool {
+            return v % 2 == 0
+        })
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+        }
+    }
+}
+
 {{end}}
 func Test{{.UType}}ListClone(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2)

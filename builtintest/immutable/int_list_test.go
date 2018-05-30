@@ -1,5 +1,5 @@
 // Generated from ../list_test.tpl with Type=int
-// options: Append:true Find:<no value> Mutable:<no value> M:.m
+// options: Append:<no value> Find:<no value> Mutable:<no value> M:.m
 
 package immutable
 
@@ -58,24 +58,6 @@ func TestConvertIntList(t *testing.T) {
 	}
 }
 
-
-func TestIntListAppend(t *testing.T) {
-	a := NewX1IntList(1, 2, 3)
-
-	b := a.Append(4, 5).Append(6, 7)
-
-	if b.Size() != 7 {
-		t.Errorf("Expected 5 but got %d", a.Size())
-	}
-
-	if b.Get(3) != 4 {
-		t.Errorf("Expected 4 but got %d", b.Get(3))
-	}
-
-	if b.Last() != 7 {
-		t.Errorf("Expected 7 but got %d", b.Last())
-	}
-}
 
 
 func TestIntListClone(t *testing.T) {

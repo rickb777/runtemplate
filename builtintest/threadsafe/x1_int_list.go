@@ -228,33 +228,33 @@ func (list *X1IntList) ContainsAll(i ...int) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of X1IntList return true for the passed func.
-func (list *X1IntList) Exists(fn func(int) bool) bool {
+// Exists verifies that one or more elements of X1IntList return true for the predicate p.
+func (list *X1IntList) Exists(p func(int) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of X1IntList return true for the passed func.
-func (list *X1IntList) Forall(fn func(int) bool) bool {
+// Forall verifies that all elements of X1IntList return true for the predicate p.
+func (list *X1IntList) Forall(p func(int) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over X1IntList and executes the passed func against each element.
+// Foreach iterates over X1IntList and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *X1IntList) Foreach(fn func(int)) {
 	list.s.Lock()
@@ -394,7 +394,7 @@ func (list *X1IntList) DropLast(n int) *X1IntList {
 
 // TakeWhile returns a new X1IntList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *X1IntList) TakeWhile(p func(int) bool) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -412,7 +412,7 @@ func (list *X1IntList) TakeWhile(p func(int) bool) *X1IntList {
 
 // DropWhile returns a new X1IntList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -432,14 +432,57 @@ func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function.
+// DeleteAt modifies a X1IntList by deleting n elements from a given index.
+// The modified list is returned.
+// Panics if the index is out of range or n is large enough to take the index out of range.
+func (list *X1IntList) DeleteAt(index, n int) *X1IntList {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	newlist := make([]int, 0, len(list.m) - n)
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    index += n
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
+// KeepWhere modifies a X1IntList by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the list in place.
+func (list *X1IntList) KeepWhere(p func(int) bool) *X1IntList {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	result := make([]int, 0, len(list.m))
+
+	for _, v := range list.m {
+		if p(v) {
+			result = append(result, v)
+		}
+	}
+
+    list.m = result
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list X1IntList) Find(fn func(int) bool) (int, bool) {
+func (list X1IntList) Find(p func(int) bool) (int, bool) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -450,16 +493,17 @@ func (list X1IntList) Find(fn func(int) bool) (int, bool) {
 
 }
 
-// Filter returns a new X1IntList whose elements return true for func.
-// The original list is not modified
-func (list *X1IntList) Filter(fn func(int) bool) *X1IntList {
+// Filter returns a new X1IntList whose elements return true for predicate p.
+//
+// The original list is not modified. See also KeepWhere (which does modify the original list).
+func (list *X1IntList) Filter(p func(int) bool) *X1IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	result := newX1IntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}
@@ -471,6 +515,7 @@ func (list *X1IntList) Filter(fn func(int) bool) *X1IntList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original list is not modified
 func (list *X1IntList) Partition(p func(int) bool) (*X1IntList, *X1IntList) {
 	list.s.RLock()
