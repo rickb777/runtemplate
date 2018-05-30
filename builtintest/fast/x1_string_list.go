@@ -365,10 +365,42 @@ func (list *X1StringList) DropWhile(p func(string) bool) *X1StringList {
 
 //-------------------------------------------------------------------------------------------------
 
+// InsertAt modifies a X1StringList by inserting elements at a given index.
+// This is a generalised version of Append.
+//
+// The modified list is returned.
+// Panics if the index is out of range.
+func (list *X1StringList) InsertAt(index int, more ...string) *X1StringList {
+
+    if len(more) == 0 {
+        return list
+    }
+
+	newlist := make([]string, 0, len(list.m) + len(more))
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    newlist = append(newlist, more...)
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
 // DeleteAt modifies a X1StringList by deleting n elements from a given index.
+//
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *X1StringList) DeleteAt(index, n int) *X1StringList {
+
+    if n == 0 {
+        return list
+    }
 
 	newlist := make([]string, 0, len(list.m) - n)
 
@@ -388,6 +420,8 @@ func (list *X1StringList) DeleteAt(index, n int) *X1StringList {
 
 // KeepWhere modifies a X1StringList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
+//
+// The modified list is returned.
 func (list *X1StringList) KeepWhere(p func(string) bool) *X1StringList {
 
 	result := make([]string, 0, len(list.m))

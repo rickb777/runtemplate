@@ -388,12 +388,46 @@ func (list *X2IntList) DropWhile(p func(big.Int) bool) *X2IntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// InsertAt modifies a X2IntList by inserting elements at a given index.
+// This is a generalised version of Append.
+//
+// The modified list is returned.
+// Panics if the index is out of range.
+func (list *X2IntList) InsertAt(index int, more ...big.Int) *X2IntList {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    if len(more) == 0 {
+        return list
+    }
+
+	newlist := make([]big.Int, 0, len(list.m) + len(more))
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    newlist = append(newlist, more...)
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
 // DeleteAt modifies a X2IntList by deleting n elements from a given index.
+//
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *X2IntList) DeleteAt(index, n int) *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
+
+    if n == 0 {
+        return list
+    }
 
 	newlist := make([]big.Int, 0, len(list.m) - n)
 
@@ -413,6 +447,8 @@ func (list *X2IntList) DeleteAt(index, n int) *X2IntList {
 
 // KeepWhere modifies a X2IntList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
+//
+// The modified list is returned.
 func (list *X2IntList) KeepWhere(p func(big.Int) bool) *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()

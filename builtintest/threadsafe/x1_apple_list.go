@@ -408,12 +408,46 @@ func (list *X1AppleList) DropWhile(p func(Apple) bool) *X1AppleList {
 
 //-------------------------------------------------------------------------------------------------
 
+// InsertAt modifies a X1AppleList by inserting elements at a given index.
+// This is a generalised version of Append.
+//
+// The modified list is returned.
+// Panics if the index is out of range.
+func (list *X1AppleList) InsertAt(index int, more ...Apple) *X1AppleList {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    if len(more) == 0 {
+        return list
+    }
+
+	newlist := make([]Apple, 0, len(list.m) + len(more))
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    newlist = append(newlist, more...)
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
 // DeleteAt modifies a X1AppleList by deleting n elements from a given index.
+//
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *X1AppleList) DeleteAt(index, n int) *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
+
+    if n == 0 {
+        return list
+    }
 
 	newlist := make([]Apple, 0, len(list.m) - n)
 
@@ -433,6 +467,8 @@ func (list *X1AppleList) DeleteAt(index, n int) *X1AppleList {
 
 // KeepWhere modifies a X1AppleList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
+//
+// The modified list is returned.
 func (list *X1AppleList) KeepWhere(p func(Apple) bool) *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()

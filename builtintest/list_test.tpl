@@ -77,6 +77,44 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 	}
 }
 
+func Test{{.UType}}ListInsertAt(t *testing.T) {
+    cases := []struct{
+        i int
+        more []{{.PType}}
+        exp *X1{{.UType}}List
+    }{
+        {
+            0,
+            []{{.PType}}{10, 11},
+            NewX1{{.UType}}List(10, 11, 1, 2, 3, 4, 5, 6),
+        },
+        {
+            2,
+            []{{.PType}}{10, 11, 12},
+            NewX1{{.UType}}List(1, 2, 10, 11, 12, 3, 4, 5, 6),
+        },
+        {
+            6,
+            []{{.PType}}{10, 11},
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6, 10, 11),
+        },
+        {
+            3,
+            []{{.PType}}{},
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+        },
+    }
+
+    for i, c := range cases {
+        act := NewX1{{.UType}}List(1, 2, 3, 4, 5, 6)
+        act.InsertAt(c.i, c.more...)
+
+        if !act.Equals(c.exp) {
+            t.Errorf("%d: Expected %v but got %v", i, c.exp, act)
+        }
+    }
+}
+
 func Test{{.UType}}ListDeleteAt(t *testing.T) {
     cases := []struct{
         i, n int
@@ -96,6 +134,11 @@ func Test{{.UType}}ListDeleteAt(t *testing.T) {
             4, 2,
             NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
             NewX1{{.UType}}List(1, 2, 3, 4),
+        },
+        {
+            3, 0,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
         },
     }
 

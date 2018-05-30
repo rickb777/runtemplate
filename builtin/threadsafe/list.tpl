@@ -443,12 +443,46 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 
 //-------------------------------------------------------------------------------------------------
 
+// InsertAt modifies a {{.UPrefix}}{{.UType}}List by inserting elements at a given index.
+// This is a generalised version of Append.
+//
+// The modified list is returned.
+// Panics if the index is out of range.
+func (list *{{.UPrefix}}{{.UType}}List) InsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    if len(more) == 0 {
+        return list
+    }
+
+	newlist := make([]{{.PType}}, 0, len(list.m) + len(more))
+
+    if index != 0 {
+        newlist = append(newlist, list.m[:index]...)
+    }
+
+    newlist = append(newlist, more...)
+
+    if index != len(list.m) {
+        newlist = append(newlist, list.m[index:]...)
+    }
+
+    list.m = newlist
+	return list
+}
+
 // DeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
+//
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
 	list.s.Lock()
 	defer list.s.Unlock()
+
+    if n == 0 {
+        return list
+    }
 
 	newlist := make([]{{.PType}}, 0, len(list.m) - n)
 
@@ -468,6 +502,8 @@ func (list *{{.UPrefix}}{{.UType}}List) DeleteAt(index, n int) *{{.UPrefix}}{{.U
 
 // KeepWhere modifies a {{.UPrefix}}{{.UType}}List by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
+//
+// The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) KeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	list.s.Lock()
 	defer list.s.Unlock()

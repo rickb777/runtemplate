@@ -77,6 +77,44 @@ func TestIntListAppend(t *testing.T) {
 	}
 }
 
+func TestIntListInsertAt(t *testing.T) {
+    cases := []struct{
+        i int
+        more []int
+        exp *X1IntList
+    }{
+        {
+            0,
+            []int{10, 11},
+            NewX1IntList(10, 11, 1, 2, 3, 4, 5, 6),
+        },
+        {
+            2,
+            []int{10, 11, 12},
+            NewX1IntList(1, 2, 10, 11, 12, 3, 4, 5, 6),
+        },
+        {
+            6,
+            []int{10, 11},
+            NewX1IntList(1, 2, 3, 4, 5, 6, 10, 11),
+        },
+        {
+            3,
+            []int{},
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+        },
+    }
+
+    for i, c := range cases {
+        act := NewX1IntList(1, 2, 3, 4, 5, 6)
+        act.InsertAt(c.i, c.more...)
+
+        if !act.Equals(c.exp) {
+            t.Errorf("%d: Expected %v but got %v", i, c.exp, act)
+        }
+    }
+}
+
 func TestIntListDeleteAt(t *testing.T) {
     cases := []struct{
         i, n int
@@ -96,6 +134,11 @@ func TestIntListDeleteAt(t *testing.T) {
             4, 2,
             NewX1IntList(1, 2, 3, 4, 5, 6),
             NewX1IntList(1, 2, 3, 4),
+        },
+        {
+            3, 0,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 3, 4, 5, 6),
         },
     }
 
