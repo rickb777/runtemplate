@@ -309,6 +309,7 @@ func (set X2EmailSet) Find(fn func(testtypes.Email) bool) (testtypes.Email, bool
 }
 
 // Filter returns a new X2EmailSet whose elements return true for func.
+//
 // The original set is not modified
 func (set X2EmailSet) Filter(fn func(testtypes.Email) bool) X2EmailSet {
 	result := NewX2EmailSet()
@@ -325,6 +326,7 @@ func (set X2EmailSet) Filter(fn func(testtypes.Email) bool) X2EmailSet {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set X2EmailSet) Partition(p func(testtypes.Email) bool) (X2EmailSet, X2EmailSet) {
 	matching := NewX2EmailSet()

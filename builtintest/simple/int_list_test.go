@@ -195,8 +195,24 @@ func TestIntListStableSort(t *testing.T) {
 	}
 }
 
-func TestIntListReverse(t *testing.T) {
+func TestIntListReverseOdd(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
+
+	b := a.Reverse()
+
+	if b.Equals(a) {
+		t.Errorf("Expected reverse of '%+v' but got '%+v'", a, b)
+	}
+
+	c := b.Reverse()
+
+	if !c.Equals(a) {
+		t.Errorf("Expected '%+v' but got '%+v'", a, c)
+	}
+}
+
+func TestIntListReverseEven(t *testing.T) {
+	a := NewX1IntList(13, 4, 7, -2, 9, 17)
 
 	b := a.Reverse()
 

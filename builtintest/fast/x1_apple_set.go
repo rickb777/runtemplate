@@ -307,6 +307,7 @@ func (set X1AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 }
 
 // Filter returns a new X1AppleSet whose elements return true for func.
+//
 // The original set is not modified
 func (set X1AppleSet) Filter(fn func(Apple) bool) X1AppleSet {
 	result := NewX1AppleSet()
@@ -323,6 +324,7 @@ func (set X1AppleSet) Filter(fn func(Apple) bool) X1AppleSet {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set X1AppleSet) Partition(p func(Apple) bool) (X1AppleSet, X1AppleSet) {
 	matching := NewX1AppleSet()

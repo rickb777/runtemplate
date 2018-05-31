@@ -77,7 +77,7 @@ func TestIntListAppend(t *testing.T) {
 	}
 }
 
-func TestIntListInsertAt(t *testing.T) {
+func TestIntListDoInsertAt(t *testing.T) {
     cases := []struct{
         i int
         more []int
@@ -107,15 +107,15 @@ func TestIntListInsertAt(t *testing.T) {
 
     for i, c := range cases {
         act := NewX1IntList(1, 2, 3, 4, 5, 6)
-        act.InsertAt(c.i, c.more...)
+        act.DoInsertAt(c.i, c.more...)
 
         if !act.Equals(c.exp) {
-            t.Errorf("%d: Expected %v but got %v", i, c.exp, act)
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, act.m)
         }
     }
 }
 
-func TestIntListDeleteAt(t *testing.T) {
+func TestIntListDoDeleteAt(t *testing.T) {
     cases := []struct{
         i, n int
         act, exp *X1IntList
@@ -143,10 +143,10 @@ func TestIntListDeleteAt(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.DeleteAt(c.i, c.n)
+        c.act.DoDeleteAt(c.i, c.n)
 
         if !c.act.Equals(c.exp) {
-            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, c.act.m)
         }
     }
 }
@@ -288,8 +288,24 @@ func TestIntListStableSort(t *testing.T) {
 	}
 }
 
-func TestIntListReverse(t *testing.T) {
+func TestIntListReverseOdd(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
+
+	b := a.Reverse()
+
+	if b.Equals(a) {
+		t.Errorf("Expected reverse of '%+v' but got '%+v'", a.m, b.m)
+	}
+
+	c := b.Reverse()
+
+	if !c.Equals(a) {
+		t.Errorf("Expected '%+v' but got '%+v'", a.m, c.m)
+	}
+}
+
+func TestIntListReverseEven(t *testing.T) {
+	a := NewX1IntList(13, 4, 7, -2, 9, 17)
 
 	b := a.Reverse()
 

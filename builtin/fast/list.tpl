@@ -118,6 +118,7 @@ func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
+
 	return New{{.UPrefix}}{{.UType}}List(list.m...)
 }
 
@@ -263,28 +264,60 @@ func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	return ch
 }
 
-// Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
-func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
+//-------------------------------------------------------------------------------------------------
 
-	numItems := len(list.m)
-	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
-	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
-	}
-	return result
+// Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
+//
+// The original list is not modified.
+func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
+	return list.Clone().doReverse()
 }
+
+// DoReverse alters a {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
+//
+// The modified list is returned.
+func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List {
+	return list.doReverse()
+}
+
+func (list *{{.UPrefix}}{{.UType}}List) doReverse() *{{.UPrefix}}{{.UType}}List {
+	mid := (len(list.m) + 1) / 2
+	last := len(list.m) - 1
+	for i := 0; i < mid; i++ {
+	    r := last - i
+	    if i != r {
+		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		}
+	}
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
+//
+// The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
-	result := list.Clone()
-	numItems := len(result.m)
+	return list.Clone().doShuffle()
+}
+
+// DoShuffle returns a shuffled {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
+//
+// The modified list is returned.
+func (list *{{.UPrefix}}{{.UType}}List) DoShuffle() *{{.UPrefix}}{{.UType}}List {
+	return list.doShuffle()
+}
+
+func (list *{{.UPrefix}}{{.UType}}List) doShuffle() *{{.UPrefix}}{{.UType}}List {
+	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result.m[i], result.m[r] = result.m[r], result.m[i]
+        list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
-	return result
+	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current list. This is a synonym for Append.
 func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
@@ -293,120 +326,31 @@ func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
 
 // Append adds items to the current list, returning the modified list.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
-
-	list.doAppend(more...)
-	return list
+	return list.doAppend(more...)
 }
 
-func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) {
+func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	list.m = append(list.m, more...)
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List {
-
-	if n > len(list.m) {
-		return list
-	}
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	result.m = list.m[0:n]
-	return result
-}
-
-// Drop returns a slice of {{.UPrefix}}{{.UType}}List without the leading n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List {
-	if n == 0 {
-		return list
-	}
-
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
-	}
-	return result
-}
-
-// TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}List {
-
-	l := len(list.m)
-	if n > l {
-		return list
-	}
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	result.m = list.m[l-n:]
-	return result
-}
-
-// DropLast returns a slice of {{.UPrefix}}{{.UType}}List without the trailing n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}List {
-	if n == 0 {
-		return list
-	}
-
-
-	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
-	}
 	return list
 }
 
-// TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
-// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elements are excluded.
-func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	for _, v := range list.m {
-		if p(v) {
-			result.m = append(result.m, v)
-		} else {
-			return result
-		}
-	}
-	return result
-}
-
-// DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
-// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elements are added.
-func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
-
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	adding := false
-
-	for _, v := range list.m {
-		if !p(v) || adding {
-			adding = true
-			result.m = append(result.m, v)
-		}
-	}
-
-	return result
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// InsertAt modifies a {{.UPrefix}}{{.UType}}List by inserting elements at a given index.
+// DoInsertAt modifies a {{.UPrefix}}{{.UType}}List by inserting elements at a given index.
 // This is a generalised version of Append.
 //
 // The modified list is returned.
 // Panics if the index is out of range.
-func (list *{{.UPrefix}}{{.UType}}List) InsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) DoInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+    return list.doInsertAt(index, more...)
+}
 
+func (list *{{.UPrefix}}{{.UType}}List) doInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
     if len(more) == 0 {
         return list
+    }
+
+    if index == len(list.m) {
+        // appending is an easy special case
+    	return list.doAppend(more...)
     }
 
 	newlist := make([]{{.PType}}, 0, len(list.m) + len(more))
@@ -417,20 +361,23 @@ func (list *{{.UPrefix}}{{.UType}}List) InsertAt(index int, more ...{{.PType}}) 
 
     newlist = append(newlist, more...)
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+    newlist = append(newlist, list.m[index:]...)
 
     list.m = newlist
 	return list
 }
 
-// DeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
+//-------------------------------------------------------------------------------------------------
+
+// DoDeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
 //
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
-func (list *{{.UPrefix}}{{.UType}}List) DeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) DoDeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
+    return list.doDeleteAt(index, n)
+}
 
+func (list *{{.UPrefix}}{{.UType}}List) doDeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
     if n == 0 {
         return list
     }
@@ -451,12 +398,17 @@ func (list *{{.UPrefix}}{{.UType}}List) DeleteAt(index, n int) *{{.UPrefix}}{{.U
 	return list
 }
 
-// KeepWhere modifies a {{.UPrefix}}{{.UType}}List by retaining only those elements that match
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a {{.UPrefix}}{{.UType}}List by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The modified list is returned.
-func (list *{{.UPrefix}}{{.UType}}List) KeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+    return list.doKeepWhere(p)
+}
 
+func (list *{{.UPrefix}}{{.UType}}List) doKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	result := make([]{{.PType}}, 0, len(list.m))
 
 	for _, v := range list.m {
@@ -467,6 +419,110 @@ func (list *{{.UPrefix}}{{.UType}}List) KeepWhere(p func({{.PType}}) bool) *{{.U
 
     list.m = result
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List {
+
+	if n > len(list.m) {
+		return list
+	}
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result.m = list.m[0:n]
+	return result
+}
+
+// Drop returns a slice of {{.UPrefix}}{{.UType}}List without the leading n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List {
+	if n == 0 {
+		return list
+	}
+
+
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	l := len(list.m)
+	if n < l {
+		result.m = list.m[n:]
+	}
+	return result
+}
+
+// TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+//
+// The original list is not modified.
+func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}List {
+
+	l := len(list.m)
+	if n > l {
+		return list
+	}
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result.m = list.m[l-n:]
+	return result
+}
+
+// DropLast returns a slice of {{.UPrefix}}{{.UType}}List without the trailing n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}List {
+	if n == 0 {
+		return list
+	}
+
+
+	l := len(list.m)
+	if n > l {
+		list.m = list.m[l:]
+	} else {
+		list.m = list.m[0 : l-n]
+	}
+	return list
+}
+
+// TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
+// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
+// elements are excluded.
+//
+// The original list is not modified.
+func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	for _, v := range list.m {
+		if p(v) {
+			result.m = append(result.m, v)
+		} else {
+			return result
+		}
+	}
+	return result
+}
+
+// DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
+// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
+// elements are added.
+//
+// The original list is not modified.
+func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	adding := false
+
+	for _, v := range list.m {
+		if !p(v) || adding {
+			adding = true
+			result.m = append(result.m, v)
+		}
+	}
+
+	return result
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -491,7 +547,7 @@ func (list {{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}
 
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for predicate p.
 //
-// The original list is not modified. See also KeepWhere (which does modify the original list).
+// The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)

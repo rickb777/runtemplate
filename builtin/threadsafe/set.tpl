@@ -388,6 +388,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}},
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
+//
 // The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
@@ -406,6 +407,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
 	matching := New{{.UPrefix}}{{.UType}}Set()

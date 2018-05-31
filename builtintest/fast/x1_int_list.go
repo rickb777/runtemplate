@@ -108,6 +108,7 @@ func (list *X1IntList) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *X1IntList) Clone() *X1IntList {
+
 	return NewX1IntList(list.m...)
 }
 
@@ -252,28 +253,60 @@ func (list *X1IntList) Send() <-chan int {
 	return ch
 }
 
-// Reverse returns a copy of X1IntList with all elements in the reverse order.
-func (list *X1IntList) Reverse() *X1IntList {
+//-------------------------------------------------------------------------------------------------
 
-	numItems := len(list.m)
-	result := newX1IntList(numItems, numItems)
-	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
-	}
-	return result
+// Reverse returns a copy of X1IntList with all elements in the reverse order.
+//
+// The original list is not modified.
+func (list *X1IntList) Reverse() *X1IntList {
+	return list.Clone().doReverse()
 }
+
+// DoReverse alters a X1IntList with all elements in the reverse order.
+//
+// The modified list is returned.
+func (list *X1IntList) DoReverse() *X1IntList {
+	return list.doReverse()
+}
+
+func (list *X1IntList) doReverse() *X1IntList {
+	mid := (len(list.m) + 1) / 2
+	last := len(list.m) - 1
+	for i := 0; i < mid; i++ {
+	    r := last - i
+	    if i != r {
+		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		}
+	}
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of X1IntList, using a version of the Fisher-Yates shuffle.
+//
+// The original list is not modified.
 func (list *X1IntList) Shuffle() *X1IntList {
-	result := list.Clone()
-	numItems := len(result.m)
+	return list.Clone().doShuffle()
+}
+
+// DoShuffle returns a shuffled X1IntList, using a version of the Fisher-Yates shuffle.
+//
+// The modified list is returned.
+func (list *X1IntList) DoShuffle() *X1IntList {
+	return list.doShuffle()
+}
+
+func (list *X1IntList) doShuffle() *X1IntList {
+	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result.m[i], result.m[r] = result.m[r], result.m[i]
+        list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
-	return result
+	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current list. This is a synonym for Append.
 func (list *X1IntList) Add(more ...int) {
@@ -282,120 +315,31 @@ func (list *X1IntList) Add(more ...int) {
 
 // Append adds items to the current list, returning the modified list.
 func (list *X1IntList) Append(more ...int) *X1IntList {
-
-	list.doAppend(more...)
-	return list
+	return list.doAppend(more...)
 }
 
-func (list *X1IntList) doAppend(more ...int) {
+func (list *X1IntList) doAppend(more ...int) *X1IntList {
 	list.m = append(list.m, more...)
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Take returns a slice of X1IntList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *X1IntList) Take(n int) *X1IntList {
-
-	if n > len(list.m) {
-		return list
-	}
-	result := newX1IntList(0, 0)
-	result.m = list.m[0:n]
-	return result
-}
-
-// Drop returns a slice of X1IntList without the leading n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X1IntList) Drop(n int) *X1IntList {
-	if n == 0 {
-		return list
-	}
-
-
-	result := newX1IntList(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
-	}
-	return result
-}
-
-// TakeLast returns a slice of X1IntList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *X1IntList) TakeLast(n int) *X1IntList {
-
-	l := len(list.m)
-	if n > l {
-		return list
-	}
-	result := newX1IntList(0, 0)
-	result.m = list.m[l-n:]
-	return result
-}
-
-// DropLast returns a slice of X1IntList without the trailing n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X1IntList) DropLast(n int) *X1IntList {
-	if n == 0 {
-		return list
-	}
-
-
-	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
-	}
 	return list
 }
 
-// TakeWhile returns a new X1IntList containing the leading elements of the source list. Whilst the
-// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elements are excluded.
-func (list *X1IntList) TakeWhile(p func(int) bool) *X1IntList {
-
-	result := newX1IntList(0, 0)
-	for _, v := range list.m {
-		if p(v) {
-			result.m = append(result.m, v)
-		} else {
-			return result
-		}
-	}
-	return result
-}
-
-// DropWhile returns a new X1IntList containing the trailing elements of the source list. Whilst the
-// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elements are added.
-func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
-
-	result := newX1IntList(0, 0)
-	adding := false
-
-	for _, v := range list.m {
-		if !p(v) || adding {
-			adding = true
-			result.m = append(result.m, v)
-		}
-	}
-
-	return result
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// InsertAt modifies a X1IntList by inserting elements at a given index.
+// DoInsertAt modifies a X1IntList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
 // The modified list is returned.
 // Panics if the index is out of range.
-func (list *X1IntList) InsertAt(index int, more ...int) *X1IntList {
+func (list *X1IntList) DoInsertAt(index int, more ...int) *X1IntList {
+    return list.doInsertAt(index, more...)
+}
 
+func (list *X1IntList) doInsertAt(index int, more ...int) *X1IntList {
     if len(more) == 0 {
         return list
+    }
+
+    if index == len(list.m) {
+        // appending is an easy special case
+    	return list.doAppend(more...)
     }
 
 	newlist := make([]int, 0, len(list.m) + len(more))
@@ -406,20 +350,23 @@ func (list *X1IntList) InsertAt(index int, more ...int) *X1IntList {
 
     newlist = append(newlist, more...)
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+    newlist = append(newlist, list.m[index:]...)
 
     list.m = newlist
 	return list
 }
 
-// DeleteAt modifies a X1IntList by deleting n elements from a given index.
+//-------------------------------------------------------------------------------------------------
+
+// DoDeleteAt modifies a X1IntList by deleting n elements from a given index.
 //
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
-func (list *X1IntList) DeleteAt(index, n int) *X1IntList {
+func (list *X1IntList) DoDeleteAt(index, n int) *X1IntList {
+    return list.doDeleteAt(index, n)
+}
 
+func (list *X1IntList) doDeleteAt(index, n int) *X1IntList {
     if n == 0 {
         return list
     }
@@ -440,12 +387,17 @@ func (list *X1IntList) DeleteAt(index, n int) *X1IntList {
 	return list
 }
 
-// KeepWhere modifies a X1IntList by retaining only those elements that match
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a X1IntList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The modified list is returned.
-func (list *X1IntList) KeepWhere(p func(int) bool) *X1IntList {
+func (list *X1IntList) DoKeepWhere(p func(int) bool) *X1IntList {
+    return list.doKeepWhere(p)
+}
 
+func (list *X1IntList) doKeepWhere(p func(int) bool) *X1IntList {
 	result := make([]int, 0, len(list.m))
 
 	for _, v := range list.m {
@@ -456,6 +408,110 @@ func (list *X1IntList) KeepWhere(p func(int) bool) *X1IntList {
 
     list.m = result
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Take returns a slice of X1IntList containing the leading n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+func (list *X1IntList) Take(n int) *X1IntList {
+
+	if n > len(list.m) {
+		return list
+	}
+	result := newX1IntList(0, 0)
+	result.m = list.m[0:n]
+	return result
+}
+
+// Drop returns a slice of X1IntList without the leading n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *X1IntList) Drop(n int) *X1IntList {
+	if n == 0 {
+		return list
+	}
+
+
+	result := newX1IntList(0, 0)
+	l := len(list.m)
+	if n < l {
+		result.m = list.m[n:]
+	}
+	return result
+}
+
+// TakeLast returns a slice of X1IntList containing the trailing n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+//
+// The original list is not modified.
+func (list *X1IntList) TakeLast(n int) *X1IntList {
+
+	l := len(list.m)
+	if n > l {
+		return list
+	}
+	result := newX1IntList(0, 0)
+	result.m = list.m[l-n:]
+	return result
+}
+
+// DropLast returns a slice of X1IntList without the trailing n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *X1IntList) DropLast(n int) *X1IntList {
+	if n == 0 {
+		return list
+	}
+
+
+	l := len(list.m)
+	if n > l {
+		list.m = list.m[l:]
+	} else {
+		list.m = list.m[0 : l-n]
+	}
+	return list
+}
+
+// TakeWhile returns a new X1IntList containing the leading elements of the source list. Whilst the
+// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
+// elements are excluded.
+//
+// The original list is not modified.
+func (list *X1IntList) TakeWhile(p func(int) bool) *X1IntList {
+
+	result := newX1IntList(0, 0)
+	for _, v := range list.m {
+		if p(v) {
+			result.m = append(result.m, v)
+		} else {
+			return result
+		}
+	}
+	return result
+}
+
+// DropWhile returns a new X1IntList containing the trailing elements of the source list. Whilst the
+// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
+// elements are added.
+//
+// The original list is not modified.
+func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
+
+	result := newX1IntList(0, 0)
+	adding := false
+
+	for _, v := range list.m {
+		if !p(v) || adding {
+			adding = true
+			result.m = append(result.m, v)
+		}
+	}
+
+	return result
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -478,7 +534,7 @@ func (list X1IntList) Find(p func(int) bool) (int, bool) {
 
 // Filter returns a new X1IntList whose elements return true for predicate p.
 //
-// The original list is not modified. See also KeepWhere (which does modify the original list).
+// The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *X1IntList) Filter(p func(int) bool) *X1IntList {
 
 	result := newX1IntList(0, len(list.m)/2)

@@ -311,6 +311,7 @@ func (set X2URLSet) Find(fn func(url.URL) bool) (url.URL, bool) {
 }
 
 // Filter returns a new X2URLSet whose elements return true for func.
+//
 // The original set is not modified
 func (set X2URLSet) Filter(fn func(url.URL) bool) X2URLSet {
 	result := NewX2URLSet()
@@ -327,6 +328,7 @@ func (set X2URLSet) Filter(fn func(url.URL) bool) X2URLSet {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set X2URLSet) Partition(p func(url.URL) bool) (X2URLSet, X2URLSet) {
 	matching := NewX2URLSet()

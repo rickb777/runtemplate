@@ -91,6 +91,9 @@ func (list *X1AppleList) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *X1AppleList) Clone() *X1AppleList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
 	return NewX1AppleList(list.m...)
 }
 
@@ -257,30 +260,64 @@ func (list *X1AppleList) Send() <-chan Apple {
 	return ch
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // Reverse returns a copy of X1AppleList with all elements in the reverse order.
+//
+// The original list is not modified.
 func (list *X1AppleList) Reverse() *X1AppleList {
+	return list.Clone().doReverse()
+}
+
+// DoReverse alters a X1AppleList with all elements in the reverse order.
+//
+// The modified list is returned.
+func (list *X1AppleList) DoReverse() *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
-
-	numItems := len(list.m)
-	result := newX1AppleList(numItems, numItems)
-	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
-	}
-	return result
+	return list.doReverse()
 }
+
+func (list *X1AppleList) doReverse() *X1AppleList {
+	mid := (len(list.m) + 1) / 2
+	last := len(list.m) - 1
+	for i := 0; i < mid; i++ {
+	    r := last - i
+	    if i != r {
+		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		}
+	}
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of X1AppleList, using a version of the Fisher-Yates shuffle.
+//
+// The original list is not modified.
 func (list *X1AppleList) Shuffle() *X1AppleList {
-	result := list.Clone()
-	numItems := len(result.m)
+	return list.Clone().doShuffle()
+}
+
+// DoShuffle returns a shuffled X1AppleList, using a version of the Fisher-Yates shuffle.
+//
+// The modified list is returned.
+func (list *X1AppleList) DoShuffle() *X1AppleList {
+	list.s.Lock()
+	defer list.s.Unlock()
+	return list.doShuffle()
+}
+
+func (list *X1AppleList) doShuffle() *X1AppleList {
+	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result.m[i], result.m[r] = result.m[r], result.m[i]
+        list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
-	return result
+	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current list. This is a synonym for Append.
 func (list *X1AppleList) Add(more ...Apple) {
@@ -291,134 +328,33 @@ func (list *X1AppleList) Add(more ...Apple) {
 func (list *X1AppleList) Append(more ...Apple) *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
-
-	list.doAppend(more...)
-	return list
+	return list.doAppend(more...)
 }
 
-func (list *X1AppleList) doAppend(more ...Apple) {
+func (list *X1AppleList) doAppend(more ...Apple) *X1AppleList {
 	list.m = append(list.m, more...)
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Take returns a slice of X1AppleList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *X1AppleList) Take(n int) *X1AppleList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	if n > len(list.m) {
-		return list
-	}
-	result := newX1AppleList(0, 0)
-	result.m = list.m[0:n]
-	return result
-}
-
-// Drop returns a slice of X1AppleList without the leading n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X1AppleList) Drop(n int) *X1AppleList {
-	if n == 0 {
-		return list
-	}
-
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := newX1AppleList(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
-	}
-	return result
-}
-
-// TakeLast returns a slice of X1AppleList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *X1AppleList) TakeLast(n int) *X1AppleList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	l := len(list.m)
-	if n > l {
-		return list
-	}
-	result := newX1AppleList(0, 0)
-	result.m = list.m[l-n:]
-	return result
-}
-
-// DropLast returns a slice of X1AppleList without the trailing n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X1AppleList) DropLast(n int) *X1AppleList {
-	if n == 0 {
-		return list
-	}
-
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
-	}
 	return list
 }
 
-// TakeWhile returns a new X1AppleList containing the leading elements of the source list. Whilst the
-// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elements are excluded.
-func (list *X1AppleList) TakeWhile(p func(Apple) bool) *X1AppleList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := newX1AppleList(0, 0)
-	for _, v := range list.m {
-		if p(v) {
-			result.m = append(result.m, v)
-		} else {
-			return result
-		}
-	}
-	return result
-}
-
-// DropWhile returns a new X1AppleList containing the trailing elements of the source list. Whilst the
-// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elements are added.
-func (list *X1AppleList) DropWhile(p func(Apple) bool) *X1AppleList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := newX1AppleList(0, 0)
-	adding := false
-
-	for _, v := range list.m {
-		if !p(v) || adding {
-			adding = true
-			result.m = append(result.m, v)
-		}
-	}
-
-	return result
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// InsertAt modifies a X1AppleList by inserting elements at a given index.
+// DoInsertAt modifies a X1AppleList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
 // The modified list is returned.
 // Panics if the index is out of range.
-func (list *X1AppleList) InsertAt(index int, more ...Apple) *X1AppleList {
+func (list *X1AppleList) DoInsertAt(index int, more ...Apple) *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
+    return list.doInsertAt(index, more...)
+}
 
+func (list *X1AppleList) doInsertAt(index int, more ...Apple) *X1AppleList {
     if len(more) == 0 {
         return list
+    }
+
+    if index == len(list.m) {
+        // appending is an easy special case
+    	return list.doAppend(more...)
     }
 
 	newlist := make([]Apple, 0, len(list.m) + len(more))
@@ -429,22 +365,25 @@ func (list *X1AppleList) InsertAt(index int, more ...Apple) *X1AppleList {
 
     newlist = append(newlist, more...)
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+    newlist = append(newlist, list.m[index:]...)
 
     list.m = newlist
 	return list
 }
 
-// DeleteAt modifies a X1AppleList by deleting n elements from a given index.
+//-------------------------------------------------------------------------------------------------
+
+// DoDeleteAt modifies a X1AppleList by deleting n elements from a given index.
 //
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
-func (list *X1AppleList) DeleteAt(index, n int) *X1AppleList {
+func (list *X1AppleList) DoDeleteAt(index, n int) *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
+    return list.doDeleteAt(index, n)
+}
 
+func (list *X1AppleList) doDeleteAt(index, n int) *X1AppleList {
     if n == 0 {
         return list
     }
@@ -465,14 +404,19 @@ func (list *X1AppleList) DeleteAt(index, n int) *X1AppleList {
 	return list
 }
 
-// KeepWhere modifies a X1AppleList by retaining only those elements that match
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a X1AppleList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The modified list is returned.
-func (list *X1AppleList) KeepWhere(p func(Apple) bool) *X1AppleList {
+func (list *X1AppleList) DoKeepWhere(p func(Apple) bool) *X1AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
+    return list.doKeepWhere(p)
+}
 
+func (list *X1AppleList) doKeepWhere(p func(Apple) bool) *X1AppleList {
 	result := make([]Apple, 0, len(list.m))
 
 	for _, v := range list.m {
@@ -483,6 +427,122 @@ func (list *X1AppleList) KeepWhere(p func(Apple) bool) *X1AppleList {
 
     list.m = result
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Take returns a slice of X1AppleList containing the leading n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+func (list *X1AppleList) Take(n int) *X1AppleList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	if n > len(list.m) {
+		return list
+	}
+	result := newX1AppleList(0, 0)
+	result.m = list.m[0:n]
+	return result
+}
+
+// Drop returns a slice of X1AppleList without the leading n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *X1AppleList) Drop(n int) *X1AppleList {
+	if n == 0 {
+		return list
+	}
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	result := newX1AppleList(0, 0)
+	l := len(list.m)
+	if n < l {
+		result.m = list.m[n:]
+	}
+	return result
+}
+
+// TakeLast returns a slice of X1AppleList containing the trailing n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+//
+// The original list is not modified.
+func (list *X1AppleList) TakeLast(n int) *X1AppleList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if n > l {
+		return list
+	}
+	result := newX1AppleList(0, 0)
+	result.m = list.m[l-n:]
+	return result
+}
+
+// DropLast returns a slice of X1AppleList without the trailing n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *X1AppleList) DropLast(n int) *X1AppleList {
+	if n == 0 {
+		return list
+	}
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if n > l {
+		list.m = list.m[l:]
+	} else {
+		list.m = list.m[0 : l-n]
+	}
+	return list
+}
+
+// TakeWhile returns a new X1AppleList containing the leading elements of the source list. Whilst the
+// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
+// elements are excluded.
+//
+// The original list is not modified.
+func (list *X1AppleList) TakeWhile(p func(Apple) bool) *X1AppleList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	result := newX1AppleList(0, 0)
+	for _, v := range list.m {
+		if p(v) {
+			result.m = append(result.m, v)
+		} else {
+			return result
+		}
+	}
+	return result
+}
+
+// DropWhile returns a new X1AppleList containing the trailing elements of the source list. Whilst the
+// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
+// elements are added.
+//
+// The original list is not modified.
+func (list *X1AppleList) DropWhile(p func(Apple) bool) *X1AppleList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	result := newX1AppleList(0, 0)
+	adding := false
+
+	for _, v := range list.m {
+		if !p(v) || adding {
+			adding = true
+			result.m = append(result.m, v)
+		}
+	}
+
+	return result
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -507,7 +567,7 @@ func (list X1AppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 // Filter returns a new X1AppleList whose elements return true for predicate p.
 //
-// The original list is not modified. See also KeepWhere (which does modify the original list).
+// The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *X1AppleList) Filter(p func(Apple) bool) *X1AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()

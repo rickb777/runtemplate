@@ -354,6 +354,7 @@ func (set X1StringSet) Find(fn func(string) bool) (string, bool) {
 }
 
 // Filter returns a new X1StringSet whose elements return true for func.
+//
 // The original set is not modified
 func (set X1StringSet) Filter(fn func(string) bool) X1StringSet {
 	result := NewX1StringSet()
@@ -372,6 +373,7 @@ func (set X1StringSet) Filter(fn func(string) bool) X1StringSet {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set X1StringSet) Partition(p func(string) bool) (X1StringSet, X1StringSet) {
 	matching := NewX1StringSet()

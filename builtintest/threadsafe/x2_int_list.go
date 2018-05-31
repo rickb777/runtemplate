@@ -93,6 +93,9 @@ func (list *X2IntList) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *X2IntList) Clone() *X2IntList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
 	return NewX2IntList(list.m...)
 }
 
@@ -237,30 +240,64 @@ func (list *X2IntList) Send() <-chan big.Int {
 	return ch
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // Reverse returns a copy of X2IntList with all elements in the reverse order.
+//
+// The original list is not modified.
 func (list *X2IntList) Reverse() *X2IntList {
+	return list.Clone().doReverse()
+}
+
+// DoReverse alters a X2IntList with all elements in the reverse order.
+//
+// The modified list is returned.
+func (list *X2IntList) DoReverse() *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-
-	numItems := len(list.m)
-	result := newX2IntList(numItems, numItems)
-	last := numItems - 1
-	for i, v := range list.m {
-		result.m[last-i] = v
-	}
-	return result
+	return list.doReverse()
 }
+
+func (list *X2IntList) doReverse() *X2IntList {
+	mid := (len(list.m) + 1) / 2
+	last := len(list.m) - 1
+	for i := 0; i < mid; i++ {
+	    r := last - i
+	    if i != r {
+		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		}
+	}
+	return list
+}
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of X2IntList, using a version of the Fisher-Yates shuffle.
+//
+// The original list is not modified.
 func (list *X2IntList) Shuffle() *X2IntList {
-	result := list.Clone()
-	numItems := len(result.m)
+	return list.Clone().doShuffle()
+}
+
+// DoShuffle returns a shuffled X2IntList, using a version of the Fisher-Yates shuffle.
+//
+// The modified list is returned.
+func (list *X2IntList) DoShuffle() *X2IntList {
+	list.s.Lock()
+	defer list.s.Unlock()
+	return list.doShuffle()
+}
+
+func (list *X2IntList) doShuffle() *X2IntList {
+	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result.m[i], result.m[r] = result.m[r], result.m[i]
+        list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
-	return result
+	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current list. This is a synonym for Append.
 func (list *X2IntList) Add(more ...big.Int) {
@@ -271,134 +308,33 @@ func (list *X2IntList) Add(more ...big.Int) {
 func (list *X2IntList) Append(more ...big.Int) *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-
-	list.doAppend(more...)
-	return list
+	return list.doAppend(more...)
 }
 
-func (list *X2IntList) doAppend(more ...big.Int) {
+func (list *X2IntList) doAppend(more ...big.Int) *X2IntList {
 	list.m = append(list.m, more...)
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Take returns a slice of X2IntList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *X2IntList) Take(n int) *X2IntList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	if n > len(list.m) {
-		return list
-	}
-	result := newX2IntList(0, 0)
-	result.m = list.m[0:n]
-	return result
-}
-
-// Drop returns a slice of X2IntList without the leading n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X2IntList) Drop(n int) *X2IntList {
-	if n == 0 {
-		return list
-	}
-
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := newX2IntList(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
-	}
-	return result
-}
-
-// TakeLast returns a slice of X2IntList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
-func (list *X2IntList) TakeLast(n int) *X2IntList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	l := len(list.m)
-	if n > l {
-		return list
-	}
-	result := newX2IntList(0, 0)
-	result.m = list.m[l-n:]
-	return result
-}
-
-// DropLast returns a slice of X2IntList without the trailing n elements of the source list.
-// If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X2IntList) DropLast(n int) *X2IntList {
-	if n == 0 {
-		return list
-	}
-
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
-	}
 	return list
 }
 
-// TakeWhile returns a new X2IntList containing the leading elements of the source list. Whilst the
-// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elements are excluded.
-func (list *X2IntList) TakeWhile(p func(big.Int) bool) *X2IntList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := newX2IntList(0, 0)
-	for _, v := range list.m {
-		if p(v) {
-			result.m = append(result.m, v)
-		} else {
-			return result
-		}
-	}
-	return result
-}
-
-// DropWhile returns a new X2IntList containing the trailing elements of the source list. Whilst the
-// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elements are added.
-func (list *X2IntList) DropWhile(p func(big.Int) bool) *X2IntList {
-	list.s.RLock()
-	defer list.s.RUnlock()
-
-	result := newX2IntList(0, 0)
-	adding := false
-
-	for _, v := range list.m {
-		if !p(v) || adding {
-			adding = true
-			result.m = append(result.m, v)
-		}
-	}
-
-	return result
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// InsertAt modifies a X2IntList by inserting elements at a given index.
+// DoInsertAt modifies a X2IntList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
 // The modified list is returned.
 // Panics if the index is out of range.
-func (list *X2IntList) InsertAt(index int, more ...big.Int) *X2IntList {
+func (list *X2IntList) DoInsertAt(index int, more ...big.Int) *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
+    return list.doInsertAt(index, more...)
+}
 
+func (list *X2IntList) doInsertAt(index int, more ...big.Int) *X2IntList {
     if len(more) == 0 {
         return list
+    }
+
+    if index == len(list.m) {
+        // appending is an easy special case
+    	return list.doAppend(more...)
     }
 
 	newlist := make([]big.Int, 0, len(list.m) + len(more))
@@ -409,22 +345,25 @@ func (list *X2IntList) InsertAt(index int, more ...big.Int) *X2IntList {
 
     newlist = append(newlist, more...)
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+    newlist = append(newlist, list.m[index:]...)
 
     list.m = newlist
 	return list
 }
 
-// DeleteAt modifies a X2IntList by deleting n elements from a given index.
+//-------------------------------------------------------------------------------------------------
+
+// DoDeleteAt modifies a X2IntList by deleting n elements from a given index.
 //
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
-func (list *X2IntList) DeleteAt(index, n int) *X2IntList {
+func (list *X2IntList) DoDeleteAt(index, n int) *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
+    return list.doDeleteAt(index, n)
+}
 
+func (list *X2IntList) doDeleteAt(index, n int) *X2IntList {
     if n == 0 {
         return list
     }
@@ -445,14 +384,19 @@ func (list *X2IntList) DeleteAt(index, n int) *X2IntList {
 	return list
 }
 
-// KeepWhere modifies a X2IntList by retaining only those elements that match
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a X2IntList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The modified list is returned.
-func (list *X2IntList) KeepWhere(p func(big.Int) bool) *X2IntList {
+func (list *X2IntList) DoKeepWhere(p func(big.Int) bool) *X2IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
+    return list.doKeepWhere(p)
+}
 
+func (list *X2IntList) doKeepWhere(p func(big.Int) bool) *X2IntList {
 	result := make([]big.Int, 0, len(list.m))
 
 	for _, v := range list.m {
@@ -463,6 +407,122 @@ func (list *X2IntList) KeepWhere(p func(big.Int) bool) *X2IntList {
 
     list.m = result
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Take returns a slice of X2IntList containing the leading n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+func (list *X2IntList) Take(n int) *X2IntList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	if n > len(list.m) {
+		return list
+	}
+	result := newX2IntList(0, 0)
+	result.m = list.m[0:n]
+	return result
+}
+
+// Drop returns a slice of X2IntList without the leading n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *X2IntList) Drop(n int) *X2IntList {
+	if n == 0 {
+		return list
+	}
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	result := newX2IntList(0, 0)
+	l := len(list.m)
+	if n < l {
+		result.m = list.m[n:]
+	}
+	return result
+}
+
+// TakeLast returns a slice of X2IntList containing the trailing n elements of the source list.
+// If n is greater than the size of the list, the whole original list is returned.
+//
+// The original list is not modified.
+func (list *X2IntList) TakeLast(n int) *X2IntList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if n > l {
+		return list
+	}
+	result := newX2IntList(0, 0)
+	result.m = list.m[l-n:]
+	return result
+}
+
+// DropLast returns a slice of X2IntList without the trailing n elements of the source list.
+// If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
+func (list *X2IntList) DropLast(n int) *X2IntList {
+	if n == 0 {
+		return list
+	}
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if n > l {
+		list.m = list.m[l:]
+	} else {
+		list.m = list.m[0 : l-n]
+	}
+	return list
+}
+
+// TakeWhile returns a new X2IntList containing the leading elements of the source list. Whilst the
+// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
+// elements are excluded.
+//
+// The original list is not modified.
+func (list *X2IntList) TakeWhile(p func(big.Int) bool) *X2IntList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	result := newX2IntList(0, 0)
+	for _, v := range list.m {
+		if p(v) {
+			result.m = append(result.m, v)
+		} else {
+			return result
+		}
+	}
+	return result
+}
+
+// DropWhile returns a new X2IntList containing the trailing elements of the source list. Whilst the
+// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
+// elements are added.
+//
+// The original list is not modified.
+func (list *X2IntList) DropWhile(p func(big.Int) bool) *X2IntList {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	result := newX2IntList(0, 0)
+	adding := false
+
+	for _, v := range list.m {
+		if !p(v) || adding {
+			adding = true
+			result.m = append(result.m, v)
+		}
+	}
+
+	return result
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -487,7 +547,7 @@ func (list X2IntList) Find(p func(big.Int) bool) (big.Int, bool) {
 
 // Filter returns a new X2IntList whose elements return true for predicate p.
 //
-// The original list is not modified. See also KeepWhere (which does modify the original list).
+// The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *X2IntList) Filter(p func(big.Int) bool) *X2IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()

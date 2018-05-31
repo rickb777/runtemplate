@@ -77,7 +77,7 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 	}
 }
 
-func Test{{.UType}}ListInsertAt(t *testing.T) {
+func Test{{.UType}}ListDoInsertAt(t *testing.T) {
     cases := []struct{
         i int
         more []{{.PType}}
@@ -107,15 +107,15 @@ func Test{{.UType}}ListInsertAt(t *testing.T) {
 
     for i, c := range cases {
         act := NewX1{{.UType}}List(1, 2, 3, 4, 5, 6)
-        act.InsertAt(c.i, c.more...)
+        act.DoInsertAt(c.i, c.more...)
 
         if !act.Equals(c.exp) {
-            t.Errorf("%d: Expected %v but got %v", i, c.exp, act)
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, act{{.M}})
         }
     }
 }
 
-func Test{{.UType}}ListDeleteAt(t *testing.T) {
+func Test{{.UType}}ListDoDeleteAt(t *testing.T) {
     cases := []struct{
         i, n int
         act, exp *X1{{.UType}}List
@@ -143,17 +143,17 @@ func Test{{.UType}}ListDeleteAt(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.DeleteAt(c.i, c.n)
+        c.act.DoDeleteAt(c.i, c.n)
 
         if !c.act.Equals(c.exp) {
-            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
         }
     }
 }
 
 {{end}}
 {{if and .Mutable .Numeric}}
-func Test{{.UType}}ListKeepWhere(t *testing.T) {
+func Test{{.UType}}ListDoKeepWhere(t *testing.T) {
     cases := []struct{
         act, exp *X1{{.UType}}List
     }{
@@ -164,12 +164,12 @@ func Test{{.UType}}ListKeepWhere(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.KeepWhere(func (v {{.PType}}) bool {
+        c.act.DoKeepWhere(func (v {{.PType}}) bool {
             return v % 2 == 0
         })
 
         if !c.act.Equals(c.exp) {
-            t.Errorf("%d: Expected %v but got %v", i, c.exp, c.act)
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
         }
     }
 }
@@ -323,8 +323,24 @@ func Test{{.UType}}ListStableSort(t *testing.T) {
 	}
 }
 
-func Test{{.UType}}ListReverse(t *testing.T) {
+func Test{{.UType}}ListReverseOdd(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+
+	b := a.Reverse()
+
+	if b.Equals(a) {
+		t.Errorf("Expected reverse of '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+	}
+
+	c := b.Reverse()
+
+	if !c.Equals(a) {
+		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, c{{.M}})
+	}
+}
+
+func Test{{.UType}}ListReverseEven(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9, 17)
 
 	b := a.Reverse()
 
