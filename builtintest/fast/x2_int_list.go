@@ -316,6 +316,24 @@ func (list *X2IntList) doInsertAt(index int, more ...big.Int) *X2IntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// DoDeleteFirst modifies a X2IntList by deleting n elements from the start of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *X2IntList) DoDeleteFirst(n int) *X2IntList {
+    return list.doDeleteAt(0, n)
+}
+
+// DoDeleteLast modifies a X2IntList by deleting n elements from the end of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *X2IntList) DoDeleteLast(n int) *X2IntList {
+    return list.doDeleteAt(len(list.m)-n, n)
+}
+
 // DoDeleteAt modifies a X2IntList by deleting n elements from a given index.
 //
 // The modified list is returned.

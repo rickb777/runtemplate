@@ -336,6 +336,24 @@ func (list *X1StringList) doInsertAt(index int, more ...string) *X1StringList {
 
 //-------------------------------------------------------------------------------------------------
 
+// DoDeleteFirst modifies a X1StringList by deleting n elements from the start of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *X1StringList) DoDeleteFirst(n int) *X1StringList {
+    return list.doDeleteAt(0, n)
+}
+
+// DoDeleteLast modifies a X1StringList by deleting n elements from the end of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *X1StringList) DoDeleteLast(n int) *X1StringList {
+    return list.doDeleteAt(len(list.m)-n, n)
+}
+
 // DoDeleteAt modifies a X1StringList by deleting n elements from a given index.
 //
 // The modified list is returned.

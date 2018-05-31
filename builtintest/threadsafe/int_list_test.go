@@ -107,10 +107,13 @@ func TestIntListDoInsertAt(t *testing.T) {
 
     for i, c := range cases {
         act := NewX1IntList(1, 2, 3, 4, 5, 6)
-        act.DoInsertAt(c.i, c.more...)
+        r := act.DoInsertAt(c.i, c.more...)
 
         if !act.Equals(c.exp) {
             t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, act.m)
+        }
+        if !act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r.m, act.m)
         }
     }
 }
@@ -143,10 +146,81 @@ func TestIntListDoDeleteAt(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.DoDeleteAt(c.i, c.n)
+        r := c.act.DoDeleteAt(c.i, c.n)
 
         if !c.act.Equals(c.exp) {
             t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, c.act.m)
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r.m, c.act.m)
+        }
+    }
+}
+
+func TestIntListDoDeleteFirst(t *testing.T) {
+    cases := []struct{
+        n int
+        act, exp *X1IntList
+    }{
+        {
+            0,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+        },
+        {
+            1,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(2, 3, 4, 5, 6),
+        },
+        {
+            3,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(4, 5, 6),
+        },
+    }
+
+    for i, c := range cases {
+        r := c.act.DoDeleteFirst(c.n)
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, c.act.m)
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r.m, c.act.m)
+        }
+    }
+}
+
+func TestIntListDoDeleteLast(t *testing.T) {
+    cases := []struct{
+        n int
+        act, exp *X1IntList
+    }{
+        {
+            0,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+        },
+        {
+            1,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 3, 4, 5),
+        },
+        {
+            3,
+            NewX1IntList(1, 2, 3, 4, 5, 6),
+            NewX1IntList(1, 2, 3),
+        },
+    }
+
+    for i, c := range cases {
+        r := c.act.DoDeleteLast(c.n)
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, c.act.m)
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r.m, c.act.m)
         }
     }
 }
@@ -164,12 +238,15 @@ func TestIntListDoKeepWhere(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.DoKeepWhere(func (v int) bool {
+        r := c.act.DoKeepWhere(func (v int) bool {
             return v % 2 == 0
         })
 
         if !c.act.Equals(c.exp) {
             t.Errorf("%d: Expected %+v but got %+v", i, c.exp.m, c.act.m)
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r.m, c.act.m)
         }
     }
 }

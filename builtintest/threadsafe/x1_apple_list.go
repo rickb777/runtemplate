@@ -373,6 +373,28 @@ func (list *X1AppleList) doInsertAt(index int, more ...Apple) *X1AppleList {
 
 //-------------------------------------------------------------------------------------------------
 
+// DoDeleteFirst modifies a X1AppleList by deleting n elements from the start of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *X1AppleList) DoDeleteFirst(n int) *X1AppleList {
+	list.s.Lock()
+	defer list.s.Unlock()
+    return list.doDeleteAt(0, n)
+}
+
+// DoDeleteLast modifies a X1AppleList by deleting n elements from the end of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *X1AppleList) DoDeleteLast(n int) *X1AppleList {
+	list.s.Lock()
+	defer list.s.Unlock()
+    return list.doDeleteAt(len(list.m)-n, n)
+}
+
 // DoDeleteAt modifies a X1AppleList by deleting n elements from a given index.
 //
 // The modified list is returned.

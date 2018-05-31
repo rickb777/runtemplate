@@ -107,10 +107,13 @@ func Test{{.UType}}ListDoInsertAt(t *testing.T) {
 
     for i, c := range cases {
         act := NewX1{{.UType}}List(1, 2, 3, 4, 5, 6)
-        act.DoInsertAt(c.i, c.more...)
+        r := act.DoInsertAt(c.i, c.more...)
 
         if !act.Equals(c.exp) {
             t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, act{{.M}})
+        }
+        if !act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r{{.M}}, act{{.M}})
         }
     }
 }
@@ -143,10 +146,81 @@ func Test{{.UType}}ListDoDeleteAt(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.DoDeleteAt(c.i, c.n)
+        r := c.act.DoDeleteAt(c.i, c.n)
 
         if !c.act.Equals(c.exp) {
             t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r{{.M}}, c.act{{.M}})
+        }
+    }
+}
+
+func Test{{.UType}}ListDoDeleteFirst(t *testing.T) {
+    cases := []struct{
+        n int
+        act, exp *X1{{.UType}}List
+    }{
+        {
+            0,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+        },
+        {
+            1,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(2, 3, 4, 5, 6),
+        },
+        {
+            3,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(4, 5, 6),
+        },
+    }
+
+    for i, c := range cases {
+        r := c.act.DoDeleteFirst(c.n)
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r{{.M}}, c.act{{.M}})
+        }
+    }
+}
+
+func Test{{.UType}}ListDoDeleteLast(t *testing.T) {
+    cases := []struct{
+        n int
+        act, exp *X1{{.UType}}List
+    }{
+        {
+            0,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+        },
+        {
+            1,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 3, 4, 5),
+        },
+        {
+            3,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.UType}}List(1, 2, 3),
+        },
+    }
+
+    for i, c := range cases {
+        r := c.act.DoDeleteLast(c.n)
+
+        if !c.act.Equals(c.exp) {
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r{{.M}}, c.act{{.M}})
         }
     }
 }
@@ -164,12 +238,15 @@ func Test{{.UType}}ListDoKeepWhere(t *testing.T) {
     }
 
     for i, c := range cases {
-        c.act.DoKeepWhere(func (v {{.PType}}) bool {
+        r := c.act.DoKeepWhere(func (v {{.PType}}) bool {
             return v % 2 == 0
         })
 
         if !c.act.Equals(c.exp) {
             t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
+        }
+        if !c.act.Equals(r) {
+            t.Errorf("%d: Expected %+v but got %+v", i, r{{.M}}, c.act{{.M}})
         }
     }
 }

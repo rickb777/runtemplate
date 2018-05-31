@@ -408,6 +408,28 @@ func (list *{{.UPrefix}}{{.UType}}List) doInsertAt(index int, more ...{{.PType}}
 
 //-------------------------------------------------------------------------------------------------
 
+// DoDeleteFirst modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from the start of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *{{.UPrefix}}{{.UType}}List) DoDeleteFirst(n int) *{{.UPrefix}}{{.UType}}List {
+	list.s.Lock()
+	defer list.s.Unlock()
+    return list.doDeleteAt(0, n)
+}
+
+// DoDeleteLast modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from the end of
+// the list.
+//
+// The modified list is returned.
+// Panics if n is large enough to take the index out of range.
+func (list *{{.UPrefix}}{{.UType}}List) DoDeleteLast(n int) *{{.UPrefix}}{{.UType}}List {
+	list.s.Lock()
+	defer list.s.Unlock()
+    return list.doDeleteAt(len(list.m)-n, n)
+}
+
 // DoDeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
 //
 // The modified list is returned.
