@@ -29,7 +29,7 @@ The built-in collections support a small number of flags that allow you to contr
  * `Stringer:true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
  * `KeyList:<type>` - for maps only, this provides a slice type for the keys in this map. This is returned from the `Keys()` method. It is also used for sorting the output of the stringer methods by the keys, which affects `MkString3(...)`, `MkString()` and `String()`.
  * `ValueList:<type>` - for maps only, this provides a slice type for the values in this map. This is returned from the `Values()` method.
- * `Imports:<imports>` - extra Go imports; the literals `\n` and `\t` are replaced with their character equivalent, allowing multiple imports.
+ * `Import:<imports>` - extra Go imports; the literals `\n` and `\t` are replaced with their character equivalent, allowing multiple imports. It's likely that single quotes will be needed to enclose the entire Import parameter, because double-quotes are also needed around the import string itself in Go syntax.
 
 The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators). If you set a flag that is impossible for the chosen data type, the generated code won't compile, but no other bad thing will happen; so it will soon become obvious.
