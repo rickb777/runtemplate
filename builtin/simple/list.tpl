@@ -570,12 +570,12 @@ func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) 
 //-------------------------------------------------------------------------------------------------
 
 type sortable{{.UPrefix}}{{.UType}}List struct {
-	less func(i, j {{.Type}}) bool
+	less func(i, j {{.PType}}) bool
 	m []{{.PType}}
 }
 
 func (sl sortable{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
-	return sl.less({{.TypeStar}}sl.m[i], {{.TypeStar}}sl.m[j])
+	return sl.less(sl.m[i], sl.m[j])
 }
 
 func (sl sortable{{.UPrefix}}{{.UType}}List) Len() int {
@@ -588,7 +588,7 @@ func (sl sortable{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list {{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) {{.UPrefix}}{{.UType}}List {
+func (list {{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 
 	sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, list})
 	return list
@@ -597,7 +597,7 @@ func (list {{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) {{
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list {{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bool) {{.UPrefix}}{{.UType}}List {
+func (list {{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 
 	sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, list})
 	return list
@@ -609,15 +609,15 @@ func (list {{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bo
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
 func (list {{.UPrefix}}{{.UType}}List) Sorted() {{.UPrefix}}{{.UType}}List {
-	return list.SortBy(func(a, b {{.Type}}) bool {
-		return a < b
+	return list.SortBy(func(a, b {{.PType}}) bool {
+		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
 func (list {{.UPrefix}}{{.UType}}List) StableSorted() {{.UPrefix}}{{.UType}}List {
-	return list.StableSortBy(func(a, b {{.Type}}) bool {
-		return a < b
+	return list.StableSortBy(func(a, b {{.PType}}) bool {
+		return {{.TypeStar}}a < {{.TypeStar}}b
 	})
 }
 

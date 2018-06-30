@@ -479,12 +479,12 @@ func (list P2IntList) LastIndexWhere2(p func(*big.Int) bool, before int) int {
 //-------------------------------------------------------------------------------------------------
 
 type sortableP2IntList struct {
-	less func(i, j big.Int) bool
+	less func(i, j *big.Int) bool
 	m []*big.Int
 }
 
 func (sl sortableP2IntList) Less(i, j int) bool {
-	return sl.less(*sl.m[i], *sl.m[j])
+	return sl.less(sl.m[i], sl.m[j])
 }
 
 func (sl sortableP2IntList) Len() int {
@@ -497,7 +497,7 @@ func (sl sortableP2IntList) Swap(i, j int) {
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list P2IntList) SortBy(less func(i, j big.Int) bool) P2IntList {
+func (list P2IntList) SortBy(less func(i, j *big.Int) bool) P2IntList {
 
 	sort.Sort(sortableP2IntList{less, list})
 	return list
@@ -506,7 +506,7 @@ func (list P2IntList) SortBy(less func(i, j big.Int) bool) P2IntList {
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list P2IntList) StableSortBy(less func(i, j big.Int) bool) P2IntList {
+func (list P2IntList) StableSortBy(less func(i, j *big.Int) bool) P2IntList {
 
 	sort.Stable(sortableP2IntList{less, list})
 	return list

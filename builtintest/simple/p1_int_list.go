@@ -532,12 +532,12 @@ func (list P1IntList) Equals(other P1IntList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableP1IntList struct {
-	less func(i, j int) bool
+	less func(i, j *int) bool
 	m []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {
-	return sl.less(*sl.m[i], *sl.m[j])
+	return sl.less(sl.m[i], sl.m[j])
 }
 
 func (sl sortableP1IntList) Len() int {
@@ -550,7 +550,7 @@ func (sl sortableP1IntList) Swap(i, j int) {
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list P1IntList) SortBy(less func(i, j int) bool) P1IntList {
+func (list P1IntList) SortBy(less func(i, j *int) bool) P1IntList {
 
 	sort.Sort(sortableP1IntList{less, list})
 	return list
@@ -559,7 +559,7 @@ func (list P1IntList) SortBy(less func(i, j int) bool) P1IntList {
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list P1IntList) StableSortBy(less func(i, j int) bool) P1IntList {
+func (list P1IntList) StableSortBy(less func(i, j *int) bool) P1IntList {
 
 	sort.Stable(sortableP1IntList{less, list})
 	return list
@@ -571,15 +571,15 @@ func (list P1IntList) StableSortBy(less func(i, j int) bool) P1IntList {
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
 func (list P1IntList) Sorted() P1IntList {
-	return list.SortBy(func(a, b int) bool {
-		return a < b
+	return list.SortBy(func(a, b *int) bool {
+		return *a < *b
 	})
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
 func (list P1IntList) StableSorted() P1IntList {
-	return list.StableSortBy(func(a, b int) bool {
-		return a < b
+	return list.StableSortBy(func(a, b *int) bool {
+		return *a < *b
 	})
 }
 

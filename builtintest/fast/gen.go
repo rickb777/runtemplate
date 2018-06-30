@@ -37,22 +37,22 @@ package fast
 
 // Code generation with pointer values
 
-//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*string Stringer:true Comparable:true
-//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*int    Stringer:true Comparable:true Ordered:true Numeric:true
-//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*Apple  Stringer:false
-//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*Pear
-//zz:generate runtemplate -tpl fast/collection.tpl Prefix=P2 Type=*big.Int Import:"math/big"
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*string Stringer:true Comparable:true
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*int    Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*Apple  Stringer:false
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*Pear
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=P2 Type=*big.Int Import:"math/big"
 
-//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*string Stringer:true  Comparable:true Ordered:false Numeric:false
-//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*int    Stringer:true  Comparable:true Ordered:true  Numeric:true
-//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*Apple  Stringer:false Comparable:true
-//zz:generate runtemplate -tpl fast/list.tpl       Prefix=P2 Type=*big.Int Import:"math/big"
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*string Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*int    Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*Apple  Stringer:false Comparable:true
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=P2 Type=*big.Int Import:"math/big"
 
-//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*int    Type=*int     Comparable:true Stringer:true
-//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*string  Comparable:true
-//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*Apple
-//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*string
-//zz:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*Pear
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*int    Type=*int     Comparable:true Stringer:true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*string  Comparable:true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*Apple
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*string
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*Pear
 
 
 type Apple struct {

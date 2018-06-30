@@ -517,12 +517,12 @@ func (list P1AppleList) Equals(other P1AppleList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableP1AppleList struct {
-	less func(i, j Apple) bool
+	less func(i, j *Apple) bool
 	m []*Apple
 }
 
 func (sl sortableP1AppleList) Less(i, j int) bool {
-	return sl.less(*sl.m[i], *sl.m[j])
+	return sl.less(sl.m[i], sl.m[j])
 }
 
 func (sl sortableP1AppleList) Len() int {
@@ -535,7 +535,7 @@ func (sl sortableP1AppleList) Swap(i, j int) {
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list P1AppleList) SortBy(less func(i, j Apple) bool) P1AppleList {
+func (list P1AppleList) SortBy(less func(i, j *Apple) bool) P1AppleList {
 
 	sort.Sort(sortableP1AppleList{less, list})
 	return list
@@ -544,7 +544,7 @@ func (list P1AppleList) SortBy(less func(i, j Apple) bool) P1AppleList {
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list P1AppleList) StableSortBy(less func(i, j Apple) bool) P1AppleList {
+func (list P1AppleList) StableSortBy(less func(i, j *Apple) bool) P1AppleList {
 
 	sort.Stable(sortableP1AppleList{less, list})
 	return list
