@@ -10,6 +10,12 @@ TOP=$PWD
 
 #go env
 
+# install Goveralls if absent
+if ! type -p goveralls; then
+  echo go get github.com/mattn/goveralls
+  go get github.com/mattn/goveralls
+fi
+
 mkdir -p reports
 rm -f reports/*.html coverage?*.*
 
