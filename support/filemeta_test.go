@@ -86,9 +86,9 @@ func TestHappy(t *testing.T) {
 
 func TestYoungest(t *testing.T) {
 	now := time.Now().UTC()
-	a := FileMeta{"", "a", now.Add(-2 * time.Minute)}
-	b := FileMeta{"", "b", now.Add(-1 * time.Minute)}
-	c := FileMeta{"", "c", now}
+	a := FileMeta{"", "a", now.Add(-2 * time.Minute), false}
+	b := FileMeta{"", "b", now.Add(-1 * time.Minute), false}
+	c := FileMeta{"", "c", now, false}
 
 	y1 := YoungestFile(c, a, b)
 	if y1 != c {

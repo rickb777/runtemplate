@@ -1,0 +1,4 @@
+github.com/go-playground/statics v1.7.0 h1:SCKwrrD6p/cAFslDAieVRNGiLyFQI/0OQdyBdQPUgWA=
+github.com/go-playground/statics v1.7.0/go.mod h1:apGVTi74G0nNg96zDvInhW8LLYTSJyChEQfUK1AWHyQ=
+gopkg.in/go-playground/assert.v1 v1.2.1 h1:xoYuJVE7KT85PYWrN730RguIQO0ePzVRfFMXadIrXTM=
+gopkg.in/go-playground/assert.v1 v1.2.1/go.mod h1:9RXL0bg/zibRAgZUYszZSwO/z8Y/a8bDuhia5mkpMnE=

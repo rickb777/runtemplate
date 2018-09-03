@@ -15,7 +15,7 @@ func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
 }
 
 func TestCreateContextCore(t *testing.T) {
-	m := FileMeta{"/a/b/c", "foo", time.Time{}}
+	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
 	types := Pairs([]Pair{})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others)
@@ -43,7 +43,7 @@ func TestCreateContextCore(t *testing.T) {
 }
 
 func TestCreateContext(t *testing.T) {
-	m := FileMeta{"/a/b/c", "foo", time.Time{}}
+	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
 	types := Pairs([]Pair{{"B", "*FooBar"}, {"C", "vv3"}})
 	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
 	ctx := CreateContext(m, "output.txt", types, others)
@@ -64,21 +64,21 @@ func TestCreateContext(t *testing.T) {
 	expectPresent(t, ctx, "I1")
 
 	exp := map[string]interface{}{
-		"B":            "FooBar",
-		"UB":           "FooBar",
-		"LB":           "fooBar",
-		"PB":           "*FooBar",
-		"C":            "vv3",
-		"UC":           "Vv3",
-		"LC":           "vv3",
-		"PC":           "vv3",
-		"HasB":         true,
-		"HasC":         true,
-		"HasI1":        true,
-		"BAmp":         "&",
-		"CAmp":         "",
-		"BStar":        "*",
-		"CStar":        "",
+		"B":     "FooBar",
+		"UB":    "FooBar",
+		"LB":    "fooBar",
+		"PB":    "*FooBar",
+		"C":     "vv3",
+		"UC":    "Vv3",
+		"LC":    "vv3",
+		"PC":    "vv3",
+		"HasB":  true,
+		"HasC":  true,
+		"HasI1": true,
+		"BAmp":  "&",
+		"CAmp":  "",
+		"BStar": "*",
+		"CStar": "",
 	}
 	if !reflect.DeepEqual(ctx, exp) {
 		diffMaps(t, ctx, exp)
@@ -87,7 +87,7 @@ func TestCreateContext(t *testing.T) {
 }
 
 func TestCreateContextWithDottedType(t *testing.T) {
-	m := FileMeta{"/a/b/c", "foo", time.Time{}}
+	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
 	types := Pairs([]Pair{{"Type", "big.Int"}})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others)
@@ -107,16 +107,16 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	expectPresent(t, ctx, "Package")
 
 	exp := map[string]interface{}{
-		"Type":         "big.Int",
-		"UType":        "Int",
-		"LType":        "int",
-		"PType":        "big.Int",
-		"Prefix":       "",
-		"UPrefix":      "",
-		"LPrefix":      "",
-		"HasType":      true,
-		"TypeAmp":      "",
-		"TypeStar":     "",
+		"Type":     "big.Int",
+		"UType":    "Int",
+		"LType":    "int",
+		"PType":    "big.Int",
+		"Prefix":   "",
+		"UPrefix":  "",
+		"LPrefix":  "",
+		"HasType":  true,
+		"TypeAmp":  "",
+		"TypeStar": "",
 	}
 	if !reflect.DeepEqual(ctx, exp) {
 		diffMaps(t, ctx, exp)

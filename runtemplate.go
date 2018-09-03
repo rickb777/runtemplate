@@ -7,40 +7,61 @@
 package main
 
 import (
+	"fmt"
+	"github.com/go-playground/statics/static"
 	. "github.com/rickb777/runtemplate/support"
+	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 	"text/template"
-	"io"
 )
 
-const defaultTplPath = "/src/github.com/rickb777/runtemplate/builtin"
+var builtins *static.Files
+
+func mustLoadBuiltins() {
+	var err error
+	builtins, err = newStaticBuiltins(&static.Config{UseStaticFiles: true})
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
 
 func findTemplateFileFromPath(templateFile string) FileMeta {
 	Debug("findTemplateFileFromPath '%s'\n", templateFile)
-	templatePath := os.Getenv("TEMPLATEPATH")
-	Debug("TEMPLATEPATH=%s\n", templatePath)
 
-	goPath := os.Getenv("GOPATH")
-	if goPath != "" {
-		if templatePath != "" {
-			templatePath = templatePath + ":"
-		}
-		templatePath = templatePath + goPath + defaultTplPath
+	templatePath := os.Getenv("TEMPLATEPATH")
+	if templatePath == "" {
+		templatePath = "."
 	}
+	Debug("TEMPLATEPATH=%s\n", templatePath)
 
 	x := strings.Split(templatePath, ":")
 	Debug("searching template path %+v\n", x)
 	for _, p := range x {
-		path := p + "/" + templateFile
-		file := SingleFileMeta(path, templateFile)
+		fp := p + "/" + templateFile
+		file := SingleFileMeta(path.Clean(fp), templateFile)
 		if file.Exists() {
 			return file
 		}
 	}
 
-	return SingleFileMeta(templateFile, templateFile)
+	st := "/builtin/" + templateFile
+	f, err := builtins.GetHTTPFile(st)
+	if err != nil {
+		Fail(err)
+	}
+
+	fi, err := f.Stat()
+	if err != nil {
+		Fail(err)
+	}
+
+	mt := fi.ModTime()
+	f.Close()
+	return EmbeddedFileMeta(st, templateFile, mt)
 }
 
 // Set up some text munging functions that will be available in the templates.
@@ -78,16 +99,24 @@ func makeFuncMap() template.FuncMap {
 	}
 }
 
-func runTheTemplate(foundTemplate, outputFile string, context map[string]interface{}) {
+func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[string]interface{}) {
 	Debug("ReadFile %s\n", foundTemplate)
-	b, err := ioutil.ReadFile(foundTemplate)
+	var b []byte
+	var err error
+
+	if foundTemplate.Embedded {
+		b, err = builtins.ReadFile("/builtin/" + foundTemplate.Name)
+	} else {
+		b, err = ioutil.ReadFile(foundTemplate.Path)
+	}
+
 	if err != nil {
 		Fail(err)
 	}
 
 	funcMap := makeFuncMap()
 	Debug("Parse template\n")
-	tmpl, err := template.New(foundTemplate).Funcs(funcMap).Parse(string(b))
+	tmpl, err := template.New(foundTemplate.Path).Funcs(funcMap).Parse(string(b))
 	if err != nil {
 		Fail(err)
 	}
@@ -113,6 +142,7 @@ func runTheTemplate(foundTemplate, outputFile string, context map[string]interfa
 func generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs) {
 	Debug("generate '%s' '%s' %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
+	mustLoadBuiltins()
 	foundTemplate := findTemplateFileFromPath(templateFile)
 	than := templateFile
 
@@ -147,6 +177,6 @@ func generate(templateFile, outputFile string, force bool, deps []string, types,
 	context := CreateContext(foundTemplate, outputFile, types, others)
 	Debug("context %+v\n", context)
 
-	runTheTemplate(foundTemplate.Path, outputFile, context)
+	runTheTemplate(foundTemplate, outputFile, context)
 	Info("Generated %s.\n", outputFile)
 }

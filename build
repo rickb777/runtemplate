@@ -1,11 +1,30 @@
 #!/bin/bash -e
 cd $(dirname $0)
 
+if [ -d $HOME/go/bin ]; then
+  PATH=$PATH:$HOME/go/bin
+fi
+
+go mod download
+go get github.com/go-playground/statics
+
 ./builtintest/clean
 
 ./copy-threadsafe-builtins
 
+echo
+echo Assembling builtins...
+statics -i=builtin -o=statics.go -pkg=main -group=Builtins
+
+echo
+echo Installing...
 go install .
-go generate -v ./...
+
+echo
+echo Generating tests...
+go generate -v ./builtintest/...
+
+echo
+echo Testing...
 go test ./...
 #go test $coveralls_testflags $GOBUILDFLAG $@ .
