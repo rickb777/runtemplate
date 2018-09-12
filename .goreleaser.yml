@@ -4,6 +4,7 @@ builds:
 -
   env:
   - CGO_ENABLED=0
+  - GOPATH=$HOME/go
   main:   app.go
   binary: runtemplate
 
