@@ -4,6 +4,7 @@ go:
   - "1.11"
 
 install:
+  - unset GOPATH
   - go mod download
 
 script:
