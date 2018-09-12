@@ -1,20 +1,12 @@
 language: go
 
 go:
-  - "1.8"
-  - "1.9"
-  - "1.10"
-  - tip
+  - "1.11"
 
 install:
   - go mod download
-  - go get github.com/go-playground/statics
-  - ./builtintest/clean
-  - ./copy-threadsafe-builtins
 
 script:
-  - go install .
-  - go generate -v ./...
-  - go test ./...
+  - ./build
 
 
