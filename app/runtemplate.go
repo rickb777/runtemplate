@@ -4,7 +4,7 @@
 //
 // Please see the [README](https://github.com/rickb777/runtemplate/blob/master/README.md).
 
-package main
+package app
 
 import (
 	"fmt"
@@ -139,7 +139,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	}
 }
 
-func generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs) {
+func Generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs) {
 	Debug("generate '%s' '%s' %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
 	mustLoadBuiltins()

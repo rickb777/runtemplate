@@ -1,24 +1,22 @@
 #!/bin/bash -e
 cd $(dirname $0)
 
-if [ -d $HOME/go/bin ]; then
-  PATH=$PATH:$HOME/go/bin
-fi
+PATH=$HOME/go/bin:$PATH
+unset GOPATH
 
 go mod download
-go get github.com/go-playground/statics
 
 ./builtintest/clean
 
 ./copy-threadsafe-builtins
 
-echo
-echo Assembling builtins...
-statics -i=builtin -o=statics.go -pkg=main -group=Builtins
+./run-statics-tool
 
 echo
 echo Installing...
 go install .
+
+type runtemplate
 
 echo
 echo Generating tests...

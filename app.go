@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/rickb777/runtemplate/app"
 	. "github.com/rickb777/runtemplate/support"
 	"strings"
 )
@@ -59,5 +60,5 @@ func main() {
 
 	types, others, leftover := SplitKeyValArgs(args)
 	failIfLeftoversExist(leftover)
-	generate(tpl, output1, force, deps, types, others)
+	app.Generate(tpl, output1, force, deps, types, others)
 }
