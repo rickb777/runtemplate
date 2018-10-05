@@ -10,7 +10,9 @@ go mod download
 
 ./copy-threadsafe-builtins
 
-./run-statics-tool
+./get-statics-tool
+
+go generate .
 
 echo
 echo Installing...

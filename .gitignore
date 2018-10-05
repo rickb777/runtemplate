@@ -1,6 +1,7 @@
-app/statics.go
 builtintest/*/[px]_*.go
-builtintest/*/?[px]_*.go
+builtintest/*/int_*.go
+builtintest/*/[px][12]_*.go
+builtintest/*/?[px][12]_*.go
 reports/
 .idea/
 .DS_Store

@@ -1,6 +1,8 @@
 // runtemplate is a command-line tool to facilitate using Go templates for a whole range for text file generation.
 // It is particularly good at generating Go source code.
 
+//go:generate statics -i=builtin -o=app/statics.go -pkg=app -group=Builtins
+
 package main
 
 import (
