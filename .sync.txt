@@ -1,0 +1,17 @@
+# Rules for rsync
+#-----------------
+# The first matching pattern is acted on: if it is an exclude
+# pattern, then that file is skipped; if it is an include pattern
+# then that filename is not skipped; if no matching pattern is found,
+# then the filename is not skipped.
+
++ */x1_int_*
++ */x1_string_*
++ */x1_apple_plumbing.go
++ */x1_apple_x1_pear_mapto.go
++ */x1_email_stringy.go
++ */tx1_int_int_*
++ */tx1_string_string_*
+- *.go
+- *.tpl
+- clean

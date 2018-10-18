@@ -48,17 +48,18 @@ runtemplate -tpl filename.tpl -output outfile.go -deps foo.go,bar.go Type=MyStru
    - (optional) supply a (list of) simple key/value pairs that are passed in to the template. `true` and `false` are converted to booleans, allowing conditional blocks within your templates.
 
  * key=value ...
-   - (optional) supply a (list of) key/value pairs that are passed in to the template. These are often Go types; extra synthetic values are also added, making it really easy to generate source code. This is described further below. `true` and `false` are converted to booleans, allowing conditional blocks within your templates
+   - (optional) supply a (list of) key/value pairs that are passed in to the template. These are often Go types; extra synthetic values are also added, making it really easy to generate source code. This is described further below. `true` and `false` are converted to booleans, allowing conditional blocks within your templates.
 
-The option parser will also infer the template and output file names, so it is also permitted to use
+The option parser will also infer the template and output file names, so it is also permitted to use either
 
 ```
+runtemplate -output outfile.go -tpl filename.tpl Type=MyStruct Option1:Value1 Option2:true
 runtemplate outfile.go filename.tpl Type=MyStruct Option1:Value1 Option2:true
 ```
 
 i.e. to omit the explicit flags `-tpl` and `-output` provided the files are named.
 
-Furthermore, the output file may be completely omitted
+Furthermore, the output file may be completely omitted:
 
 ```
 runtemplate filename.tpl Type=MyStruct Option1=Value1 Option2=true Option3:foo

@@ -30,7 +30,7 @@ func mustLoadBuiltins() {
 }
 
 func findTemplateFileFromPath(templateFile string) FileMeta {
-	Debug("findTemplateFileFromPath '%s'\n", templateFile)
+	Debug("findTemplateFileFromPath %q\n", templateFile)
 
 	templatePath := os.Getenv("TEMPLATEPATH")
 	if templatePath == "" {
@@ -140,7 +140,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 }
 
 func Generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs) {
-	Debug("generate '%s' '%s' %v %+v %+v\n", templateFile, outputFile, force, deps, types)
+	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
 	mustLoadBuiltins()
 	foundTemplate := findTemplateFileFromPath(templateFile)
@@ -153,7 +153,7 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types,
 		tf, _ := RichString(templateFile).DivideLastOr0('.')
 		tf = RichString(tf).RemoveBeforeLast('/').ToLower()
 		outputFile = (RichString(keys).ToLower() + "_" + tf + ".go").String()
-		Debug("default output now '%s'\n", outputFile)
+		Debug("default output now %s\n", outputFile)
 	} else if outputFile == "-" {
 		outputFile = "" // implies stdout
 	}

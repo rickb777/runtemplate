@@ -16,7 +16,7 @@ func newStaticBuiltins(config *static.Config) (*static.Files, error) {
 		Name:    "builtin",
 		Size:    256,
 		Mode:    os.FileMode(2147484141),
-		ModTime: 1538733384,
+		ModTime: 1539694437,
 		IsDir:   true,
 		Compressed: `
 `,
@@ -25,7 +25,7 @@ func newStaticBuiltins(config *static.Config) (*static.Files, error) {
 			Name:    "immutable",
 			Size:    192,
 			Mode:    os.FileMode(2147484141),
-			ModTime: 1538733384,
+			ModTime: 1539694437,
 			IsDir:   true,
 			Compressed: `
 `,
@@ -34,7 +34,7 @@ func newStaticBuiltins(config *static.Config) (*static.Files, error) {
 				Name:    "list.tpl",
 				Size:    23476,
 				Mode:    os.FileMode(420),
-				ModTime: 1538733384,
+				ModTime: 1539694437,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/9w8a28bR5KfyV9R4eGyQ5ukbGeRWyiWgcQbZ32wE+PkRXDwCrctTlHseKZ73N0jicsl
@@ -128,7 +128,7 @@ i5xE/Nn/tN/zrKrYe96vP/n3/wEAAP//J2eGd7RbAAA=
 					Name:    "map.tpl",
 					Size:    10525,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/9Rab2/cNtJ/vfoU0wX6QPtAlhvnnQ8+oC2aXi9NGsC53os0KLirkZdYidSR3HVUVd/9
@@ -181,7 +181,7 @@ CeIna68nUesPKadSPKF6Cq6jYeS/AwAA//+rxvgZHSkAAA==
 					Name:    "set.tpl",
 					Size:    16900,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Q87Y4byXG/OU9RRyAx6eNSZ8s4GMqtAUk5JQosnZA9Iz9k4dycqVl2dqZ7rruHuzyC
@@ -256,7 +256,7 @@ qtmcP7X3KD7Eed7DEH+w5FyBFaL6MflSoPdl9bGQHpuL/xMAAP//JpXRaQRCAAA=
 					Name:    "collection.tpl",
 					Size:    4508,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/8xYzXLbNhA+i0+xR2pGpg+5pe3B8SStO7HjqdNTJgeIXEqo8cMAoCyFw5k8Rvt6eZLO
@@ -293,7 +293,7 @@ vxL5sMD3f8oId2UrJ3VmW5lWV3o5HnWTm1ZO6mdE6rO/AwAA//9KNHqJnBEAAA==
 				Name:    "types",
 				Size:    96,
 				Mode:    os.FileMode(2147484141),
-				ModTime: 1538733384,
+				ModTime: 1539694437,
 				IsDir:   true,
 				Compressed: `
 `,
@@ -302,7 +302,7 @@ vxL5sMD3f8oId2UrJ3VmW5lWV3o5HnWTm1ZO6mdE6rO/AwAA//9KNHqJnBEAAA==
 					Name:    "stringy.tpl",
 					Size:    2969,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/7xWQW/jNhM9m79ioOD7IAaOdA+aw15apMimAZwUBYIcGGlkc0ORXJK2Gwj+78WQtKVs
@@ -332,7 +332,7 @@ LKf3lOQwpNb1nwAAAP//eD8A15kLAAA=
 				Name:    "fast",
 				Size:    192,
 				Mode:    os.FileMode(2147484141),
-				ModTime: 1538733384,
+				ModTime: 1539694437,
 				IsDir:   true,
 				Compressed: `
 `,
@@ -341,7 +341,7 @@ LKf3lOQwpNb1nwAAAP//eD8A15kLAAA=
 					Name:    "list.tpl",
 					Size:    28383,
 					Mode:    os.FileMode(420),
-					ModTime: 1538742209,
+					ModTime: 1539893798,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Q97W4cN5K/Z56iosNle+yZke0scgvZCuDE613fxUlw8iI4eIUDp5ujYdxNtkm2pMns
@@ -445,7 +445,7 @@ ZPxfAAAA//+FMFMB324AAA==
 						Name:    "map.tpl",
 						Size:    12153,
 						Mode:    os.FileMode(420),
-						ModTime: 1538742209,
+						ModTime: 1539893798,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xabY/bNvJ/bX+KiYH+IRdab7N5t3/sAW2v6fXSpIvbXPsiDQLaGq0JS6SOpLxRVH33
@@ -503,7 +503,7 @@ Z/d9DOvwihXbxc+9611azdlr57pvTx6LxfzWyzR3i6vCSOXSaPbV9vyr7Szm6EwMs+QXLajETPsly4NR
 						Name:    "set.tpl",
 						Size:    16852,
 						Mode:    os.FileMode(420),
-						ModTime: 1538742209,
+						ModTime: 1539893798,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+Q77a7bRna/paeYFdAulejK2fUiWLi5C9hu3LpYO0ZvFv3hNYIReXg1NTnDzAx1ryII
@@ -579,7 +579,7 @@ AA==
 						Name:    "collection.tpl",
 						Size:    4406,
 						Mode:    os.FileMode(420),
-						ModTime: 1538742209,
+						ModTime: 1539893798,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/8xYz27cthM+r55ijlpgLR9yy+/Xg2MkrYvYMeD0FOQwK412WVOkQlL7J4KAPEb7enmS
@@ -616,7 +616,7 @@ LvkrAAD//6wqmEg2EQAA
 				Name:    "simple",
 				Size:    160,
 				Mode:    os.FileMode(2147484141),
-				ModTime: 1538733384,
+				ModTime: 1539694437,
 				IsDir:   true,
 				Compressed: `
 `,
@@ -625,7 +625,7 @@ LvkrAAD//6wqmEg2EQAA
 					Name:    "list.tpl",
 					Size:    21974,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Rc/W4bOZL/W3qKWh9utzWR2klmMbfwxAF2ZiezAeYL51kMDoFxoLtLFsfdZIdky9Zq
@@ -715,7 +715,7 @@ zeULP/1nGZXWF1yl0biH7Ueo/i8AAP//wYbU/9ZVAAA=
 						Name:    "map.tpl",
 						Size:    12188,
 						Mode:    os.FileMode(420),
-						ModTime: 1538733384,
+						ModTime: 1539694437,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xaW4/bRrJ+ln5FWUAOqICjicdvPpgDJDlxTo5jZ7DjTR4cI2iJxVFDZDe3u6kxzfC/
@@ -773,7 +773,7 @@ YQH9FgT97E7OsP8u2aldt3K0FUxfc8kabBAeWWKxWN64meZudVkYqVwaLb7av/xqv4g5J5OybPN5Cyep
 						Name:    "set.tpl",
 						Size:    16137,
 						Mode:    os.FileMode(420),
-						ModTime: 1538733384,
+						ModTime: 1539694437,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+Q77Y4bOXK/paeoGyC51q5Gs3c+LA7OTgDbOScOYq+R2UN++IwF1V09ItxN9pJsabSC
@@ -848,7 +848,7 @@ LtGGLX5km0F9wm3nOqDt+5WiGltuRFqTGf9I2aP4GHPSYVg9WDJch/i9H05J9yPEWvNUSI2/ovvvAAAA
 				Name:    "threadsafe",
 				Size:    192,
 				Mode:    os.FileMode(2147484141),
-				ModTime: 1538733384,
+				ModTime: 1539694437,
 				IsDir:   true,
 				Compressed: `
 `,
@@ -857,7 +857,7 @@ LtGGLX5km0F9wm3nOqDt+5WiGltuRFqTGf9I2aP4GHPSYVg9WDJch/i9H05J9yPEWvNUSI2/ovvvAAAA
 					Name:    "list.tpl",
 					Size:    30330,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+R9/Y4bN5L439JTVOaHX7ZlSxrbWeQWY08AJ17v+i5Ogh0vgoN3cKC6SyPG3WSbZM+M
@@ -963,7 +963,7 @@ qv8NAAD//71CoyJ6dgAA
 						Name:    "map.tpl",
 						Size:    13060,
 						Mode:    os.FileMode(420),
-						ModTime: 1538733384,
+						ModTime: 1539694437,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xaX4/bNhJ/tj7FxEALuVC8zeZtD3tA22t6vTTpopu2D2lQ0NJoTVgidSTljaLqux+G
@@ -1022,7 +1022,7 @@ hUnD+Wfbi8+288gyOCls0blsgSdl2ttdDzL9owzrLpDtSnGB1oXmKuh7/i8AAP//zjT4rwQzAAA=
 						Name:    "set.tpl",
 						Size:    18243,
 						Mode:    os.FileMode(420),
-						ModTime: 1538733384,
+						ModTime: 1539694437,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+w87Y7bRpK/paeoFXC7VKKRs+tFsPBlFrB98Z0PsWNkEuwPrxG0yOKob8huprupGUUQ
@@ -1099,7 +1099,7 @@ yr/KxKP4UKcBO4Fg55NTyV/w/YfkS+HAFwaHHH91GP6/AQAA///ftc19Q0cAAA==
 						Name:    "collection.tpl",
 						Size:    4406,
 						Mode:    os.FileMode(420),
-						ModTime: 1538733384,
+						ModTime: 1539694437,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/8xYz27cthM+r55ijlpgLR9yy+/Xg2MkrYvYMeD0FOQwK412WVOkQlL7J4KAPEb7enmS
@@ -1136,7 +1136,7 @@ LvkrAAD//6wqmEg2EQAA
 				Name:    "plumbing",
 				Size:    128,
 				Mode:    os.FileMode(2147484141),
-				ModTime: 1538733384,
+				ModTime: 1539694437,
 				IsDir:   true,
 				Compressed: `
 `,
@@ -1145,7 +1145,7 @@ LvkrAAD//6wqmEg2EQAA
 					Name:    "mapTo.tpl",
 					Size:    1095,
 					Mode:    os.FileMode(420),
-					ModTime: 1538733384,
+					ModTime: 1539694437,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/8yST4vbMBDFz9KnmKMNiX0v2VPptj20LNSlZ2GP1qL2jJDktMHou5eRN5sNYaGUFnow
@@ -1163,7 +1163,7 @@ IA3n6vkVHFn+si7fzVv4FQAA//8lTv0SRwQAAA==
 						Name:    "plumbing.tpl",
 						Size:    6462,
 						Mode:    os.FileMode(420),
-						ModTime: 1538733384,
+						ModTime: 1539694437,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xYS28bvxE/S59imkMguSspUm6unKJN6yZAk/rgokAvBbU7KxHmkgtydhVF1ncvhtyX

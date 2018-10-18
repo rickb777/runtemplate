@@ -17,7 +17,7 @@ func EmbeddedFileMeta(path, name string, modTime time.Time) FileMeta {
 }
 
 func SingleFileMeta(path, name string) FileMeta {
-	Debug("stat '%s'\n", path)
+	Debug("stat %q\n", path)
 	if path == "" {
 		return FileMeta{path, "", time.Time{}, false}
 	}
@@ -25,7 +25,7 @@ func SingleFileMeta(path, name string) FileMeta {
 	info, err := fs.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			Info("'%s' does not exist.\n", path)
+			Debug("%q does not exist.\n", path)
 			return FileMeta{path, "", time.Time{}, false}
 		} else {
 			Fail(err)

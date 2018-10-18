@@ -62,7 +62,7 @@ Example use:
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
 
-Examples: [IntList](builtintest/simple/x_int_list.go), [StringList](builtintest/simple/x_string_list.go)
+Examples: [IntList](examples/simple/x_int_list.go), [StringList](examples/simple/x_string_list.go)
 
 
 ### simple/set.tpl
@@ -78,7 +78,7 @@ Example use:
 
 The generated code is simple wrapper around a map of the type: the set elements are used as map keys; the map uses zero-size values. It is not suitable for access by more than one goroutine at a time.
 
-Examples: [IntSet](builtintest/simple/x_int_set.go), [StringSet](builtintest/simple/x_string_set.go)
+Examples: [IntSet](examples/simple/x_int_set.go), [StringSet](examples/simple/x_string_set.go)
 
 
 ### simple/map.tpl
@@ -96,7 +96,7 @@ The generated code is a simple wrapper around a map of the key and type. It not 
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
-Examples: [IntIntMap](builtintest/simple/sx_int_int_map.go), [StringStringMap](builtintest/simple/sx_string_string_map.go)
+Examples: [IntIntMap](examples/simple/sx_int_int_map.go), [StringStringMap](examples/simple/sx_string_string_map.go)
 
 
 ## 2. Encapsulated Collections - Mutable
@@ -126,8 +126,8 @@ Example use:
 ```
 
 Examples: 
-Fast:       [IntList](builtintest/fast/x_int_list.go),       [StringList](builtintest/fast/x_string_list.go).
-Threadsafe: [IntList](builtintest/threadsafe/x_int_list.go), [StringList](builtintest/threadsafe/x_string_list.go).
+Fast:       [IntList](examples/fast/x_int_list.go),       [StringList](examples/fast/x_string_list.go).
+Threadsafe: [IntList](examples/threadsafe/x_int_list.go), [StringList](examples/threadsafe/x_string_list.go).
 
 
 ### fast/set.tpl and threadsafe/set.tpl
@@ -143,8 +143,8 @@ Example use:
 ```
 
 Examples:
-Fast:       [IntSet](builtintest/fast/x_int_set.go),       [StringSet](builtintest/fast/x_string_set.go).
-Threadsafe: [IntSet](builtintest/threadsafe/x_int_set.go), [StringSet](builtintest/threadsafe/x_string_set.go).
+Fast:       [IntSet](examples/fast/x_int_set.go),       [StringSet](examples/fast/x_string_set.go).
+Threadsafe: [IntSet](examples/threadsafe/x_int_set.go), [StringSet](examples/threadsafe/x_string_set.go).
 
 
 ### fast/map.tpl and threadsafe/map.tpl
@@ -162,8 +162,8 @@ Example use:
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
 Examples:
-Fast:       [IntIntMap](builtintest/fast/x_int_int_list.go),       [StringStringMap](builtintest/fast/x_string_string_map.go).
-Threadsafe: [IntIntMap](builtintest/threadsafe/x_int_int_list.go), [StringStringMap](builtintest/threadsafe/x_string_string_map.go).
+Fast:       [IntIntMap](examples/fast/x1_int_int_list.go),       [StringStringMap](examples/fast/x1_string_string_map.go).
+Threadsafe: [IntIntMap](examples/threadsafe/x1_int_int_list.go), [StringStringMap](examples/threadsafe/x1_string_string_map.go).
 
 
 ### fast/collection.tpl and threadsafe/collection.tpl
@@ -178,8 +178,8 @@ Example use:
 //go:generate runtemplate -tpl threadsafe/collection.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 Examples:
-Fast:       [IntCollection](builtintest/fast/x_int_collection.go),       [StringCollection](builtintest/fast/x_string_collection.go),
-Threadsafe: [IntCollection](builtintest/threadsafe/x_int_collection.go), [StringCollection](builtintest/threadsafe/x_string_collection.go),
+Fast:       [IntCollection](examples/fast/x1_int_collection.go),       [StringCollection](examples/fast/x1_string_collection.go),
+Threadsafe: [IntCollection](examples/threadsafe/x1_int_collection.go), [StringCollection](examples/threadsafe/x1_string_collection.go),
 
 
 ## 3. Encapsulated Collections - Immutable
@@ -200,7 +200,7 @@ Example use:
 //go:generate runtemplate -tpl immutable/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
-Examples: [IntList](builtintest/immutable/x_int_list.go), [StringList](builtintest/immutable/x_string_list.go).
+Examples: [IntList](examples/immutable/x1_int_list.go), [StringList](examples/immutable/x1_string_list.go).
 
 
 ### immutable/set.tpl
@@ -214,7 +214,7 @@ Example use:
 //go:generate runtemplate -tpl immutable/set.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
-Examples: [IntSet](builtintest/immutable/x_int_set.go), [StringSet](builtintest/immutable/x_string_set.go).
+Examples: [IntSet](examples/immutable/x1_int_set.go), [StringSet](examples/immutable/x1_string_set.go).
 
 
 ### immutable/map.tpl
@@ -230,7 +230,7 @@ Example use:
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
-Examples: [IntIntMap](builtintest/immutable/x_int_int_list.go), [StringStringMap](builtintest/immutable/x_string_string_map.go).
+Examples: [IntIntMap](examples/immutable/x1_int_int_list.go), [StringStringMap](examples/immutable/x1_string_string_map.go).
 
 
 ### immutable/collection.tpl
@@ -243,7 +243,7 @@ Example use:
 ```
 //go:generate runtemplate -tpl immutable/collection.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
 ```
-Examples: [IntCollection](builtintest/immutable/x_int_collection.go), [StringCollection](builtintest/immutable/x_string_collection.go),
+Examples: [IntCollection](examples/immutable/x1_int_collection.go), [StringCollection](examples/immutable/x1_string_collection.go),
 
 
 ## 4. Channel-based Plumbing
@@ -268,7 +268,7 @@ Example use:
 ```
 //go:generate runtemplate -tpl plumbing/plumbing.tpl Type=int
 ```
-Example: [ApplePlumbing](builtintest/threadsafe/x_apple_plumbing.go).
+Example: [ApplePlumbing](examples/threadsafe/x1_apple_plumbing.go).
 
 
 ### plumbing/mapTo.tpl
@@ -284,7 +284,7 @@ Example use:
 ```
 //go:generate runtemplate -tpl plumbing/mapTo.tpl Type=Apple ToType=Pear
 ```
-Example: [ApplePearMapTo](builtintest/threadsafe/x_apple_x_pear_mapto.go).
+Example: [ApplePearMapTo](examples/threadsafe/x1_apple_x1_pear_mapto).
 
 
 ## 5. Stringy Types
