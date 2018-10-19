@@ -7,9 +7,8 @@
 package examples
 
 import (
-
 	"math/rand"
-    "sort"
+	"sort"
 )
 
 // ImmutableAppleList contains a slice of type Apple. Use it where you would use []Apple.
@@ -22,11 +21,10 @@ type ImmutableAppleList struct {
 	m []Apple
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 func newImmutableAppleList(len, cap int) *ImmutableAppleList {
-	return &ImmutableAppleList {
+	return &ImmutableAppleList{
 		m: make([]Apple, len, cap),
 	}
 }
@@ -163,10 +161,9 @@ func (list *ImmutableAppleList) Len() int {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
 func (list *ImmutableAppleList) Contains(v Apple) bool {
-	return list.Exists(func (x Apple) bool {
+	return list.Exists(func(x Apple) bool {
 		return x == v
 	})
 }
@@ -283,7 +280,6 @@ func (list *ImmutableAppleList) Drop(n int) *ImmutableAppleList {
 		return list
 	}
 
-
 	result := newImmutableAppleList(0, 0)
 	l := len(list.m)
 	if n < l {
@@ -311,7 +307,6 @@ func (list *ImmutableAppleList) DropLast(n int) *ImmutableAppleList {
 	if n == 0 {
 		return list
 	}
-
 
 	l := len(list.m)
 	if n > l {
@@ -368,8 +363,7 @@ func (list ImmutableAppleList) Find(fn func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
-    var empty Apple
+	var empty Apple
 	return empty, false
 
 }
@@ -542,7 +536,6 @@ func (list *ImmutableAppleList) LastIndexWhere2(p func(Apple) bool, before int) 
 	return -1
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when Apple is comparable.
 
@@ -567,8 +560,8 @@ func (list *ImmutableAppleList) Equals(other *ImmutableAppleList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableImmutableAppleList struct {
-    less func(i, j Apple) bool
-    m []Apple
+	less func(i, j Apple) bool
+	m    []Apple
 }
 
 func (sl sortableImmutableAppleList) Less(i, j int) bool {
@@ -587,8 +580,8 @@ func (sl sortableImmutableAppleList) Swap(i, j int) {
 func (list *ImmutableAppleList) SortBy(less func(i, j Apple) bool) *ImmutableAppleList {
 
 	result := NewImmutableAppleList(list.m...)
-    sort.Sort(sortableImmutableAppleList{less, result.m})
-    return result
+	sort.Sort(sortableImmutableAppleList{less, result.m})
+	return result
 }
 
 // StableSortBy returns a new list in which the elements are sorted by a specified ordering.
@@ -596,8 +589,6 @@ func (list *ImmutableAppleList) SortBy(less func(i, j Apple) bool) *ImmutableApp
 func (list *ImmutableAppleList) StableSortBy(less func(i, j Apple) bool) *ImmutableAppleList {
 
 	result := NewImmutableAppleList(list.m...)
-    sort.Stable(sortableImmutableAppleList{less, result.m})
-    return result
+	sort.Stable(sortableImmutableAppleList{less, result.m})
+	return result
 }
-
-

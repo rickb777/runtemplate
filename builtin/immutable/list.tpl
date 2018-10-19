@@ -11,9 +11,9 @@ import (
 	"bytes"
 	"fmt" {{- end}}
 	"math/rand"
-    "sort"
+	"sort"
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end}}
 )
 
@@ -406,7 +406,7 @@ func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}
 {{if eq .TypeStar "*"}}
 	return nil, false
 {{else}}
-    var empty {{.Type}}
+	var empty {{.Type}}
 	return empty, false
 {{end}}
 }
@@ -620,8 +620,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 //-------------------------------------------------------------------------------------------------
 
 type sortable{{.UPrefix}}{{.UType}}List struct {
-    less func(i, j {{.Type}}) bool
-    m []{{.PType}}
+	less func(i, j {{.Type}}) bool
+	m []{{.PType}}
 }
 
 func (sl sortable{{.UPrefix}}{{.UType}}List) Less(i, j int) bool {
@@ -640,8 +640,8 @@ func (sl sortable{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := New{{.UPrefix}}{{.UType}}List(list.m...)
-    sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, result.m})
-    return result
+	sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, result.m})
+	return result
 }
 
 // StableSortBy returns a new list in which the elements are sorted by a specified ordering.
@@ -649,8 +649,8 @@ func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.Type}}) bool) *
 func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := New{{.UPrefix}}{{.UType}}List(list.m...)
-    sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, result.m})
-    return result
+	sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, result.m})
+	return result
 }
 
 {{if .Ordered}}
@@ -659,16 +659,16 @@ func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) b
 
 // Sorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *{{.UPrefix}}{{.UType}}List) Sorted() *{{.UPrefix}}{{.UType}}List {
-    return list.SortBy(func(a, b {{.Type}}) bool {
-        return a < b
-    })
+	return list.SortBy(func(a, b {{.Type}}) bool {
+		return a < b
+	})
 }
 
 // StableSorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *{{.UPrefix}}{{.UType}}List) StableSorted() *{{.UPrefix}}{{.UType}}List {
-    return list.StableSortBy(func(a, b {{.Type}}) bool {
-        return a < b
-    })
+	return list.StableSortBy(func(a, b {{.Type}}) bool {
+		return a < b
+	})
 }
 
 // Min returns the first element containing the minimum value, when compared to other elements.

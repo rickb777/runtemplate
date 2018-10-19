@@ -6,11 +6,10 @@
 
 package examples
 
-
 import (
-
 	"bytes"
-	"fmt")
+	"fmt"
+)
 
 // SimpleIntSet is the primary type that represents a set
 type SimpleIntSet map[int]struct{}
@@ -336,7 +335,7 @@ func (set SimpleIntSet) Map(fn func(int) int) SimpleIntSet {
 	result := NewSimpleIntSet()
 
 	for v := range set {
-        result[fn(v)] = struct{}{}
+		result[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -352,9 +351,9 @@ func (set SimpleIntSet) FlatMap(fn func(int) []int) SimpleIntSet {
 	result := NewSimpleIntSet()
 
 	for v, _ := range set {
-	    for _, x := range fn(v) {
-            result[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result[x] = struct{}{}
+		}
 	}
 
 	return result
@@ -369,7 +368,6 @@ func (set SimpleIntSet) CountBy(predicate func(int) bool) (result int) {
 	}
 	return
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
@@ -430,7 +428,6 @@ func (set SimpleIntSet) MaxBy(less func(int, int) bool) int {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
@@ -459,7 +456,6 @@ func (set SimpleIntSet) Equals(other SimpleIntSet) bool {
 	}
 	return true
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -512,4 +508,3 @@ func (set SimpleIntSet) StringMap() map[string]bool {
 	}
 	return strings
 }
-

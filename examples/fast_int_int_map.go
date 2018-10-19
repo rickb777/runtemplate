@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 )
@@ -265,8 +264,8 @@ func (mm FastIntIntMap) Map(fn func(int, int) (int, int)) FastIntIntMap {
 	result := NewFastIntIntMap()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
@@ -282,15 +281,14 @@ func (mm FastIntIntMap) FlatMap(fn func(int, int) []FastIntIntTuple) FastIntIntM
 	result := NewFastIntIntMap()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result
 }
-
 
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
@@ -318,7 +316,6 @@ func (mm FastIntIntMap) Clone() FastIntIntMap {
 	}
 	return result
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -355,4 +352,3 @@ func (mm FastIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buf
 	b.WriteString(after)
 	return b
 }
-

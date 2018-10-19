@@ -284,9 +284,9 @@ func (list *{{.UPrefix}}{{.UType}}List) doReverse() *{{.UPrefix}}{{.UType}}List 
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
-	    r := last - i
-	    if i != r {
-		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		r := last - i
+		if i != r {
+			list.m[i], list.m[r] = list.m[r], list.m[i]
 		}
 	}
 	return list
@@ -312,7 +312,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doShuffle() *{{.UPrefix}}{{.UType}}List 
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-        list.m[i], list.m[r] = list.m[r], list.m[i]
+		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
 }
@@ -340,30 +340,30 @@ func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) *{{.UPrefix
 // The modified list is returned.
 // Panics if the index is out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
-    return list.doInsertAt(index, more...)
+	return list.doInsertAt(index, more...)
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
-    if len(more) == 0 {
-        return list
-    }
+	if len(more) == 0 {
+		return list
+	}
 
-    if index == len(list.m) {
-        // appending is an easy special case
-    	return list.doAppend(more...)
-    }
+	if index == len(list.m) {
+		// appending is an easy special case
+		return list.doAppend(more...)
+	}
 
 	newlist := make([]{{.PType}}, 0, len(list.m) + len(more))
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    newlist = append(newlist, more...)
+	newlist = append(newlist, more...)
 
-    newlist = append(newlist, list.m[index:]...)
+	newlist = append(newlist, list.m[index:]...)
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
@@ -375,7 +375,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doInsertAt(index int, more ...{{.PType}}
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoDeleteFirst(n int) *{{.UPrefix}}{{.UType}}List {
-    return list.doDeleteAt(0, n)
+	return list.doDeleteAt(0, n)
 }
 
 // DoDeleteLast modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from the end of
@@ -384,7 +384,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DoDeleteFirst(n int) *{{.UPrefix}}{{.UTy
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoDeleteLast(n int) *{{.UPrefix}}{{.UType}}List {
-    return list.doDeleteAt(len(list.m)-n, n)
+	return list.doDeleteAt(len(list.m)-n, n)
 }
 
 // DoDeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
@@ -392,27 +392,27 @@ func (list *{{.UPrefix}}{{.UType}}List) DoDeleteLast(n int) *{{.UPrefix}}{{.UTyp
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoDeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
-    return list.doDeleteAt(index, n)
+	return list.doDeleteAt(index, n)
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doDeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
-    if n == 0 {
-        return list
-    }
+	if n == 0 {
+		return list
+	}
 
 	newlist := make([]{{.PType}}, 0, len(list.m) - n)
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    index += n
+	index += n
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+	if index != len(list.m) {
+		newlist = append(newlist, list.m[index:]...)
+	}
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
@@ -423,7 +423,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doDeleteAt(index, n int) *{{.UPrefix}}{{
 //
 // The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
-    return list.doKeepWhere(p)
+	return list.doKeepWhere(p)
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
@@ -435,7 +435,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doKeepWhere(p func({{.PType}}) bool) *{{
 		}
 	}
 
-    list.m = result
+	list.m = result
 	return list
 }
 

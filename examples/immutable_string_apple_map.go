@@ -6,9 +6,7 @@
 
 package examples
 
-
 import (
-
 	"bytes"
 	"fmt"
 )
@@ -206,8 +204,8 @@ func (mm ImmutableStringAppleMap) Map(fn func(string, Apple) (string, Apple)) Im
 	result := NewImmutableStringAppleMap()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
@@ -222,10 +220,10 @@ func (mm ImmutableStringAppleMap) FlatMap(fn func(string, Apple) []ImmutableStri
 	result := NewImmutableStringAppleMap()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result
@@ -235,7 +233,6 @@ func (mm ImmutableStringAppleMap) FlatMap(fn func(string, Apple) []ImmutableStri
 func (mm ImmutableStringAppleMap) Clone() ImmutableStringAppleMap {
 	return mm
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -272,4 +269,3 @@ func (mm ImmutableStringAppleMap) mkString3Bytes(before, between, after string) 
 	b.WriteString(after)
 	return b
 }
-

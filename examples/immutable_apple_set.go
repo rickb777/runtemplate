@@ -300,7 +300,6 @@ func (set ImmutableAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
 	var empty Apple
 	return empty, false
 
@@ -344,7 +343,7 @@ func (set ImmutableAppleSet) Map(fn func(Apple) Apple) ImmutableAppleSet {
 	result := NewImmutableAppleSet()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -359,9 +358,9 @@ func (set ImmutableAppleSet) FlatMap(fn func(Apple) []Apple) ImmutableAppleSet {
 	result := NewImmutableAppleSet()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result
@@ -386,7 +385,6 @@ func (set ImmutableAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 		panic("Cannot determine the minimum of an empty list.")
 	}
 
-
 	var m Apple
 	first := true
 	for v, _ := range set.m {
@@ -407,7 +405,6 @@ func (set ImmutableAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
-
 
 	var m Apple
 	first := true
@@ -439,5 +436,3 @@ func (set ImmutableAppleSet) Equals(other ImmutableAppleSet) bool {
 	}
 	return true
 }
-
-

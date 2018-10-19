@@ -6,9 +6,7 @@
 
 package examples
 
-import (
-
-)
+import ()
 
 // FastAppleSet is the primary type that represents a set
 type FastAppleSet struct {
@@ -75,7 +73,6 @@ func (set FastAppleSet) ToInterfaceSlice() []interface{} {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set FastAppleSet) Clone() FastAppleSet {
 	clonedSet := NewFastAppleSet()
-
 
 	for v, _ := range set.m {
 		clonedSet.doAdd(v)
@@ -170,7 +167,6 @@ func (set FastAppleSet) IsSuperset(other FastAppleSet) bool {
 func (set FastAppleSet) Union(other FastAppleSet) FastAppleSet {
 	unionedSet := set.Clone()
 
-
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
@@ -180,7 +176,6 @@ func (set FastAppleSet) Union(other FastAppleSet) FastAppleSet {
 // Intersect returns a new set with items that exist only in both sets.
 func (set FastAppleSet) Intersect(other FastAppleSet) FastAppleSet {
 	intersection := NewFastAppleSet()
-
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
@@ -202,7 +197,6 @@ func (set FastAppleSet) Intersect(other FastAppleSet) FastAppleSet {
 // Difference returns a new set with items in the current set but not in the other set
 func (set FastAppleSet) Difference(other FastAppleSet) FastAppleSet {
 	differencedSet := NewFastAppleSet()
-
 
 	for v, _ := range set.m {
 		if !other.Contains(v) {
@@ -300,7 +294,6 @@ func (set FastAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
 	var empty Apple
 	return empty, false
 
@@ -349,7 +342,7 @@ func (set FastAppleSet) Map(fn func(Apple) Apple) FastAppleSet {
 	result := NewFastAppleSet()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -365,9 +358,9 @@ func (set FastAppleSet) FlatMap(fn func(Apple) []Apple) FastAppleSet {
 	result := NewFastAppleSet()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result
@@ -392,7 +385,6 @@ func (set FastAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 		panic("Cannot determine the minimum of an empty list.")
 	}
 
-
 	var m Apple
 	first := true
 	for v, _ := range set.m {
@@ -413,7 +405,6 @@ func (set FastAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
-
 
 	var m Apple
 	first := true
@@ -445,5 +436,3 @@ func (set FastAppleSet) Equals(other FastAppleSet) bool {
 	}
 	return true
 }
-
-

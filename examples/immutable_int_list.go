@@ -7,11 +7,10 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 	"math/rand"
-    "sort"
+	"sort"
 )
 
 // ImmutableIntList contains a slice of type int. Use it where you would use []int.
@@ -24,11 +23,10 @@ type ImmutableIntList struct {
 	m []int
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 func newImmutableIntList(len, cap int) *ImmutableIntList {
-	return &ImmutableIntList {
+	return &ImmutableIntList{
 		m: make([]int, len, cap),
 	}
 }
@@ -187,10 +185,9 @@ func (list *ImmutableIntList) Len() int {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
 func (list *ImmutableIntList) Contains(v int) bool {
-	return list.Exists(func (x int) bool {
+	return list.Exists(func(x int) bool {
 		return x == v
 	})
 }
@@ -307,7 +304,6 @@ func (list *ImmutableIntList) Drop(n int) *ImmutableIntList {
 		return list
 	}
 
-
 	result := newImmutableIntList(0, 0)
 	l := len(list.m)
 	if n < l {
@@ -335,7 +331,6 @@ func (list *ImmutableIntList) DropLast(n int) *ImmutableIntList {
 	if n == 0 {
 		return list
 	}
-
 
 	l := len(list.m)
 	if n > l {
@@ -392,8 +387,7 @@ func (list ImmutableIntList) Find(fn func(int) bool) (int, bool) {
 		}
 	}
 
-
-    var empty int
+	var empty int
 	return empty, false
 
 }
@@ -566,7 +560,6 @@ func (list *ImmutableIntList) LastIndexWhere2(p func(int) bool, before int) int 
 	return -1
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
@@ -579,7 +572,6 @@ func (list *ImmutableIntList) Sum() int {
 	}
 	return sum
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is comparable.
@@ -605,8 +597,8 @@ func (list *ImmutableIntList) Equals(other *ImmutableIntList) bool {
 //-------------------------------------------------------------------------------------------------
 
 type sortableImmutableIntList struct {
-    less func(i, j int) bool
-    m []int
+	less func(i, j int) bool
+	m    []int
 }
 
 func (sl sortableImmutableIntList) Less(i, j int) bool {
@@ -625,8 +617,8 @@ func (sl sortableImmutableIntList) Swap(i, j int) {
 func (list *ImmutableIntList) SortBy(less func(i, j int) bool) *ImmutableIntList {
 
 	result := NewImmutableIntList(list.m...)
-    sort.Sort(sortableImmutableIntList{less, result.m})
-    return result
+	sort.Sort(sortableImmutableIntList{less, result.m})
+	return result
 }
 
 // StableSortBy returns a new list in which the elements are sorted by a specified ordering.
@@ -634,26 +626,25 @@ func (list *ImmutableIntList) SortBy(less func(i, j int) bool) *ImmutableIntList
 func (list *ImmutableIntList) StableSortBy(less func(i, j int) bool) *ImmutableIntList {
 
 	result := NewImmutableIntList(list.m...)
-    sort.Stable(sortableImmutableIntList{less, result.m})
-    return result
+	sort.Stable(sortableImmutableIntList{less, result.m})
+	return result
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
 
 // Sorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *ImmutableIntList) Sorted() *ImmutableIntList {
-    return list.SortBy(func(a, b int) bool {
-        return a < b
-    })
+	return list.SortBy(func(a, b int) bool {
+		return a < b
+	})
 }
 
 // StableSorted returns a new list in which the elements are sorted by their natural ordering.
 func (list *ImmutableIntList) StableSorted() *ImmutableIntList {
-    return list.StableSortBy(func(a, b int) bool {
-        return a < b
-    })
+	return list.StableSortBy(func(a, b int) bool {
+		return a < b
+	})
 }
 
 // Min returns the first element containing the minimum value, when compared to other elements.
@@ -696,7 +687,6 @@ func (list *ImmutableIntList) Max() (result int) {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
@@ -734,7 +724,6 @@ func (list ImmutableIntList) mkString3Bytes(before, between, after string) *byte
 	b.WriteString(before)
 	sep := ""
 
-
 	for _, v := range list.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
@@ -743,4 +732,3 @@ func (list ImmutableIntList) mkString3Bytes(before, between, after string) *byte
 	b.WriteString(after)
 	return b
 }
-

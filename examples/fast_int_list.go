@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 	"math/rand"
@@ -24,11 +23,10 @@ type FastIntList struct {
 	m []int
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 func newFastIntList(len, cap int) *FastIntList {
-	return &FastIntList {
+	return &FastIntList{
 		m: make([]int, len, cap),
 	}
 }
@@ -188,10 +186,9 @@ func (list *FastIntList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
 func (list *FastIntList) Contains(v int) bool {
-	return list.Exists(func (x int) bool {
+	return list.Exists(func(x int) bool {
 		return x == v
 	})
 }
@@ -273,9 +270,9 @@ func (list *FastIntList) doReverse() *FastIntList {
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
-	    r := last - i
-	    if i != r {
-		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		r := last - i
+		if i != r {
+			list.m[i], list.m[r] = list.m[r], list.m[i]
 		}
 	}
 	return list
@@ -301,7 +298,7 @@ func (list *FastIntList) doShuffle() *FastIntList {
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-        list.m[i], list.m[r] = list.m[r], list.m[i]
+		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
 }
@@ -329,30 +326,30 @@ func (list *FastIntList) doAppend(more ...int) *FastIntList {
 // The modified list is returned.
 // Panics if the index is out of range.
 func (list *FastIntList) DoInsertAt(index int, more ...int) *FastIntList {
-    return list.doInsertAt(index, more...)
+	return list.doInsertAt(index, more...)
 }
 
 func (list *FastIntList) doInsertAt(index int, more ...int) *FastIntList {
-    if len(more) == 0 {
-        return list
-    }
+	if len(more) == 0 {
+		return list
+	}
 
-    if index == len(list.m) {
-        // appending is an easy special case
-    	return list.doAppend(more...)
-    }
+	if index == len(list.m) {
+		// appending is an easy special case
+		return list.doAppend(more...)
+	}
 
-	newlist := make([]int, 0, len(list.m) + len(more))
+	newlist := make([]int, 0, len(list.m)+len(more))
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    newlist = append(newlist, more...)
+	newlist = append(newlist, more...)
 
-    newlist = append(newlist, list.m[index:]...)
+	newlist = append(newlist, list.m[index:]...)
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
@@ -364,7 +361,7 @@ func (list *FastIntList) doInsertAt(index int, more ...int) *FastIntList {
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *FastIntList) DoDeleteFirst(n int) *FastIntList {
-    return list.doDeleteAt(0, n)
+	return list.doDeleteAt(0, n)
 }
 
 // DoDeleteLast modifies a FastIntList by deleting n elements from the end of
@@ -373,7 +370,7 @@ func (list *FastIntList) DoDeleteFirst(n int) *FastIntList {
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *FastIntList) DoDeleteLast(n int) *FastIntList {
-    return list.doDeleteAt(len(list.m)-n, n)
+	return list.doDeleteAt(len(list.m)-n, n)
 }
 
 // DoDeleteAt modifies a FastIntList by deleting n elements from a given index.
@@ -381,27 +378,27 @@ func (list *FastIntList) DoDeleteLast(n int) *FastIntList {
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *FastIntList) DoDeleteAt(index, n int) *FastIntList {
-    return list.doDeleteAt(index, n)
+	return list.doDeleteAt(index, n)
 }
 
 func (list *FastIntList) doDeleteAt(index, n int) *FastIntList {
-    if n == 0 {
-        return list
-    }
+	if n == 0 {
+		return list
+	}
 
-	newlist := make([]int, 0, len(list.m) - n)
+	newlist := make([]int, 0, len(list.m)-n)
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    index += n
+	index += n
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+	if index != len(list.m) {
+		newlist = append(newlist, list.m[index:]...)
+	}
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
@@ -412,7 +409,7 @@ func (list *FastIntList) doDeleteAt(index, n int) *FastIntList {
 //
 // The modified list is returned.
 func (list *FastIntList) DoKeepWhere(p func(int) bool) *FastIntList {
-    return list.doKeepWhere(p)
+	return list.doKeepWhere(p)
 }
 
 func (list *FastIntList) doKeepWhere(p func(int) bool) *FastIntList {
@@ -424,7 +421,7 @@ func (list *FastIntList) doKeepWhere(p func(int) bool) *FastIntList {
 		}
 	}
 
-    list.m = result
+	list.m = result
 	return list
 }
 
@@ -450,7 +447,6 @@ func (list *FastIntList) Drop(n int) *FastIntList {
 	if n == 0 {
 		return list
 	}
-
 
 	result := newFastIntList(0, 0)
 	l := len(list.m)
@@ -483,7 +479,6 @@ func (list *FastIntList) DropLast(n int) *FastIntList {
 	if n == 0 {
 		return list
 	}
-
 
 	l := len(list.m)
 	if n > l {
@@ -543,7 +538,6 @@ func (list FastIntList) Find(p func(int) bool) (int, bool) {
 			return v, true
 		}
 	}
-
 
 	var empty int
 	return empty, false
@@ -724,7 +718,6 @@ func (list *FastIntList) LastIndexWhere2(p func(int) bool, before int) int {
 	return -1
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
@@ -737,7 +730,6 @@ func (list *FastIntList) Sum() int {
 	}
 	return sum
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is comparable.
@@ -764,7 +756,7 @@ func (list *FastIntList) Equals(other *FastIntList) bool {
 
 type sortableFastIntList struct {
 	less func(i, j int) bool
-	m []int
+	m    []int
 }
 
 func (sl sortableFastIntList) Less(i, j int) bool {
@@ -795,7 +787,6 @@ func (list *FastIntList) StableSortBy(less func(i, j int) bool) *FastIntList {
 	sort.Stable(sortableFastIntList{less, list.m})
 	return list
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
@@ -856,7 +847,6 @@ func (list *FastIntList) Max() (result int) {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
@@ -894,7 +884,6 @@ func (list FastIntList) mkString3Bytes(before, between, after string) *bytes.Buf
 	b.WriteString(before)
 	sep := ""
 
-
 	for _, v := range list.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
@@ -903,4 +892,3 @@ func (list FastIntList) mkString3Bytes(before, between, after string) *bytes.Buf
 	b.WriteString(after)
 	return b
 }
-

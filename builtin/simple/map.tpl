@@ -251,8 +251,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}}) 
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 
 	for k1, v1 := range mm {
-	    k2, v2 := fn(k1, v1)
-	    result[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result[k2] = v2
 	}
 
 	return result
@@ -268,10 +268,10 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 
 	for k1, v1 := range mm {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result[t.Key] = t.Val
+		}
 	}
 
 	return result

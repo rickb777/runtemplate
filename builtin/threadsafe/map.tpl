@@ -309,8 +309,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}}) 
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
@@ -328,10 +328,10 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result

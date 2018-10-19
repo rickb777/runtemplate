@@ -12,7 +12,7 @@ import (
 	"bytes"
 	"fmt"{{- end}}
 {{- if .HasImport}}
-    {{.Import}}
+	{{.Import}}
 {{end}}
 )
 
@@ -210,8 +210,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}}) 
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
@@ -226,10 +226,10 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result
@@ -287,14 +287,14 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, aft
 	b.WriteString(before)
 	sep := ""
 {{if .HasKeyList}}
-    keys := make({{.KeyList}}, 0, len(mm.m))
+	keys := make({{.KeyList}}, 0, len(mm.m))
 	for k, _ := range mm.m {
-	    keys  = append(keys, k)
+		keys  = append(keys, k)
 	}
-    keys.Sorted()
+	keys.Sorted()
 
 	for _, k := range keys {
-	    v := mm.m[k]
+		v := mm.m[k]
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v:%v", k, v))
 		sep = between

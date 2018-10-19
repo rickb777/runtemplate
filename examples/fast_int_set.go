@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 )
@@ -99,7 +98,6 @@ func (set FastIntSet) ToInterfaceSlice() []interface{} {
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (set FastIntSet) Clone() FastIntSet {
 	clonedSet := NewFastIntSet()
-
 
 	for v, _ := range set.m {
 		clonedSet.doAdd(v)
@@ -194,7 +192,6 @@ func (set FastIntSet) IsSuperset(other FastIntSet) bool {
 func (set FastIntSet) Union(other FastIntSet) FastIntSet {
 	unionedSet := set.Clone()
 
-
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
@@ -204,7 +201,6 @@ func (set FastIntSet) Union(other FastIntSet) FastIntSet {
 // Intersect returns a new set with items that exist only in both sets.
 func (set FastIntSet) Intersect(other FastIntSet) FastIntSet {
 	intersection := NewFastIntSet()
-
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
@@ -226,7 +222,6 @@ func (set FastIntSet) Intersect(other FastIntSet) FastIntSet {
 // Difference returns a new set with items in the current set but not in the other set
 func (set FastIntSet) Difference(other FastIntSet) FastIntSet {
 	differencedSet := NewFastIntSet()
-
 
 	for v, _ := range set.m {
 		if !other.Contains(v) {
@@ -324,7 +319,6 @@ func (set FastIntSet) Find(fn func(int) bool) (int, bool) {
 		}
 	}
 
-
 	var empty int
 	return empty, false
 
@@ -373,7 +367,7 @@ func (set FastIntSet) Map(fn func(int) int) FastIntSet {
 	result := NewFastIntSet()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -389,9 +383,9 @@ func (set FastIntSet) FlatMap(fn func(int) []int) FastIntSet {
 	result := NewFastIntSet()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result
@@ -407,7 +401,6 @@ func (set FastIntSet) CountBy(predicate func(int) bool) (result int) {
 	}
 	return
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
@@ -446,7 +439,6 @@ func (set FastIntSet) Max() (result int) {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
@@ -477,7 +469,6 @@ func (set FastIntSet) Equals(other FastIntSet) bool {
 	}
 	return true
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -518,7 +509,6 @@ func (set FastIntSet) mkString3Bytes(before, between, after string) *bytes.Buffe
 	b.WriteString(before)
 	sep := ""
 
-
 	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
@@ -537,4 +527,3 @@ func (set FastIntSet) StringMap() map[string]bool {
 	}
 	return strings
 }
-

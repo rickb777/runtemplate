@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"math/rand"
 	"sort"
 )
@@ -22,11 +21,10 @@ type FastAppleList struct {
 	m []Apple
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 func newFastAppleList(len, cap int) *FastAppleList {
-	return &FastAppleList {
+	return &FastAppleList{
 		m: make([]Apple, len, cap),
 	}
 }
@@ -164,10 +162,9 @@ func (list *FastAppleList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
 func (list *FastAppleList) Contains(v Apple) bool {
-	return list.Exists(func (x Apple) bool {
+	return list.Exists(func(x Apple) bool {
 		return x == v
 	})
 }
@@ -249,9 +246,9 @@ func (list *FastAppleList) doReverse() *FastAppleList {
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
-	    r := last - i
-	    if i != r {
-		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		r := last - i
+		if i != r {
+			list.m[i], list.m[r] = list.m[r], list.m[i]
 		}
 	}
 	return list
@@ -277,7 +274,7 @@ func (list *FastAppleList) doShuffle() *FastAppleList {
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-        list.m[i], list.m[r] = list.m[r], list.m[i]
+		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
 }
@@ -305,30 +302,30 @@ func (list *FastAppleList) doAppend(more ...Apple) *FastAppleList {
 // The modified list is returned.
 // Panics if the index is out of range.
 func (list *FastAppleList) DoInsertAt(index int, more ...Apple) *FastAppleList {
-    return list.doInsertAt(index, more...)
+	return list.doInsertAt(index, more...)
 }
 
 func (list *FastAppleList) doInsertAt(index int, more ...Apple) *FastAppleList {
-    if len(more) == 0 {
-        return list
-    }
+	if len(more) == 0 {
+		return list
+	}
 
-    if index == len(list.m) {
-        // appending is an easy special case
-    	return list.doAppend(more...)
-    }
+	if index == len(list.m) {
+		// appending is an easy special case
+		return list.doAppend(more...)
+	}
 
-	newlist := make([]Apple, 0, len(list.m) + len(more))
+	newlist := make([]Apple, 0, len(list.m)+len(more))
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    newlist = append(newlist, more...)
+	newlist = append(newlist, more...)
 
-    newlist = append(newlist, list.m[index:]...)
+	newlist = append(newlist, list.m[index:]...)
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
@@ -340,7 +337,7 @@ func (list *FastAppleList) doInsertAt(index int, more ...Apple) *FastAppleList {
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *FastAppleList) DoDeleteFirst(n int) *FastAppleList {
-    return list.doDeleteAt(0, n)
+	return list.doDeleteAt(0, n)
 }
 
 // DoDeleteLast modifies a FastAppleList by deleting n elements from the end of
@@ -349,7 +346,7 @@ func (list *FastAppleList) DoDeleteFirst(n int) *FastAppleList {
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *FastAppleList) DoDeleteLast(n int) *FastAppleList {
-    return list.doDeleteAt(len(list.m)-n, n)
+	return list.doDeleteAt(len(list.m)-n, n)
 }
 
 // DoDeleteAt modifies a FastAppleList by deleting n elements from a given index.
@@ -357,27 +354,27 @@ func (list *FastAppleList) DoDeleteLast(n int) *FastAppleList {
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *FastAppleList) DoDeleteAt(index, n int) *FastAppleList {
-    return list.doDeleteAt(index, n)
+	return list.doDeleteAt(index, n)
 }
 
 func (list *FastAppleList) doDeleteAt(index, n int) *FastAppleList {
-    if n == 0 {
-        return list
-    }
+	if n == 0 {
+		return list
+	}
 
-	newlist := make([]Apple, 0, len(list.m) - n)
+	newlist := make([]Apple, 0, len(list.m)-n)
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    index += n
+	index += n
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+	if index != len(list.m) {
+		newlist = append(newlist, list.m[index:]...)
+	}
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
@@ -388,7 +385,7 @@ func (list *FastAppleList) doDeleteAt(index, n int) *FastAppleList {
 //
 // The modified list is returned.
 func (list *FastAppleList) DoKeepWhere(p func(Apple) bool) *FastAppleList {
-    return list.doKeepWhere(p)
+	return list.doKeepWhere(p)
 }
 
 func (list *FastAppleList) doKeepWhere(p func(Apple) bool) *FastAppleList {
@@ -400,7 +397,7 @@ func (list *FastAppleList) doKeepWhere(p func(Apple) bool) *FastAppleList {
 		}
 	}
 
-    list.m = result
+	list.m = result
 	return list
 }
 
@@ -426,7 +423,6 @@ func (list *FastAppleList) Drop(n int) *FastAppleList {
 	if n == 0 {
 		return list
 	}
-
 
 	result := newFastAppleList(0, 0)
 	l := len(list.m)
@@ -459,7 +455,6 @@ func (list *FastAppleList) DropLast(n int) *FastAppleList {
 	if n == 0 {
 		return list
 	}
-
 
 	l := len(list.m)
 	if n > l {
@@ -519,7 +514,6 @@ func (list FastAppleList) Find(p func(Apple) bool) (Apple, bool) {
 			return v, true
 		}
 	}
-
 
 	var empty Apple
 	return empty, false
@@ -700,7 +694,6 @@ func (list *FastAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 	return -1
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when Apple is comparable.
 
@@ -726,7 +719,7 @@ func (list *FastAppleList) Equals(other *FastAppleList) bool {
 
 type sortableFastAppleList struct {
 	less func(i, j Apple) bool
-	m []Apple
+	m    []Apple
 }
 
 func (sl sortableFastAppleList) Less(i, j int) bool {
@@ -757,5 +750,3 @@ func (list *FastAppleList) StableSortBy(less func(i, j Apple) bool) *FastAppleLi
 	sort.Stable(sortableFastAppleList{less, list.m})
 	return list
 }
-
-

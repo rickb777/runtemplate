@@ -66,7 +66,7 @@ func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UTy
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if ok {
-		    set[v] = struct{}{}
+			set[v] = struct{}{}
 		}
 	}
 {{end}}
@@ -348,7 +348,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPre
 	result := New{{.UPrefix}}{{.UType}}Set()
 
 	for v := range set {
-        result[fn(v)] = struct{}{}
+		result[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -364,9 +364,9 @@ func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {
 	result := New{{.UPrefix}}{{.UType}}Set()
 
 	for v, _ := range set {
-	    for _, x := range fn(v) {
-            result[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result[x] = struct{}{}
+		}
 	}
 
 	return result

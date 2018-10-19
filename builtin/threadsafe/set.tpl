@@ -436,7 +436,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPre
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -454,9 +454,9 @@ func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {
 	defer set.s.RUnlock()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result

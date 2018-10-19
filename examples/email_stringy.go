@@ -5,11 +5,11 @@
 package examples
 
 import (
+	"database/sql/driver"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
-	"database/sql/driver"
-	"fmt"
 )
 
 // Email is a specialised kind of string.
@@ -46,7 +46,7 @@ func (email Email) ToUpper() Email {
 // https://golang.org/pkg/database/sql/#Scanner
 func (email *Email) Scan(value interface{}) error {
 	if value == nil {
-        *email = Email("")
+		*email = Email("")
 		return nil
 	}
 
@@ -93,4 +93,3 @@ func (p EmailSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // SortedN is a convenience method.
 func (p EmailSlice) Sorted() { sort.Sort(p) }
-

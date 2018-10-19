@@ -6,9 +6,7 @@
 
 package examples
 
-
 import (
-
 	"bytes"
 	"fmt"
 )
@@ -329,7 +327,6 @@ func (set ImmutableIntSet) Find(fn func(int) bool) (int, bool) {
 		}
 	}
 
-
 	var empty int
 	return empty, false
 
@@ -373,7 +370,7 @@ func (set ImmutableIntSet) Map(fn func(int) int) ImmutableIntSet {
 	result := NewImmutableIntSet()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -388,9 +385,9 @@ func (set ImmutableIntSet) FlatMap(fn func(int) []int) ImmutableIntSet {
 	result := NewImmutableIntSet()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result
@@ -406,7 +403,6 @@ func (set ImmutableIntSet) CountBy(predicate func(int) bool) (result int) {
 	}
 	return
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
@@ -445,7 +441,6 @@ func (set ImmutableIntSet) Max() (result int) {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
@@ -476,7 +471,6 @@ func (set ImmutableIntSet) Equals(other ImmutableIntSet) bool {
 	}
 	return true
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -517,7 +511,6 @@ func (set ImmutableIntSet) mkString3Bytes(before, between, after string) *bytes.
 	b.WriteString(before)
 	sep := ""
 
-
 	for v, _ := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
@@ -536,4 +529,3 @@ func (set ImmutableIntSet) StringMap() map[string]bool {
 	}
 	return strings
 }
-

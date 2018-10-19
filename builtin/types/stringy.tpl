@@ -48,7 +48,7 @@ func ({{.LType}} {{.Type}}) ToUpper() {{.Type}} {
 // https://golang.org/pkg/database/sql/#Scanner
 func ({{.LType}} *{{.Type}}) Scan(value interface{}) error {
 	if value == nil {
-        *{{.LType}} = {{.Type}}("")
+		*{{.LType}} = {{.Type}}("")
 		return nil
 	}
 

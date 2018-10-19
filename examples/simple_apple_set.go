@@ -26,7 +26,7 @@ func ConvertSimpleAppleSet(values ...interface{}) (SimpleAppleSet, bool) {
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if ok {
-		    set[v] = struct{}{}
+			set[v] = struct{}{}
 		}
 	}
 
@@ -308,7 +308,7 @@ func (set SimpleAppleSet) Map(fn func(Apple) Apple) SimpleAppleSet {
 	result := NewSimpleAppleSet()
 
 	for v := range set {
-        result[fn(v)] = struct{}{}
+		result[fn(v)] = struct{}{}
 	}
 
 	return result
@@ -324,9 +324,9 @@ func (set SimpleAppleSet) FlatMap(fn func(Apple) []Apple) SimpleAppleSet {
 	result := NewSimpleAppleSet()
 
 	for v, _ := range set {
-	    for _, x := range fn(v) {
-            result[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result[x] = struct{}{}
+		}
 	}
 
 	return result
@@ -398,5 +398,3 @@ func (set SimpleAppleSet) Equals(other SimpleAppleSet) bool {
 	}
 	return true
 }
-
-

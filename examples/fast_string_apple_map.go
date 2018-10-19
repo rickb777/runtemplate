@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 )
@@ -265,8 +264,8 @@ func (mm FastStringAppleMap) Map(fn func(string, Apple) (string, Apple)) FastStr
 	result := NewFastStringAppleMap()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
@@ -282,10 +281,10 @@ func (mm FastStringAppleMap) FlatMap(fn func(string, Apple) []FastStringAppleTup
 	result := NewFastStringAppleMap()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result
@@ -300,7 +299,6 @@ func (mm FastStringAppleMap) Clone() FastStringAppleMap {
 	}
 	return result
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -337,4 +335,3 @@ func (mm FastStringAppleMap) mkString3Bytes(before, between, after string) *byte
 	b.WriteString(after)
 	return b
 }
-
