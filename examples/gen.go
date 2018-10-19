@@ -10,7 +10,7 @@
 // In each group, there are two list types, two set types and two map types. There are also two collection types
 // in all except the simple group.
 //
-// See [BUILTIN](../BUILTIN.md] for a fuller description.
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md for a fuller description.
 package examples
 
 // Simple Examples
