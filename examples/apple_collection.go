@@ -3,22 +3,21 @@
 
 package examples
 
-// SyncAppleSizer defines an interface for sizing methods on Apple collections.
-type SyncAppleSizer interface {
-	// IsEmpty tests whether SyncAppleCollection is empty.
+// AppleSizer defines an interface for sizing methods on Apple collections.
+type AppleSizer interface {
+	// IsEmpty tests whether AppleCollection is empty.
 	IsEmpty() bool
 
-	// NonEmpty tests whether SyncAppleCollection is empty.
+	// NonEmpty tests whether AppleCollection is empty.
 	NonEmpty() bool
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
 }
 
-// SyncAppleCollection defines an interface for common collection methods on Apple.
-type SyncAppleCollection interface {
-	SyncAppleSizer
-
+// AppleCollection defines an interface for common collection methods on Apple.
+type AppleCollection interface {
+	AppleSizer
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
@@ -32,13 +31,13 @@ type SyncAppleCollection interface {
 	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
 	ToInterfaceSlice() []interface{}
 
-	// Exists verifies that one or more elements of SyncAppleCollection return true for the passed func.
+	// Exists verifies that one or more elements of AppleCollection return true for the passed func.
 	Exists(fn func(Apple) bool) bool
 
-	// Forall verifies that all elements of SyncAppleCollection return true for the passed func.
+	// Forall verifies that all elements of AppleCollection return true for the passed func.
 	Forall(fn func(Apple) bool) bool
 
-	// Foreach iterates over SyncAppleCollection and executes the passed func against each element.
+	// Foreach iterates over AppleCollection and executes the passed func against each element.
 	Foreach(fn func(Apple))
 
 	// Find returns the first Apple that returns true for some function.
@@ -49,20 +48,19 @@ type SyncAppleCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan Apple
 
-	// CountBy gives the number elements of SyncAppleCollection that return true for the passed predicate.
+	// CountBy gives the number elements of AppleCollection that return true for the passed predicate.
 	CountBy(predicate func(Apple) bool) int
 
-// Add adds items to the current collection.
+	// Add adds items to the current collection.
 	Add(more ...Apple)
 
-// MinBy returns an element of SyncAppleCollection containing the minimum value, when compared to other elements
+	// MinBy returns an element of AppleCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 	// element is returned. Panics if there are no elements.
 	MinBy(less func(Apple, Apple) bool) Apple
 
-	// MaxBy returns an element of SyncAppleCollection containing the maximum value, when compared to other elements
+	// MaxBy returns an element of AppleCollection containing the maximum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(Apple, Apple) bool) Apple
-
 }

@@ -1,66 +1,88 @@
-// An encapsulated []Apple.
+// An encapsulated []int.
 // Thread-safe.
 //
-// Generated from threadsafe/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
+// Generated from threadsafe/list.tpl with Type=int
+// options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:always
 
 package examples
 
 import (
-
+	"bytes"
+	"fmt"
 	"math/rand"
 	"sort"
 	"sync"
 )
 
-// SyncAppleList contains a slice of type Apple. Use it where you would use []Apple.
+// IntList contains a slice of type int. Use it where you would use []int.
 // To add items to the list, simply use the normal built-in append function.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type SyncAppleList struct {
+type IntList struct {
 	s *sync.RWMutex
-	m []Apple
+	m []int
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
-func newSyncAppleList(len, cap int) *SyncAppleList {
-	return &SyncAppleList {
+func newIntList(len, cap int) *IntList {
+	return &IntList{
 		s: &sync.RWMutex{},
-		m: make([]Apple, len, cap),
+		m: make([]int, len, cap),
 	}
 }
 
-// NewSyncAppleList constructs a new list containing the supplied values, if any.
-func NewSyncAppleList(values ...Apple) *SyncAppleList {
-	result := newSyncAppleList(len(values), len(values))
+// NewIntList constructs a new list containing the supplied values, if any.
+func NewIntList(values ...int) *IntList {
+	result := newIntList(len(values), len(values))
 	copy(result.m, values)
 	return result
 }
 
-// ConvertSyncAppleList constructs a new list containing the supplied values, if any.
+// ConvertIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
-func ConvertSyncAppleList(values ...interface{}) (*SyncAppleList, bool) {
-	result := newSyncAppleList(0, len(values))
+func ConvertIntList(values ...interface{}) (*IntList, bool) {
+	result := newIntList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			result.m = append(result.m, v)
+		switch i.(type) {
+		case int:
+			result.m = append(result.m, int(i.(int)))
+		case int8:
+			result.m = append(result.m, int(i.(int8)))
+		case int16:
+			result.m = append(result.m, int(i.(int16)))
+		case int32:
+			result.m = append(result.m, int(i.(int32)))
+		case int64:
+			result.m = append(result.m, int(i.(int64)))
+		case uint:
+			result.m = append(result.m, int(i.(uint)))
+		case uint8:
+			result.m = append(result.m, int(i.(uint8)))
+		case uint16:
+			result.m = append(result.m, int(i.(uint16)))
+		case uint32:
+			result.m = append(result.m, int(i.(uint32)))
+		case uint64:
+			result.m = append(result.m, int(i.(uint64)))
+		case float32:
+			result.m = append(result.m, int(i.(float32)))
+		case float64:
+			result.m = append(result.m, int(i.(float64)))
 		}
 	}
 
 	return result, len(result.m) == len(values)
 }
 
-// BuildSyncAppleListFromChan constructs a new SyncAppleList from a channel that supplies a sequence
+// BuildIntListFromChan constructs a new IntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func BuildSyncAppleListFromChan(source <-chan Apple) *SyncAppleList {
-	result := newSyncAppleList(0, 0)
+func BuildIntListFromChan(source <-chan int) *IntList {
+	result := newIntList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
 	}
@@ -68,17 +90,17 @@ func BuildSyncAppleListFromChan(source <-chan Apple) *SyncAppleList {
 }
 
 // ToSlice returns the elements of the current list as a slice.
-func (list *SyncAppleList) ToSlice() []Apple {
+func (list *IntList) ToSlice() []int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	s := make([]Apple, len(list.m), len(list.m))
+	s := make([]int, len(list.m), len(list.m))
 	copy(s, list.m)
 	return s
 }
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
-func (list *SyncAppleList) ToInterfaceSlice() []interface{} {
+func (list *IntList) ToInterfaceSlice() []interface{} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -90,18 +112,18 @@ func (list *SyncAppleList) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (list *SyncAppleList) Clone() *SyncAppleList {
+func (list *IntList) Clone() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	return NewSyncAppleList(list.m...)
+	return NewIntList(list.m...)
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
 // Panics if the index is out of range.
-func (list *SyncAppleList) Get(i int) Apple {
+func (list *IntList) Get(i int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -110,13 +132,13 @@ func (list *SyncAppleList) Get(i int) Apple {
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty
-func (list *SyncAppleList) Head() Apple {
+func (list *IntList) Head() int {
 	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty
-func (list *SyncAppleList) Last() Apple {
+func (list *IntList) Last() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -125,50 +147,50 @@ func (list *SyncAppleList) Last() Apple {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty
-func (list *SyncAppleList) Tail() *SyncAppleList {
+func (list *IntList) Tail() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty
-func (list *SyncAppleList) Init() *SyncAppleList {
+func (list *IntList) Init() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
 
-// IsEmpty tests whether SyncAppleList is empty.
-func (list *SyncAppleList) IsEmpty() bool {
+// IsEmpty tests whether IntList is empty.
+func (list *IntList) IsEmpty() bool {
 	return list.Size() == 0
 }
 
-// NonEmpty tests whether SyncAppleList is empty.
-func (list *SyncAppleList) NonEmpty() bool {
+// NonEmpty tests whether IntList is empty.
+func (list *IntList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (list *SyncAppleList) IsSequence() bool {
+func (list *IntList) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists.
-func (list *SyncAppleList) IsSet() bool {
+func (list *IntList) IsSet() bool {
 	return false
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list.
-func (list *SyncAppleList) Size() int {
+func (list *IntList) Size() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -176,7 +198,7 @@ func (list *SyncAppleList) Size() int {
 }
 
 // Swap exchanges two elements.
-func (list *SyncAppleList) Swap(i, j int) {
+func (list *IntList) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -185,17 +207,16 @@ func (list *SyncAppleList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
-func (list *SyncAppleList) Contains(v Apple) bool {
-	return list.Exists(func (x Apple) bool {
+func (list *IntList) Contains(v int) bool {
+	return list.Exists(func(x int) bool {
 		return x == v
 	})
 }
 
 // ContainsAll determines if the given items are all in the list.
 // This is potentially a slow method and should only be used rarely.
-func (list *SyncAppleList) ContainsAll(i ...Apple) bool {
+func (list *IntList) ContainsAll(i ...int) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -207,8 +228,8 @@ func (list *SyncAppleList) ContainsAll(i ...Apple) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of SyncAppleList return true for the predicate p.
-func (list *SyncAppleList) Exists(p func(Apple) bool) bool {
+// Exists verifies that one or more elements of IntList return true for the predicate p.
+func (list *IntList) Exists(p func(int) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -220,8 +241,8 @@ func (list *SyncAppleList) Exists(p func(Apple) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of SyncAppleList return true for the predicate p.
-func (list *SyncAppleList) Forall(p func(Apple) bool) bool {
+// Forall verifies that all elements of IntList return true for the predicate p.
+func (list *IntList) Forall(p func(int) bool) bool {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -233,9 +254,9 @@ func (list *SyncAppleList) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Foreach iterates over SyncAppleList and executes function fn against each element.
+// Foreach iterates over IntList and executes function fn against each element.
 // The function can safely alter the values via side-effects.
-func (list *SyncAppleList) Foreach(fn func(Apple)) {
+func (list *IntList) Foreach(fn func(int)) {
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -246,8 +267,8 @@ func (list *SyncAppleList) Foreach(fn func(Apple)) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (list *SyncAppleList) Send() <-chan Apple {
-	ch := make(chan Apple)
+func (list *IntList) Send() <-chan int {
+	ch := make(chan int)
 	go func() {
 		list.s.RLock()
 		defer list.s.RUnlock()
@@ -262,29 +283,29 @@ func (list *SyncAppleList) Send() <-chan Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Reverse returns a copy of SyncAppleList with all elements in the reverse order.
+// Reverse returns a copy of IntList with all elements in the reverse order.
 //
 // The original list is not modified.
-func (list *SyncAppleList) Reverse() *SyncAppleList {
+func (list *IntList) Reverse() *IntList {
 	return list.Clone().doReverse()
 }
 
-// DoReverse alters a SyncAppleList with all elements in the reverse order.
+// DoReverse alters a IntList with all elements in the reverse order.
 //
 // The modified list is returned.
-func (list *SyncAppleList) DoReverse() *SyncAppleList {
+func (list *IntList) DoReverse() *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doReverse()
 }
 
-func (list *SyncAppleList) doReverse() *SyncAppleList {
+func (list *IntList) doReverse() *IntList {
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
-	    r := last - i
-	    if i != r {
-		    list.m[i], list.m[r] = list.m[r], list.m[i]
+		r := last - i
+		if i != r {
+			list.m[i], list.m[r] = list.m[r], list.m[i]
 		}
 	}
 	return list
@@ -292,27 +313,27 @@ func (list *SyncAppleList) doReverse() *SyncAppleList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Shuffle returns a shuffled copy of SyncAppleList, using a version of the Fisher-Yates shuffle.
+// Shuffle returns a shuffled copy of IntList, using a version of the Fisher-Yates shuffle.
 //
 // The original list is not modified.
-func (list *SyncAppleList) Shuffle() *SyncAppleList {
+func (list *IntList) Shuffle() *IntList {
 	return list.Clone().doShuffle()
 }
 
-// DoShuffle returns a shuffled SyncAppleList, using a version of the Fisher-Yates shuffle.
+// DoShuffle returns a shuffled IntList, using a version of the Fisher-Yates shuffle.
 //
 // The modified list is returned.
-func (list *SyncAppleList) DoShuffle() *SyncAppleList {
+func (list *IntList) DoShuffle() *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doShuffle()
 }
 
-func (list *SyncAppleList) doShuffle() *SyncAppleList {
+func (list *IntList) doShuffle() *IntList {
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-        list.m[i], list.m[r] = list.m[r], list.m[i]
+		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
 }
@@ -320,126 +341,126 @@ func (list *SyncAppleList) doShuffle() *SyncAppleList {
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current list. This is a synonym for Append.
-func (list *SyncAppleList) Add(more ...Apple) {
+func (list *IntList) Add(more ...int) {
 	list.Append(more...)
 }
 
 // Append adds items to the current list, returning the modified list.
-func (list *SyncAppleList) Append(more ...Apple) *SyncAppleList {
+func (list *IntList) Append(more ...int) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doAppend(more...)
 }
 
-func (list *SyncAppleList) doAppend(more ...Apple) *SyncAppleList {
+func (list *IntList) doAppend(more ...int) *IntList {
 	list.m = append(list.m, more...)
 	return list
 }
 
-// DoInsertAt modifies a SyncAppleList by inserting elements at a given index.
+// DoInsertAt modifies a IntList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
 // The modified list is returned.
 // Panics if the index is out of range.
-func (list *SyncAppleList) DoInsertAt(index int, more ...Apple) *SyncAppleList {
+func (list *IntList) DoInsertAt(index int, more ...int) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-    return list.doInsertAt(index, more...)
+	return list.doInsertAt(index, more...)
 }
 
-func (list *SyncAppleList) doInsertAt(index int, more ...Apple) *SyncAppleList {
-    if len(more) == 0 {
-        return list
-    }
+func (list *IntList) doInsertAt(index int, more ...int) *IntList {
+	if len(more) == 0 {
+		return list
+	}
 
-    if index == len(list.m) {
-        // appending is an easy special case
-    	return list.doAppend(more...)
-    }
+	if index == len(list.m) {
+		// appending is an easy special case
+		return list.doAppend(more...)
+	}
 
-	newlist := make([]Apple, 0, len(list.m) + len(more))
+	newlist := make([]int, 0, len(list.m)+len(more))
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    newlist = append(newlist, more...)
+	newlist = append(newlist, more...)
 
-    newlist = append(newlist, list.m[index:]...)
+	newlist = append(newlist, list.m[index:]...)
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// DoDeleteFirst modifies a SyncAppleList by deleting n elements from the start of
+// DoDeleteFirst modifies a IntList by deleting n elements from the start of
 // the list.
 //
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
-func (list *SyncAppleList) DoDeleteFirst(n int) *SyncAppleList {
+func (list *IntList) DoDeleteFirst(n int) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-    return list.doDeleteAt(0, n)
+	return list.doDeleteAt(0, n)
 }
 
-// DoDeleteLast modifies a SyncAppleList by deleting n elements from the end of
+// DoDeleteLast modifies a IntList by deleting n elements from the end of
 // the list.
 //
 // The modified list is returned.
 // Panics if n is large enough to take the index out of range.
-func (list *SyncAppleList) DoDeleteLast(n int) *SyncAppleList {
+func (list *IntList) DoDeleteLast(n int) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-    return list.doDeleteAt(len(list.m)-n, n)
+	return list.doDeleteAt(len(list.m)-n, n)
 }
 
-// DoDeleteAt modifies a SyncAppleList by deleting n elements from a given index.
+// DoDeleteAt modifies a IntList by deleting n elements from a given index.
 //
 // The modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
-func (list *SyncAppleList) DoDeleteAt(index, n int) *SyncAppleList {
+func (list *IntList) DoDeleteAt(index, n int) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-    return list.doDeleteAt(index, n)
+	return list.doDeleteAt(index, n)
 }
 
-func (list *SyncAppleList) doDeleteAt(index, n int) *SyncAppleList {
-    if n == 0 {
-        return list
-    }
+func (list *IntList) doDeleteAt(index, n int) *IntList {
+	if n == 0 {
+		return list
+	}
 
-	newlist := make([]Apple, 0, len(list.m) - n)
+	newlist := make([]int, 0, len(list.m)-n)
 
-    if index != 0 {
-        newlist = append(newlist, list.m[:index]...)
-    }
+	if index != 0 {
+		newlist = append(newlist, list.m[:index]...)
+	}
 
-    index += n
+	index += n
 
-    if index != len(list.m) {
-        newlist = append(newlist, list.m[index:]...)
-    }
+	if index != len(list.m) {
+		newlist = append(newlist, list.m[index:]...)
+	}
 
-    list.m = newlist
+	list.m = newlist
 	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// DoKeepWhere modifies a SyncAppleList by retaining only those elements that match
+// DoKeepWhere modifies a IntList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The modified list is returned.
-func (list *SyncAppleList) DoKeepWhere(p func(Apple) bool) *SyncAppleList {
+func (list *IntList) DoKeepWhere(p func(int) bool) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
-    return list.doKeepWhere(p)
+	return list.doKeepWhere(p)
 }
 
-func (list *SyncAppleList) doKeepWhere(p func(Apple) bool) *SyncAppleList {
-	result := make([]Apple, 0, len(list.m))
+func (list *IntList) doKeepWhere(p func(int) bool) *IntList {
+	result := make([]int, 0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -447,31 +468,31 @@ func (list *SyncAppleList) doKeepWhere(p func(Apple) bool) *SyncAppleList {
 		}
 	}
 
-    list.m = result
+	list.m = result
 	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Take returns a slice of SyncAppleList containing the leading n elements of the source list.
+// Take returns a slice of IntList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
-func (list *SyncAppleList) Take(n int) *SyncAppleList {
+func (list *IntList) Take(n int) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if n > len(list.m) {
 		return list
 	}
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
 
-// Drop returns a slice of SyncAppleList without the leading n elements of the source list.
+// Drop returns a slice of IntList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 //
 // The original list is not modified.
-func (list *SyncAppleList) Drop(n int) *SyncAppleList {
+func (list *IntList) Drop(n int) *IntList {
 	if n == 0 {
 		return list
 	}
@@ -479,7 +500,7 @@ func (list *SyncAppleList) Drop(n int) *SyncAppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
@@ -487,11 +508,11 @@ func (list *SyncAppleList) Drop(n int) *SyncAppleList {
 	return result
 }
 
-// TakeLast returns a slice of SyncAppleList containing the trailing n elements of the source list.
+// TakeLast returns a slice of IntList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 //
 // The original list is not modified.
-func (list *SyncAppleList) TakeLast(n int) *SyncAppleList {
+func (list *IntList) TakeLast(n int) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -499,16 +520,16 @@ func (list *SyncAppleList) TakeLast(n int) *SyncAppleList {
 	if n > l {
 		return list
 	}
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
 
-// DropLast returns a slice of SyncAppleList without the trailing n elements of the source list.
+// DropLast returns a slice of IntList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 //
 // The original list is not modified.
-func (list *SyncAppleList) DropLast(n int) *SyncAppleList {
+func (list *IntList) DropLast(n int) *IntList {
 	if n == 0 {
 		return list
 	}
@@ -525,16 +546,16 @@ func (list *SyncAppleList) DropLast(n int) *SyncAppleList {
 	return list
 }
 
-// TakeWhile returns a new SyncAppleList containing the leading elements of the source list. Whilst the
+// TakeWhile returns a new IntList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
 //
 // The original list is not modified.
-func (list *SyncAppleList) TakeWhile(p func(Apple) bool) *SyncAppleList {
+func (list *IntList) TakeWhile(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -545,16 +566,16 @@ func (list *SyncAppleList) TakeWhile(p func(Apple) bool) *SyncAppleList {
 	return result
 }
 
-// DropWhile returns a new SyncAppleList containing the trailing elements of the source list. Whilst the
+// DropWhile returns a new IntList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
 //
 // The original list is not modified.
-func (list *SyncAppleList) DropWhile(p func(Apple) bool) *SyncAppleList {
+func (list *IntList) DropWhile(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, 0)
+	result := newIntList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -569,9 +590,9 @@ func (list *SyncAppleList) DropWhile(p func(Apple) bool) *SyncAppleList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for predicate p.
+// Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list SyncAppleList) Find(p func(Apple) bool) (Apple, bool) {
+func (list IntList) Find(p func(int) bool) (int, bool) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -581,20 +602,19 @@ func (list SyncAppleList) Find(p func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
-	var empty Apple
+	var empty int
 	return empty, false
 
 }
 
-// Filter returns a new SyncAppleList whose elements return true for predicate p.
+// Filter returns a new IntList whose elements return true for predicate p.
 //
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
-func (list *SyncAppleList) Filter(p func(Apple) bool) *SyncAppleList {
+func (list *IntList) Filter(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, len(list.m)/2)
+	result := newIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -605,18 +625,18 @@ func (list *SyncAppleList) Filter(p func(Apple) bool) *SyncAppleList {
 	return result
 }
 
-// Partition returns two new AppleLists whose elements return true or false for the predicate, p.
+// Partition returns two new intLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 //
 // The original list is not modified
-func (list *SyncAppleList) Partition(p func(Apple) bool) (*SyncAppleList, *SyncAppleList) {
+func (list *IntList) Partition(p func(int) bool) (*IntList, *IntList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := newSyncAppleList(0, len(list.m)/2)
-	others := newSyncAppleList(0, len(list.m)/2)
+	matching := newIntList(0, len(list.m)/2)
+	others := newIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -629,14 +649,14 @@ func (list *SyncAppleList) Partition(p func(Apple) bool) (*SyncAppleList, *SyncA
 	return matching, others
 }
 
-// Map returns a new SyncAppleList by transforming every element with a function fn.
+// Map returns a new IntList by transforming every element with a function fn.
 // The resulting list is the same size as the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *SyncAppleList) Map(fn func(Apple) Apple) *SyncAppleList {
-	result := newSyncAppleList(len(list.m), len(list.m))
+func (list *IntList) Map(fn func(int) int) *IntList {
+	result := newIntList(len(list.m), len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -647,14 +667,14 @@ func (list *SyncAppleList) Map(fn func(Apple) Apple) *SyncAppleList {
 	return result
 }
 
-// FlatMap returns a new SyncAppleList by transforming every element with a function fn that
+// FlatMap returns a new IntList by transforming every element with a function fn that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *SyncAppleList) FlatMap(fn func(Apple) []Apple) *SyncAppleList {
-	result := newSyncAppleList(0, len(list.m))
+func (list *IntList) FlatMap(fn func(int) []int) *IntList {
+	result := newIntList(0, len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -665,8 +685,8 @@ func (list *SyncAppleList) FlatMap(fn func(Apple) []Apple) *SyncAppleList {
 	return result
 }
 
-// CountBy gives the number elements of SyncAppleList that return true for the passed predicate.
-func (list *SyncAppleList) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of IntList that return true for the passed predicate.
+func (list *IntList) CountBy(predicate func(int) bool) (result int) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -678,10 +698,10 @@ func (list *SyncAppleList) CountBy(predicate func(Apple) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of SyncAppleList containing the minimum value, when compared to other elements
+// MinBy returns an element of IntList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (list *SyncAppleList) MinBy(less func(Apple, Apple) bool) Apple {
+func (list *IntList) MinBy(less func(int, int) bool) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -699,10 +719,10 @@ func (list *SyncAppleList) MinBy(less func(Apple, Apple) bool) Apple {
 	return list.m[m]
 }
 
-// MaxBy returns an element of SyncAppleList containing the maximum value, when compared to other elements
+// MaxBy returns an element of IntList containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (list *SyncAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
+func (list *IntList) MaxBy(less func(int, int) bool) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -720,12 +740,12 @@ func (list *SyncAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	return list.m[m]
 }
 
-// DistinctBy returns a new SyncAppleList whose elements are unique, where equality is defined by a passed func.
-func (list *SyncAppleList) DistinctBy(equal func(Apple, Apple) bool) *SyncAppleList {
+// DistinctBy returns a new IntList whose elements are unique, where equality is defined by a passed func.
+func (list *IntList) DistinctBy(equal func(int, int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newSyncAppleList(0, len(list.m))
+	result := newIntList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -739,13 +759,13 @@ Outer:
 }
 
 // IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
-func (list *SyncAppleList) IndexWhere(p func(Apple) bool) int {
+func (list *IntList) IndexWhere(p func(int) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
 // IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
-func (list *SyncAppleList) IndexWhere2(p func(Apple) bool, from int) int {
+func (list *IntList) IndexWhere2(p func(int) bool, from int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -759,13 +779,13 @@ func (list *SyncAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 
 // LastIndexWhere finds the index of the last element satisfying some predicate.
 // If none exists, -1 is returned.
-func (list *SyncAppleList) LastIndexWhere(p func(Apple) bool) int {
+func (list *IntList) LastIndexWhere(p func(int) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
 // If none exists, -1 is returned.
-func (list *SyncAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
+func (list *IntList) LastIndexWhere2(p func(int) bool, before int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -781,14 +801,28 @@ func (list *SyncAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 	return -1
 }
 
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int is numeric.
+
+// Sum returns the sum of all the elements in the list.
+func (list *IntList) Sum() int {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	sum := int(0)
+	for _, v := range list.m {
+		sum = sum + v
+	}
+	return sum
+}
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when Apple is comparable.
+// These methods are included when int is comparable.
 
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (list *SyncAppleList) Equals(other *SyncAppleList) bool {
+func (list *IntList) Equals(other *IntList) bool {
 	list.s.RLock()
 	other.s.RLock()
 	defer list.s.RUnlock()
@@ -809,42 +843,154 @@ func (list *SyncAppleList) Equals(other *SyncAppleList) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-type sortableSyncAppleList struct {
-	less func(i, j Apple) bool
-	m []Apple
+type sortableIntList struct {
+	less func(i, j int) bool
+	m    []int
 }
 
-func (sl sortableSyncAppleList) Less(i, j int) bool {
+func (sl sortableIntList) Less(i, j int) bool {
 	return sl.less(sl.m[i], sl.m[j])
 }
 
-func (sl sortableSyncAppleList) Len() int {
+func (sl sortableIntList) Len() int {
 	return len(sl.m)
 }
 
-func (sl sortableSyncAppleList) Swap(i, j int) {
+func (sl sortableIntList) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list *SyncAppleList) SortBy(less func(i, j Apple) bool) *SyncAppleList {
+func (list *IntList) SortBy(less func(i, j int) bool) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	sort.Sort(sortableSyncAppleList{less, list.m})
+	sort.Sort(sortableIntList{less, list.m})
 	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list *SyncAppleList) StableSortBy(less func(i, j Apple) bool) *SyncAppleList {
+func (list *IntList) StableSortBy(less func(i, j int) bool) *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	sort.Stable(sortableSyncAppleList{less, list.m})
+	sort.Stable(sortableIntList{less, list.m})
 	return list
 }
 
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int is ordered.
 
+// Sorted alters the list so that the elements are sorted by their natural ordering.
+// Sorting happens in-place; the modified list is returned.
+func (list *IntList) Sorted() *IntList {
+	return list.SortBy(func(a, b int) bool {
+		return a < b
+	})
+}
+
+// StableSorted alters the list so that the elements are sorted by their natural ordering.
+// Sorting happens in-place; the modified list is returned.
+func (list *IntList) StableSorted() *IntList {
+	return list.StableSortBy(func(a, b int) bool {
+		return a < b
+	})
+}
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *IntList) Min() int {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if l == 0 {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list *IntList) Max() (result int) {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	l := len(list.m)
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty list.")
+	}
+
+	v := list.m[0]
+	m := v
+	for i := 1; i < l; i++ {
+		v := list.m[i]
+		if v > m {
+			m = v
+		}
+	}
+	return m
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// StringList gets a list of strings that depicts all the elements.
+func (list IntList) StringList() []string {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	strings := make([]string, len(list.m))
+	for i, v := range list.m {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
+}
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
+func (list *IntList) String() string {
+	return list.MkString3("[", ", ", "]")
+}
+
+// implements json.Marshaler interface {
+func (list IntList) MarshalJSON() ([]byte, error) {
+	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
+}
+
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+func (list *IntList) MkString(sep string) string {
+	return list.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+func (list *IntList) MkString3(before, between, after string) string {
+	return list.mkString3Bytes(before, between, after).String()
+}
+
+func (list IntList) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range list.m {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v", v))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}

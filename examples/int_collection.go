@@ -3,21 +3,20 @@
 
 package examples
 
-// SyncIntSizer defines an interface for sizing methods on int collections.
-type SyncIntSizer interface {
-	// IsEmpty tests whether SyncIntCollection is empty.
+// IntSizer defines an interface for sizing methods on int collections.
+type IntSizer interface {
+	// IsEmpty tests whether IntCollection is empty.
 	IsEmpty() bool
 
-	// NonEmpty tests whether SyncIntCollection is empty.
+	// NonEmpty tests whether IntCollection is empty.
 	NonEmpty() bool
 
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
 }
 
-
-// SyncIntMkStringer defines an interface for stringer methods on int collections.
-type SyncIntMkStringer interface {
+// IntMkStringer defines an interface for stringer methods on int collections.
+type IntMkStringer interface {
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
 	// in square brackets.
 	String() string
@@ -35,12 +34,11 @@ type SyncIntMkStringer interface {
 	StringList() []string
 }
 
-// SyncIntCollection defines an interface for common collection methods on int.
-type SyncIntCollection interface {
-	SyncIntSizer
+// IntCollection defines an interface for common collection methods on int.
+type IntCollection interface {
+	IntSizer
 
-	SyncIntMkStringer
-
+	IntMkStringer
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
@@ -54,13 +52,13 @@ type SyncIntCollection interface {
 	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
 	ToInterfaceSlice() []interface{}
 
-	// Exists verifies that one or more elements of SyncIntCollection return true for the passed func.
+	// Exists verifies that one or more elements of IntCollection return true for the passed func.
 	Exists(fn func(int) bool) bool
 
-	// Forall verifies that all elements of SyncIntCollection return true for the passed func.
+	// Forall verifies that all elements of IntCollection return true for the passed func.
 	Forall(fn func(int) bool) bool
 
-	// Foreach iterates over SyncIntCollection and executes the passed func against each element.
+	// Foreach iterates over IntCollection and executes the passed func against each element.
 	Foreach(fn func(int))
 
 	// Find returns the first int that returns true for some function.
@@ -71,9 +69,8 @@ type SyncIntCollection interface {
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan int
 
-	// CountBy gives the number elements of SyncIntCollection that return true for the passed predicate.
+	// CountBy gives the number elements of IntCollection that return true for the passed predicate.
 	CountBy(predicate func(int) bool) int
-
 
 	// Contains determines if a given item is already in the collection.
 	Contains(v int) bool
@@ -81,16 +78,14 @@ type SyncIntCollection interface {
 	// ContainsAll determines if the given items are all in the collection.
 	ContainsAll(v ...int) bool
 
-// Add adds items to the current collection.
+	// Add adds items to the current collection.
 	Add(more ...int)
-
 
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() int
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() int
-
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int

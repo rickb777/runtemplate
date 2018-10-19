@@ -12,16 +12,16 @@ package examples
 
 //-------------------------------------------------------------------------------------------------
 
-// SyncAppleGenerator produces a stream of Apple based on a supplied generator function.
+// AppleGenerator produces a stream of Apple based on a supplied generator function.
 // The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleGenerator(out chan<- Apple, iterations int, fn func(int) Apple) {
-	SyncAppleGenerator3(out, 0, iterations-1, 1, fn)
+func AppleGenerator(out chan<- Apple, iterations int, fn func(int) Apple) {
+	AppleGenerator3(out, 0, iterations-1, 1, fn)
 }
 
-// SyncAppleGenerator produces a stream of Apple based on a supplied generator function.
+// AppleGenerator produces a stream of Apple based on a supplied generator function.
 // The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
 // from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
@@ -29,11 +29,11 @@ func SyncAppleGenerator(out chan<- Apple, iterations int, fn func(int) Apple) {
 // loop end, the output channel is closed and the generator terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleGenerator3(out chan<- Apple, from, to, stride int, fn func(int) Apple) {
+func AppleGenerator3(out chan<- Apple, from, to, stride int, fn func(int) Apple) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
 		panic("Loop conditions are divergent.")
 	}
-	if (from > to && stride < 0) {
+	if from > to && stride < 0 {
 		for i := from; i >= to; i += stride {
 			out <- fn(i)
 		}
@@ -45,32 +45,34 @@ func SyncAppleGenerator3(out chan<- Apple, from, to, stride int, fn func(int) Ap
 	close(out)
 }
 
-// SyncAppleDelta duplicates a stream of Apple to two output channels.
+// AppleDelta duplicates a stream of Apple to two output channels.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleDelta(in <-chan Apple, out1, out2 chan<- Apple) {
+func AppleDelta(in <-chan Apple, out1, out2 chan<- Apple) {
 	for v := range in {
 		select {
-		case out1 <- v: out2 <- v
-		case out2 <- v: out1 <- v
+		case out1 <- v:
+			out2 <- v
+		case out2 <- v:
+			out1 <- v
 		}
 	}
 	close(out1)
 	close(out2)
 }
 
-// SyncAppleZip2 interleaves two streams of Apple.
+// AppleZip2 interleaves two streams of Apple.
 // Each input channel is used in turn, alternating between them.
 // The function terminates when *both* input channels have been closed by their senders.
 // The output channel is then closed also.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleZip2(in1, in2 <-chan Apple, out chan<- Apple) {
+func AppleZip2(in1, in2 <-chan Apple, out chan<- Apple) {
 	closed2 := false
 	for v := range in1 {
 		out <- v
-		v, ok := <- in2
+		v, ok := <-in2
 		if ok {
 			out <- v
 		} else {
@@ -85,45 +87,45 @@ func SyncAppleZip2(in1, in2 <-chan Apple, out chan<- Apple) {
 	close(out)
 }
 
-// SyncAppleMux2 multiplexes two streams of Apple into a single output channel.
+// AppleMux2 multiplexes two streams of Apple into a single output channel.
 // Each input channel is used as soon as it is ready.
 // When a signal is received from the closer channel, the output channel is then closed.
 // Concurrently, both input channels are then passed into blackholes that comsume them until they too are closed,
 // and the function terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleMux2(in1, in2 <-chan Apple, closer <-chan bool, out chan<- Apple) {
+func AppleMux2(in1, in2 <-chan Apple, closer <-chan bool, out chan<- Apple) {
 	running := true
 	for running {
 		select {
-		case v := <- in1:
+		case v := <-in1:
 			out <- v
-		case v := <- in2:
+		case v := <-in2:
 			out <- v
-		case _ = <- closer:
+		case _ = <-closer:
 			running = false
 		}
 	}
-	go SyncAppleBlackHole(in1)
-	go SyncAppleBlackHole(in2)
+	go AppleBlackHole(in1)
+	go AppleBlackHole(in2)
 	close(out)
 }
 
-// SyncAppleBlackHole silently consumes a stream of Apple.
+// AppleBlackHole silently consumes a stream of Apple.
 // It terminates when the sender closes the channel.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleBlackHole(in <-chan Apple) {
+func AppleBlackHole(in <-chan Apple) {
 	for _ = range in {
 		// om nom nom
 	}
 }
 
-// SyncAppleFilter filters a stream of Apple, silently dropping elements that do not match the predicate p.
+// AppleFilter filters a stream of Apple, silently dropping elements that do not match the predicate p.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleFilter(in <-chan Apple, out chan<- Apple, p func(Apple) bool) {
+func AppleFilter(in <-chan Apple, out chan<- Apple, p func(Apple) bool) {
 	for v := range in {
 		if p(v) {
 			out <- v
@@ -132,12 +134,12 @@ func SyncAppleFilter(in <-chan Apple, out chan<- Apple, p func(Apple) bool) {
 	close(out)
 }
 
-// SyncApplePartition filters a stream of Apple into two output streams using a predicate p, those that
+// ApplePartition filters a stream of Apple into two output streams using a predicate p, those that
 // match and all others.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncApplePartition(in <-chan Apple, matching, others chan<- Apple, p func(Apple) bool) {
+func ApplePartition(in <-chan Apple, matching, others chan<- Apple, p func(Apple) bool) {
 	for v := range in {
 		if p(v) {
 			matching <- v
@@ -149,23 +151,23 @@ func SyncApplePartition(in <-chan Apple, matching, others chan<- Apple, p func(A
 	close(others)
 }
 
-// SyncAppleMap transforms a stream of Apple by applying a function fn to each item in the stream.
+// AppleMap transforms a stream of Apple by applying a function fn to each item in the stream.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleMap(in <-chan Apple, out chan<- Apple, fn func(Apple) Apple) {
+func AppleMap(in <-chan Apple, out chan<- Apple, fn func(Apple) Apple) {
 	for v := range in {
 		out <- fn(v)
 	}
 	close(out)
 }
 
-// SyncAppleFlatMap transforms a stream of Apple by applying a function fn to each item in the stream that
+// AppleFlatMap transforms a stream of Apple by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 //
 // It is part of the Plumbing function suite for Apple.
-func SyncAppleFlatMap(in <-chan Apple, out chan<- Apple, fn func(Apple) SyncAppleCollection) {
+func AppleFlatMap(in <-chan Apple, out chan<- Apple, fn func(Apple) AppleCollection) {
 	for vi := range in {
 		c := fn(vi)
 		c.Foreach(func(vo Apple) {

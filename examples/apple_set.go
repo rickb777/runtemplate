@@ -7,19 +7,18 @@
 package examples
 
 import (
-
 	"sync"
 )
 
-// SyncAppleSet is the primary type that represents a set
-type SyncAppleSet struct {
+// AppleSet is the primary type that represents a set
+type AppleSet struct {
 	s *sync.RWMutex
 	m map[Apple]struct{}
 }
 
-// NewSyncAppleSet creates and returns a reference to an empty set.
-func NewSyncAppleSet(values ...Apple) SyncAppleSet {
-	set := SyncAppleSet{
+// NewAppleSet creates and returns a reference to an empty set.
+func NewAppleSet(values ...Apple) AppleSet {
+	set := AppleSet{
 		s: &sync.RWMutex{},
 		m: make(map[Apple]struct{}),
 	}
@@ -29,11 +28,11 @@ func NewSyncAppleSet(values ...Apple) SyncAppleSet {
 	return set
 }
 
-// ConvertSyncAppleSet constructs a new set containing the supplied values, if any.
+// ConvertAppleSet constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned set will contain all the values that were correctly converted.
-func ConvertSyncAppleSet(values ...interface{}) (SyncAppleSet, bool) {
-	set := NewSyncAppleSet()
+func ConvertAppleSet(values ...interface{}) (AppleSet, bool) {
+	set := NewAppleSet()
 
 	for _, i := range values {
 		v, ok := i.(Apple)
@@ -45,10 +44,10 @@ func ConvertSyncAppleSet(values ...interface{}) (SyncAppleSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildSyncAppleSetFromChan constructs a new SyncAppleSet from a channel that supplies a sequence
+// BuildAppleSetFromChan constructs a new AppleSet from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func BuildSyncAppleSetFromChan(source <-chan Apple) SyncAppleSet {
-	set := NewSyncAppleSet()
+func BuildAppleSetFromChan(source <-chan Apple) AppleSet {
+	set := NewAppleSet()
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
@@ -56,7 +55,7 @@ func BuildSyncAppleSetFromChan(source <-chan Apple) SyncAppleSet {
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set SyncAppleSet) ToSlice() []Apple {
+func (set AppleSet) ToSlice() []Apple {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -68,7 +67,7 @@ func (set SyncAppleSet) ToSlice() []Apple {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set SyncAppleSet) ToInterfaceSlice() []interface{} {
+func (set AppleSet) ToInterfaceSlice() []interface{} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -80,8 +79,8 @@ func (set SyncAppleSet) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set SyncAppleSet) Clone() SyncAppleSet {
-	clonedSet := NewSyncAppleSet()
+func (set AppleSet) Clone() AppleSet {
+	clonedSet := NewAppleSet()
 
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -95,27 +94,27 @@ func (set SyncAppleSet) Clone() SyncAppleSet {
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set SyncAppleSet) IsEmpty() bool {
+func (set AppleSet) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set SyncAppleSet) NonEmpty() bool {
+func (set AppleSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (set SyncAppleSet) IsSequence() bool {
+func (set AppleSet) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists.
-func (set SyncAppleSet) IsSet() bool {
+func (set AppleSet) IsSet() bool {
 	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set SyncAppleSet) Size() int {
+func (set AppleSet) Size() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -123,14 +122,14 @@ func (set SyncAppleSet) Size() int {
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set SyncAppleSet) Cardinality() int {
+func (set AppleSet) Cardinality() int {
 	return set.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set.
-func (set SyncAppleSet) Add(more ...Apple) {
+func (set AppleSet) Add(more ...Apple) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -139,12 +138,12 @@ func (set SyncAppleSet) Add(more ...Apple) {
 	}
 }
 
-func (set SyncAppleSet) doAdd(i Apple) {
+func (set AppleSet) doAdd(i Apple) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
-func (set SyncAppleSet) Contains(i Apple) bool {
+func (set AppleSet) Contains(i Apple) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -153,7 +152,7 @@ func (set SyncAppleSet) Contains(i Apple) bool {
 }
 
 // ContainsAll determines if the given items are all in the set.
-func (set SyncAppleSet) ContainsAll(i ...Apple) bool {
+func (set AppleSet) ContainsAll(i ...Apple) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -168,7 +167,7 @@ func (set SyncAppleSet) ContainsAll(i ...Apple) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines if every item in the other set is in this set.
-func (set SyncAppleSet) IsSubset(other SyncAppleSet) bool {
+func (set AppleSet) IsSubset(other AppleSet) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -183,12 +182,12 @@ func (set SyncAppleSet) IsSubset(other SyncAppleSet) bool {
 }
 
 // IsSuperset determines if every item of this set is in the other set.
-func (set SyncAppleSet) IsSuperset(other SyncAppleSet) bool {
+func (set AppleSet) IsSuperset(other AppleSet) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set SyncAppleSet) Union(other SyncAppleSet) SyncAppleSet {
+func (set AppleSet) Union(other AppleSet) AppleSet {
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -201,8 +200,8 @@ func (set SyncAppleSet) Union(other SyncAppleSet) SyncAppleSet {
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set SyncAppleSet) Intersect(other SyncAppleSet) SyncAppleSet {
-	intersection := NewSyncAppleSet()
+func (set AppleSet) Intersect(other AppleSet) AppleSet {
+	intersection := NewAppleSet()
 
 	set.s.RLock()
 	other.s.RLock()
@@ -227,8 +226,8 @@ func (set SyncAppleSet) Intersect(other SyncAppleSet) SyncAppleSet {
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set SyncAppleSet) Difference(other SyncAppleSet) SyncAppleSet {
-	differencedSet := NewSyncAppleSet()
+func (set AppleSet) Difference(other AppleSet) AppleSet {
+	differencedSet := NewAppleSet()
 
 	set.s.RLock()
 	other.s.RLock()
@@ -244,14 +243,14 @@ func (set SyncAppleSet) Difference(other SyncAppleSet) SyncAppleSet {
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set SyncAppleSet) SymmetricDifference(other SyncAppleSet) SyncAppleSet {
+func (set AppleSet) SymmetricDifference(other AppleSet) AppleSet {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
 }
 
 // Clear clears the entire set to be the empty set.
-func (set *SyncAppleSet) Clear() {
+func (set *AppleSet) Clear() {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -259,7 +258,7 @@ func (set *SyncAppleSet) Clear() {
 }
 
 // Remove removes a single item from the set.
-func (set SyncAppleSet) Remove(i Apple) {
+func (set AppleSet) Remove(i Apple) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -270,7 +269,7 @@ func (set SyncAppleSet) Remove(i Apple) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set SyncAppleSet) Send() <-chan Apple {
+func (set AppleSet) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
 		set.s.RLock()
@@ -293,7 +292,7 @@ func (set SyncAppleSet) Send() <-chan Apple {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set SyncAppleSet) Forall(fn func(Apple) bool) bool {
+func (set AppleSet) Forall(fn func(Apple) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -308,7 +307,7 @@ func (set SyncAppleSet) Forall(fn func(Apple) bool) bool {
 // Exists applies a predicate function to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set SyncAppleSet) Exists(fn func(Apple) bool) bool {
+func (set AppleSet) Exists(fn func(Apple) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -322,7 +321,7 @@ func (set SyncAppleSet) Exists(fn func(Apple) bool) bool {
 
 // Foreach iterates over AppleSet and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
-func (set SyncAppleSet) Foreach(fn func(Apple)) {
+func (set AppleSet) Foreach(fn func(Apple)) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -335,7 +334,7 @@ func (set SyncAppleSet) Foreach(fn func(Apple)) {
 
 // Find returns the first Apple that returns true for some function.
 // False is returned if none match.
-func (set SyncAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
+func (set AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -345,17 +344,16 @@ func (set SyncAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
 	var empty Apple
 	return empty, false
 
 }
 
-// Filter returns a new SyncAppleSet whose elements return true for func.
+// Filter returns a new AppleSet whose elements return true for func.
 //
 // The original set is not modified
-func (set SyncAppleSet) Filter(fn func(Apple) bool) SyncAppleSet {
-	result := NewSyncAppleSet()
+func (set AppleSet) Filter(fn func(Apple) bool) AppleSet {
+	result := NewAppleSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -373,9 +371,9 @@ func (set SyncAppleSet) Filter(fn func(Apple) bool) SyncAppleSet {
 // original list.
 //
 // The original set is not modified
-func (set SyncAppleSet) Partition(p func(Apple) bool) (SyncAppleSet, SyncAppleSet) {
-	matching := NewSyncAppleSet()
-	others := NewSyncAppleSet()
+func (set AppleSet) Partition(p func(Apple) bool) (AppleSet, AppleSet) {
+	matching := NewAppleSet()
+	others := NewAppleSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -389,45 +387,45 @@ func (set SyncAppleSet) Partition(p func(Apple) bool) (SyncAppleSet, SyncAppleSe
 	return matching, others
 }
 
-// Map returns a new SyncAppleSet by transforming every element with a function fn.
+// Map returns a new AppleSet by transforming every element with a function fn.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SyncAppleSet) Map(fn func(Apple) Apple) SyncAppleSet {
-	result := NewSyncAppleSet()
+func (set AppleSet) Map(fn func(Apple) Apple) AppleSet {
+	result := NewAppleSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new SyncAppleSet by transforming every element with a function fn that
+// FlatMap returns a new AppleSet by transforming every element with a function fn that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SyncAppleSet) FlatMap(fn func(Apple) []Apple) SyncAppleSet {
-	result := NewSyncAppleSet()
+func (set AppleSet) FlatMap(fn func(Apple) []Apple) AppleSet {
+	result := NewAppleSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result
 }
 
-// CountBy gives the number elements of SyncAppleSet that return true for the passed predicate.
-func (set SyncAppleSet) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of AppleSet that return true for the passed predicate.
+func (set AppleSet) CountBy(predicate func(Apple) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -439,10 +437,10 @@ func (set SyncAppleSet) CountBy(predicate func(Apple) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of SyncAppleSet containing the minimum value, when compared to other elements
+// MinBy returns an element of AppleSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set SyncAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
+func (set AppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -463,10 +461,10 @@ func (set SyncAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 	return m
 }
 
-// MaxBy returns an element of SyncAppleSet containing the maximum value, when compared to other elements
+// MaxBy returns an element of AppleSet containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set SyncAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
+func (set AppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty list.")
 	}
@@ -492,7 +490,7 @@ func (set SyncAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set SyncAppleSet) Equals(other SyncAppleSet) bool {
+func (set AppleSet) Equals(other AppleSet) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -508,5 +506,3 @@ func (set SyncAppleSet) Equals(other SyncAppleSet) bool {
 	}
 	return true
 }
-
-

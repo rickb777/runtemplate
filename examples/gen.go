@@ -42,18 +42,19 @@ package examples
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=Fast Key=string Type=Apple                   Stringer:true
 
 // Threadsafe Examples
-//go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=Sync Type=int    Stringer:true Comparable:true Ordered:true Numeric:true
-//go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=Sync Type=Apple  Stringer:false
-//go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=Sync Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=Sync Type=Apple  Stringer:false Comparable:true
-//go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=Sync Type=int    Stringer:true  Ordered:true  Numeric:true
-//go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=Sync Type=Apple  Stringer:false
-//go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=Sync Key=int    Type=int     Comparable:true Stringer:true
-//go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=Sync Key=string Type=Apple                   Stringer:true
+//go:generate runtemplate -tpl threadsafe/collection.tpl Type=int    Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/collection.tpl Type=Apple  Stringer:false
+//go:generate runtemplate -tpl threadsafe/list.tpl       Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl threadsafe/list.tpl       Type=Apple  Stringer:false Comparable:true
+//go:generate runtemplate -tpl threadsafe/set.tpl        Type=int    Stringer:true  Ordered:true  Numeric:true
+//go:generate runtemplate -tpl threadsafe/set.tpl        Type=Apple  Stringer:false
+//go:generate runtemplate -tpl threadsafe/map.tpl        Key=int    Type=int     Comparable:true Stringer:true
+//go:generate runtemplate -tpl threadsafe/map.tpl        Key=string Type=Apple                   Stringer:true
 
 // Other Categories
 //go:generate runtemplate -tpl types/stringy.tpl         Type=Email SortableSlice:true
-//go:generate runtemplate -tpl plumbing/plumbing.tpl     Type=Apple Prefix=Sync
-//go:generate runtemplate -tpl plumbing/mapTo.tpl        Type=Apple Prefix=Sync ToPrefix=Sync ToType=int
+//go:generate runtemplate -tpl plumbing/plumbing.tpl     Type=Apple
+//go:generate runtemplate -tpl plumbing/mapTo.tpl        Type=Apple ToType=int
 
-type Apple struct {}
+// Apple is an empty placeholder used for the examples. "Insert your own type!"
+type Apple struct{}

@@ -7,58 +7,57 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 	"sync"
 )
 
-// SyncIntIntMap is the primary type that represents a thread-safe map
-type SyncIntIntMap struct {
+// IntIntMap is the primary type that represents a thread-safe map
+type IntIntMap struct {
 	s *sync.RWMutex
 	m map[int]int
 }
 
-// SyncIntIntTuple represents a key/value pair.
-type SyncIntIntTuple struct {
+// IntIntTuple represents a key/value pair.
+type IntIntTuple struct {
 	Key int
 	Val int
 }
 
-// SyncIntIntTuples can be used as a builder for unmodifiable maps.
-type SyncIntIntTuples []SyncIntIntTuple
+// IntIntTuples can be used as a builder for unmodifiable maps.
+type IntIntTuples []IntIntTuple
 
-func (ts SyncIntIntTuples) Append1(k int, v int) SyncIntIntTuples {
-	return append(ts, SyncIntIntTuple{k, v})
+func (ts IntIntTuples) Append1(k int, v int) IntIntTuples {
+	return append(ts, IntIntTuple{k, v})
 }
 
-func (ts SyncIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) SyncIntIntTuples {
-	return append(ts, SyncIntIntTuple{k1, v1}, SyncIntIntTuple{k2, v2})
+func (ts IntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) IntIntTuples {
+	return append(ts, IntIntTuple{k1, v1}, IntIntTuple{k2, v2})
 }
 
-func (ts SyncIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) SyncIntIntTuples {
-	return append(ts, SyncIntIntTuple{k1, v1}, SyncIntIntTuple{k2, v2}, SyncIntIntTuple{k3, v3})
+func (ts IntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) IntIntTuples {
+	return append(ts, IntIntTuple{k1, v1}, IntIntTuple{k2, v2}, IntIntTuple{k3, v3})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newSyncIntIntMap() SyncIntIntMap {
-	return SyncIntIntMap{
+func newIntIntMap() IntIntMap {
+	return IntIntMap{
 		s: &sync.RWMutex{},
 		m: make(map[int]int),
 	}
 }
 
-// NewSyncIntIntMap creates and returns a reference to a map containing one item.
-func NewSyncIntIntMap1(k int, v int) SyncIntIntMap {
-	mm := newSyncIntIntMap()
+// NewIntIntMap creates and returns a reference to a map containing one item.
+func NewIntIntMap1(k int, v int) IntIntMap {
+	mm := newIntIntMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewSyncIntIntMap creates and returns a reference to a map, optionally containing some items.
-func NewSyncIntIntMap(kv ...SyncIntIntTuple) SyncIntIntMap {
-	mm := newSyncIntIntMap()
+// NewIntIntMap creates and returns a reference to a map, optionally containing some items.
+func NewIntIntMap(kv ...IntIntTuple) IntIntMap {
+	mm := newIntIntMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -66,7 +65,7 @@ func NewSyncIntIntMap(kv ...SyncIntIntTuple) SyncIntIntMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm SyncIntIntMap) Keys() []int {
+func (mm IntIntMap) Keys() []int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -78,7 +77,7 @@ func (mm SyncIntIntMap) Keys() []int {
 }
 
 // Values returns the values of the current map as a slice.
-func (mm SyncIntIntMap) Values() []int {
+func (mm IntIntMap) Values() []int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -90,19 +89,19 @@ func (mm SyncIntIntMap) Values() []int {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm SyncIntIntMap) ToSlice() []SyncIntIntTuple {
+func (mm IntIntMap) ToSlice() []IntIntTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []SyncIntIntTuple
+	var s []IntIntTuple
 	for k, v := range mm.m {
-		s = append(s, SyncIntIntTuple{k, v})
+		s = append(s, IntIntTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm SyncIntIntMap) Get(k int) (int, bool) {
+func (mm IntIntMap) Get(k int) (int, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -111,7 +110,7 @@ func (mm SyncIntIntMap) Get(k int) (int, bool) {
 }
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm SyncIntIntMap) Put(k int, v int) bool {
+func (mm IntIntMap) Put(k int, v int) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -121,7 +120,7 @@ func (mm SyncIntIntMap) Put(k int, v int) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm SyncIntIntMap) ContainsKey(k int) bool {
+func (mm IntIntMap) ContainsKey(k int) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -130,7 +129,7 @@ func (mm SyncIntIntMap) ContainsKey(k int) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm SyncIntIntMap) ContainsAllKeys(kk ...int) bool {
+func (mm IntIntMap) ContainsAllKeys(kk ...int) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -143,7 +142,7 @@ func (mm SyncIntIntMap) ContainsAllKeys(kk ...int) bool {
 }
 
 // Clear clears the entire map.
-func (mm *SyncIntIntMap) Clear() {
+func (mm *IntIntMap) Clear() {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -151,7 +150,7 @@ func (mm *SyncIntIntMap) Clear() {
 }
 
 // Remove a single item from the map.
-func (mm SyncIntIntMap) Remove(k int) {
+func (mm IntIntMap) Remove(k int) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -159,7 +158,7 @@ func (mm SyncIntIntMap) Remove(k int) {
 }
 
 // Pop removes a single item from the map, returning the value present until removal.
-func (mm SyncIntIntMap) Pop(k int) (int, bool) {
+func (mm IntIntMap) Pop(k int) (int, bool) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -169,7 +168,7 @@ func (mm SyncIntIntMap) Pop(k int) (int, bool) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm SyncIntIntMap) Size() int {
+func (mm IntIntMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -177,25 +176,25 @@ func (mm SyncIntIntMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm SyncIntIntMap) IsEmpty() bool {
+func (mm IntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm SyncIntIntMap) NonEmpty() bool {
+func (mm IntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
-func (mm SyncIntIntMap) DropWhere(fn func(int, int) bool) SyncIntIntTuples {
+func (mm IntIntMap) DropWhere(fn func(int, int) bool) IntIntTuples {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	removed := make(SyncIntIntTuples, 0)
+	removed := make(IntIntTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-			removed = append(removed, SyncIntIntTuple{k, v})
+			removed = append(removed, IntIntTuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -204,7 +203,7 @@ func (mm SyncIntIntMap) DropWhere(fn func(int, int) bool) SyncIntIntTuples {
 
 // Foreach applies a function to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm SyncIntIntMap) Foreach(fn func(int, int)) {
+func (mm IntIntMap) Foreach(fn func(int, int)) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -219,7 +218,7 @@ func (mm SyncIntIntMap) Foreach(fn func(int, int)) {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm SyncIntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm IntIntMap) Forall(fn func(int, int) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -234,7 +233,7 @@ func (mm SyncIntIntMap) Forall(fn func(int, int) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm SyncIntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm IntIntMap) Exists(fn func(int, int) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -248,23 +247,23 @@ func (mm SyncIntIntMap) Exists(fn func(int, int) bool) bool {
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (mm SyncIntIntMap) Find(fn func(int, int) bool) (SyncIntIntTuple, bool) {
+func (mm IntIntMap) Find(fn func(int, int) bool) (IntIntTuple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
 		if fn(k, v) {
-			return SyncIntIntTuple{k, v}, true
+			return IntIntTuple{k, v}, true
 		}
 	}
 
-	return SyncIntIntTuple{}, false
+	return IntIntTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm SyncIntIntMap) Filter(fn func(int, int) bool) SyncIntIntMap {
-	result := NewSyncIntIntMap()
+func (mm IntIntMap) Filter(fn func(int, int) bool) IntIntMap {
+	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -279,9 +278,9 @@ func (mm SyncIntIntMap) Filter(fn func(int, int) bool) SyncIntIntMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm SyncIntIntMap) Partition(fn func(int, int) bool) (matching SyncIntIntMap, others SyncIntIntMap) {
-	matching = NewSyncIntIntMap()
-	others = NewSyncIntIntMap()
+func (mm IntIntMap) Partition(fn func(int, int) bool) (matching IntIntMap, others IntIntMap) {
+	matching = NewIntIntMap()
+	others = NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -295,50 +294,49 @@ func (mm SyncIntIntMap) Partition(fn func(int, int) bool) (matching SyncIntIntMa
 	return
 }
 
-// Map returns a new SyncIntMap by transforming every element with a function fn.
+// Map returns a new IntMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SyncIntIntMap) Map(fn func(int, int) (int, int)) SyncIntIntMap {
-	result := NewSyncIntIntMap()
+func (mm IntIntMap) Map(fn func(int, int) (int, int)) IntIntMap {
+	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
 }
 
-// FlatMap returns a new SyncIntMap by transforming every element with a function fn that
+// FlatMap returns a new IntMap by transforming every element with a function fn that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SyncIntIntMap) FlatMap(fn func(int, int) []SyncIntIntTuple) SyncIntIntMap {
-	result := NewSyncIntIntMap()
+func (mm IntIntMap) FlatMap(fn func(int, int) []IntIntTuple) IntIntMap {
+	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result
 }
 
-
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm SyncIntIntMap) Equals(other SyncIntIntMap) bool {
+func (mm IntIntMap) Equals(other IntIntMap) bool {
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -357,8 +355,8 @@ func (mm SyncIntIntMap) Equals(other SyncIntIntMap) bool {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm SyncIntIntMap) Clone() SyncIntIntMap {
-	result := NewSyncIntIntMap()
+func (mm IntIntMap) Clone() IntIntMap {
+	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -368,29 +366,28 @@ func (mm SyncIntIntMap) Clone() SyncIntIntMap {
 	return result
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
-func (mm SyncIntIntMap) String() string {
+func (mm IntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm SyncIntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm IntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm SyncIntIntMap) MkString(sep string) string {
+func (mm IntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm SyncIntIntMap) MkString3(before, between, after string) string {
+func (mm IntIntMap) MkString3(before, between, after string) string {
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm SyncIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (mm IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -406,4 +403,3 @@ func (mm SyncIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buf
 	b.WriteString(after)
 	return b
 }
-

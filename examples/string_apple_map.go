@@ -7,58 +7,57 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 	"sync"
 )
 
-// SyncStringAppleMap is the primary type that represents a thread-safe map
-type SyncStringAppleMap struct {
+// StringAppleMap is the primary type that represents a thread-safe map
+type StringAppleMap struct {
 	s *sync.RWMutex
 	m map[string]Apple
 }
 
-// SyncStringAppleTuple represents a key/value pair.
-type SyncStringAppleTuple struct {
+// StringAppleTuple represents a key/value pair.
+type StringAppleTuple struct {
 	Key string
 	Val Apple
 }
 
-// SyncStringAppleTuples can be used as a builder for unmodifiable maps.
-type SyncStringAppleTuples []SyncStringAppleTuple
+// StringAppleTuples can be used as a builder for unmodifiable maps.
+type StringAppleTuples []StringAppleTuple
 
-func (ts SyncStringAppleTuples) Append1(k string, v Apple) SyncStringAppleTuples {
-	return append(ts, SyncStringAppleTuple{k, v})
+func (ts StringAppleTuples) Append1(k string, v Apple) StringAppleTuples {
+	return append(ts, StringAppleTuple{k, v})
 }
 
-func (ts SyncStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) SyncStringAppleTuples {
-	return append(ts, SyncStringAppleTuple{k1, v1}, SyncStringAppleTuple{k2, v2})
+func (ts StringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) StringAppleTuples {
+	return append(ts, StringAppleTuple{k1, v1}, StringAppleTuple{k2, v2})
 }
 
-func (ts SyncStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) SyncStringAppleTuples {
-	return append(ts, SyncStringAppleTuple{k1, v1}, SyncStringAppleTuple{k2, v2}, SyncStringAppleTuple{k3, v3})
+func (ts StringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) StringAppleTuples {
+	return append(ts, StringAppleTuple{k1, v1}, StringAppleTuple{k2, v2}, StringAppleTuple{k3, v3})
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newSyncStringAppleMap() SyncStringAppleMap {
-	return SyncStringAppleMap{
+func newStringAppleMap() StringAppleMap {
+	return StringAppleMap{
 		s: &sync.RWMutex{},
 		m: make(map[string]Apple),
 	}
 }
 
-// NewSyncStringAppleMap creates and returns a reference to a map containing one item.
-func NewSyncStringAppleMap1(k string, v Apple) SyncStringAppleMap {
-	mm := newSyncStringAppleMap()
+// NewStringAppleMap creates and returns a reference to a map containing one item.
+func NewStringAppleMap1(k string, v Apple) StringAppleMap {
+	mm := newStringAppleMap()
 	mm.m[k] = v
 	return mm
 }
 
-// NewSyncStringAppleMap creates and returns a reference to a map, optionally containing some items.
-func NewSyncStringAppleMap(kv ...SyncStringAppleTuple) SyncStringAppleMap {
-	mm := newSyncStringAppleMap()
+// NewStringAppleMap creates and returns a reference to a map, optionally containing some items.
+func NewStringAppleMap(kv ...StringAppleTuple) StringAppleMap {
+	mm := newStringAppleMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -66,7 +65,7 @@ func NewSyncStringAppleMap(kv ...SyncStringAppleTuple) SyncStringAppleMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm SyncStringAppleMap) Keys() []string {
+func (mm StringAppleMap) Keys() []string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -78,7 +77,7 @@ func (mm SyncStringAppleMap) Keys() []string {
 }
 
 // Values returns the values of the current map as a slice.
-func (mm SyncStringAppleMap) Values() []Apple {
+func (mm StringAppleMap) Values() []Apple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -90,19 +89,19 @@ func (mm SyncStringAppleMap) Values() []Apple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm SyncStringAppleMap) ToSlice() []SyncStringAppleTuple {
+func (mm StringAppleMap) ToSlice() []StringAppleTuple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []SyncStringAppleTuple
+	var s []StringAppleTuple
 	for k, v := range mm.m {
-		s = append(s, SyncStringAppleTuple{k, v})
+		s = append(s, StringAppleTuple{k, v})
 	}
 	return s
 }
 
 // Get returns one of the items in the map, if present.
-func (mm SyncStringAppleMap) Get(k string) (Apple, bool) {
+func (mm StringAppleMap) Get(k string) (Apple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -111,7 +110,7 @@ func (mm SyncStringAppleMap) Get(k string) (Apple, bool) {
 }
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm SyncStringAppleMap) Put(k string, v Apple) bool {
+func (mm StringAppleMap) Put(k string, v Apple) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -121,7 +120,7 @@ func (mm SyncStringAppleMap) Put(k string, v Apple) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm SyncStringAppleMap) ContainsKey(k string) bool {
+func (mm StringAppleMap) ContainsKey(k string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -130,7 +129,7 @@ func (mm SyncStringAppleMap) ContainsKey(k string) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm SyncStringAppleMap) ContainsAllKeys(kk ...string) bool {
+func (mm StringAppleMap) ContainsAllKeys(kk ...string) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -143,7 +142,7 @@ func (mm SyncStringAppleMap) ContainsAllKeys(kk ...string) bool {
 }
 
 // Clear clears the entire map.
-func (mm *SyncStringAppleMap) Clear() {
+func (mm *StringAppleMap) Clear() {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -151,7 +150,7 @@ func (mm *SyncStringAppleMap) Clear() {
 }
 
 // Remove a single item from the map.
-func (mm SyncStringAppleMap) Remove(k string) {
+func (mm StringAppleMap) Remove(k string) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -159,7 +158,7 @@ func (mm SyncStringAppleMap) Remove(k string) {
 }
 
 // Pop removes a single item from the map, returning the value present until removal.
-func (mm SyncStringAppleMap) Pop(k string) (Apple, bool) {
+func (mm StringAppleMap) Pop(k string) (Apple, bool) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -169,7 +168,7 @@ func (mm SyncStringAppleMap) Pop(k string) (Apple, bool) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm SyncStringAppleMap) Size() int {
+func (mm StringAppleMap) Size() int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -177,25 +176,25 @@ func (mm SyncStringAppleMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm SyncStringAppleMap) IsEmpty() bool {
+func (mm StringAppleMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm SyncStringAppleMap) NonEmpty() bool {
+func (mm StringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
-func (mm SyncStringAppleMap) DropWhere(fn func(string, Apple) bool) SyncStringAppleTuples {
+func (mm StringAppleMap) DropWhere(fn func(string, Apple) bool) StringAppleTuples {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	removed := make(SyncStringAppleTuples, 0)
+	removed := make(StringAppleTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-			removed = append(removed, SyncStringAppleTuple{k, v})
+			removed = append(removed, StringAppleTuple{k, v})
 			delete(mm.m, k)
 		}
 	}
@@ -204,7 +203,7 @@ func (mm SyncStringAppleMap) DropWhere(fn func(string, Apple) bool) SyncStringAp
 
 // Foreach applies a function to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm SyncStringAppleMap) Foreach(fn func(string, Apple)) {
+func (mm StringAppleMap) Foreach(fn func(string, Apple)) {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -219,7 +218,7 @@ func (mm SyncStringAppleMap) Foreach(fn func(string, Apple)) {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm SyncStringAppleMap) Forall(fn func(string, Apple) bool) bool {
+func (mm StringAppleMap) Forall(fn func(string, Apple) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -234,7 +233,7 @@ func (mm SyncStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm SyncStringAppleMap) Exists(fn func(string, Apple) bool) bool {
+func (mm StringAppleMap) Exists(fn func(string, Apple) bool) bool {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -248,23 +247,23 @@ func (mm SyncStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 
 // Find returns the first Apple that returns true for some function.
 // False is returned if none match.
-func (mm SyncStringAppleMap) Find(fn func(string, Apple) bool) (SyncStringAppleTuple, bool) {
+func (mm StringAppleMap) Find(fn func(string, Apple) bool) (StringAppleTuple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
 		if fn(k, v) {
-			return SyncStringAppleTuple{k, v}, true
+			return StringAppleTuple{k, v}, true
 		}
 	}
 
-	return SyncStringAppleTuple{}, false
+	return StringAppleTuple{}, false
 }
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm SyncStringAppleMap) Filter(fn func(string, Apple) bool) SyncStringAppleMap {
-	result := NewSyncStringAppleMap()
+func (mm StringAppleMap) Filter(fn func(string, Apple) bool) StringAppleMap {
+	result := NewStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -279,9 +278,9 @@ func (mm SyncStringAppleMap) Filter(fn func(string, Apple) bool) SyncStringApple
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm SyncStringAppleMap) Partition(fn func(string, Apple) bool) (matching SyncStringAppleMap, others SyncStringAppleMap) {
-	matching = NewSyncStringAppleMap()
-	others = NewSyncStringAppleMap()
+func (mm StringAppleMap) Partition(fn func(string, Apple) bool) (matching StringAppleMap, others StringAppleMap) {
+	matching = NewStringAppleMap()
+	others = NewStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -295,48 +294,48 @@ func (mm SyncStringAppleMap) Partition(fn func(string, Apple) bool) (matching Sy
 	return
 }
 
-// Map returns a new SyncAppleMap by transforming every element with a function fn.
+// Map returns a new AppleMap by transforming every element with a function fn.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SyncStringAppleMap) Map(fn func(string, Apple) (string, Apple)) SyncStringAppleMap {
-	result := NewSyncStringAppleMap()
+func (mm StringAppleMap) Map(fn func(string, Apple) (string, Apple)) StringAppleMap {
+	result := NewStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-	    k2, v2 := fn(k1, v1)
-	    result.m[k2] = v2
+		k2, v2 := fn(k1, v1)
+		result.m[k2] = v2
 	}
 
 	return result
 }
 
-// FlatMap returns a new SyncAppleMap by transforming every element with a function fn that
+// FlatMap returns a new AppleMap by transforming every element with a function fn that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SyncStringAppleMap) FlatMap(fn func(string, Apple) []SyncStringAppleTuple) SyncStringAppleMap {
-	result := NewSyncStringAppleMap()
+func (mm StringAppleMap) FlatMap(fn func(string, Apple) []StringAppleTuple) StringAppleMap {
+	result := NewStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-	    ts := fn(k1, v1)
-	    for _, t := range ts {
-            result.m[t.Key] = t.Val
-	    }
+		ts := fn(k1, v1)
+		for _, t := range ts {
+			result.m[t.Key] = t.Val
+		}
 	}
 
 	return result
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm SyncStringAppleMap) Clone() SyncStringAppleMap {
-	result := NewSyncStringAppleMap()
+func (mm StringAppleMap) Clone() StringAppleMap {
+	result := NewStringAppleMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -346,29 +345,28 @@ func (mm SyncStringAppleMap) Clone() SyncStringAppleMap {
 	return result
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
-func (mm SyncStringAppleMap) String() string {
+func (mm StringAppleMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm SyncStringAppleMap) MarshalJSON() ([]byte, error) {
+//func (mm StringAppleMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm SyncStringAppleMap) MkString(sep string) string {
+func (mm StringAppleMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm SyncStringAppleMap) MkString3(before, between, after string) string {
+func (mm StringAppleMap) MkString3(before, between, after string) string {
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm SyncStringAppleMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (mm StringAppleMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -384,4 +382,3 @@ func (mm SyncStringAppleMap) mkString3Bytes(before, between, after string) *byte
 	b.WriteString(after)
 	return b
 }
-

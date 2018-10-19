@@ -2,18 +2,18 @@
 
 package examples
 
-// SyncAppleMapToSyncInt transforms a stream of Apple to a stream of int.
+// AppleMapToInt transforms a stream of Apple to a stream of int.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
-func SyncAppleMapToSyncInt(in <-chan Apple, out chan<- int, fn func(Apple) int) {
+func AppleMapToInt(in <-chan Apple, out chan<- int, fn func(Apple) int) {
 	for v := range in {
 		out <- fn(v)
 	}
 	close(out)
 }
 
-// SyncAppleFlatMapToSyncInt transforms a stream of Apple to a stream of int.
+// AppleFlatMapToInt transforms a stream of Apple to a stream of int.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
-func SyncAppleFlatMapToSyncInt(in <-chan Apple, out chan<- int, fn func(Apple) SyncIntCollection) {
+func AppleFlatMapToInt(in <-chan Apple, out chan<- int, fn func(Apple) IntCollection) {
 	for vi := range in {
 		c := fn(vi)
 		if c.NonEmpty() {
@@ -24,4 +24,3 @@ func SyncAppleFlatMapToSyncInt(in <-chan Apple, out chan<- int, fn func(Apple) S
 	}
 	close(out)
 }
-

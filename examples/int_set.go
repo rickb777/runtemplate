@@ -7,21 +7,20 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 	"sync"
 )
 
-// SyncIntSet is the primary type that represents a set
-type SyncIntSet struct {
+// IntSet is the primary type that represents a set
+type IntSet struct {
 	s *sync.RWMutex
 	m map[int]struct{}
 }
 
-// NewSyncIntSet creates and returns a reference to an empty set.
-func NewSyncIntSet(values ...int) SyncIntSet {
-	set := SyncIntSet{
+// NewIntSet creates and returns a reference to an empty set.
+func NewIntSet(values ...int) IntSet {
+	set := IntSet{
 		s: &sync.RWMutex{},
 		m: make(map[int]struct{}),
 	}
@@ -31,11 +30,11 @@ func NewSyncIntSet(values ...int) SyncIntSet {
 	return set
 }
 
-// ConvertSyncIntSet constructs a new set containing the supplied values, if any.
+// ConvertIntSet constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned set will contain all the values that were correctly converted.
-func ConvertSyncIntSet(values ...interface{}) (SyncIntSet, bool) {
-	set := NewSyncIntSet()
+func ConvertIntSet(values ...interface{}) (IntSet, bool) {
+	set := NewIntSet()
 
 	for _, i := range values {
 		switch i.(type) {
@@ -69,10 +68,10 @@ func ConvertSyncIntSet(values ...interface{}) (SyncIntSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildSyncIntSetFromChan constructs a new SyncIntSet from a channel that supplies a sequence
+// BuildIntSetFromChan constructs a new IntSet from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func BuildSyncIntSetFromChan(source <-chan int) SyncIntSet {
-	set := NewSyncIntSet()
+func BuildIntSetFromChan(source <-chan int) IntSet {
+	set := NewIntSet()
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
@@ -80,7 +79,7 @@ func BuildSyncIntSetFromChan(source <-chan int) SyncIntSet {
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set SyncIntSet) ToSlice() []int {
+func (set IntSet) ToSlice() []int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -92,7 +91,7 @@ func (set SyncIntSet) ToSlice() []int {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set SyncIntSet) ToInterfaceSlice() []interface{} {
+func (set IntSet) ToInterfaceSlice() []interface{} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -104,8 +103,8 @@ func (set SyncIntSet) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set SyncIntSet) Clone() SyncIntSet {
-	clonedSet := NewSyncIntSet()
+func (set IntSet) Clone() IntSet {
+	clonedSet := NewIntSet()
 
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -119,27 +118,27 @@ func (set SyncIntSet) Clone() SyncIntSet {
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set SyncIntSet) IsEmpty() bool {
+func (set IntSet) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set SyncIntSet) NonEmpty() bool {
+func (set IntSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (set SyncIntSet) IsSequence() bool {
+func (set IntSet) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists.
-func (set SyncIntSet) IsSet() bool {
+func (set IntSet) IsSet() bool {
 	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set SyncIntSet) Size() int {
+func (set IntSet) Size() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -147,14 +146,14 @@ func (set SyncIntSet) Size() int {
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set SyncIntSet) Cardinality() int {
+func (set IntSet) Cardinality() int {
 	return set.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set.
-func (set SyncIntSet) Add(more ...int) {
+func (set IntSet) Add(more ...int) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -163,12 +162,12 @@ func (set SyncIntSet) Add(more ...int) {
 	}
 }
 
-func (set SyncIntSet) doAdd(i int) {
+func (set IntSet) doAdd(i int) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
-func (set SyncIntSet) Contains(i int) bool {
+func (set IntSet) Contains(i int) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -177,7 +176,7 @@ func (set SyncIntSet) Contains(i int) bool {
 }
 
 // ContainsAll determines if the given items are all in the set.
-func (set SyncIntSet) ContainsAll(i ...int) bool {
+func (set IntSet) ContainsAll(i ...int) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -192,7 +191,7 @@ func (set SyncIntSet) ContainsAll(i ...int) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines if every item in the other set is in this set.
-func (set SyncIntSet) IsSubset(other SyncIntSet) bool {
+func (set IntSet) IsSubset(other IntSet) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -207,12 +206,12 @@ func (set SyncIntSet) IsSubset(other SyncIntSet) bool {
 }
 
 // IsSuperset determines if every item of this set is in the other set.
-func (set SyncIntSet) IsSuperset(other SyncIntSet) bool {
+func (set IntSet) IsSuperset(other IntSet) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set SyncIntSet) Union(other SyncIntSet) SyncIntSet {
+func (set IntSet) Union(other IntSet) IntSet {
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -225,8 +224,8 @@ func (set SyncIntSet) Union(other SyncIntSet) SyncIntSet {
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set SyncIntSet) Intersect(other SyncIntSet) SyncIntSet {
-	intersection := NewSyncIntSet()
+func (set IntSet) Intersect(other IntSet) IntSet {
+	intersection := NewIntSet()
 
 	set.s.RLock()
 	other.s.RLock()
@@ -251,8 +250,8 @@ func (set SyncIntSet) Intersect(other SyncIntSet) SyncIntSet {
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set SyncIntSet) Difference(other SyncIntSet) SyncIntSet {
-	differencedSet := NewSyncIntSet()
+func (set IntSet) Difference(other IntSet) IntSet {
+	differencedSet := NewIntSet()
 
 	set.s.RLock()
 	other.s.RLock()
@@ -268,14 +267,14 @@ func (set SyncIntSet) Difference(other SyncIntSet) SyncIntSet {
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set SyncIntSet) SymmetricDifference(other SyncIntSet) SyncIntSet {
+func (set IntSet) SymmetricDifference(other IntSet) IntSet {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
 }
 
 // Clear clears the entire set to be the empty set.
-func (set *SyncIntSet) Clear() {
+func (set *IntSet) Clear() {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -283,7 +282,7 @@ func (set *SyncIntSet) Clear() {
 }
 
 // Remove removes a single item from the set.
-func (set SyncIntSet) Remove(i int) {
+func (set IntSet) Remove(i int) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -294,7 +293,7 @@ func (set SyncIntSet) Remove(i int) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set SyncIntSet) Send() <-chan int {
+func (set IntSet) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
 		set.s.RLock()
@@ -317,7 +316,7 @@ func (set SyncIntSet) Send() <-chan int {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set SyncIntSet) Forall(fn func(int) bool) bool {
+func (set IntSet) Forall(fn func(int) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -332,7 +331,7 @@ func (set SyncIntSet) Forall(fn func(int) bool) bool {
 // Exists applies a predicate function to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set SyncIntSet) Exists(fn func(int) bool) bool {
+func (set IntSet) Exists(fn func(int) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -346,7 +345,7 @@ func (set SyncIntSet) Exists(fn func(int) bool) bool {
 
 // Foreach iterates over intSet and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
-func (set SyncIntSet) Foreach(fn func(int)) {
+func (set IntSet) Foreach(fn func(int)) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -359,7 +358,7 @@ func (set SyncIntSet) Foreach(fn func(int)) {
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (set SyncIntSet) Find(fn func(int) bool) (int, bool) {
+func (set IntSet) Find(fn func(int) bool) (int, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -369,17 +368,16 @@ func (set SyncIntSet) Find(fn func(int) bool) (int, bool) {
 		}
 	}
 
-
 	var empty int
 	return empty, false
 
 }
 
-// Filter returns a new SyncIntSet whose elements return true for func.
+// Filter returns a new IntSet whose elements return true for func.
 //
 // The original set is not modified
-func (set SyncIntSet) Filter(fn func(int) bool) SyncIntSet {
-	result := NewSyncIntSet()
+func (set IntSet) Filter(fn func(int) bool) IntSet {
+	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -397,9 +395,9 @@ func (set SyncIntSet) Filter(fn func(int) bool) SyncIntSet {
 // original list.
 //
 // The original set is not modified
-func (set SyncIntSet) Partition(p func(int) bool) (SyncIntSet, SyncIntSet) {
-	matching := NewSyncIntSet()
-	others := NewSyncIntSet()
+func (set IntSet) Partition(p func(int) bool) (IntSet, IntSet) {
+	matching := NewIntSet()
+	others := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -413,45 +411,45 @@ func (set SyncIntSet) Partition(p func(int) bool) (SyncIntSet, SyncIntSet) {
 	return matching, others
 }
 
-// Map returns a new SyncIntSet by transforming every element with a function fn.
+// Map returns a new IntSet by transforming every element with a function fn.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SyncIntSet) Map(fn func(int) int) SyncIntSet {
-	result := NewSyncIntSet()
+func (set IntSet) Map(fn func(int) int) IntSet {
+	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-        result.m[fn(v)] = struct{}{}
+		result.m[fn(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new SyncIntSet by transforming every element with a function fn that
+// FlatMap returns a new IntSet by transforming every element with a function fn that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SyncIntSet) FlatMap(fn func(int) []int) SyncIntSet {
-	result := NewSyncIntSet()
+func (set IntSet) FlatMap(fn func(int) []int) IntSet {
+	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v, _ := range set.m {
-	    for _, x := range fn(v) {
-            result.m[x] = struct{}{}
-	    }
+		for _, x := range fn(v) {
+			result.m[x] = struct{}{}
+		}
 	}
 
 	return result
 }
 
-// CountBy gives the number elements of SyncIntSet that return true for the passed predicate.
-func (set SyncIntSet) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of IntSet that return true for the passed predicate.
+func (set IntSet) CountBy(predicate func(int) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -463,13 +461,12 @@ func (set SyncIntSet) CountBy(predicate func(int) bool) (result int) {
 	return
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set SyncIntSet) Min() int {
+func (set IntSet) Min() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -488,7 +485,7 @@ func (set SyncIntSet) Min() int {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set SyncIntSet) Max() (result int) {
+func (set IntSet) Max() (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -505,12 +502,11 @@ func (set SyncIntSet) Max() (result int) {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
 // Sum returns the sum of all the elements in the set.
-func (set SyncIntSet) Sum() int {
+func (set IntSet) Sum() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -526,7 +522,7 @@ func (set SyncIntSet) Sum() int {
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set SyncIntSet) Equals(other SyncIntSet) bool {
+func (set IntSet) Equals(other IntSet) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -543,11 +539,10 @@ func (set SyncIntSet) Equals(other SyncIntSet) bool {
 	return true
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (set SyncIntSet) StringList() []string {
+func (set IntSet) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -561,26 +556,26 @@ func (set SyncIntSet) StringList() []string {
 }
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (set SyncIntSet) String() string {
+func (set IntSet) String() string {
 	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
 // implements json.Marshaler interface {
-func (set SyncIntSet) MarshalJSON() ([]byte, error) {
+func (set IntSet) MarshalJSON() ([]byte, error) {
 	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (set SyncIntSet) MkString(sep string) string {
+func (set IntSet) MkString(sep string) string {
 	return set.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set SyncIntSet) MkString3(before, between, after string) string {
+func (set IntSet) MkString3(before, between, after string) string {
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set SyncIntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (set IntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -599,11 +594,10 @@ func (set SyncIntSet) mkString3Bytes(before, between, after string) *bytes.Buffe
 
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
-func (set SyncIntSet) StringMap() map[string]bool {
+func (set IntSet) StringMap() map[string]bool {
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true
 	}
 	return strings
 }
-

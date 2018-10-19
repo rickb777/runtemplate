@@ -1,5 +1,7 @@
 # runtemplate built-in templates
 
+[![GoDoc-Examples](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate/examples)
+
 A selection of built-in templates is included with `runtemplate`. These provide type-safe collection types. Their API style has been loosely influenced by the excellent Scala collection classes.
 
 There are several main categories:
@@ -11,6 +13,8 @@ There are several main categories:
 The threadsafe collections and non-threadsafe collections are generally not intended to be used together directly, although it is possible to transfer content from either collections of one category to collections of the other category.
 
 If you want to mix both categories, you will need to generate the output code with different prefixes or in different packages. To set a prefix, pass `Prefix=Abc` or similar to `runtemplate`. To do the latter, specify different directories for the generated code via `-output`.
+
+In the description that follows, examples are given of applying the templates to two types, `int` and `Apple`; the latter is a placeholder for any other type (it's actually an empty struct).
 
 
 ## General Flags
@@ -62,7 +66,9 @@ Example use:
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
 
-Examples: [IntList](examples/simple_int_list.go), [AppleList](examples/simple_apple_list.go)
+Examples:
+ * **IntList** [source](examples/simple_int_list.go) / [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#SimpleIntList)
+ * **AppleList** [source](examples/simple_apple_list.go) / [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#SimpleAppleList)
 
 
 ### simple/set.tpl
@@ -78,7 +84,9 @@ Example use:
 
 The generated code is simple wrapper around a map of the type: the set elements are used as map keys; the map uses zero-size values. It is not suitable for access by more than one goroutine at a time.
 
-Examples: [IntSet](examples/simple_int_set.go), [AppleSet](examples/simple_apple_set.go)
+Examples:
+ * **IntSet** [source](examples/simple_int_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#SimpleIntSet) 
+ * **AppleSet** [source](examples/simple_apple_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#SimpleAppleSet)
 
 
 ### simple/map.tpl
@@ -96,7 +104,9 @@ The generated code is a simple wrapper around a map of the key and type. It not 
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
-Examples: [IntIntMap](examples/simple/sx_int_int_map.go), [AppleStringMap](examples/simple/sx_apple_string_map.go)
+Examples:
+ * **IntIntMap** [source](examples/simple_int_int_map.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#SimpleIntIntMap)
+ * **StringAppleMap** [source](examples/simple_string_apple_map.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#SimpleStringAppleMap)
 
 
 ## 2. Encapsulated Collections - Mutable
@@ -126,8 +136,10 @@ Example use:
 ```
 
 Examples: 
-Fast:       [IntList](examples/fast_int_list.go), [AppleList](examples/fast_apple_list.go).
-Threadsafe: [IntList](examples/sync_int_list.go), [AppleList](examples/sync_apple_list.go).
+ * Fast **IntList** [source](examples/fast_int_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastIntList)
+ * Fast **AppleList** [source](examples/fast_apple_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastAppleList)
+ * Threadsafe **IntList** [source](examples/int_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#IntList)
+ * Threadsafe **AppleList** [source](examples/apple_list.go)  [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleList)
 
 
 ### fast/set.tpl and threadsafe/set.tpl
@@ -143,8 +155,10 @@ Example use:
 ```
 
 Examples:
-Fast:       [IntSet](examples/fast_int_set.go), [AppleSet](examples/fast_apple_set.go).
-Threadsafe: [IntSet](examples/sync_int_set.go), [AppleSet](examples/sync_apple_set.go).
+ * Fast **IntSet** [source](examples/fast_int_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastIntSet)
+ * Fast **AppleSet** [source](examples/fast_apple_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastAppleSet)
+ * Threadsafe **IntSet** [source](examples/int_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#IntSet)
+ * Threadsafe **AppleSet** [source](examples/apple_set.go)  [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleSet)
 
 
 ### fast/map.tpl and threadsafe/map.tpl
@@ -162,8 +176,10 @@ Example use:
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
 Examples:
-Fast:       [IntIntMap](examples/fast_int_int_list.go), [AppleStringMap](examples/fast_apple_string_map.go).
-Threadsafe: [IntIntMap](examples/sync_int_int_list.go), [AppleStringMap](examples/sync_apple_string_map.go).
+ * Fast **IntIntMap** [source](examples/fast_int_int_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastIntIntMap)
+ * Fast **StringAppleMap** [source](examples/fast_string_apple_map.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastStringAppleMap)
+ * Threadsafe **IntIntMap** [source](examples/int_int_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#IntIntMap)
+ * Threadsafe **StringAppleMap** [source](examples/string_apple_map.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#StringAppleMap)
 
 
 ### fast/collection.tpl and threadsafe/collection.tpl
@@ -178,8 +194,10 @@ Example use:
 //go:generate runtemplate -tpl threadsafe/collection.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 Examples:
-Fast:       [IntCollection](examples/fast_int_collection.go), [AppleCollection](examples/fast_apple_collection.go),
-Threadsafe: [IntCollection](examples/sync_int_collection.go), [AppleCollection](examples/sync_apple_collection.go),
+ * Fast **IntCollection** [source](examples/fast_int_collection.go)  [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastIntCollection)
+ * Fast **AppleCollection** [source](examples/fast_apple_collection.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastAppleCollection)
+ * Threadsafe **IntCollection** [source](examples/int_collection.go)  [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#IntCollection)
+ * Threadsafe **AppleCollection** [source](examples/apple_collection.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleCollection)
 
 
 ## 3. Encapsulated Collections - Immutable
@@ -200,7 +218,9 @@ Example use:
 //go:generate runtemplate -tpl immutable/list.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
-Examples: [IntList](examples/immutable_int_list.go), [AppleList](examples/immutable_apple_list.go).
+Examples:
+ * **IntList** [source](examples/immutable_int_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableIntList)
+ * **AppleList** [source](examples/immutable_apple_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableAppleList)
 
 
 ### immutable/set.tpl
@@ -214,7 +234,9 @@ Example use:
 //go:generate runtemplate -tpl immutable/set.tpl  Type=int  Stringer:true Ordered:true Numeric:true
 ```
 
-Examples: [IntSet](examples/immutable_int_set.go), [AppleSet](examples/immutable_apple_set.go).
+Examples:
+ * **IntSet** [source](examples/immutable_int_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableIntSet)
+ * **AppleSet** [source](examples/immutable_apple_set.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableAppleSet)
 
 
 ### immutable/map.tpl
@@ -230,7 +252,9 @@ Example use:
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
-Examples: [IntIntMap](examples/immutable_int_int_list.go), [AppleStringMap](examples/immutable_apple_string_map.go).
+Examples:
+ * **IntIntMap** [source](examples/immutable_int_int_list.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableIntIntMap)
+ * **AppleStringMap** [source](examples/immutable_string_apple_map.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableStringAppleMap)
 
 
 ### immutable/collection.tpl
@@ -243,7 +267,9 @@ Example use:
 ```
 //go:generate runtemplate -tpl immutable/collection.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
-Examples: [IntCollection](examples/immutable_int_collection.go), [AppleCollection](examples/immutable_apple_collection.go),
+Examples:
+ * **IntCollection** [source](examples/immutable_int_collection.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableIntCollection)
+ * **AppleCollection** [source](examples/immutable_apple_collection.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#ImmutableAppleCollection)
 
 
 ## 4. Channel-based Plumbing
@@ -268,7 +294,8 @@ Example use:
 ```
 //go:generate runtemplate -tpl plumbing/plumbing.tpl Type=int
 ```
-Example: [ApplePlumbing](examples/apple_sync_plumbing.go).
+Example:
+ * **ApplePlumbing** [source](examples/apple_plumbing.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleBlackHole)
 
 
 ### plumbing/mapTo.tpl
@@ -284,7 +311,8 @@ Example use:
 ```
 //go:generate runtemplate -tpl plumbing/mapTo.tpl Type=Apple ToType=int
 ```
-Example: [AppleMapToInt](examples/apple_sync_sync_int_mapto.go).
+Example:
+ * **AppleMapToInt** [source](examples/apple_int_mapto.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleFlatMap)
 
 
 ## 5. Stringy Types
@@ -299,4 +327,4 @@ They also provide methods to make them compatible with the SQL and marshalling A
 
 Finally, they can provide a sorting utility `sort.Interface` implementation. This is only generated when `SortableSlice:true` is specified.
 
-Example: [Email](examples/email_stringy.go).
+Example: [Email source](examples/email_stringy.go).
