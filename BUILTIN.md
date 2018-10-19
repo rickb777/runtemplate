@@ -57,12 +57,12 @@ The supported options are: Comparable, Ordered, Numeric, Stringer. The generated
 Example use:
 
 ```
-//go:generate runtemplate -tpl simple/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl simple/list.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 The generated code is a simple wrapper around a slice of the type. It is not suitable for access by more than one goroutine at a time.
 
-Examples: [IntList](examples/simple/x_int_list.go), [StringList](examples/simple/x_string_list.go)
+Examples: [IntList](examples/simple_int_list.go), [AppleList](examples/simple_apple_list.go)
 
 
 ### simple/set.tpl
@@ -73,12 +73,12 @@ The supported options are: Numeric, Stringer. The generated types are always mut
 
 Example use:
 ```
-//go:generate runtemplate -tpl simple/set.tpl Type=int Stringer:true Numeric:true
+//go:generate runtemplate -tpl simple/set.tpl  Type=int  Stringer:true Ordered:true  Numeric:true
 ```
 
 The generated code is simple wrapper around a map of the type: the set elements are used as map keys; the map uses zero-size values. It is not suitable for access by more than one goroutine at a time.
 
-Examples: [IntSet](examples/simple/x_int_set.go), [StringSet](examples/simple/x_string_set.go)
+Examples: [IntSet](examples/simple_int_set.go), [AppleSet](examples/simple_apple_set.go)
 
 
 ### simple/map.tpl
@@ -89,14 +89,14 @@ The supported options are: Comparable, Numeric, Stringer. The generated types ar
 
 Example use:
 ```
-//go:generate runtemplate -tpl simple/map.tpl Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
+//go:generate runtemplate -tpl simple/map.tpl  Key=int Type=int  Comparable:true Stringer:true
 ```
 
 The generated code is a simple wrapper around a map of the key and type. It not suitable for access by more than one goroutine at a time.
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
-Examples: [IntIntMap](examples/simple/sx_int_int_map.go), [StringStringMap](examples/simple/sx_string_string_map.go)
+Examples: [IntIntMap](examples/simple/sx_int_int_map.go), [AppleStringMap](examples/simple/sx_apple_string_map.go)
 
 
 ## 2. Encapsulated Collections - Mutable
@@ -121,13 +121,13 @@ The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/list.tpl       Type=int Stringer:true Comparable:true Ordered:true Numeric:true
-//go:generate runtemplate -tpl threadsafe/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl fast/list.tpl        Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/list.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
 Examples: 
-Fast:       [IntList](examples/fast/x_int_list.go),       [StringList](examples/fast/x_string_list.go).
-Threadsafe: [IntList](examples/threadsafe/x_int_list.go), [StringList](examples/threadsafe/x_string_list.go).
+Fast:       [IntList](examples/fast_int_list.go), [AppleList](examples/fast_apple_list.go).
+Threadsafe: [IntList](examples/sync_int_list.go), [AppleList](examples/sync_apple_list.go).
 
 
 ### fast/set.tpl and threadsafe/set.tpl
@@ -138,13 +138,13 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/set.tpl       Type=int Stringer:true Comparable:true Ordered:true Numeric:true
-//go:generate runtemplate -tpl threadsafe/set.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl fast/set.tpl        Type=int  Stringer:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/set.tpl  Type=int  Stringer:true Ordered:true Numeric:true
 ```
 
 Examples:
-Fast:       [IntSet](examples/fast/x_int_set.go),       [StringSet](examples/fast/x_string_set.go).
-Threadsafe: [IntSet](examples/threadsafe/x_int_set.go), [StringSet](examples/threadsafe/x_string_set.go).
+Fast:       [IntSet](examples/fast_int_set.go), [AppleSet](examples/fast_apple_set.go).
+Threadsafe: [IntSet](examples/sync_int_set.go), [AppleSet](examples/sync_apple_set.go).
 
 
 ### fast/map.tpl and threadsafe/map.tpl
@@ -155,15 +155,15 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/map.tpl       Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
-//go:generate runtemplate -tpl threadsafe/map.tpl Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
+//go:generate runtemplate -tpl fast/map.tpl        Key=int Type=int  Comparable:true Stringer:true
+//go:generate runtemplate -tpl threadsafe/map.tpl  Key=int Type=int  Comparable:true Stringer:true
 ```
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
 Examples:
-Fast:       [IntIntMap](examples/fast/x1_int_int_list.go),       [StringStringMap](examples/fast/x1_string_string_map.go).
-Threadsafe: [IntIntMap](examples/threadsafe/x1_int_int_list.go), [StringStringMap](examples/threadsafe/x1_string_string_map.go).
+Fast:       [IntIntMap](examples/fast_int_int_list.go), [AppleStringMap](examples/fast_apple_string_map.go).
+Threadsafe: [IntIntMap](examples/sync_int_int_list.go), [AppleStringMap](examples/sync_apple_string_map.go).
 
 
 ### fast/collection.tpl and threadsafe/collection.tpl
@@ -174,12 +174,12 @@ The **list** and **set** templates (above) both implement this interface.
 
 Example use:
 ```
-//go:generate runtemplate -tpl fast/collection.tpl       Type=int Stringer:true Comparable:true Ordered:true Numeric:true
-//go:generate runtemplate -tpl threadsafe/collection.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl fast/collection.tpl        Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl threadsafe/collection.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 Examples:
-Fast:       [IntCollection](examples/fast/x1_int_collection.go),       [StringCollection](examples/fast/x1_string_collection.go),
-Threadsafe: [IntCollection](examples/threadsafe/x1_int_collection.go), [StringCollection](examples/threadsafe/x1_string_collection.go),
+Fast:       [IntCollection](examples/fast_int_collection.go), [AppleCollection](examples/fast_apple_collection.go),
+Threadsafe: [IntCollection](examples/sync_int_collection.go), [AppleCollection](examples/sync_apple_collection.go),
 
 
 ## 3. Encapsulated Collections - Immutable
@@ -197,10 +197,10 @@ The supported options are: Comparable, Ordered, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/list.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl immutable/list.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
 
-Examples: [IntList](examples/immutable/x1_int_list.go), [StringList](examples/immutable/x1_string_list.go).
+Examples: [IntList](examples/immutable_int_list.go), [AppleList](examples/immutable_apple_list.go).
 
 
 ### immutable/set.tpl
@@ -211,10 +211,10 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/set.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl immutable/set.tpl  Type=int  Stringer:true Ordered:true Numeric:true
 ```
 
-Examples: [IntSet](examples/immutable/x1_int_set.go), [StringSet](examples/immutable/x1_string_set.go).
+Examples: [IntSet](examples/immutable_int_set.go), [AppleSet](examples/immutable_apple_set.go).
 
 
 ### immutable/map.tpl
@@ -225,12 +225,12 @@ The supported options are: Comparable, Numeric, Stringer.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/map.tpl Key=string Type=int Stringer:true Comparable:true Numeric:true KeySlice:sort.StringSlice
+//go:generate runtemplate -tpl immutable/map.tpl  Key=int Type=int  Comparable:true Stringer:true
 ```
 
 A tuple type is also generated: this is a struct that pairs up the key and value. A slice of such structs can be converted to and from the map type (assuming there are no duplicates), so the generated methods provide for this.
 
-Examples: [IntIntMap](examples/immutable/x1_int_int_list.go), [StringStringMap](examples/immutable/x1_string_string_map.go).
+Examples: [IntIntMap](examples/immutable_int_int_list.go), [AppleStringMap](examples/immutable_apple_string_map.go).
 
 
 ### immutable/collection.tpl
@@ -241,9 +241,9 @@ The **list** and **set** templates (above) both implement this interface.
 
 Example use:
 ```
-//go:generate runtemplate -tpl immutable/collection.tpl Type=int Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl immutable/collection.tpl  Type=int  Stringer:true Comparable:true Ordered:true Numeric:true
 ```
-Examples: [IntCollection](examples/immutable/x1_int_collection.go), [StringCollection](examples/immutable/x1_string_collection.go),
+Examples: [IntCollection](examples/immutable_int_collection.go), [AppleCollection](examples/immutable_apple_collection.go),
 
 
 ## 4. Channel-based Plumbing
@@ -268,7 +268,7 @@ Example use:
 ```
 //go:generate runtemplate -tpl plumbing/plumbing.tpl Type=int
 ```
-Example: [ApplePlumbing](examples/threadsafe/x1_apple_plumbing.go).
+Example: [ApplePlumbing](examples/apple_sync_plumbing.go).
 
 
 ### plumbing/mapTo.tpl
@@ -282,9 +282,9 @@ Both of them terminate their loops when their input channels get closed. They th
 
 Example use:
 ```
-//go:generate runtemplate -tpl plumbing/mapTo.tpl Type=Apple ToType=Pear
+//go:generate runtemplate -tpl plumbing/mapTo.tpl Type=Apple ToType=int
 ```
-Example: [ApplePearMapTo](examples/threadsafe/x1_apple_x1_pear_mapto).
+Example: [AppleMapToInt](examples/apple_sync_sync_int_mapto.go).
 
 
 ## 5. Stringy Types
@@ -298,3 +298,5 @@ The stringy types provide some of the stanrdard `strings` functions as methods.
 They also provide methods to make them compatible with the SQL and marshalling APIs, just like ordinary strings.
 
 Finally, they can provide a sorting utility `sort.Interface` implementation. This is only generated when `SortableSlice:true` is specified.
+
+Example: [Email](examples/email_stringy.go).

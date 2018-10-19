@@ -341,7 +341,7 @@ LKf3lOQwpNb1nwAAAP//eD8A15kLAAA=
 					Name:    "list.tpl",
 					Size:    28383,
 					Mode:    os.FileMode(420),
-					ModTime: 1539961303,
+					ModTime: 1539962980,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Q97W4cN5K/Z56iosNle+yZke0scgvZCuDE613fxUlw8iI4eIUDp5ujYdxNtkm2pMns
@@ -445,7 +445,7 @@ ZPxfAAAA//+FMFMB324AAA==
 						Name:    "map.tpl",
 						Size:    12153,
 						Mode:    os.FileMode(420),
-						ModTime: 1539961303,
+						ModTime: 1539962980,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xabY/bNvJ/bX+KiYH+IRdab7N5t3/sAW2v6fXSpIvbXPsiDQLaGq0JS6SOpLxRVH33
@@ -503,7 +503,7 @@ Z/d9DOvwihXbxc+9611azdlr57pvTx6LxfzWyzR3i6vCSOXSaPbV9vyr7Szm6EwMs+QXLajETPsly4NR
 						Name:    "set.tpl",
 						Size:    16852,
 						Mode:    os.FileMode(420),
-						ModTime: 1539961303,
+						ModTime: 1539962980,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+Q77a7bRna/paeYFdAulejK2fUiWLi5C9hu3LpYO0ZvFv3hNYIReXg1NTnDzAx1ryII
@@ -579,7 +579,7 @@ AA==
 						Name:    "collection.tpl",
 						Size:    4406,
 						Mode:    os.FileMode(420),
-						ModTime: 1539961303,
+						ModTime: 1539962980,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/8xYz27cthM+r55ijlpgLR9yy+/Xg2MkrYvYMeD0FOQwK412WVOkQlL7J4KAPEb7enmS
