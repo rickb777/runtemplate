@@ -19,7 +19,6 @@ type ImmutableAppleSizer interface {
 type ImmutableAppleCollection interface {
 	ImmutableAppleSizer
 
-
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
@@ -52,7 +51,7 @@ type ImmutableAppleCollection interface {
 	// CountBy gives the number elements of ImmutableAppleCollection that return true for the passed predicate.
 	CountBy(predicate func(Apple) bool) int
 
-// MinBy returns an element of ImmutableAppleCollection containing the minimum value, when compared to other elements
+	// MinBy returns an element of ImmutableAppleCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 	// element is returned. Panics if there are no elements.
 	MinBy(less func(Apple, Apple) bool) Apple
@@ -61,5 +60,4 @@ type ImmutableAppleCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(Apple, Apple) bool) Apple
-
 }

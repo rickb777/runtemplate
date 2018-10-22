@@ -397,7 +397,7 @@ func (set AppleSet) Map(fn func(Apple) Apple) AppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 

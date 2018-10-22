@@ -27,16 +27,17 @@ type IntList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newIntList(len, cap int) *IntList {
+// MakeIntList makes an empty list with both length and capacity initialised.
+func MakeIntList(length, capacity int) *IntList {
 	return &IntList{
 		s: &sync.RWMutex{},
-		m: make([]int, len, cap),
+		m: make([]int, length, capacity),
 	}
 }
 
 // NewIntList constructs a new list containing the supplied values, if any.
 func NewIntList(values ...int) *IntList {
-	result := newIntList(len(values), len(values))
+	result := MakeIntList(len(values), len(values))
 	copy(result.m, values)
 	return result
 }
@@ -45,7 +46,7 @@ func NewIntList(values ...int) *IntList {
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertIntList(values ...interface{}) (*IntList, bool) {
-	result := newIntList(0, len(values))
+	result := MakeIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
@@ -82,7 +83,7 @@ func ConvertIntList(values ...interface{}) (*IntList, bool) {
 // BuildIntListFromChan constructs a new IntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildIntListFromChan(source <-chan int) *IntList {
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
 	}
@@ -151,7 +152,7 @@ func (list *IntList) Tail() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
@@ -162,7 +163,7 @@ func (list *IntList) Init() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
@@ -483,7 +484,7 @@ func (list *IntList) Take(n int) *IntList {
 	if n > len(list.m) {
 		return list
 	}
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
@@ -500,7 +501,7 @@ func (list *IntList) Drop(n int) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
@@ -520,7 +521,7 @@ func (list *IntList) TakeLast(n int) *IntList {
 	if n > l {
 		return list
 	}
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
@@ -555,7 +556,7 @@ func (list *IntList) TakeWhile(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -575,7 +576,7 @@ func (list *IntList) DropWhile(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, 0)
+	result := MakeIntList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -604,7 +605,6 @@ func (list IntList) Find(p func(int) bool) (int, bool) {
 
 	var empty int
 	return empty, false
-
 }
 
 // Filter returns a new IntList whose elements return true for predicate p.
@@ -614,7 +614,7 @@ func (list *IntList) Filter(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, len(list.m)/2)
+	result := MakeIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -635,8 +635,8 @@ func (list *IntList) Partition(p func(int) bool) (*IntList, *IntList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := newIntList(0, len(list.m)/2)
-	others := newIntList(0, len(list.m)/2)
+	matching := MakeIntList(0, len(list.m)/2)
+	others := MakeIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -656,7 +656,7 @@ func (list *IntList) Partition(p func(int) bool) (*IntList, *IntList) {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *IntList) Map(fn func(int) int) *IntList {
-	result := newIntList(len(list.m), len(list.m))
+	result := MakeIntList(len(list.m), len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -674,7 +674,7 @@ func (list *IntList) Map(fn func(int) int) *IntList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *IntList) FlatMap(fn func(int) []int) *IntList {
-	result := newIntList(0, len(list.m))
+	result := MakeIntList(0, len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -745,7 +745,7 @@ func (list *IntList) DistinctBy(equal func(int, int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newIntList(0, len(list.m))
+	result := MakeIntList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {

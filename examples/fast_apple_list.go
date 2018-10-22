@@ -1,5 +1,4 @@
 // An encapsulated []Apple.
-// Thread-safe.
 //
 // Generated from fast/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
@@ -23,15 +22,16 @@ type FastAppleList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newFastAppleList(len, cap int) *FastAppleList {
+// MakeFastAppleList makes an empty list with both length and capacity initialised.
+func MakeFastAppleList(length, capacity int) *FastAppleList {
 	return &FastAppleList{
-		m: make([]Apple, len, cap),
+		m: make([]Apple, length, capacity),
 	}
 }
 
 // NewFastAppleList constructs a new list containing the supplied values, if any.
 func NewFastAppleList(values ...Apple) *FastAppleList {
-	result := newFastAppleList(len(values), len(values))
+	result := MakeFastAppleList(len(values), len(values))
 	copy(result.m, values)
 	return result
 }
@@ -40,7 +40,7 @@ func NewFastAppleList(values ...Apple) *FastAppleList {
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertFastAppleList(values ...interface{}) (*FastAppleList, bool) {
-	result := newFastAppleList(0, len(values))
+	result := MakeFastAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
@@ -55,7 +55,7 @@ func ConvertFastAppleList(values ...interface{}) (*FastAppleList, bool) {
 // BuildFastAppleListFromChan constructs a new FastAppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildFastAppleListFromChan(source <-chan Apple) *FastAppleList {
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
 	}
@@ -112,7 +112,7 @@ func (list *FastAppleList) Last() Apple {
 // Panics if list is empty
 func (list *FastAppleList) Tail() *FastAppleList {
 
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
@@ -121,7 +121,7 @@ func (list *FastAppleList) Tail() *FastAppleList {
 // Panics if list is empty
 func (list *FastAppleList) Init() *FastAppleList {
 
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
@@ -410,7 +410,7 @@ func (list *FastAppleList) Take(n int) *FastAppleList {
 	if n > len(list.m) {
 		return list
 	}
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
@@ -424,7 +424,7 @@ func (list *FastAppleList) Drop(n int) *FastAppleList {
 		return list
 	}
 
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
@@ -442,7 +442,7 @@ func (list *FastAppleList) TakeLast(n int) *FastAppleList {
 	if n > l {
 		return list
 	}
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
@@ -472,7 +472,7 @@ func (list *FastAppleList) DropLast(n int) *FastAppleList {
 // The original list is not modified.
 func (list *FastAppleList) TakeWhile(p func(Apple) bool) *FastAppleList {
 
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -490,7 +490,7 @@ func (list *FastAppleList) TakeWhile(p func(Apple) bool) *FastAppleList {
 // The original list is not modified.
 func (list *FastAppleList) DropWhile(p func(Apple) bool) *FastAppleList {
 
-	result := newFastAppleList(0, 0)
+	result := MakeFastAppleList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -517,7 +517,6 @@ func (list FastAppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
-
 }
 
 // Filter returns a new FastAppleList whose elements return true for predicate p.
@@ -525,7 +524,7 @@ func (list FastAppleList) Find(p func(Apple) bool) (Apple, bool) {
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *FastAppleList) Filter(p func(Apple) bool) *FastAppleList {
 
-	result := newFastAppleList(0, len(list.m)/2)
+	result := MakeFastAppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -544,8 +543,8 @@ func (list *FastAppleList) Filter(p func(Apple) bool) *FastAppleList {
 // The original list is not modified
 func (list *FastAppleList) Partition(p func(Apple) bool) (*FastAppleList, *FastAppleList) {
 
-	matching := newFastAppleList(0, len(list.m)/2)
-	others := newFastAppleList(0, len(list.m)/2)
+	matching := MakeFastAppleList(0, len(list.m)/2)
+	others := MakeFastAppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -565,7 +564,7 @@ func (list *FastAppleList) Partition(p func(Apple) bool) (*FastAppleList, *FastA
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *FastAppleList) Map(fn func(Apple) Apple) *FastAppleList {
-	result := newFastAppleList(len(list.m), len(list.m))
+	result := MakeFastAppleList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
 		result.m[i] = fn(v)
@@ -581,7 +580,7 @@ func (list *FastAppleList) Map(fn func(Apple) Apple) *FastAppleList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *FastAppleList) FlatMap(fn func(Apple) []Apple) *FastAppleList {
-	result := newFastAppleList(0, len(list.m))
+	result := MakeFastAppleList(0, len(list.m))
 
 	for _, v := range list.m {
 		result.m = append(result.m, fn(v)...)
@@ -642,7 +641,7 @@ func (list *FastAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 // DistinctBy returns a new FastAppleList whose elements are unique, where equality is defined by a passed func.
 func (list *FastAppleList) DistinctBy(equal func(Apple, Apple) bool) *FastAppleList {
 
-	result := newFastAppleList(0, len(list.m))
+	result := MakeFastAppleList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {

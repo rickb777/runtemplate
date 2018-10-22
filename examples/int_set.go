@@ -421,7 +421,7 @@ func (set IntSet) Map(fn func(int) int) IntSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 

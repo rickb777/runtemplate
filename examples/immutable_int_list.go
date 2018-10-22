@@ -25,9 +25,9 @@ type ImmutableIntList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newImmutableIntList(len, cap int) *ImmutableIntList {
+func newImmutableIntList(length, capacity int) *ImmutableIntList {
 	return &ImmutableIntList{
-		m: make([]int, len, cap),
+		m: make([]int, length, capacity),
 	}
 }
 

@@ -12,5 +12,6 @@ for tpl in list.tpl map.tpl set.tpl; do
   cat threadsafe/$tpl | \
       fgrep -v '"sync"' | fgrep -v 'sync.RWMutex' | \
       fgrep -v 's.Lock()' | fgrep -v 's.Unlock()' | \
-      fgrep -v 's.RLock()' | fgrep -v 's.RUnlock()' > fast/$tpl
+      fgrep -v 's.RLock()' | fgrep -v 's.RUnlock()' | \
+      fgrep -v '// Thread-safe' > fast/$tpl
 done

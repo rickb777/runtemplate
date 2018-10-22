@@ -25,16 +25,17 @@ type AppleList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newAppleList(len, cap int) *AppleList {
+// MakeAppleList makes an empty list with both length and capacity initialised.
+func MakeAppleList(length, capacity int) *AppleList {
 	return &AppleList{
 		s: &sync.RWMutex{},
-		m: make([]Apple, len, cap),
+		m: make([]Apple, length, capacity),
 	}
 }
 
 // NewAppleList constructs a new list containing the supplied values, if any.
 func NewAppleList(values ...Apple) *AppleList {
-	result := newAppleList(len(values), len(values))
+	result := MakeAppleList(len(values), len(values))
 	copy(result.m, values)
 	return result
 }
@@ -43,7 +44,7 @@ func NewAppleList(values ...Apple) *AppleList {
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertAppleList(values ...interface{}) (*AppleList, bool) {
-	result := newAppleList(0, len(values))
+	result := MakeAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
@@ -58,7 +59,7 @@ func ConvertAppleList(values ...interface{}) (*AppleList, bool) {
 // BuildAppleListFromChan constructs a new AppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildAppleListFromChan(source <-chan Apple) *AppleList {
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
 	}
@@ -127,7 +128,7 @@ func (list *AppleList) Tail() *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
@@ -138,7 +139,7 @@ func (list *AppleList) Init() *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
@@ -459,7 +460,7 @@ func (list *AppleList) Take(n int) *AppleList {
 	if n > len(list.m) {
 		return list
 	}
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
@@ -476,7 +477,7 @@ func (list *AppleList) Drop(n int) *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
@@ -496,7 +497,7 @@ func (list *AppleList) TakeLast(n int) *AppleList {
 	if n > l {
 		return list
 	}
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
@@ -531,7 +532,7 @@ func (list *AppleList) TakeWhile(p func(Apple) bool) *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -551,7 +552,7 @@ func (list *AppleList) DropWhile(p func(Apple) bool) *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, 0)
+	result := MakeAppleList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -580,7 +581,6 @@ func (list AppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
-
 }
 
 // Filter returns a new AppleList whose elements return true for predicate p.
@@ -590,7 +590,7 @@ func (list *AppleList) Filter(p func(Apple) bool) *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, len(list.m)/2)
+	result := MakeAppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -611,8 +611,8 @@ func (list *AppleList) Partition(p func(Apple) bool) (*AppleList, *AppleList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := newAppleList(0, len(list.m)/2)
-	others := newAppleList(0, len(list.m)/2)
+	matching := MakeAppleList(0, len(list.m)/2)
+	others := MakeAppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -632,7 +632,7 @@ func (list *AppleList) Partition(p func(Apple) bool) (*AppleList, *AppleList) {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *AppleList) Map(fn func(Apple) Apple) *AppleList {
-	result := newAppleList(len(list.m), len(list.m))
+	result := MakeAppleList(len(list.m), len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -650,7 +650,7 @@ func (list *AppleList) Map(fn func(Apple) Apple) *AppleList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *AppleList) FlatMap(fn func(Apple) []Apple) *AppleList {
-	result := newAppleList(0, len(list.m))
+	result := MakeAppleList(0, len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -721,7 +721,7 @@ func (list *AppleList) DistinctBy(equal func(Apple, Apple) bool) *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := newAppleList(0, len(list.m))
+	result := MakeAppleList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {

@@ -7,7 +7,7 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
 	"sync"
@@ -435,7 +435,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPre
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 

@@ -81,30 +81,31 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
 	CountBy(predicate func({{.PType}}) bool) int
 
-{{if .Comparable}}
+{{- if .Comparable}}
+
 	// Contains determines if a given item is already in the collection.
 	Contains(v {{.Type}}) bool
 
 	// ContainsAll determines if the given items are all in the collection.
 	ContainsAll(v ...{{.Type}}) bool
+{{end}}
+{{- if .Mutable}}
 
-{{end -}}
-{{if .Mutable}}
 	// Add adds items to the current collection.
 	Add(more ...{{.Type}})
 
 	// Remove removes a single item from the collection.
 	Remove({{.Type}})
+{{end}}
+{{- if .Ordered}}
 
-{{end -}}
-{{if .Ordered}}
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() {{.Type}}
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.Type}}
+{{- else}}
 
-{{else -}}
 	// MinBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 	// element is returned. Panics if there are no elements.
@@ -115,9 +116,10 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
 
-{{end -}}
-{{if .Numeric}}
+{{- end}}
+{{- if .Numeric}}
+
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.Type}}
-{{end -}}
+{{- end}}
 }

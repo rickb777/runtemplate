@@ -1,5 +1,4 @@
 // An encapsulated []int.
-// Thread-safe.
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:always
@@ -25,15 +24,16 @@ type FastIntList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newFastIntList(len, cap int) *FastIntList {
+// MakeFastIntList makes an empty list with both length and capacity initialised.
+func MakeFastIntList(length, capacity int) *FastIntList {
 	return &FastIntList{
-		m: make([]int, len, cap),
+		m: make([]int, length, capacity),
 	}
 }
 
 // NewFastIntList constructs a new list containing the supplied values, if any.
 func NewFastIntList(values ...int) *FastIntList {
-	result := newFastIntList(len(values), len(values))
+	result := MakeFastIntList(len(values), len(values))
 	copy(result.m, values)
 	return result
 }
@@ -42,7 +42,7 @@ func NewFastIntList(values ...int) *FastIntList {
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertFastIntList(values ...interface{}) (*FastIntList, bool) {
-	result := newFastIntList(0, len(values))
+	result := MakeFastIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
@@ -79,7 +79,7 @@ func ConvertFastIntList(values ...interface{}) (*FastIntList, bool) {
 // BuildFastIntListFromChan constructs a new FastIntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildFastIntListFromChan(source <-chan int) *FastIntList {
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	for v := range source {
 		result.m = append(result.m, v)
 	}
@@ -136,7 +136,7 @@ func (list *FastIntList) Last() int {
 // Panics if list is empty
 func (list *FastIntList) Tail() *FastIntList {
 
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
@@ -145,7 +145,7 @@ func (list *FastIntList) Tail() *FastIntList {
 // Panics if list is empty
 func (list *FastIntList) Init() *FastIntList {
 
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
@@ -434,7 +434,7 @@ func (list *FastIntList) Take(n int) *FastIntList {
 	if n > len(list.m) {
 		return list
 	}
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
@@ -448,7 +448,7 @@ func (list *FastIntList) Drop(n int) *FastIntList {
 		return list
 	}
 
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	l := len(list.m)
 	if n < l {
 		result.m = list.m[n:]
@@ -466,7 +466,7 @@ func (list *FastIntList) TakeLast(n int) *FastIntList {
 	if n > l {
 		return list
 	}
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
@@ -496,7 +496,7 @@ func (list *FastIntList) DropLast(n int) *FastIntList {
 // The original list is not modified.
 func (list *FastIntList) TakeWhile(p func(int) bool) *FastIntList {
 
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -514,7 +514,7 @@ func (list *FastIntList) TakeWhile(p func(int) bool) *FastIntList {
 // The original list is not modified.
 func (list *FastIntList) DropWhile(p func(int) bool) *FastIntList {
 
-	result := newFastIntList(0, 0)
+	result := MakeFastIntList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -541,7 +541,6 @@ func (list FastIntList) Find(p func(int) bool) (int, bool) {
 
 	var empty int
 	return empty, false
-
 }
 
 // Filter returns a new FastIntList whose elements return true for predicate p.
@@ -549,7 +548,7 @@ func (list FastIntList) Find(p func(int) bool) (int, bool) {
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *FastIntList) Filter(p func(int) bool) *FastIntList {
 
-	result := newFastIntList(0, len(list.m)/2)
+	result := MakeFastIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -568,8 +567,8 @@ func (list *FastIntList) Filter(p func(int) bool) *FastIntList {
 // The original list is not modified
 func (list *FastIntList) Partition(p func(int) bool) (*FastIntList, *FastIntList) {
 
-	matching := newFastIntList(0, len(list.m)/2)
-	others := newFastIntList(0, len(list.m)/2)
+	matching := MakeFastIntList(0, len(list.m)/2)
+	others := MakeFastIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -589,7 +588,7 @@ func (list *FastIntList) Partition(p func(int) bool) (*FastIntList, *FastIntList
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *FastIntList) Map(fn func(int) int) *FastIntList {
-	result := newFastIntList(len(list.m), len(list.m))
+	result := MakeFastIntList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
 		result.m[i] = fn(v)
@@ -605,7 +604,7 @@ func (list *FastIntList) Map(fn func(int) int) *FastIntList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *FastIntList) FlatMap(fn func(int) []int) *FastIntList {
-	result := newFastIntList(0, len(list.m))
+	result := MakeFastIntList(0, len(list.m))
 
 	for _, v := range list.m {
 		result.m = append(result.m, fn(v)...)
@@ -666,7 +665,7 @@ func (list *FastIntList) MaxBy(less func(int, int) bool) int {
 // DistinctBy returns a new FastIntList whose elements are unique, where equality is defined by a passed func.
 func (list *FastIntList) DistinctBy(equal func(int, int) bool) *FastIntList {
 
-	result := newFastIntList(0, len(list.m))
+	result := MakeFastIntList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {

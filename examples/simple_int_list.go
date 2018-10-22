@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"bytes"
 	"fmt"
 	"math/rand"
@@ -24,13 +23,14 @@ type SimpleIntList []int
 
 //-------------------------------------------------------------------------------------------------
 
-func newSimpleIntList(len, cap int) SimpleIntList {
-	return make(SimpleIntList, len, cap)
+// MakeSimpleIntList makes an empty list with both length and capacity initialised.
+func MakeSimpleIntList(length, capacity int) SimpleIntList {
+	return make(SimpleIntList, length, capacity)
 }
 
 // NewSimpleIntList constructs a new list containing the supplied values, if any.
 func NewSimpleIntList(values ...int) SimpleIntList {
-	result := newSimpleIntList(len(values), len(values))
+	result := MakeSimpleIntList(len(values), len(values))
 	copy(result, values)
 	return result
 }
@@ -39,7 +39,7 @@ func NewSimpleIntList(values ...int) SimpleIntList {
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertSimpleIntList(values ...interface{}) (SimpleIntList, bool) {
-	result := newSimpleIntList(0, len(values))
+	result := MakeSimpleIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
@@ -76,7 +76,7 @@ func ConvertSimpleIntList(values ...interface{}) (SimpleIntList, bool) {
 // BuildSimpleIntListFromChan constructs a new SimpleIntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildSimpleIntListFromChan(source <-chan int) SimpleIntList {
-	result := newSimpleIntList(0, 0)
+	result := MakeSimpleIntList(0, 0)
 	for v := range source {
 		result = append(result, v)
 	}
@@ -171,10 +171,9 @@ func (list SimpleIntList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
 func (list SimpleIntList) Contains(v int) bool {
-	return list.Exists(func (x int) bool {
+	return list.Exists(func(x int) bool {
 		return x == v
 	})
 }
@@ -233,7 +232,7 @@ func (list SimpleIntList) Send() <-chan int {
 // Reverse returns a copy of SimpleIntList with all elements in the reverse order.
 func (list SimpleIntList) Reverse() SimpleIntList {
 	numItems := len(list)
-	result := newSimpleIntList(numItems, numItems)
+	result := MakeSimpleIntList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list {
 		result[last-i] = v
@@ -306,7 +305,7 @@ func (list SimpleIntList) DropLast(n int) SimpleIntList {
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
 func (list SimpleIntList) TakeWhile(p func(int) bool) SimpleIntList {
-	result := newSimpleIntList(0, 0)
+	result := MakeSimpleIntList(0, 0)
 	for _, v := range list {
 		if p(v) {
 			result = append(result, v)
@@ -321,7 +320,7 @@ func (list SimpleIntList) TakeWhile(p func(int) bool) SimpleIntList {
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
 func (list SimpleIntList) DropWhile(p func(int) bool) SimpleIntList {
-	result := newSimpleIntList(0, 0)
+	result := MakeSimpleIntList(0, 0)
 	adding := false
 
 	for _, v := range list {
@@ -346,7 +345,6 @@ func (list SimpleIntList) Find(fn func(int) bool) (int, bool) {
 		}
 	}
 
-
 	var empty int
 	return empty, false
 
@@ -355,7 +353,7 @@ func (list SimpleIntList) Find(fn func(int) bool) (int, bool) {
 // Filter returns a new SimpleIntList whose elements return true for func.
 // The original list is not modified
 func (list SimpleIntList) Filter(fn func(int) bool) SimpleIntList {
-	result := newSimpleIntList(0, len(list)/2)
+	result := MakeSimpleIntList(0, len(list)/2)
 
 	for _, v := range list {
 		if fn(v) {
@@ -372,8 +370,8 @@ func (list SimpleIntList) Filter(fn func(int) bool) SimpleIntList {
 // original list.
 // The original list is not modified
 func (list SimpleIntList) Partition(p func(int) bool) (SimpleIntList, SimpleIntList) {
-	matching := newSimpleIntList(0, len(list)/2)
-	others := newSimpleIntList(0, len(list)/2)
+	matching := MakeSimpleIntList(0, len(list)/2)
+	others := MakeSimpleIntList(0, len(list)/2)
 
 	for _, v := range list {
 		if p(v) {
@@ -393,7 +391,7 @@ func (list SimpleIntList) Partition(p func(int) bool) (SimpleIntList, SimpleIntL
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list SimpleIntList) Map(fn func(int) int) SimpleIntList {
-	result := newSimpleIntList(0, len(list))
+	result := MakeSimpleIntList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v))
@@ -409,7 +407,7 @@ func (list SimpleIntList) Map(fn func(int) int) SimpleIntList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list SimpleIntList) FlatMap(fn func(int) []int) SimpleIntList {
-	result := newSimpleIntList(0, len(list))
+	result := MakeSimpleIntList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v)...)
@@ -468,7 +466,7 @@ func (list SimpleIntList) MaxBy(less func(int, int) bool) int {
 
 // DistinctBy returns a new SimpleIntList whose elements are unique, where equality is defined by a passed func.
 func (list SimpleIntList) DistinctBy(equal func(int, int) bool) SimpleIntList {
-	result := newSimpleIntList(0, len(list))
+	result := MakeSimpleIntList(0, len(list))
 Outer:
 	for _, v := range list {
 		for _, r := range result {
@@ -518,7 +516,6 @@ func (list SimpleIntList) LastIndexWhere2(p func(int) bool, before int) int {
 	return -1
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 
@@ -530,7 +527,6 @@ func (list SimpleIntList) Sum() int {
 	}
 	return sum
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is comparable.
@@ -556,7 +552,7 @@ func (list SimpleIntList) Equals(other SimpleIntList) bool {
 
 type sortableSimpleIntList struct {
 	less func(i, j int) bool
-	m []int
+	m    []int
 }
 
 func (sl sortableSimpleIntList) Less(i, j int) bool {
@@ -587,7 +583,6 @@ func (list SimpleIntList) StableSortBy(less func(i, j int) bool) SimpleIntList {
 	sort.Stable(sortableSimpleIntList{less, list})
 	return list
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is ordered.
@@ -624,7 +619,6 @@ func (list SimpleIntList) Max() (result int) {
 	return m
 }
 
-
 //-------------------------------------------------------------------------------------------------
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
@@ -654,4 +648,3 @@ func (list SimpleIntList) MkString3(before, between, after string) string {
 	b.WriteString(after)
 	return b.String()
 }
-

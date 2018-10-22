@@ -39,7 +39,7 @@ func {{.UPrefix}}{{.UType}}Generator3(out chan<- {{.PType}}, from, to, stride in
 	if (from > to && stride > 0) || (from < to && stride < 0) {
 		panic("Loop conditions are divergent.")
 	}
-	if (from > to && stride < 0) {
+	if from > to && stride < 0 {
 		for i := from; i >= to; i += stride {
 			out <- fn(i)
 		}
@@ -58,8 +58,10 @@ func {{.UPrefix}}{{.UType}}Generator3(out chan<- {{.PType}}, from, to, stride in
 func {{.UPrefix}}{{.UType}}Delta(in <-chan {{.PType}}, out1, out2 chan<- {{.PType}}) {
 	for v := range in {
 		select {
-		case out1 <- v: out2 <- v
-		case out2 <- v: out1 <- v
+		case out1 <- v:
+			out2 <- v
+		case out2 <- v:
+			out1 <- v
 		}
 	}
 	close(out1)

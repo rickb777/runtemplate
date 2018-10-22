@@ -15,7 +15,6 @@ type ImmutableIntSizer interface {
 	Size() int
 }
 
-
 // ImmutableIntMkStringer defines an interface for stringer methods on int collections.
 type ImmutableIntMkStringer interface {
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
@@ -40,7 +39,6 @@ type ImmutableIntCollection interface {
 	ImmutableIntSizer
 
 	ImmutableIntMkStringer
-
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
@@ -74,20 +72,17 @@ type ImmutableIntCollection interface {
 	// CountBy gives the number elements of ImmutableIntCollection that return true for the passed predicate.
 	CountBy(predicate func(int) bool) int
 
-
 	// Contains determines if a given item is already in the collection.
 	Contains(v int) bool
 
 	// ContainsAll determines if the given items are all in the collection.
 	ContainsAll(v ...int) bool
 
-
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() int
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() int
-
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int

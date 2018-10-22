@@ -1,5 +1,4 @@
 // An encapsulated map[{{.Type}}]struct{} used as a set.
-// Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
@@ -7,7 +6,7 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
 {{- if .HasImport}}
@@ -384,7 +383,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 

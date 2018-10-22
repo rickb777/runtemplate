@@ -30,4 +30,3 @@ func {{.UPrefix}}{{.UType}}FlatMapTo{{.UToPrefix}}{{.UToType}}(in <-chan {{.PTyp
 	}
 	close(out)
 }
-

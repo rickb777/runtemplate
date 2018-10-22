@@ -23,9 +23,9 @@ type ImmutableAppleList struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func newImmutableAppleList(len, cap int) *ImmutableAppleList {
+func newImmutableAppleList(length, capacity int) *ImmutableAppleList {
 	return &ImmutableAppleList{
-		m: make([]Apple, len, cap),
+		m: make([]Apple, length, capacity),
 	}
 }
 

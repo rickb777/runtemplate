@@ -1,5 +1,4 @@
 // An encapsulated map[int]struct{} used as a set.
-// Thread-safe.
 //
 // Generated from fast/set.tpl with Type=int
 // options: Comparable:always Numeric:true Ordered:true Stringer:true
@@ -366,7 +365,7 @@ func (set FastIntSet) Partition(p func(int) bool) (FastIntSet, FastIntSet) {
 func (set FastIntSet) Map(fn func(int) int) FastIntSet {
 	result := NewFastIntSet()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 

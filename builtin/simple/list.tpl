@@ -7,7 +7,7 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
 	"math/rand"
@@ -27,13 +27,14 @@ type {{.UPrefix}}{{.UType}}List []{{.PType}}
 
 //-------------------------------------------------------------------------------------------------
 
-func new{{.UPrefix}}{{.UType}}List(len, cap int) {{.UPrefix}}{{.UType}}List {
-	return make({{.UPrefix}}{{.UType}}List, len, cap)
+// Make{{.UPrefix}}{{.UType}}List makes an empty list with both length and capacity initialised.
+func Make{{.UPrefix}}{{.UType}}List(length, capacity int) {{.UPrefix}}{{.UType}}List {
+	return make({{.UPrefix}}{{.UType}}List, length, capacity)
 }
 
 // New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
+	result := Make{{.UPrefix}}{{.UType}}List(len(values), len(values))
 	copy(result, values)
 	return result
 }
@@ -42,7 +43,7 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) {{.UPrefix}}{{.UType}}L
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) ({{.UPrefix}}{{.UType}}List, bool) {
-	result := new{{.UPrefix}}{{.UType}}List(0, len(values))
+	result := Make{{.UPrefix}}{{.UType}}List(0, len(values))
 {{if and .Numeric (eq .Type .PType)}}
 	for _, i := range values {
 		switch i.(type) {
@@ -86,7 +87,7 @@ func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) ({{.UPrefix}}{{.UT
 // Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	for v := range source {
 		result = append(result, v)
 	}
@@ -244,7 +245,7 @@ func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 // Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
 	numItems := len(list)
-	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
+	result := Make{{.UPrefix}}{{.UType}}List(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list {
 		result[last-i] = v
@@ -317,7 +318,7 @@ func (list {{.UPrefix}}{{.UType}}List) DropLast(n int) {{.UPrefix}}{{.UType}}Lis
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
 func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	for _, v := range list {
 		if p(v) {
 			result = append(result, v)
@@ -332,7 +333,7 @@ func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPr
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
 func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	adding := false
 
 	for _, v := range list {
@@ -368,7 +369,7 @@ func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
 // The original list is not modified
 func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, len(list)/2)
+	result := Make{{.UPrefix}}{{.UType}}List(0, len(list)/2)
 
 	for _, v := range list {
 		if fn(v) {
@@ -385,8 +386,8 @@ func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPref
 // original list.
 // The original list is not modified
 func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UPrefix}}{{.UType}}List, {{.UPrefix}}{{.UType}}List) {
-	matching := new{{.UPrefix}}{{.UType}}List(0, len(list)/2)
-	others := new{{.UPrefix}}{{.UType}}List(0, len(list)/2)
+	matching := Make{{.UPrefix}}{{.UType}}List(0, len(list)/2)
+	others := Make{{.UPrefix}}{{.UType}}List(0, len(list)/2)
 
 	for _, v := range list {
 		if p(v) {
@@ -406,7 +407,7 @@ func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UP
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list {{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, len(list))
+	result := Make{{.UPrefix}}{{.UType}}List(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v))
@@ -422,7 +423,7 @@ func (list {{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) {{.UP
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list {{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, len(list))
+	result := Make{{.UPrefix}}{{.UType}}List(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v)...)
@@ -481,7 +482,7 @@ func (list {{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) b
 
 // DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
 func (list {{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, len(list))
+	result := Make{{.UPrefix}}{{.UType}}List(0, len(list))
 Outer:
 	for _, v := range list {
 		for _, r := range result {

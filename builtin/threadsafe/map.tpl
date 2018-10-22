@@ -7,7 +7,7 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
 	"sync"

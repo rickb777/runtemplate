@@ -1,5 +1,4 @@
 // An encapsulated map[{{.Key}}]{{.Type}}.
-// Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
 // options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} ValueList:{{.ValueList}} Mutable:always
@@ -7,7 +6,7 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
 {{- if .HasImport}}

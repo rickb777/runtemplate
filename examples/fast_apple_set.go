@@ -1,5 +1,4 @@
 // An encapsulated map[Apple]struct{} used as a set.
-// Thread-safe.
 //
 // Generated from fast/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false
@@ -341,7 +340,7 @@ func (set FastAppleSet) Partition(p func(Apple) bool) (FastAppleSet, FastAppleSe
 func (set FastAppleSet) Map(fn func(Apple) Apple) FastAppleSet {
 	result := NewFastAppleSet()
 
-	for v := range set.m {
+	for v, _ := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 

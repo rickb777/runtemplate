@@ -15,7 +15,6 @@ type FastIntSizer interface {
 	Size() int
 }
 
-
 // FastIntMkStringer defines an interface for stringer methods on int collections.
 type FastIntMkStringer interface {
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
@@ -40,7 +39,6 @@ type FastIntCollection interface {
 	FastIntSizer
 
 	FastIntMkStringer
-
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
@@ -74,23 +72,20 @@ type FastIntCollection interface {
 	// CountBy gives the number elements of FastIntCollection that return true for the passed predicate.
 	CountBy(predicate func(int) bool) int
 
-
 	// Contains determines if a given item is already in the collection.
 	Contains(v int) bool
 
 	// ContainsAll determines if the given items are all in the collection.
 	ContainsAll(v ...int) bool
 
-// Add adds items to the current collection.
+	// Add adds items to the current collection.
 	Add(more ...int)
-
 
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Min() int
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() int
-
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int

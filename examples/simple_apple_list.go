@@ -7,7 +7,6 @@
 package examples
 
 import (
-
 	"math/rand"
 	"sort"
 )
@@ -22,13 +21,14 @@ type SimpleAppleList []Apple
 
 //-------------------------------------------------------------------------------------------------
 
-func newSimpleAppleList(len, cap int) SimpleAppleList {
-	return make(SimpleAppleList, len, cap)
+// MakeSimpleAppleList makes an empty list with both length and capacity initialised.
+func MakeSimpleAppleList(length, capacity int) SimpleAppleList {
+	return make(SimpleAppleList, length, capacity)
 }
 
 // NewSimpleAppleList constructs a new list containing the supplied values, if any.
 func NewSimpleAppleList(values ...Apple) SimpleAppleList {
-	result := newSimpleAppleList(len(values), len(values))
+	result := MakeSimpleAppleList(len(values), len(values))
 	copy(result, values)
 	return result
 }
@@ -37,7 +37,7 @@ func NewSimpleAppleList(values ...Apple) SimpleAppleList {
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertSimpleAppleList(values ...interface{}) (SimpleAppleList, bool) {
-	result := newSimpleAppleList(0, len(values))
+	result := MakeSimpleAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
@@ -52,7 +52,7 @@ func ConvertSimpleAppleList(values ...interface{}) (SimpleAppleList, bool) {
 // BuildSimpleAppleListFromChan constructs a new SimpleAppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildSimpleAppleListFromChan(source <-chan Apple) SimpleAppleList {
-	result := newSimpleAppleList(0, 0)
+	result := MakeSimpleAppleList(0, 0)
 	for v := range source {
 		result = append(result, v)
 	}
@@ -147,10 +147,9 @@ func (list SimpleAppleList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-
 // Contains determines if a given item is already in the list.
 func (list SimpleAppleList) Contains(v Apple) bool {
-	return list.Exists(func (x Apple) bool {
+	return list.Exists(func(x Apple) bool {
 		return x == v
 	})
 }
@@ -209,7 +208,7 @@ func (list SimpleAppleList) Send() <-chan Apple {
 // Reverse returns a copy of SimpleAppleList with all elements in the reverse order.
 func (list SimpleAppleList) Reverse() SimpleAppleList {
 	numItems := len(list)
-	result := newSimpleAppleList(numItems, numItems)
+	result := MakeSimpleAppleList(numItems, numItems)
 	last := numItems - 1
 	for i, v := range list {
 		result[last-i] = v
@@ -282,7 +281,7 @@ func (list SimpleAppleList) DropLast(n int) SimpleAppleList {
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
 func (list SimpleAppleList) TakeWhile(p func(Apple) bool) SimpleAppleList {
-	result := newSimpleAppleList(0, 0)
+	result := MakeSimpleAppleList(0, 0)
 	for _, v := range list {
 		if p(v) {
 			result = append(result, v)
@@ -297,7 +296,7 @@ func (list SimpleAppleList) TakeWhile(p func(Apple) bool) SimpleAppleList {
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
 func (list SimpleAppleList) DropWhile(p func(Apple) bool) SimpleAppleList {
-	result := newSimpleAppleList(0, 0)
+	result := MakeSimpleAppleList(0, 0)
 	adding := false
 
 	for _, v := range list {
@@ -322,7 +321,6 @@ func (list SimpleAppleList) Find(fn func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
 	var empty Apple
 	return empty, false
 
@@ -331,7 +329,7 @@ func (list SimpleAppleList) Find(fn func(Apple) bool) (Apple, bool) {
 // Filter returns a new SimpleAppleList whose elements return true for func.
 // The original list is not modified
 func (list SimpleAppleList) Filter(fn func(Apple) bool) SimpleAppleList {
-	result := newSimpleAppleList(0, len(list)/2)
+	result := MakeSimpleAppleList(0, len(list)/2)
 
 	for _, v := range list {
 		if fn(v) {
@@ -348,8 +346,8 @@ func (list SimpleAppleList) Filter(fn func(Apple) bool) SimpleAppleList {
 // original list.
 // The original list is not modified
 func (list SimpleAppleList) Partition(p func(Apple) bool) (SimpleAppleList, SimpleAppleList) {
-	matching := newSimpleAppleList(0, len(list)/2)
-	others := newSimpleAppleList(0, len(list)/2)
+	matching := MakeSimpleAppleList(0, len(list)/2)
+	others := MakeSimpleAppleList(0, len(list)/2)
 
 	for _, v := range list {
 		if p(v) {
@@ -369,7 +367,7 @@ func (list SimpleAppleList) Partition(p func(Apple) bool) (SimpleAppleList, Simp
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list SimpleAppleList) Map(fn func(Apple) Apple) SimpleAppleList {
-	result := newSimpleAppleList(0, len(list))
+	result := MakeSimpleAppleList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v))
@@ -385,7 +383,7 @@ func (list SimpleAppleList) Map(fn func(Apple) Apple) SimpleAppleList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list SimpleAppleList) FlatMap(fn func(Apple) []Apple) SimpleAppleList {
-	result := newSimpleAppleList(0, len(list))
+	result := MakeSimpleAppleList(0, len(list))
 
 	for _, v := range list {
 		result = append(result, fn(v)...)
@@ -444,7 +442,7 @@ func (list SimpleAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 
 // DistinctBy returns a new SimpleAppleList whose elements are unique, where equality is defined by a passed func.
 func (list SimpleAppleList) DistinctBy(equal func(Apple, Apple) bool) SimpleAppleList {
-	result := newSimpleAppleList(0, len(list))
+	result := MakeSimpleAppleList(0, len(list))
 Outer:
 	for _, v := range list {
 		for _, r := range result {
@@ -494,7 +492,6 @@ func (list SimpleAppleList) LastIndexWhere2(p func(Apple) bool, before int) int 
 	return -1
 }
 
-
 //-------------------------------------------------------------------------------------------------
 // These methods are included when Apple is comparable.
 
@@ -519,7 +516,7 @@ func (list SimpleAppleList) Equals(other SimpleAppleList) bool {
 
 type sortableSimpleAppleList struct {
 	less func(i, j Apple) bool
-	m []Apple
+	m    []Apple
 }
 
 func (sl sortableSimpleAppleList) Less(i, j int) bool {
@@ -550,5 +547,3 @@ func (list SimpleAppleList) StableSortBy(less func(i, j Apple) bool) SimpleApple
 	sort.Stable(sortableSimpleAppleList{less, list})
 	return list
 }
-
-

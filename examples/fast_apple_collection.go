@@ -19,7 +19,6 @@ type FastAppleSizer interface {
 type FastAppleCollection interface {
 	FastAppleSizer
 
-
 	// IsSequence returns true for lists.
 	IsSequence() bool
 
@@ -52,10 +51,10 @@ type FastAppleCollection interface {
 	// CountBy gives the number elements of FastAppleCollection that return true for the passed predicate.
 	CountBy(predicate func(Apple) bool) int
 
-// Add adds items to the current collection.
+	// Add adds items to the current collection.
 	Add(more ...Apple)
 
-// MinBy returns an element of FastAppleCollection containing the minimum value, when compared to other elements
+	// MinBy returns an element of FastAppleCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 	// element is returned. Panics if there are no elements.
 	MinBy(less func(Apple, Apple) bool) Apple
@@ -64,5 +63,4 @@ type FastAppleCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(Apple, Apple) bool) Apple
-
 }

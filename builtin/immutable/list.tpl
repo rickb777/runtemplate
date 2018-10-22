@@ -7,7 +7,7 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"fmt" {{- end}}
 	"math/rand"
@@ -30,9 +30,9 @@ type {{.UPrefix}}{{.UType}}List struct {
 
 //-------------------------------------------------------------------------------------------------
 
-func new{{.UPrefix}}{{.UType}}List(len, cap int) *{{.UPrefix}}{{.UType}}List {
+func new{{.UPrefix}}{{.UType}}List(length, capacity int) *{{.UPrefix}}{{.UType}}List {
 	return &{{.UPrefix}}{{.UType}}List {
-		m: make([]{{.PType}}, len, cap),
+		m: make([]{{.PType}}, length, capacity),
 	}
 }
 
