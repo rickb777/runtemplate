@@ -2,11 +2,13 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
 
 package examples
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math/rand"
 	"sort"
 	"sync"
@@ -840,4 +842,27 @@ func (list *AppleList) StableSortBy(less func(i, j Apple) bool) *AppleList {
 
 	sort.Stable(sortableAppleList{less, list.m})
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this list type.
+// You must register Apple with the 'gob' package before this method is used.
+func (list *AppleList) GobDecode(b []byte) error {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&list.m)
+}
+
+// GobDecode implements 'gob' encoding for this list type.
+// You must register Apple with the 'gob' package before this method is used.
+func (list *AppleList) GobEncode() ([]byte, error) {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
 }

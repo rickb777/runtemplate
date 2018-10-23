@@ -2,14 +2,9 @@
 // Thread-safe.
 //
 // Generated from immutable/map.tpl with Key=string Type=Apple
-// options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:disabled
+// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:disabled
 
 package examples
-
-import (
-	"bytes"
-	"fmt"
-)
 
 // ImmutableStringAppleMap is the primary type that represents a thread-safe map
 type ImmutableStringAppleMap struct {
@@ -232,40 +227,4 @@ func (mm ImmutableStringAppleMap) FlatMap(fn func(string, Apple) []ImmutableStri
 // Clone returns the same map, which is immutable.
 func (mm ImmutableStringAppleMap) Clone() ImmutableStringAppleMap {
 	return mm
-}
-
-//-------------------------------------------------------------------------------------------------
-
-func (mm ImmutableStringAppleMap) String() string {
-	return mm.MkString3("map[", ", ", "]")
-}
-
-// implements encoding.Marshaler interface {
-//func (mm ImmutableStringAppleMap) MarshalJSON() ([]byte, error) {
-//	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
-//}
-
-// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm ImmutableStringAppleMap) MkString(sep string) string {
-	return mm.MkString3("", sep, "")
-}
-
-// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm ImmutableStringAppleMap) MkString3(before, between, after string) string {
-	return mm.mkString3Bytes(before, between, after).String()
-}
-
-func (mm ImmutableStringAppleMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
-	b.WriteString(before)
-	sep := ""
-
-	for k, v := range mm.m {
-		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v:%v", k, v))
-		sep = between
-	}
-
-	b.WriteString(after)
-	return b
 }

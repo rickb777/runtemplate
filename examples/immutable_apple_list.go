@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
 
 package examples
 
@@ -160,25 +160,6 @@ func (list *ImmutableAppleList) Len() int {
 }
 
 //-------------------------------------------------------------------------------------------------
-
-// Contains determines if a given item is already in the list.
-func (list *ImmutableAppleList) Contains(v Apple) bool {
-	return list.Exists(func(x Apple) bool {
-		return x == v
-	})
-}
-
-// ContainsAll determines if the given items are all in the list.
-// This is potentially a slow method and should only be used rarely.
-func (list *ImmutableAppleList) ContainsAll(i ...Apple) bool {
-
-	for _, v := range i {
-		if !list.Contains(v) {
-			return false
-		}
-	}
-	return true
-}
 
 // Exists verifies that one or more elements of ImmutableAppleList return true for the passed func.
 func (list *ImmutableAppleList) Exists(fn func(Apple) bool) bool {
@@ -534,27 +515,6 @@ func (list *ImmutableAppleList) LastIndexWhere2(p func(Apple) bool, before int) 
 		}
 	}
 	return -1
-}
-
-//-------------------------------------------------------------------------------------------------
-// These methods are included when Apple is comparable.
-
-// Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
-// Order of items is not relevent for sets to be equal.
-func (list *ImmutableAppleList) Equals(other *ImmutableAppleList) bool {
-
-	if len(list.m) != len(other.m) {
-		return false
-	}
-
-	for i, v := range list.m {
-		if v != other.m[i] {
-			return false
-		}
-	}
-
-	return true
 }
 
 //-------------------------------------------------------------------------------------------------

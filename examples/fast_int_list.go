@@ -1,7 +1,7 @@
 // An encapsulated []int.
 //
 // Generated from fast/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:always
+// options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
 
 package examples
 

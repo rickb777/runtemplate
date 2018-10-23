@@ -1,11 +1,13 @@
 // An encapsulated []Apple.
 //
 // Generated from fast/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
 
 package examples
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math/rand"
 	"sort"
 )
@@ -748,4 +750,23 @@ func (list *FastAppleList) StableSortBy(less func(i, j Apple) bool) *FastAppleLi
 
 	sort.Stable(sortableFastAppleList{less, list.m})
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this list type.
+// You must register Apple with the 'gob' package before this method is used.
+func (list *FastAppleList) GobDecode(b []byte) error {
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&list.m)
+}
+
+// GobDecode implements 'gob' encoding for this list type.
+// You must register Apple with the 'gob' package before this method is used.
+func (list *FastAppleList) GobEncode() ([]byte, error) {
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
 }

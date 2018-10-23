@@ -1,14 +1,20 @@
 // An encapsulated []{{.Type}}.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:always
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:always
 
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{- if or .Stringer .GobEncode}}
 	"bytes"
-	"fmt" {{- end}}
+{{- end}}
+{{- if .GobEncode}}
+	"encoding/gob"
+{{- end}}
+{{- if .Stringer}}
+	"fmt"
+{{- end}}
 	"math/rand"
 	"sort"
 {{- if .HasImport}}
@@ -919,4 +925,26 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 	b.WriteString(after)
 	return b
 }
+{{- end}}
+{{- if .GobEncode}}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this list type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
+
+    buf := bytes.NewBuffer(b)
+    return gob.NewDecoder(buf).Decode(&list.m)
+}
+
+// GobDecode implements 'gob' encoding for this list type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (list *{{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
+
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
+}
+
 {{- end}}
