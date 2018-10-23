@@ -36,6 +36,28 @@ func (ts FastIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 in
 	return append(ts, FastIntIntTuple{k1, v1}, FastIntIntTuple{k2, v2}, FastIntIntTuple{k3, v3})
 }
 
+// FastIntIntZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewFastIntIntMap
+// constructor function.
+func FastIntIntZip(keys ...int) FastIntIntTuples {
+	ts := make(FastIntIntTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with FastIntIntZip.
+func (ts FastIntIntTuples) Values(values ...int) FastIntIntTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newFastIntIntMap() FastIntIntMap {

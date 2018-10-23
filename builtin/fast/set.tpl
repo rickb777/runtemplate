@@ -6,9 +6,15 @@
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{- if or .Stringer .GobEncode}}
 	"bytes"
-	"fmt" {{- end}}
+{{- end}}
+{{- if .GobEncode}}
+	"encoding/gob"
+{{- end}}
+{{- if .Stringer}}
+	"fmt"
+{{- end}}
 {{- if .HasImport}}
 	{{.Import}}
 {{end}}
@@ -207,6 +213,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.U
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
+
 	return unionedSet
 }
 
@@ -229,6 +236,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) 
 			}
 		}
 	}
+
 	return intersection
 }
 
@@ -242,6 +250,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set)
 			differencedSet.doAdd(v)
 		}
 	}
+
 	return differencedSet
 }
 
@@ -418,8 +427,8 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 	}
 	return
 }
+{{- if .Ordered}}
 
-{{if .Ordered}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
 
@@ -456,8 +465,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
 	}
 	return m
 }
+{{- end}}
 
-{{else -}}
 // MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
@@ -501,9 +510,8 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	}
 	return m
 }
+{{- if .Numeric}}
 
-{{end -}}
-{{if .Numeric}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is numeric.
 
@@ -516,8 +524,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 	}
 	return sum
 }
+{{- end}}
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // Equals determines if two sets are equal to each other.
@@ -536,7 +544,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 	return true
 }
 
-{{if .Stringer}}
+{{- if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
@@ -595,4 +603,26 @@ func (set {{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 	}
 	return strings
 }
-{{end}}
+{{- end}}
+{{- if .GobEncode}}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this set type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (set *{{.UPrefix}}{{.UType}}Set) GobDecode(b []byte) error {
+
+    buf := bytes.NewBuffer(b)
+    return gob.NewDecoder(buf).Decode(&set.m)
+}
+
+// GobDecode implements 'gob' encoding for this set type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (set {{.UPrefix}}{{.UType}}Set) GobEncode() ([]byte, error) {
+
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(set.m)
+	return buf.Bytes(), err
+}
+
+{{- end}}

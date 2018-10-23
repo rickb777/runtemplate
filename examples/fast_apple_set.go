@@ -5,7 +5,10 @@
 
 package examples
 
-import ()
+import (
+	"bytes"
+	"encoding/gob"
+)
 
 // FastAppleSet is the primary type that represents a set
 type FastAppleSet struct {
@@ -169,6 +172,7 @@ func (set FastAppleSet) Union(other FastAppleSet) FastAppleSet {
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
+
 	return unionedSet
 }
 
@@ -190,6 +194,7 @@ func (set FastAppleSet) Intersect(other FastAppleSet) FastAppleSet {
 			}
 		}
 	}
+
 	return intersection
 }
 
@@ -202,6 +207,7 @@ func (set FastAppleSet) Difference(other FastAppleSet) FastAppleSet {
 			differencedSet.doAdd(v)
 		}
 	}
+
 	return differencedSet
 }
 
@@ -434,4 +440,23 @@ func (set FastAppleSet) Equals(other FastAppleSet) bool {
 		}
 	}
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this set type.
+// You must register Apple with the 'gob' package before this method is used.
+func (set *FastAppleSet) GobDecode(b []byte) error {
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&set.m)
+}
+
+// GobDecode implements 'gob' encoding for this set type.
+// You must register Apple with the 'gob' package before this method is used.
+func (set FastAppleSet) GobEncode() ([]byte, error) {
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(set.m)
+	return buf.Bytes(), err
 }

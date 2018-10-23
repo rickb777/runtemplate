@@ -764,7 +764,7 @@ func (list *FastAppleList) GobDecode(b []byte) error {
 
 // GobDecode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
-func (list *FastAppleList) GobEncode() ([]byte, error) {
+func (list FastAppleList) GobEncode() ([]byte, error) {
 
 	buf := &bytes.Buffer{}
 	err := gob.NewEncoder(buf).Encode(list.m)

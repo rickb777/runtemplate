@@ -7,14 +7,20 @@
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{- if or .Stringer .GobEncode}}
 	"bytes"
-	"fmt" {{- end}}
+{{- end}}
+{{- if .GobEncode}}
+	"encoding/gob"
+{{- end}}
+{{- if .Stringer}}
+	"fmt"
+{{- end}}
 	"math/rand"
 	"sort"
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 // {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
@@ -26,7 +32,6 @@ import (
 type {{.UPrefix}}{{.UType}}List struct {
 	m []{{.PType}}
 }
-
 
 //-------------------------------------------------------------------------------------------------
 
@@ -196,11 +201,11 @@ func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 }
 
 //-------------------------------------------------------------------------------------------------
+{{- if .Comparable}}
 
-{{if .Comparable}}
 // Contains determines if a given item is already in the list.
 func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
-	return list.Exists(func (x {{.PType}}) bool {
+	return list.Exists(func(x {{.PType}}) bool {
 		return {{.TypeStar}}x == v
 	})
 }
@@ -216,31 +221,31 @@ func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	}
 	return true
 }
+{{- end}}
 
-{{end -}}
-// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
-func (list *{{.UPrefix}}{{.UType}}List) Exists(fn func({{.Type}}) bool) bool {
+// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) Exists(p func({{.Type}}) bool) bool {
 
 	for _, v := range list.m {
-		if fn({{.TypeStar}}v) {
+		if p({{.TypeStar}}v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
-func (list *{{.UPrefix}}{{.UType}}List) Forall(fn func({{.Type}}) bool) bool {
+// Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.Type}}) bool) bool {
 
 	for _, v := range list.m {
-		if !fn({{.TypeStar}}v) {
+		if !p({{.TypeStar}}v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
+// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.Type}})) {
 
 	for _, v := range list.m {
@@ -359,7 +364,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
@@ -375,7 +380,7 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.U
 
 // DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
@@ -393,31 +398,32 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for some function.
+// Find returns the first {{.Type}} that returns true for predicate p.
 // False is returned if none match.
-func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
+func (list {{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
-
 {{if eq .TypeStar "*"}}
+
 	return nil, false
 {{else}}
+
 	var empty {{.Type}}
 	return empty, false
-{{end}}
+{{end -}}
 }
 
-// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
-func (list *{{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 
 	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}
@@ -578,8 +584,8 @@ func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool,
 	}
 	return -1
 }
+{{- if .Numeric}}
 
-{{if .Numeric}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is numeric.
 
@@ -592,9 +598,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 	}
 	return sum
 }
+{{- end}}
+{{- if .Comparable}}
 
-{{end -}}
-{{if .Comparable}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is comparable.
 
@@ -615,8 +621,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 
 	return true
 }
+{{- end}}
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 type sortable{{.UPrefix}}{{.UType}}List struct {
@@ -652,8 +658,8 @@ func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.Type}}) b
 	sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, result.m})
 	return result
 }
+{{- if .Ordered}}
 
-{{if .Ordered}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
 
@@ -710,9 +716,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 	}
 	return m
 }
+{{- end}}
+{{- if .Stringer}}
 
-{{end -}}
-{{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
@@ -759,4 +765,26 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 	b.WriteString(after)
 	return b
 }
-{{end}}
+{{- end}}
+{{- if .GobEncode}}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this list type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
+
+    buf := bytes.NewBuffer(b)
+    return gob.NewDecoder(buf).Decode(&list.m)
+}
+
+// GobDecode implements 'gob' encoding for this list type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
+
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
+}
+
+{{- end}}

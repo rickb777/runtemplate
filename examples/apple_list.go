@@ -858,7 +858,7 @@ func (list *AppleList) GobDecode(b []byte) error {
 
 // GobDecode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
-func (list *AppleList) GobEncode() ([]byte, error) {
+func (list AppleList) GobEncode() ([]byte, error) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 

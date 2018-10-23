@@ -20,8 +20,8 @@ type {{.UPrefix}}{{.UType}}Sizer interface {
 	// Size returns the number of items in the list - an alias of Len().
 	Size() int
 }
+{{- if .Stringer}}
 
-{{if .Stringer}}
 // {{.UPrefix}}{{.UType}}MkStringer defines an interface for stringer methods on {{.PType}} collections.
 type {{.UPrefix}}{{.UType}}MkStringer interface {
 	// String implements the Stringer interface to render the list as a comma-separated string enclosed
@@ -40,14 +40,14 @@ type {{.UPrefix}}{{.UType}}MkStringer interface {
 	// StringList gets a list of strings that depicts all the elements.
 	StringList() []string
 }
+{{- end}}
 
-{{end -}}
 // {{.UPrefix}}{{.UType}}Collection defines an interface for common collection methods on {{.PType}}.
 type {{.UPrefix}}{{.UType}}Collection interface {
 	{{.UPrefix}}{{.UType}}Sizer
-{{if .Stringer}}
+{{- if .Stringer}}
 	{{.UPrefix}}{{.UType}}MkStringer
-{{end}}
+{{- end}}
 
 	// IsSequence returns true for lists.
 	IsSequence() bool
@@ -80,7 +80,6 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 
 	// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
 	CountBy(predicate func({{.PType}}) bool) int
-
 {{- if .Comparable}}
 
 	// Contains determines if a given item is already in the collection.
@@ -88,7 +87,7 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 
 	// ContainsAll determines if the given items are all in the collection.
 	ContainsAll(v ...{{.Type}}) bool
-{{end}}
+{{- end}}
 {{- if .Mutable}}
 
 	// Add adds items to the current collection.
@@ -104,7 +103,7 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() {{.Type}}
-{{- else}}
+{{- end}}
 
 	// MinBy returns an element of {{.UPrefix}}{{.UType}}Collection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
@@ -115,8 +114,6 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}}
-
-{{- end}}
 {{- if .Numeric}}
 
 	// Sum returns the sum of all the elements in the collection.

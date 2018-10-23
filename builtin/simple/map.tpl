@@ -6,17 +6,16 @@
 
 package {{.Package}}
 
-{{if or .Stringer .HasImport}}
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt"{{- end}}
+{{- end}}
+	"fmt"
 {{- if .HasImport}}
 	{{.Import}}
 {{end}}
 )
 
-{{end -}}
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map map[{{.PKey}}]{{.PType}}
 
@@ -39,6 +38,28 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PTyp
 
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}, k3 {{.PKey}}, v3 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k3, v3})
+}
+
+// {{.UPrefix}}{{.UKey}}{{.UType}}Zip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the New{{.UPrefix}}{{.UKey}}{{.UType}}Map
+// constructor function.
+func {{.UPrefix}}{{.UKey}}{{.UType}}Zip(keys ...{{.PKey}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+	ts := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, len(keys))
+	for i, k := range keys {
+	    ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with {{.UPrefix}}{{.UKey}}{{.UType}}Zip.
+func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+    if len(ts) != len(values) {
+        panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+    }
+	for i, v := range values {
+	    ts[i].Val = v
+	}
+	return ts
 }
 
 //-------------------------------------------------------------------------------------------------

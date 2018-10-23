@@ -34,7 +34,7 @@ package threadsafe
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 
 //go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true
-//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true Find:false
+//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true
 //go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true
 //go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true M:.m GobEncode:true
 

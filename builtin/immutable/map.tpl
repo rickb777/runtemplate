@@ -6,17 +6,19 @@
 
 package {{.Package}}
 
-{{if or .Stringer .HasImport}}
 import (
-{{if .Stringer}}
+{{- if or .GobEncode .Stringer}}
 	"bytes"
-	"fmt"{{- end}}
+{{- end}}
+{{- if .GobEncode}}
+	"encoding/gob"
+{{- end}}
+	"fmt"
 {{- if .HasImport}}
 	{{.Import}}
 {{end}}
 )
 
-{{end -}}
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
 type {{.UPrefix}}{{.UKey}}{{.UType}}Map struct {
 	m map[{{.PKey}}]{{.PType}}
@@ -41,6 +43,28 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PTyp
 
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}, k3 {{.PKey}}, v3 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k3, v3})
+}
+
+// {{.UPrefix}}{{.UKey}}{{.UType}}Zip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the New{{.UPrefix}}{{.UKey}}{{.UType}}Map
+// constructor function.
+func {{.UPrefix}}{{.UKey}}{{.UType}}Zip(keys ...{{.PKey}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+	ts := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, len(keys))
+	for i, k := range keys {
+	    ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with {{.UPrefix}}{{.UKey}}{{.UType}}Zip.
+func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+    if len(ts) != len(values) {
+        panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+    }
+	for i, v := range values {
+	    ts[i].Val = v
+	}
+	return ts
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -234,8 +258,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType
 
 	return result
 }
+{{- if .Comparable}}
 
-{{if .Comparable}}
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
@@ -251,14 +275,14 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{
 	}
 	return true
 }
+{{- end}}
 
-{{end -}}
 // Clone returns the same map, which is immutable.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	return mm
 }
+{{- if .Stringer}}
 
-{{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
@@ -309,4 +333,24 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, aft
 	b.WriteString(after)
 	return b
 }
-{{end}}
+{{- end}}
+{{- if .GobEncode}}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this map type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobDecode(b []byte) error {
+    buf := bytes.NewBuffer(b)
+    return gob.NewDecoder(buf).Decode(&mm.m)
+}
+
+// GobDecode implements 'gob' encoding for this map type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) GobEncode() ([]byte, error) {
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(mm.m)
+	return buf.Bytes(), err
+}
+
+{{- end}}

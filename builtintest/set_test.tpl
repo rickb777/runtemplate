@@ -4,6 +4,10 @@
 package {{.Package}}
 
 import (
+{{- if .GobEncode}}
+    "bytes"
+    "encoding/gob"
+{{- end}}
 	"fmt"
 	"testing"
 )
@@ -376,4 +380,29 @@ func Test{{.UType}}SetMkString3(t *testing.T) {
 		t.Errorf("Expected '13|4' but got %q", c)
 	}
 }
+
+{{if .GobEncode}}
+func Test{{.UType}}SetGobEncode(t *testing.T) {
+	a := NewX1{{.UType}}Set(13, 4, 7, -2, 9)
+	b := NewX1{{.UType}}Set()
+
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(a)
+
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+
+    err = gob.NewDecoder(buf).Decode(&b)
+
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+	}
+}
+
+{{end}}
 

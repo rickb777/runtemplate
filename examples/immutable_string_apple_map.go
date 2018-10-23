@@ -6,6 +6,12 @@
 
 package examples
 
+import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+)
+
 // ImmutableStringAppleMap is the primary type that represents a thread-safe map
 type ImmutableStringAppleMap struct {
 	m map[string]Apple
@@ -30,6 +36,28 @@ func (ts ImmutableStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 
 
 func (ts ImmutableStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) ImmutableStringAppleTuples {
 	return append(ts, ImmutableStringAppleTuple{k1, v1}, ImmutableStringAppleTuple{k2, v2}, ImmutableStringAppleTuple{k3, v3})
+}
+
+// ImmutableStringAppleZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewImmutableStringAppleMap
+// constructor function.
+func ImmutableStringAppleZip(keys ...string) ImmutableStringAppleTuples {
+	ts := make(ImmutableStringAppleTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with ImmutableStringAppleZip.
+func (ts ImmutableStringAppleTuples) Values(values ...Apple) ImmutableStringAppleTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -227,4 +255,21 @@ func (mm ImmutableStringAppleMap) FlatMap(fn func(string, Apple) []ImmutableStri
 // Clone returns the same map, which is immutable.
 func (mm ImmutableStringAppleMap) Clone() ImmutableStringAppleMap {
 	return mm
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this map type.
+// You must register Apple with the 'gob' package before this method is used.
+func (mm *ImmutableStringAppleMap) GobDecode(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&mm.m)
+}
+
+// GobDecode implements 'gob' encoding for this map type.
+// You must register Apple with the 'gob' package before this method is used.
+func (mm ImmutableStringAppleMap) GobEncode() ([]byte, error) {
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(mm.m)
+	return buf.Bytes(), err
 }

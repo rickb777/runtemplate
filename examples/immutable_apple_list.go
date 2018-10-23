@@ -7,6 +7,8 @@
 package examples
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math/rand"
 	"sort"
 )
@@ -161,29 +163,29 @@ func (list *ImmutableAppleList) Len() int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Exists verifies that one or more elements of ImmutableAppleList return true for the passed func.
-func (list *ImmutableAppleList) Exists(fn func(Apple) bool) bool {
+// Exists verifies that one or more elements of ImmutableAppleList return true for the predicate p.
+func (list *ImmutableAppleList) Exists(p func(Apple) bool) bool {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of ImmutableAppleList return true for the passed func.
-func (list *ImmutableAppleList) Forall(fn func(Apple) bool) bool {
+// Forall verifies that all elements of ImmutableAppleList return true for the predicate p.
+func (list *ImmutableAppleList) Forall(p func(Apple) bool) bool {
 
 	for _, v := range list.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over ImmutableAppleList and executes the passed func against each element.
+// Foreach iterates over ImmutableAppleList and executes function fn against each element.
 func (list *ImmutableAppleList) Foreach(fn func(Apple)) {
 
 	for _, v := range list.m {
@@ -300,7 +302,7 @@ func (list *ImmutableAppleList) DropLast(n int) *ImmutableAppleList {
 
 // TakeWhile returns a new ImmutableAppleList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *ImmutableAppleList) TakeWhile(p func(Apple) bool) *ImmutableAppleList {
 
 	result := newImmutableAppleList(0, 0)
@@ -316,7 +318,7 @@ func (list *ImmutableAppleList) TakeWhile(p func(Apple) bool) *ImmutableAppleLis
 
 // DropWhile returns a new ImmutableAppleList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *ImmutableAppleList) DropWhile(p func(Apple) bool) *ImmutableAppleList {
 
 	result := newImmutableAppleList(0, 0)
@@ -334,28 +336,27 @@ func (list *ImmutableAppleList) DropWhile(p func(Apple) bool) *ImmutableAppleLis
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function.
+// Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
-func (list ImmutableAppleList) Find(fn func(Apple) bool) (Apple, bool) {
+func (list ImmutableAppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
 
 	var empty Apple
 	return empty, false
-
 }
 
-// Filter returns a new ImmutableAppleList whose elements return true for func.
-func (list *ImmutableAppleList) Filter(fn func(Apple) bool) *ImmutableAppleList {
+// Filter returns a new ImmutableAppleList whose elements return true for predicate p.
+func (list *ImmutableAppleList) Filter(p func(Apple) bool) *ImmutableAppleList {
 
 	result := newImmutableAppleList(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}
@@ -551,4 +552,23 @@ func (list *ImmutableAppleList) StableSortBy(less func(i, j Apple) bool) *Immuta
 	result := NewImmutableAppleList(list.m...)
 	sort.Stable(sortableImmutableAppleList{less, result.m})
 	return result
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this list type.
+// You must register Apple with the 'gob' package before this method is used.
+func (list *ImmutableAppleList) GobDecode(b []byte) error {
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&list.m)
+}
+
+// GobDecode implements 'gob' encoding for this list type.
+// You must register Apple with the 'gob' package before this method is used.
+func (list ImmutableAppleList) GobEncode() ([]byte, error) {
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
 }

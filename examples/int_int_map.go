@@ -39,6 +39,28 @@ func (ts IntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) I
 	return append(ts, IntIntTuple{k1, v1}, IntIntTuple{k2, v2}, IntIntTuple{k3, v3})
 }
 
+// IntIntZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewIntIntMap
+// constructor function.
+func IntIntZip(keys ...int) IntIntTuples {
+	ts := make(IntIntTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with IntIntZip.
+func (ts IntIntTuples) Values(values ...int) IntIntTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newIntIntMap() IntIntMap {

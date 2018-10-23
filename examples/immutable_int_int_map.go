@@ -37,6 +37,28 @@ func (ts ImmutableIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, 
 	return append(ts, ImmutableIntIntTuple{k1, v1}, ImmutableIntIntTuple{k2, v2}, ImmutableIntIntTuple{k3, v3})
 }
 
+// ImmutableIntIntZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewImmutableIntIntMap
+// constructor function.
+func ImmutableIntIntZip(keys ...int) ImmutableIntIntTuples {
+	ts := make(ImmutableIntIntTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with ImmutableIntIntZip.
+func (ts ImmutableIntIntTuples) Values(values ...int) ImmutableIntIntTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newImmutableIntIntMap() ImmutableIntIntMap {

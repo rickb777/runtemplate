@@ -7,9 +7,13 @@
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{- if or .Stringer .GobEncode}}
 	"bytes"
-	"fmt" {{- end}}
+{{- end}}
+{{- if .GobEncode}}
+	"encoding/gob"
+{{- end}}
+	"fmt"
 	"sync"
 {{- if .HasImport}}
 	{{.Import}}
@@ -41,6 +45,28 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PTyp
 
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}, k3 {{.PKey}}, v3 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k3, v3})
+}
+
+// {{.UPrefix}}{{.UKey}}{{.UType}}Zip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the New{{.UPrefix}}{{.UKey}}{{.UType}}Map
+// constructor function.
+func {{.UPrefix}}{{.UKey}}{{.UType}}Zip(keys ...{{.PKey}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+	ts := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, len(keys))
+	for i, k := range keys {
+	    ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with {{.UPrefix}}{{.UKey}}{{.UType}}Zip.
+func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+    if len(ts) != len(values) {
+        panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+    }
+	for i, v := range values {
+	    ts[i].Val = v
+	}
+	return ts
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -425,4 +451,30 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, aft
 	b.WriteString(after)
 	return b
 }
-{{end}}
+{{- end}}
+{{- if .GobEncode}}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this map type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobDecode(b []byte) error {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+    buf := bytes.NewBuffer(b)
+    return gob.NewDecoder(buf).Decode(&mm.m)
+}
+
+// GobDecode implements 'gob' encoding for this map type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) GobEncode() ([]byte, error) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(mm.m)
+	return buf.Bytes(), err
+}
+
+{{- end}}

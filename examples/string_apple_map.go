@@ -7,6 +7,9 @@
 package examples
 
 import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
 	"sync"
 )
 
@@ -35,6 +38,28 @@ func (ts StringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) St
 
 func (ts StringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) StringAppleTuples {
 	return append(ts, StringAppleTuple{k1, v1}, StringAppleTuple{k2, v2}, StringAppleTuple{k3, v3})
+}
+
+// StringAppleZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewStringAppleMap
+// constructor function.
+func StringAppleZip(keys ...string) StringAppleTuples {
+	ts := make(StringAppleTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with StringAppleZip.
+func (ts StringAppleTuples) Values(values ...Apple) StringAppleTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -341,4 +366,27 @@ func (mm StringAppleMap) Clone() StringAppleMap {
 		result.m[k] = v
 	}
 	return result
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this map type.
+// You must register Apple with the 'gob' package before this method is used.
+func (mm *StringAppleMap) GobDecode(b []byte) error {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&mm.m)
+}
+
+// GobDecode implements 'gob' encoding for this map type.
+// You must register Apple with the 'gob' package before this method is used.
+func (mm StringAppleMap) GobEncode() ([]byte, error) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(mm.m)
+	return buf.Bytes(), err
 }

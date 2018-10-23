@@ -21,7 +21,7 @@ import (
 	"sync"
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 // {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
@@ -224,11 +224,11 @@ func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 }
 
 //-------------------------------------------------------------------------------------------------
+{{- if .Comparable}}
 
-{{if .Comparable -}}
 // Contains determines if a given item is already in the list.
 func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
-	return list.Exists(func (x {{.PType}}) bool {
+	return list.Exists(func(x {{.PType}}) bool {
 		return {{.TypeStar}}x == v
 	})
 }
@@ -246,8 +246,8 @@ func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	}
 	return true
 }
+{{- end}}
 
-{{end -}}
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
 func (list *{{.UPrefix}}{{.UType}}List) Exists(p func({{.PType}}) bool) bool {
 	list.s.RLock()
@@ -1042,7 +1042,7 @@ func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
 
 // GobDecode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
-func (list *{{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
+func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 

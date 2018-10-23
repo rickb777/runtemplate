@@ -37,7 +37,6 @@ type IntMkStringer interface {
 // IntCollection defines an interface for common collection methods on int.
 type IntCollection interface {
 	IntSizer
-
 	IntMkStringer
 
 	// IsSequence returns true for lists.
@@ -86,6 +85,16 @@ type IntCollection interface {
 
 	// Max returns the minimum value of all the items in the collection. Panics if there are no elements.
 	Max() int
+
+	// MinBy returns an element of IntCollection containing the minimum value, when compared to other elements
+	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+	// element is returned. Panics if there are no elements.
+	MinBy(less func(int, int) bool) int
+
+	// MaxBy returns an element of IntCollection containing the maximum value, when compared to other elements
+	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+	// element is returned. Panics if there are no elements.
+	MaxBy(less func(int, int) bool) int
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int

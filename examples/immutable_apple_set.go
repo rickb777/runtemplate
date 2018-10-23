@@ -6,6 +6,11 @@
 
 package examples
 
+import (
+	"bytes"
+	"encoding/gob"
+)
+
 // ImmutableAppleSet is the primary type that represents a set
 type ImmutableAppleSet struct {
 	m map[Apple]struct{}
@@ -435,4 +440,21 @@ func (set ImmutableAppleSet) Equals(other ImmutableAppleSet) bool {
 		}
 	}
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this set type.
+// You must register Apple with the 'gob' package before this method is used.
+func (set *ImmutableAppleSet) GobDecode(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&set.m)
+}
+
+// GobDecode implements 'gob' encoding for this set type.
+// You must register Apple with the 'gob' package before this method is used.
+func (set ImmutableAppleSet) GobEncode() ([]byte, error) {
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(set.m)
+	return buf.Bytes(), err
 }

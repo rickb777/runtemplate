@@ -663,7 +663,7 @@ func Test{{.UType}}ListMkString3(t *testing.T) {
 }
 
 {{if .GobEncode}}
-func Test{{.UType}}GobEncode(t *testing.T) {
+func Test{{.UType}}ListGobEncode(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 	b := NewX1{{.UType}}List()
 

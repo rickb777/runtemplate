@@ -35,6 +35,28 @@ func (ts SimpleStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 App
 	return append(ts, SimpleStringAppleTuple{k1, v1}, SimpleStringAppleTuple{k2, v2}, SimpleStringAppleTuple{k3, v3})
 }
 
+// SimpleStringAppleZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewSimpleStringAppleMap
+// constructor function.
+func SimpleStringAppleZip(keys ...string) SimpleStringAppleTuples {
+	ts := make(SimpleStringAppleTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with SimpleStringAppleZip.
+func (ts SimpleStringAppleTuples) Values(values ...Apple) SimpleStringAppleTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newSimpleStringAppleMap() SimpleStringAppleMap {

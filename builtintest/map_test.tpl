@@ -4,6 +4,10 @@
 package {{.Package}}
 
 import (
+{{- if .GobEncode}}
+    "bytes"
+    "encoding/gob"
+{{- end}}
 	"testing"
 )
 
@@ -108,7 +112,7 @@ func Test{{.UType}}MapFilter(t *testing.T) {
 }
 
 func Test{{.UType}}MapPartition(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{2, 11}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 2, 4).Values(4, 11, 0)...)
 
 	b, c := a.Partition(func(k, v int) bool {
 		return v > 5
@@ -126,7 +130,7 @@ func Test{{.UType}}MapPartition(t *testing.T) {
 }
 
 func Test{{.UType}}MapTransform(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 6}, TX1{{.UKey}}{{.UType}}Tuple{9, 10}, TX1{{.UKey}}{{.UType}}Tuple{10, 5})
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 9, 10).Values(6, 10, 5)...)
 
 	b := a.Map(func(k, v int) (int, int) {
 		return k + 1, v * v
@@ -139,7 +143,7 @@ func Test{{.UType}}MapTransform(t *testing.T) {
 }
 
 func Test{{.UType}}MapFlatMap(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{2, 6}, TX1{{.UKey}}{{.UType}}Tuple{1, 10}, TX1{{.UKey}}{{.UType}}Tuple{10, 5})
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(2, 1, 18).Values(6, 10, 5)...)
 
 	b := a.FlatMap(func(k {{.Key}}, v {{.Type}}) []TX1{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 	    if k > 3 {
@@ -260,3 +264,29 @@ func Test{{.UType}}MapMkString3(t *testing.T) {
 		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
 	}
 }
+
+{{if .GobEncode}}
+func Test{{.UType}}MapGobEncode(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
+	b := NewTX1{{.UKey}}{{.UType}}Map()
+
+    buf := &bytes.Buffer{}
+    err := gob.NewEncoder(buf).Encode(a)
+
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+
+    err = gob.NewDecoder(buf).Decode(&b)
+
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+	}
+}
+
+{{end}}
+

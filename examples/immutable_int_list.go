@@ -204,29 +204,29 @@ func (list *ImmutableIntList) ContainsAll(i ...int) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of ImmutableIntList return true for the passed func.
-func (list *ImmutableIntList) Exists(fn func(int) bool) bool {
+// Exists verifies that one or more elements of ImmutableIntList return true for the predicate p.
+func (list *ImmutableIntList) Exists(p func(int) bool) bool {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of ImmutableIntList return true for the passed func.
-func (list *ImmutableIntList) Forall(fn func(int) bool) bool {
+// Forall verifies that all elements of ImmutableIntList return true for the predicate p.
+func (list *ImmutableIntList) Forall(p func(int) bool) bool {
 
 	for _, v := range list.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over ImmutableIntList and executes the passed func against each element.
+// Foreach iterates over ImmutableIntList and executes function fn against each element.
 func (list *ImmutableIntList) Foreach(fn func(int)) {
 
 	for _, v := range list.m {
@@ -343,7 +343,7 @@ func (list *ImmutableIntList) DropLast(n int) *ImmutableIntList {
 
 // TakeWhile returns a new ImmutableIntList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list *ImmutableIntList) TakeWhile(p func(int) bool) *ImmutableIntList {
 
 	result := newImmutableIntList(0, 0)
@@ -359,7 +359,7 @@ func (list *ImmutableIntList) TakeWhile(p func(int) bool) *ImmutableIntList {
 
 // DropWhile returns a new ImmutableIntList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list *ImmutableIntList) DropWhile(p func(int) bool) *ImmutableIntList {
 
 	result := newImmutableIntList(0, 0)
@@ -377,28 +377,27 @@ func (list *ImmutableIntList) DropWhile(p func(int) bool) *ImmutableIntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function.
+// Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list ImmutableIntList) Find(fn func(int) bool) (int, bool) {
+func (list ImmutableIntList) Find(p func(int) bool) (int, bool) {
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
 
 	var empty int
 	return empty, false
-
 }
 
-// Filter returns a new ImmutableIntList whose elements return true for func.
-func (list *ImmutableIntList) Filter(fn func(int) bool) *ImmutableIntList {
+// Filter returns a new ImmutableIntList whose elements return true for predicate p.
+func (list *ImmutableIntList) Filter(p func(int) bool) *ImmutableIntList {
 
 	result := newImmutableIntList(0, len(list.m)/2)
 
 	for _, v := range list.m {
-		if fn(v) {
+		if p(v) {
 			result.m = append(result.m, v)
 		}
 	}

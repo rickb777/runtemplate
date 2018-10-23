@@ -7,6 +7,8 @@
 package examples
 
 import (
+	"bytes"
+	"encoding/gob"
 	"sync"
 )
 
@@ -196,6 +198,7 @@ func (set AppleSet) Union(other AppleSet) AppleSet {
 	for v, _ := range other.m {
 		unionedSet.doAdd(v)
 	}
+
 	return unionedSet
 }
 
@@ -222,6 +225,7 @@ func (set AppleSet) Intersect(other AppleSet) AppleSet {
 			}
 		}
 	}
+
 	return intersection
 }
 
@@ -239,6 +243,7 @@ func (set AppleSet) Difference(other AppleSet) AppleSet {
 			differencedSet.doAdd(v)
 		}
 	}
+
 	return differencedSet
 }
 
@@ -505,4 +510,27 @@ func (set AppleSet) Equals(other AppleSet) bool {
 		}
 	}
 	return true
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this set type.
+// You must register Apple with the 'gob' package before this method is used.
+func (set *AppleSet) GobDecode(b []byte) error {
+	set.s.Lock()
+	defer set.s.Unlock()
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&set.m)
+}
+
+// GobDecode implements 'gob' encoding for this set type.
+// You must register Apple with the 'gob' package before this method is used.
+func (set AppleSet) GobEncode() ([]byte, error) {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(set.m)
+	return buf.Bytes(), err
 }

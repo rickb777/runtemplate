@@ -441,6 +441,48 @@ func (set ImmutableIntSet) Max() (result int) {
 	return m
 }
 
+// MinBy returns an element of ImmutableIntSet containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (set ImmutableIntSet) MinBy(less func(int, int) bool) int {
+	if set.IsEmpty() {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+
+	var m int
+	first := true
+	for v, _ := range set.m {
+		if first {
+			m = v
+			first = false
+		} else if less(v, m) {
+			m = v
+		}
+	}
+	return m
+}
+
+// MaxBy returns an element of ImmutableIntSet containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (set ImmutableIntSet) MaxBy(less func(int, int) bool) int {
+	if set.IsEmpty() {
+		panic("Cannot determine the minimum of an empty list.")
+	}
+
+	var m int
+	first := true
+	for v, _ := range set.m {
+		if first {
+			m = v
+			first = false
+		} else if less(m, v) {
+			m = v
+		}
+	}
+	return m
+}
+
 //-------------------------------------------------------------------------------------------------
 // These methods are included when int is numeric.
 

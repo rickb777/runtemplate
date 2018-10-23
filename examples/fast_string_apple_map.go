@@ -5,7 +5,11 @@
 
 package examples
 
-import ()
+import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+)
 
 // FastStringAppleMap is the primary type that represents a thread-safe map
 type FastStringAppleMap struct {
@@ -31,6 +35,28 @@ func (ts FastStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple
 
 func (ts FastStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) FastStringAppleTuples {
 	return append(ts, FastStringAppleTuple{k1, v1}, FastStringAppleTuple{k2, v2}, FastStringAppleTuple{k3, v3})
+}
+
+// FastStringAppleZip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the NewFastStringAppleMap
+// constructor function.
+func FastStringAppleZip(keys ...string) FastStringAppleTuples {
+	ts := make(FastStringAppleTuples, len(keys))
+	for i, k := range keys {
+		ts[i].Key = k
+	}
+	return ts
+}
+
+// Values sets the values in a tuple slice. Use this with FastStringAppleZip.
+func (ts FastStringAppleTuples) Values(values ...Apple) FastStringAppleTuples {
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
+	for i, v := range values {
+		ts[i].Val = v
+	}
+	return ts
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -294,4 +320,23 @@ func (mm FastStringAppleMap) Clone() FastStringAppleMap {
 		result.m[k] = v
 	}
 	return result
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this map type.
+// You must register Apple with the 'gob' package before this method is used.
+func (mm *FastStringAppleMap) GobDecode(b []byte) error {
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&mm.m)
+}
+
+// GobDecode implements 'gob' encoding for this map type.
+// You must register Apple with the 'gob' package before this method is used.
+func (mm FastStringAppleMap) GobEncode() ([]byte, error) {
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(mm.m)
+	return buf.Bytes(), err
 }
