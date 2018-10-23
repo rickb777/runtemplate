@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from immutable/list.tpl with Type=Apple
-// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:disabled
 
 package examples
 
@@ -559,7 +559,6 @@ func (list *ImmutableAppleList) StableSortBy(less func(i, j Apple) bool) *Immuta
 // GobDecode implements 'gob' decoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (list *ImmutableAppleList) GobDecode(b []byte) error {
-
 	buf := bytes.NewBuffer(b)
 	return gob.NewDecoder(buf).Decode(&list.m)
 }
@@ -567,7 +566,6 @@ func (list *ImmutableAppleList) GobDecode(b []byte) error {
 // GobDecode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (list ImmutableAppleList) GobEncode() ([]byte, error) {
-
 	buf := &bytes.Buffer{}
 	err := gob.NewEncoder(buf).Encode(list.m)
 	return buf.Bytes(), err

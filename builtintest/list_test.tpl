@@ -4,10 +4,11 @@
 package {{.Package}}
 
 import (
-{{- if .GobEncode}}
     "bytes"
+{{- if .GobEncode}}
     "encoding/gob"
 {{- end}}
+    "encoding/json"
 	"testing"
 )
 
@@ -686,3 +687,24 @@ func Test{{.UType}}ListGobEncode(t *testing.T) {
 }
 
 {{end}}
+func Test{{.UType}}ListJsonEncode(t *testing.T) {
+	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+	b := NewX1{{.UType}}List()
+
+    buf := &bytes.Buffer{}
+    err := json.NewEncoder(buf).Encode(a)
+
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+
+    err = json.NewDecoder(buf).Decode(&b)
+
+	if err != nil {
+		t.Errorf("Got %v", err)
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+	}
+}

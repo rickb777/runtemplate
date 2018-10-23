@@ -6,7 +6,6 @@ package {{.Package}}
 import (
 	"testing"
 	"sort"
-	"encoding/json"
 )
 
 type Sizer interface {
@@ -245,17 +244,6 @@ func test{{.UType}}Stringer(t *testing.T, a X1{{.UType}}Collection, ordered bool
 	}
 	if sl[4] != "71" {
 		t.Errorf("Got %s", sl[4])
-	}
-
-	var m json.Marshaler = a
-	json, err := m.MarshalJSON()
-	if err != nil {
-		t.Errorf("Got %v", err)
-	}
-	if ordered && string(json) != `["10", "71", "3", "7", "13"]` {
-		t.Errorf("Got %s for %+v", json, a)
-	} else if len(json) != 28 {
-		t.Errorf("Got %s for %+v", json, a)
 	}
 }
 

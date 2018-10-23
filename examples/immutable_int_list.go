@@ -2,12 +2,13 @@
 // Thread-safe.
 //
 // Generated from immutable/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:disabled
+// options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:disabled
 
 package examples
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -703,11 +704,6 @@ func (list *ImmutableIntList) String() string {
 	return list.MkString3("[", ", ", "]")
 }
 
-// implements json.Marshaler interface {
-func (list ImmutableIntList) MarshalJSON() ([]byte, error) {
-	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list *ImmutableIntList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
@@ -730,4 +726,19 @@ func (list ImmutableIntList) mkString3Bytes(before, between, after string) *byte
 	}
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this list type.
+func (list *ImmutableIntList) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&list.m)
+}
+
+// MarshalJSON implements JSON encoding for this list type.
+func (list ImmutableIntList) MarshalJSON() ([]byte, error) {
+	buf := &bytes.Buffer{}
+	err := json.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
 }

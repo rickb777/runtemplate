@@ -11,17 +11,17 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=X2 Type=big.Int Import:"math/big"
 
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X1 Type=string Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X1 Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true GobEncode:true
+//go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X1 Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X1 Type=Apple  Stringer:false Comparable:true
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X2 Type=big.Int Import:"math/big"
 
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=string Stringer:true  Ordered:false Numeric:false
-//go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=int    Stringer:true  Ordered:true  Numeric:true GobEncode:true
+//go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=int    Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=Apple  Stringer:false
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=url.URL Stringer:true  Comparable:true Import:"net/url"
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/rickb777/runtemplate/builtintest/testtypes"
 
-//go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true
+//go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=string Type=string  Comparable:true Stringer:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=string Type=Apple                   Stringer:true KeySlice:sort.StringSlice
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=Email  Type=string                  Stringer:true KeySlice:EmailSlice
@@ -34,9 +34,9 @@ package threadsafe
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 
 //go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true
-//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true
-//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true
-//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true M:.m GobEncode:true
+//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true M:.m GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true M:.m GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true M:.m GobEncode:true JsonEncode:true
 
 // Code generation with pointer values
 

@@ -14,6 +14,7 @@ import (
 	"encoding/gob"
 {{- end}}
 {{- if .Stringer}}
+	"encoding/json"
 	"fmt"
 {{- end}}
 	"math/rand"
@@ -994,11 +995,6 @@ func (list *{{.UPrefix}}{{.UType}}List) String() string {
 	return list.MkString3("[", ", ", "]")
 }
 
-// implements json.Marshaler interface {
-func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
-	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list *{{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 	return list.MkString3("", sep, "")
@@ -1024,6 +1020,27 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 	}
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this list type.
+func (list *{{.UPrefix}}{{.UType}}List) UnmarshalJSON(b []byte) error {
+	list.s.Lock()
+	defer list.s.Unlock()
+
+    buf := bytes.NewBuffer(b)
+    return json.NewDecoder(buf).Decode(&list.m)
+}
+
+// MarshalJSON implements JSON encoding for this list type.
+func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+    buf := &bytes.Buffer{}
+    err := json.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
 }
 {{- end}}
 {{- if .GobEncode}}

@@ -7,6 +7,7 @@ package examples
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -863,11 +864,6 @@ func (list *FastIntList) String() string {
 	return list.MkString3("[", ", ", "]")
 }
 
-// implements json.Marshaler interface {
-func (list FastIntList) MarshalJSON() ([]byte, error) {
-	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list *FastIntList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
@@ -890,4 +886,21 @@ func (list FastIntList) mkString3Bytes(before, between, after string) *bytes.Buf
 	}
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this list type.
+func (list *FastIntList) UnmarshalJSON(b []byte) error {
+
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&list.m)
+}
+
+// MarshalJSON implements JSON encoding for this list type.
+func (list FastIntList) MarshalJSON() ([]byte, error) {
+
+	buf := &bytes.Buffer{}
+	err := json.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
 }

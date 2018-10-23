@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:disabled
 
 package {{.Package}}
 
@@ -14,6 +14,7 @@ import (
 	"encoding/gob"
 {{- end}}
 {{- if .Stringer}}
+	"encoding/json"
 	"fmt"
 {{- end}}
 	"math/rand"
@@ -736,11 +737,6 @@ func (list *{{.UPrefix}}{{.UType}}List) String() string {
 	return list.MkString3("[", ", ", "]")
 }
 
-// implements json.Marshaler interface {
-func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
-	return list.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list *{{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 	return list.MkString3("", sep, "")
@@ -765,6 +761,21 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 	b.WriteString(after)
 	return b
 }
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this list type.
+func (list *{{.UPrefix}}{{.UType}}List) UnmarshalJSON(b []byte) error {
+    buf := bytes.NewBuffer(b)
+    return json.NewDecoder(buf).Decode(&list.m)
+}
+
+// MarshalJSON implements JSON encoding for this list type.
+func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
+    buf := &bytes.Buffer{}
+    err := json.NewEncoder(buf).Encode(list.m)
+	return buf.Bytes(), err
+}
 {{- end}}
 {{- if .GobEncode}}
 
@@ -773,7 +784,6 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 // GobDecode implements 'gob' decoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
-
     buf := bytes.NewBuffer(b)
     return gob.NewDecoder(buf).Decode(&list.m)
 }
@@ -781,7 +791,6 @@ func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
 // GobDecode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
-
     buf := &bytes.Buffer{}
     err := gob.NewEncoder(buf).Encode(list.m)
 	return buf.Bytes(), err
