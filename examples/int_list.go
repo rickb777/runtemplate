@@ -594,7 +594,7 @@ func (list *IntList) DropWhile(p func(int) bool) *IntList {
 
 // Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list IntList) Find(p func(int) bool) (int, bool) {
+func (list *IntList) Find(p func(int) bool) (int, bool) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -998,8 +998,7 @@ func (list *IntList) UnmarshalJSON(b []byte) error {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	buf := bytes.NewBuffer(b)
-	return json.NewDecoder(buf).Decode(&list.m)
+	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
@@ -1007,7 +1006,6 @@ func (list IntList) MarshalJSON() ([]byte, error) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	buf := &bytes.Buffer{}
-	err := json.NewEncoder(buf).Encode(list.m)
-	return buf.Bytes(), err
+	buf, err := json.Marshal(list.m)
+	return buf, err
 }

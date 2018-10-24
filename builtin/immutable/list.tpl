@@ -766,15 +766,13 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 
 // UnmarshalJSON implements JSON decoding for this list type.
 func (list *{{.UPrefix}}{{.UType}}List) UnmarshalJSON(b []byte) error {
-    buf := bytes.NewBuffer(b)
-    return json.NewDecoder(buf).Decode(&list.m)
+    return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
 func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
-    buf := &bytes.Buffer{}
-    err := json.NewEncoder(buf).Encode(list.m)
-	return buf.Bytes(), err
+    buf, err := json.Marshal(list.m)
+	return buf, err
 }
 {{- end}}
 {{- if .GobEncode}}

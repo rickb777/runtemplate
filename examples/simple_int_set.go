@@ -8,6 +8,7 @@ package examples
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -471,11 +472,6 @@ func (set SimpleIntSet) String() string {
 	return set.mkString3Bytes("", ", ", "").String()
 }
 
-// implements encoding.Marshaler interface {
-func (set SimpleIntSet) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (set SimpleIntSet) MkString(sep string) string {
 	return set.MkString3("", sep, "")
@@ -497,6 +493,27 @@ func (set SimpleIntSet) mkString3Bytes(before, between, after string) *bytes.Buf
 	}
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this set type.
+func (set SimpleIntSet) UnmarshalJSON(b []byte) error {
+	values := make([]int, 0)
+	buf := bytes.NewBuffer(b)
+	err := json.NewDecoder(buf).Decode(&values)
+	if err != nil {
+		return err
+	}
+	set.Add(values...)
+	return nil
+}
+
+// MarshalJSON implements JSON encoding for this set type.
+func (set SimpleIntSet) MarshalJSON() ([]byte, error) {
+	buf := &bytes.Buffer{}
+	err := json.NewEncoder(buf).Encode(set.ToSlice())
+	return buf.Bytes(), err
 }
 
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the

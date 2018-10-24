@@ -613,7 +613,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 
 // Find returns the first {{.Type}} that returns true for predicate p.
 // False is returned if none match.
-func (list {{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
+func (list *{{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -1029,8 +1029,7 @@ func (list *{{.UPrefix}}{{.UType}}List) UnmarshalJSON(b []byte) error {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    buf := bytes.NewBuffer(b)
-    return json.NewDecoder(buf).Decode(&list.m)
+    return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
@@ -1038,9 +1037,8 @@ func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-    buf := &bytes.Buffer{}
-    err := json.NewEncoder(buf).Encode(list.m)
-	return buf.Bytes(), err
+    buf, err := json.Marshal(list.m)
+	return buf, err
 }
 {{- end}}
 {{- if .GobEncode}}

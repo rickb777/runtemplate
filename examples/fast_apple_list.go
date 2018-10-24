@@ -509,7 +509,7 @@ func (list *FastAppleList) DropWhile(p func(Apple) bool) *FastAppleList {
 
 // Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
-func (list FastAppleList) Find(p func(Apple) bool) (Apple, bool) {
+func (list *FastAppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 	for _, v := range list.m {
 		if p(v) {

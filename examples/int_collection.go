@@ -30,6 +30,9 @@ type IntMkStringer interface {
 	// implements json.Marshaler interface {
 	MarshalJSON() ([]byte, error)
 
+	// implements json.Unmarshaler interface {
+	UnmarshalJSON(b []byte) error
+
 	// StringList gets a list of strings that depicts all the elements.
 	StringList() []string
 }

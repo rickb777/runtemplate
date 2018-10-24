@@ -8,6 +8,7 @@ package examples
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -19,8 +20,8 @@ type IntSet struct {
 }
 
 // NewIntSet creates and returns a reference to an empty set.
-func NewIntSet(values ...int) IntSet {
-	set := IntSet{
+func NewIntSet(values ...int) *IntSet {
+	set := &IntSet{
 		s: &sync.RWMutex{},
 		m: make(map[int]struct{}),
 	}
@@ -33,7 +34,7 @@ func NewIntSet(values ...int) IntSet {
 // ConvertIntSet constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned set will contain all the values that were correctly converted.
-func ConvertIntSet(values ...interface{}) (IntSet, bool) {
+func ConvertIntSet(values ...interface{}) (*IntSet, bool) {
 	set := NewIntSet()
 
 	for _, i := range values {
@@ -70,7 +71,7 @@ func ConvertIntSet(values ...interface{}) (IntSet, bool) {
 
 // BuildIntSetFromChan constructs a new IntSet from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func BuildIntSetFromChan(source <-chan int) IntSet {
+func BuildIntSetFromChan(source <-chan int) *IntSet {
 	set := NewIntSet()
 	for v := range source {
 		set.m[v] = struct{}{}
@@ -79,7 +80,7 @@ func BuildIntSetFromChan(source <-chan int) IntSet {
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set IntSet) ToSlice() []int {
+func (set *IntSet) ToSlice() []int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -91,7 +92,7 @@ func (set IntSet) ToSlice() []int {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set IntSet) ToInterfaceSlice() []interface{} {
+func (set *IntSet) ToInterfaceSlice() []interface{} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -103,7 +104,7 @@ func (set IntSet) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set IntSet) Clone() IntSet {
+func (set *IntSet) Clone() *IntSet {
 	clonedSet := NewIntSet()
 
 	set.s.RLock()
@@ -118,27 +119,27 @@ func (set IntSet) Clone() IntSet {
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set IntSet) IsEmpty() bool {
+func (set *IntSet) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set IntSet) NonEmpty() bool {
+func (set *IntSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (set IntSet) IsSequence() bool {
+func (set *IntSet) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists.
-func (set IntSet) IsSet() bool {
+func (set *IntSet) IsSet() bool {
 	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set IntSet) Size() int {
+func (set *IntSet) Size() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -146,14 +147,14 @@ func (set IntSet) Size() int {
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set IntSet) Cardinality() int {
+func (set *IntSet) Cardinality() int {
 	return set.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set.
-func (set IntSet) Add(more ...int) {
+func (set *IntSet) Add(more ...int) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -162,12 +163,12 @@ func (set IntSet) Add(more ...int) {
 	}
 }
 
-func (set IntSet) doAdd(i int) {
+func (set *IntSet) doAdd(i int) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
-func (set IntSet) Contains(i int) bool {
+func (set *IntSet) Contains(i int) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -176,7 +177,7 @@ func (set IntSet) Contains(i int) bool {
 }
 
 // ContainsAll determines if the given items are all in the set.
-func (set IntSet) ContainsAll(i ...int) bool {
+func (set *IntSet) ContainsAll(i ...int) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -191,7 +192,7 @@ func (set IntSet) ContainsAll(i ...int) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines if every item in the other set is in this set.
-func (set IntSet) IsSubset(other IntSet) bool {
+func (set *IntSet) IsSubset(other *IntSet) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -206,12 +207,12 @@ func (set IntSet) IsSubset(other IntSet) bool {
 }
 
 // IsSuperset determines if every item of this set is in the other set.
-func (set IntSet) IsSuperset(other IntSet) bool {
+func (set *IntSet) IsSuperset(other *IntSet) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set IntSet) Union(other IntSet) IntSet {
+func (set *IntSet) Union(other *IntSet) *IntSet {
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -225,7 +226,7 @@ func (set IntSet) Union(other IntSet) IntSet {
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set IntSet) Intersect(other IntSet) IntSet {
+func (set *IntSet) Intersect(other *IntSet) *IntSet {
 	intersection := NewIntSet()
 
 	set.s.RLock()
@@ -252,7 +253,7 @@ func (set IntSet) Intersect(other IntSet) IntSet {
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set IntSet) Difference(other IntSet) IntSet {
+func (set *IntSet) Difference(other *IntSet) *IntSet {
 	differencedSet := NewIntSet()
 
 	set.s.RLock()
@@ -270,7 +271,7 @@ func (set IntSet) Difference(other IntSet) IntSet {
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set IntSet) SymmetricDifference(other IntSet) IntSet {
+func (set *IntSet) SymmetricDifference(other *IntSet) *IntSet {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
@@ -285,7 +286,7 @@ func (set *IntSet) Clear() {
 }
 
 // Remove removes a single item from the set.
-func (set IntSet) Remove(i int) {
+func (set *IntSet) Remove(i int) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -296,7 +297,7 @@ func (set IntSet) Remove(i int) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set IntSet) Send() <-chan int {
+func (set *IntSet) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
 		set.s.RLock()
@@ -319,7 +320,7 @@ func (set IntSet) Send() <-chan int {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set IntSet) Forall(fn func(int) bool) bool {
+func (set *IntSet) Forall(fn func(int) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -334,7 +335,7 @@ func (set IntSet) Forall(fn func(int) bool) bool {
 // Exists applies a predicate function to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set IntSet) Exists(fn func(int) bool) bool {
+func (set *IntSet) Exists(fn func(int) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -348,7 +349,7 @@ func (set IntSet) Exists(fn func(int) bool) bool {
 
 // Foreach iterates over intSet and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
-func (set IntSet) Foreach(fn func(int)) {
+func (set *IntSet) Foreach(fn func(int)) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -361,7 +362,7 @@ func (set IntSet) Foreach(fn func(int)) {
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (set IntSet) Find(fn func(int) bool) (int, bool) {
+func (set *IntSet) Find(fn func(int) bool) (int, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -379,7 +380,7 @@ func (set IntSet) Find(fn func(int) bool) (int, bool) {
 // Filter returns a new IntSet whose elements return true for func.
 //
 // The original set is not modified
-func (set IntSet) Filter(fn func(int) bool) IntSet {
+func (set *IntSet) Filter(fn func(int) bool) *IntSet {
 	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -398,7 +399,7 @@ func (set IntSet) Filter(fn func(int) bool) IntSet {
 // original list.
 //
 // The original set is not modified
-func (set IntSet) Partition(p func(int) bool) (IntSet, IntSet) {
+func (set *IntSet) Partition(p func(int) bool) (*IntSet, *IntSet) {
 	matching := NewIntSet()
 	others := NewIntSet()
 	set.s.RLock()
@@ -419,7 +420,7 @@ func (set IntSet) Partition(p func(int) bool) (IntSet, IntSet) {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set IntSet) Map(fn func(int) int) IntSet {
+func (set *IntSet) Map(fn func(int) int) *IntSet {
 	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -437,7 +438,7 @@ func (set IntSet) Map(fn func(int) int) IntSet {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set IntSet) FlatMap(fn func(int) []int) IntSet {
+func (set *IntSet) FlatMap(fn func(int) []int) *IntSet {
 	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -452,7 +453,7 @@ func (set IntSet) FlatMap(fn func(int) []int) IntSet {
 }
 
 // CountBy gives the number elements of IntSet that return true for the passed predicate.
-func (set IntSet) CountBy(predicate func(int) bool) (result int) {
+func (set *IntSet) CountBy(predicate func(int) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -469,7 +470,7 @@ func (set IntSet) CountBy(predicate func(int) bool) (result int) {
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set IntSet) Min() int {
+func (set *IntSet) Min() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -488,7 +489,7 @@ func (set IntSet) Min() int {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set IntSet) Max() (result int) {
+func (set *IntSet) Max() (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -508,9 +509,9 @@ func (set IntSet) Max() (result int) {
 // MinBy returns an element of IntSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set IntSet) MinBy(less func(int, int) bool) int {
+func (set *IntSet) MinBy(less func(int, int) bool) int {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 
 	set.s.RLock()
@@ -532,9 +533,9 @@ func (set IntSet) MinBy(less func(int, int) bool) int {
 // MaxBy returns an element of IntSet containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set IntSet) MaxBy(less func(int, int) bool) int {
+func (set *IntSet) MaxBy(less func(int, int) bool) int {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 
 	set.s.RLock()
@@ -557,7 +558,7 @@ func (set IntSet) MaxBy(less func(int, int) bool) int {
 // These methods are included when int is numeric.
 
 // Sum returns the sum of all the elements in the set.
-func (set IntSet) Sum() int {
+func (set *IntSet) Sum() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -573,7 +574,7 @@ func (set IntSet) Sum() int {
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set IntSet) Equals(other IntSet) bool {
+func (set *IntSet) Equals(other *IntSet) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -593,7 +594,7 @@ func (set IntSet) Equals(other IntSet) bool {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (set IntSet) StringList() []string {
+func (set *IntSet) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -606,27 +607,22 @@ func (set IntSet) StringList() []string {
 	return strings
 }
 
-// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (set IntSet) String() string {
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
+func (set *IntSet) String() string {
 	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
-// implements json.Marshaler interface {
-func (set IntSet) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (set IntSet) MkString(sep string) string {
+func (set *IntSet) MkString(sep string) string {
 	return set.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set IntSet) MkString3(before, between, after string) string {
+func (set *IntSet) MkString3(before, between, after string) string {
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set IntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (set *IntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -643,9 +639,36 @@ func (set IntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	return b
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this set type.
+func (set *IntSet) UnmarshalJSON(b []byte) error {
+	set.s.Lock()
+	defer set.s.Unlock()
+
+	values := make([]int, 0)
+	err := json.Unmarshal(b, &values)
+	if err != nil {
+		return err
+	}
+
+	s2 := NewIntSet(values...)
+	*set = *s2
+	return nil
+}
+
+// MarshalJSON implements JSON encoding for this set type.
+func (set *IntSet) MarshalJSON() ([]byte, error) {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	buf, err := json.Marshal(set.ToSlice())
+	return buf, err
+}
+
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
-func (set IntSet) StringMap() map[string]bool {
+func (set *IntSet) StringMap() map[string]bool {
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true

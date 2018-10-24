@@ -571,7 +571,7 @@ func (list *AppleList) DropWhile(p func(Apple) bool) *AppleList {
 
 // Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
-func (list AppleList) Find(p func(Apple) bool) (Apple, bool) {
+func (list *AppleList) Find(p func(Apple) bool) (Apple, bool) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 

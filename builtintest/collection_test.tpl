@@ -121,7 +121,6 @@ func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection, kind string) {
 	}
 }
 
-
 func Test{{.UType}}CountBy(t *testing.T) {
 	test{{.UType}}CountBy(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}CountBy(t, NewX1{{.UType}}List(1, 2, 3), "List")

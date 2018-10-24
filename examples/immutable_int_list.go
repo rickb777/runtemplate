@@ -732,13 +732,11 @@ func (list ImmutableIntList) mkString3Bytes(before, between, after string) *byte
 
 // UnmarshalJSON implements JSON decoding for this list type.
 func (list *ImmutableIntList) UnmarshalJSON(b []byte) error {
-	buf := bytes.NewBuffer(b)
-	return json.NewDecoder(buf).Decode(&list.m)
+	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
 func (list ImmutableIntList) MarshalJSON() ([]byte, error) {
-	buf := &bytes.Buffer{}
-	err := json.NewEncoder(buf).Encode(list.m)
-	return buf.Bytes(), err
+	buf, err := json.Marshal(list.m)
+	return buf, err
 }

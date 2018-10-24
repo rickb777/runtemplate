@@ -7,11 +7,14 @@
 package {{.Package}}
 
 import (
-{{- if or .GobEncode .Stringer}}
+{{- if or .Stringer .GobEncode}}
 	"bytes"
 {{- end}}
 {{- if .GobEncode}}
 	"encoding/gob"
+{{- end}}
+{{- if and .Stringer (eq .Key "string")}}
+	"encoding/json"
 {{- end}}
 	"fmt"
 {{- if .HasImport}}
@@ -333,6 +336,21 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, aft
 	b.WriteString(after)
 	return b
 }
+{{- if eq .Key "string"}}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this map type.
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) UnmarshalJSON(b []byte) error {
+    buf := bytes.NewBuffer(b)
+    return json.NewDecoder(buf).Decode(&mm.m)
+}
+
+// MarshalJSON implements JSON encoding for this map type.
+func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
+    return json.Marshal(mm.m)
+}
+{{- end}}
 {{- end}}
 {{- if .GobEncode}}
 

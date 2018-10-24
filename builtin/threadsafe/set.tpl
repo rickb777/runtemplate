@@ -14,6 +14,7 @@ import (
 	"encoding/gob"
 {{- end}}
 {{- if .Stringer}}
+	"encoding/json"
 	"fmt"
 {{- end}}
 	"sync"
@@ -29,8 +30,8 @@ type {{.UPrefix}}{{.UType}}Set struct {
 }
 
 // New{{.UPrefix}}{{.UType}}Set creates and returns a reference to an empty set.
-func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	set := {{.UPrefix}}{{.UType}}Set{
+func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) *{{.UPrefix}}{{.UType}}Set {
+	set := &{{.UPrefix}}{{.UType}}Set{
 		s: &sync.RWMutex{},
 		m: make(map[{{.Type}}]struct{}),
 	}
@@ -43,7 +44,7 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set
 // Convert{{.UPrefix}}{{.UType}}Set constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned set will contain all the values that were correctly converted.
-func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UType}}Set, bool) {
+func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) (*{{.UPrefix}}{{.UType}}Set, bool) {
 	set := New{{.UPrefix}}{{.UType}}Set()
 {{if and .Numeric (eq .Type .PType)}}
 	for _, i := range values {
@@ -87,7 +88,7 @@ func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UTy
 
 // Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}Set {
 	set := New{{.UPrefix}}{{.UType}}Set()
 	for v := range source {
 		set.m[v] = struct{}{}
@@ -96,7 +97,7 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
+func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -108,7 +109,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set {{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
+func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -120,7 +121,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) Clone() *{{.UPrefix}}{{.UType}}Set {
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
 
 	set.s.RLock()
@@ -135,27 +136,27 @@ func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set {{.UPrefix}}{{.UType}}Set) IsEmpty() bool {
+func (set *{{.UPrefix}}{{.UType}}Set) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set {{.UPrefix}}{{.UType}}Set) NonEmpty() bool {
+func (set *{{.UPrefix}}{{.UType}}Set) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (set {{.UPrefix}}{{.UType}}Set) IsSequence() bool {
+func (set *{{.UPrefix}}{{.UType}}Set) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists.
-func (set {{.UPrefix}}{{.UType}}Set) IsSet() bool {
+func (set *{{.UPrefix}}{{.UType}}Set) IsSet() bool {
 	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set {{.UPrefix}}{{.UType}}Set) Size() int {
+func (set *{{.UPrefix}}{{.UType}}Set) Size() int {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -163,14 +164,14 @@ func (set {{.UPrefix}}{{.UType}}Set) Size() int {
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
+func (set *{{.UPrefix}}{{.UType}}Set) Cardinality() int {
 	return set.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set.
-func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {
+func (set *{{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -179,12 +180,12 @@ func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {
 	}
 }
 
-func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
+func (set *{{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
-func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -193,7 +194,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 }
 
 // ContainsAll determines if the given items are all in the set.
-func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -208,7 +209,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines if every item in the other set is in this set.
-func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -223,12 +224,12 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) b
 }
 
 // IsSuperset determines if every item of this set is in the other set.
-func (set {{.UPrefix}}{{.UType}}Set) IsSuperset(other {{.UPrefix}}{{.UType}}Set) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) IsSuperset(other *{{.UPrefix}}{{.UType}}Set) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -242,7 +243,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.U
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
 	intersection := New{{.UPrefix}}{{.UType}}Set()
 
 	set.s.RLock()
@@ -269,7 +270,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) 
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
 	differencedSet := New{{.UPrefix}}{{.UType}}Set()
 
 	set.s.RLock()
@@ -287,7 +288,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set)
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UType}}Set) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) SymmetricDifference(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
@@ -302,7 +303,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 }
 
 // Remove removes a single item from the set.
-func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
+func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -313,7 +314,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
+func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
 	go func() {
 		set.s.RLock()
@@ -336,7 +337,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -351,7 +352,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 // Exists applies a predicate function to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -365,7 +366,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 
 // Foreach iterates over {{.Type}}Set and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
-func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
+func (set *{{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -378,7 +379,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 
 // Find returns the first {{.Type}} that returns true for some function.
 // False is returned if none match.
-func (set {{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
+func (set *{{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -399,7 +400,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}},
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
 //
 // The original set is not modified
-func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) *{{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -418,7 +419,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 // original list.
 //
 // The original set is not modified
-func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
+func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPrefix}}{{.UType}}Set, *{{.UPrefix}}{{.UType}}Set) {
 	matching := New{{.UPrefix}}{{.UType}}Set()
 	others := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
@@ -439,7 +440,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -457,7 +458,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPre
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -472,7 +473,7 @@ func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {
 }
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the passed predicate.
-func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (result int) {
+func (set *{{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -490,7 +491,7 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set {{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
+func (set *{{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -509,7 +510,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set {{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
+func (set *{{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -530,9 +531,9 @@ func (set {{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
 // MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+func (set *{{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 
 	set.s.RLock()
@@ -554,9 +555,9 @@ func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool)
 // MaxBy returns an element of {{.UPrefix}}{{.UType}}Set containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+func (set *{{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 
 	set.s.RLock()
@@ -580,7 +581,7 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 // These methods are included when {{.Type}} is numeric.
 
 // Sum returns the sum of all the elements in the set.
-func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
+func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -597,7 +598,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) bool {
+func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) bool {
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -618,7 +619,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
+func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -631,27 +632,22 @@ func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
 	return strings
 }
 
-// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (set {{.UPrefix}}{{.UType}}Set) String() string {
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
+func (set *{{.UPrefix}}{{.UType}}Set) String() string {
 	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
-// implements json.Marshaler interface {
-func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (set {{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
+func (set *{{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
 	return set.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set {{.UPrefix}}{{.UType}}Set) MkString3(before, between, after string) string {
+func (set *{{.UPrefix}}{{.UType}}Set) MkString3(before, between, after string) string {
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (set *{{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -668,9 +664,36 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after strin
 	return b
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this set type.
+func (set *{{.UPrefix}}{{.UType}}Set) UnmarshalJSON(b []byte) error {
+	set.s.Lock()
+	defer set.s.Unlock()
+
+    values := make([]{{.PType}}, 0)
+    err := json.Unmarshal(b, &values)
+    if err != nil {
+        return err
+    }
+
+    s2 := New{{.UPrefix}}{{.UType}}Set(values...)
+    *set = *s2
+    return nil
+}
+
+// MarshalJSON implements JSON encoding for this set type.
+func (set *{{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+    buf, err := json.Marshal(set.ToSlice())
+	return buf, err
+}
+
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
-func (set {{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
+func (set *{{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true

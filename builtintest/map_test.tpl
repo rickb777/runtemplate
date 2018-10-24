@@ -8,6 +8,10 @@ import (
     "bytes"
     "encoding/gob"
 {{- end}}
+{{- if eq .Key "string"}}
+    "encoding/json"
+	"strings"
+{{- end}}
 	"testing"
 )
 
@@ -28,11 +32,11 @@ func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
 	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 6}, TX1{{.UKey}}{{.UType}}Tuple{1, 10}, TX1{{.UKey}}{{.UType}}Tuple{2, 11})
 
 	if !a.ContainsAllKeys(8, 1, 2) {
-		t.Errorf("%+v", a)
+		t.Errorf("Got %+v", a)
 	}
 
 	if a.ContainsAllKeys(8, 6, 11, 1, 2) {
-		t.Errorf("%+v", a)
+		t.Errorf("Got %+v", a)
 	}
 }
 
@@ -123,7 +127,7 @@ func Test{{.UType}}MapPartition(t *testing.T) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp1{{.M}}, b{{.M}})
 	}
 
-	exp2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+	exp2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4).Values(4, 0)...)
 	if !c.Equals(exp2) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp2{{.M}}, c{{.M}})
 	}
@@ -136,7 +140,7 @@ func Test{{.UType}}MapTransform(t *testing.T) {
 		return k + 1, v * v
 	})
 
-	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{9, 36}, TX1{{.UKey}}{{.UType}}Tuple{10, 100}, TX1{{.UKey}}{{.UType}}Tuple{11, 25})
+	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(9, 10, 11).Values(36, 100, 25)...)
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp{{.M}}, b{{.M}})
 	}
@@ -176,14 +180,14 @@ func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
 	}
 
 	if !(a.ContainsKey(1) && a.ContainsKey(2)) {
-		t.Errorf("%+v", a)
+		t.Errorf("Got %+v", a)
 	}
 
 	a.Remove(2)
 	a.Remove(1)
 
 	if a.Size() != 0 {
-		t.Errorf("%+v", a)
+		t.Errorf("Got %+v", a)
 	}
 }
 
@@ -205,7 +209,7 @@ func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
 	a.Put(9, 5)
 
 	if !(a.ContainsKey(9) && a.ContainsKey(13)) {
-		t.Errorf("%+v", a)
+		t.Errorf("Got %+v", a)
 	}
 }
 
@@ -215,13 +219,13 @@ func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
 	a.Clear()
 
 	if a.Size() != 0 {
-		t.Errorf("%+v", a)
+		t.Errorf("Got %+v", a)
 	}
 }
 
 func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
-	a1 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append2(1, 9, 2, 8)...)
-	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(1, 9, 2, 8, 3, 3)...)
+	a1 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 2).Values(9, 8)...)
+	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 2, 3).Values(9, 8, 7)...)
 
 	b := a1.Clone()
 
@@ -246,7 +250,7 @@ func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
 {{end}}
 
 func Test{{.UType}}MapMkString(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4).Values(4, 0)...)
 
 	c := a.MkString("|")
 
@@ -264,8 +268,8 @@ func Test{{.UType}}MapMkString3(t *testing.T) {
 		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
 	}
 }
+{{- if .GobEncode}}
 
-{{if .GobEncode}}
 func Test{{.UType}}MapGobEncode(t *testing.T) {
 	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
 	b := NewTX1{{.UKey}}{{.UType}}Map()
@@ -274,19 +278,46 @@ func Test{{.UType}}MapGobEncode(t *testing.T) {
     err := gob.NewEncoder(buf).Encode(a)
 
 	if err != nil {
-		t.Errorf("Got %v", err)
+		t.Errorf("%v", err)
 	}
 
     err = gob.NewDecoder(buf).Decode(&b)
 
 	if err != nil {
-		t.Errorf("Got %v", err)
+		t.Errorf("%v", err)
 	}
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
 	}
 }
+{{- end}}
+{{- if eq .Key "string"}}
 
-{{end}}
+func Test{{.UType}}MapJsonEncode(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
+	b := NewTX1{{.UKey}}{{.UType}}Map()
 
+    buf, err := json.Marshal(a)
+
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+    got := strings.TrimSpace(string(buf))
+    exp := `{"-2":13,"1":-5,"3":23,"8":17,"9":10}`
+	if got != exp {
+		t.Errorf("Expected %s but got '%+v'", exp, got)
+	}
+
+    err = json.Unmarshal(buf, &b)
+
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+	}
+}
+{{- end}}

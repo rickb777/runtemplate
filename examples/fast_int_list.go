@@ -532,7 +532,7 @@ func (list *FastIntList) DropWhile(p func(int) bool) *FastIntList {
 
 // Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list FastIntList) Find(p func(int) bool) (int, bool) {
+func (list *FastIntList) Find(p func(int) bool) (int, bool) {
 
 	for _, v := range list.m {
 		if p(v) {
@@ -893,14 +893,12 @@ func (list FastIntList) mkString3Bytes(before, between, after string) *bytes.Buf
 // UnmarshalJSON implements JSON decoding for this list type.
 func (list *FastIntList) UnmarshalJSON(b []byte) error {
 
-	buf := bytes.NewBuffer(b)
-	return json.NewDecoder(buf).Decode(&list.m)
+	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
 func (list FastIntList) MarshalJSON() ([]byte, error) {
 
-	buf := &bytes.Buffer{}
-	err := json.NewEncoder(buf).Encode(list.m)
-	return buf.Bytes(), err
+	buf, err := json.Marshal(list.m)
+	return buf, err
 }

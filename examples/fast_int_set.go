@@ -7,6 +7,7 @@ package examples
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -16,8 +17,8 @@ type FastIntSet struct {
 }
 
 // NewFastIntSet creates and returns a reference to an empty set.
-func NewFastIntSet(values ...int) FastIntSet {
-	set := FastIntSet{
+func NewFastIntSet(values ...int) *FastIntSet {
+	set := &FastIntSet{
 		m: make(map[int]struct{}),
 	}
 	for _, i := range values {
@@ -29,7 +30,7 @@ func NewFastIntSet(values ...int) FastIntSet {
 // ConvertFastIntSet constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned set will contain all the values that were correctly converted.
-func ConvertFastIntSet(values ...interface{}) (FastIntSet, bool) {
+func ConvertFastIntSet(values ...interface{}) (*FastIntSet, bool) {
 	set := NewFastIntSet()
 
 	for _, i := range values {
@@ -66,7 +67,7 @@ func ConvertFastIntSet(values ...interface{}) (FastIntSet, bool) {
 
 // BuildFastIntSetFromChan constructs a new FastIntSet from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func BuildFastIntSetFromChan(source <-chan int) FastIntSet {
+func BuildFastIntSetFromChan(source <-chan int) *FastIntSet {
 	set := NewFastIntSet()
 	for v := range source {
 		set.m[v] = struct{}{}
@@ -75,7 +76,7 @@ func BuildFastIntSetFromChan(source <-chan int) FastIntSet {
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set FastIntSet) ToSlice() []int {
+func (set *FastIntSet) ToSlice() []int {
 
 	var s []int
 	for v, _ := range set.m {
@@ -85,7 +86,7 @@ func (set FastIntSet) ToSlice() []int {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set FastIntSet) ToInterfaceSlice() []interface{} {
+func (set *FastIntSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
 	for v, _ := range set.m {
@@ -95,7 +96,7 @@ func (set FastIntSet) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (set FastIntSet) Clone() FastIntSet {
+func (set *FastIntSet) Clone() *FastIntSet {
 	clonedSet := NewFastIntSet()
 
 	for v, _ := range set.m {
@@ -107,59 +108,59 @@ func (set FastIntSet) Clone() FastIntSet {
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set FastIntSet) IsEmpty() bool {
+func (set *FastIntSet) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set FastIntSet) NonEmpty() bool {
+func (set *FastIntSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // IsSequence returns true for lists.
-func (set FastIntSet) IsSequence() bool {
+func (set *FastIntSet) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists.
-func (set FastIntSet) IsSet() bool {
+func (set *FastIntSet) IsSet() bool {
 	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set FastIntSet) Size() int {
+func (set *FastIntSet) Size() int {
 
 	return len(set.m)
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set FastIntSet) Cardinality() int {
+func (set *FastIntSet) Cardinality() int {
 	return set.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set.
-func (set FastIntSet) Add(more ...int) {
+func (set *FastIntSet) Add(more ...int) {
 
 	for _, v := range more {
 		set.doAdd(v)
 	}
 }
 
-func (set FastIntSet) doAdd(i int) {
+func (set *FastIntSet) doAdd(i int) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines if a given item is already in the set.
-func (set FastIntSet) Contains(i int) bool {
+func (set *FastIntSet) Contains(i int) bool {
 
 	_, found := set.m[i]
 	return found
 }
 
 // ContainsAll determines if the given items are all in the set.
-func (set FastIntSet) ContainsAll(i ...int) bool {
+func (set *FastIntSet) ContainsAll(i ...int) bool {
 
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -172,7 +173,7 @@ func (set FastIntSet) ContainsAll(i ...int) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines if every item in the other set is in this set.
-func (set FastIntSet) IsSubset(other FastIntSet) bool {
+func (set *FastIntSet) IsSubset(other *FastIntSet) bool {
 
 	for v, _ := range set.m {
 		if !other.Contains(v) {
@@ -183,12 +184,12 @@ func (set FastIntSet) IsSubset(other FastIntSet) bool {
 }
 
 // IsSuperset determines if every item of this set is in the other set.
-func (set FastIntSet) IsSuperset(other FastIntSet) bool {
+func (set *FastIntSet) IsSuperset(other *FastIntSet) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set FastIntSet) Union(other FastIntSet) FastIntSet {
+func (set *FastIntSet) Union(other *FastIntSet) *FastIntSet {
 	unionedSet := set.Clone()
 
 	for v, _ := range other.m {
@@ -199,7 +200,7 @@ func (set FastIntSet) Union(other FastIntSet) FastIntSet {
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set FastIntSet) Intersect(other FastIntSet) FastIntSet {
+func (set *FastIntSet) Intersect(other *FastIntSet) *FastIntSet {
 	intersection := NewFastIntSet()
 
 	// loop over smaller set
@@ -221,7 +222,7 @@ func (set FastIntSet) Intersect(other FastIntSet) FastIntSet {
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set FastIntSet) Difference(other FastIntSet) FastIntSet {
+func (set *FastIntSet) Difference(other *FastIntSet) *FastIntSet {
 	differencedSet := NewFastIntSet()
 
 	for v, _ := range set.m {
@@ -234,7 +235,7 @@ func (set FastIntSet) Difference(other FastIntSet) FastIntSet {
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set FastIntSet) SymmetricDifference(other FastIntSet) FastIntSet {
+func (set *FastIntSet) SymmetricDifference(other *FastIntSet) *FastIntSet {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
@@ -247,7 +248,7 @@ func (set *FastIntSet) Clear() {
 }
 
 // Remove removes a single item from the set.
-func (set FastIntSet) Remove(i int) {
+func (set *FastIntSet) Remove(i int) {
 
 	delete(set.m, i)
 }
@@ -256,7 +257,7 @@ func (set FastIntSet) Remove(i int) {
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set FastIntSet) Send() <-chan int {
+func (set *FastIntSet) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
 
@@ -277,7 +278,7 @@ func (set FastIntSet) Send() <-chan int {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set FastIntSet) Forall(fn func(int) bool) bool {
+func (set *FastIntSet) Forall(fn func(int) bool) bool {
 
 	for v, _ := range set.m {
 		if !fn(v) {
@@ -290,7 +291,7 @@ func (set FastIntSet) Forall(fn func(int) bool) bool {
 // Exists applies a predicate function to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set FastIntSet) Exists(fn func(int) bool) bool {
+func (set *FastIntSet) Exists(fn func(int) bool) bool {
 
 	for v, _ := range set.m {
 		if fn(v) {
@@ -302,7 +303,7 @@ func (set FastIntSet) Exists(fn func(int) bool) bool {
 
 // Foreach iterates over intSet and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
-func (set FastIntSet) Foreach(fn func(int)) {
+func (set *FastIntSet) Foreach(fn func(int)) {
 
 	for v, _ := range set.m {
 		fn(v)
@@ -313,7 +314,7 @@ func (set FastIntSet) Foreach(fn func(int)) {
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (set FastIntSet) Find(fn func(int) bool) (int, bool) {
+func (set *FastIntSet) Find(fn func(int) bool) (int, bool) {
 
 	for v, _ := range set.m {
 		if fn(v) {
@@ -329,7 +330,7 @@ func (set FastIntSet) Find(fn func(int) bool) (int, bool) {
 // Filter returns a new FastIntSet whose elements return true for func.
 //
 // The original set is not modified
-func (set FastIntSet) Filter(fn func(int) bool) FastIntSet {
+func (set *FastIntSet) Filter(fn func(int) bool) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v, _ := range set.m {
@@ -346,7 +347,7 @@ func (set FastIntSet) Filter(fn func(int) bool) FastIntSet {
 // original list.
 //
 // The original set is not modified
-func (set FastIntSet) Partition(p func(int) bool) (FastIntSet, FastIntSet) {
+func (set *FastIntSet) Partition(p func(int) bool) (*FastIntSet, *FastIntSet) {
 	matching := NewFastIntSet()
 	others := NewFastIntSet()
 
@@ -365,7 +366,7 @@ func (set FastIntSet) Partition(p func(int) bool) (FastIntSet, FastIntSet) {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set FastIntSet) Map(fn func(int) int) FastIntSet {
+func (set *FastIntSet) Map(fn func(int) int) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v, _ := range set.m {
@@ -381,7 +382,7 @@ func (set FastIntSet) Map(fn func(int) int) FastIntSet {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set FastIntSet) FlatMap(fn func(int) []int) FastIntSet {
+func (set *FastIntSet) FlatMap(fn func(int) []int) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v, _ := range set.m {
@@ -394,7 +395,7 @@ func (set FastIntSet) FlatMap(fn func(int) []int) FastIntSet {
 }
 
 // CountBy gives the number elements of FastIntSet that return true for the passed predicate.
-func (set FastIntSet) CountBy(predicate func(int) bool) (result int) {
+func (set *FastIntSet) CountBy(predicate func(int) bool) (result int) {
 
 	for v, _ := range set.m {
 		if predicate(v) {
@@ -409,7 +410,7 @@ func (set FastIntSet) CountBy(predicate func(int) bool) (result int) {
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set FastIntSet) Min() int {
+func (set *FastIntSet) Min() int {
 
 	var m int
 	first := true
@@ -426,7 +427,7 @@ func (set FastIntSet) Min() int {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set FastIntSet) Max() (result int) {
+func (set *FastIntSet) Max() (result int) {
 
 	var m int
 	first := true
@@ -444,9 +445,9 @@ func (set FastIntSet) Max() (result int) {
 // MinBy returns an element of FastIntSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set FastIntSet) MinBy(less func(int, int) bool) int {
+func (set *FastIntSet) MinBy(less func(int, int) bool) int {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 
 	var m int
@@ -465,9 +466,9 @@ func (set FastIntSet) MinBy(less func(int, int) bool) int {
 // MaxBy returns an element of FastIntSet containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set FastIntSet) MaxBy(less func(int, int) bool) int {
+func (set *FastIntSet) MaxBy(less func(int, int) bool) int {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 
 	var m int
@@ -487,7 +488,7 @@ func (set FastIntSet) MaxBy(less func(int, int) bool) int {
 // These methods are included when int is numeric.
 
 // Sum returns the sum of all the elements in the set.
-func (set FastIntSet) Sum() int {
+func (set *FastIntSet) Sum() int {
 
 	sum := int(0)
 	for v, _ := range set.m {
@@ -501,7 +502,7 @@ func (set FastIntSet) Sum() int {
 // Equals determines if two sets are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set FastIntSet) Equals(other FastIntSet) bool {
+func (set *FastIntSet) Equals(other *FastIntSet) bool {
 
 	if set.Size() != other.Size() {
 		return false
@@ -517,7 +518,7 @@ func (set FastIntSet) Equals(other FastIntSet) bool {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (set FastIntSet) StringList() []string {
+func (set *FastIntSet) StringList() []string {
 
 	strings := make([]string, len(set.m))
 	i := 0
@@ -528,27 +529,22 @@ func (set FastIntSet) StringList() []string {
 	return strings
 }
 
-// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (set FastIntSet) String() string {
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
+func (set *FastIntSet) String() string {
 	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
-// implements json.Marshaler interface {
-func (set FastIntSet) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"]").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (set FastIntSet) MkString(sep string) string {
+func (set *FastIntSet) MkString(sep string) string {
 	return set.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set FastIntSet) MkString3(before, between, after string) string {
+func (set *FastIntSet) MkString3(before, between, after string) string {
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set FastIntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (set *FastIntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -562,9 +558,32 @@ func (set FastIntSet) mkString3Bytes(before, between, after string) *bytes.Buffe
 	return b
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this set type.
+func (set *FastIntSet) UnmarshalJSON(b []byte) error {
+
+	values := make([]int, 0)
+	err := json.Unmarshal(b, &values)
+	if err != nil {
+		return err
+	}
+
+	s2 := NewFastIntSet(values...)
+	*set = *s2
+	return nil
+}
+
+// MarshalJSON implements JSON encoding for this set type.
+func (set *FastIntSet) MarshalJSON() ([]byte, error) {
+
+	buf, err := json.Marshal(set.ToSlice())
+	return buf, err
+}
+
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
-func (set FastIntSet) StringMap() map[string]bool {
+func (set *FastIntSet) StringMap() map[string]bool {
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true

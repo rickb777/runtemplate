@@ -10,7 +10,9 @@ package {{.Package}}
 import (
 {{if .Stringer}}
 	"bytes"
-	"fmt" {{- end}}
+	"encoding/json"
+	"fmt"
+{{- end}}
 {{- if .HasImport}}
 	{{.Import}}
 {{end -}}
@@ -489,11 +491,6 @@ func (set {{.UPrefix}}{{.UType}}Set) String() string {
 	return set.mkString3Bytes("", ", ", "").String()
 }
 
-// implements encoding.Marshaler interface {
-func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
-	return set.mkString3Bytes("[\"", "\", \"", "\"").Bytes(), nil
-}
-
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (set {{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
 	return set.MkString3("", sep, "")
@@ -515,6 +512,27 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after strin
 	}
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this set type.
+func (set {{.UPrefix}}{{.UType}}Set) UnmarshalJSON(b []byte) error {
+    values := make([]{{.PType}}, 0)
+    buf := bytes.NewBuffer(b)
+    err := json.NewDecoder(buf).Decode(&values)
+    if err != nil {
+        return err
+    }
+    set.Add(values...)
+    return nil
+}
+
+// MarshalJSON implements JSON encoding for this set type.
+func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
+    buf := &bytes.Buffer{}
+    err := json.NewEncoder(buf).Encode(set.ToSlice())
+	return buf.Bytes(), err
 }
 
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
