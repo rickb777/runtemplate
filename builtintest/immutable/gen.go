@@ -30,10 +30,10 @@ package immutable
 
 //go:generate runtemplate -tpl types/stringy.tpl        Prefix=X1 Type=Email SortableSlice:true
 
-//go:generate runtemplate -tpl ../collection_test.tpl   Type=int Numeric:true
-//go:generate runtemplate -tpl ../list_test.tpl         Type=int Numeric:true M:.m GobEncode:true
-//go:generate runtemplate -tpl ../set_test.tpl          Type=int Numeric:true M:.m GobEncode:true
-//go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int Numeric:true M:.m GobEncode:true
+//go:generate runtemplate -tpl ../collection_test.tpl    Type=int Numeric:true Comparable:true
+//go:generate runtemplate -tpl ../list_test.tpl          Type=int Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl ../set_test.tpl           Type=int Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
 // Code generation with pointer values
 

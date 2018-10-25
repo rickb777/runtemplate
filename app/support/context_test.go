@@ -48,7 +48,7 @@ func TestCreateContext(t *testing.T) {
 	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
 	ctx := CreateContext(m, "output.txt", types, others)
 
-	if len(ctx) != 25 {
+	if len(ctx) != 27 {
 		t.Fatalf("Got len %d %+v", len(ctx), ctx)
 	}
 
@@ -79,6 +79,8 @@ func TestCreateContext(t *testing.T) {
 		"CAmp":  "",
 		"BStar": "*",
 		"CStar": "",
+		"BZero": "nil",
+		"CZero": "*(new(vv3))",
 	}
 	if !reflect.DeepEqual(ctx, exp) {
 		diffMaps(t, ctx, exp)
@@ -88,11 +90,11 @@ func TestCreateContext(t *testing.T) {
 
 func TestCreateContextWithDottedType(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Pairs([]Pair{{"Type", "big.Int"}})
+	types := Pairs([]Pair{{"Type", "*big.Int"}})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others)
 
-	if len(ctx) != 19 {
+	if len(ctx) != 20 {
 		t.Fatalf("Got len %d %+v", len(ctx), ctx)
 	}
 
@@ -110,13 +112,14 @@ func TestCreateContextWithDottedType(t *testing.T) {
 		"Type":     "big.Int",
 		"UType":    "Int",
 		"LType":    "int",
-		"PType":    "big.Int",
+		"PType":    "*big.Int",
 		"Prefix":   "",
 		"UPrefix":  "",
 		"LPrefix":  "",
 		"HasType":  true,
-		"TypeAmp":  "",
-		"TypeStar": "",
+		"TypeAmp":  "&",
+		"TypeStar": "*",
+		"TypeZero": "nil",
 	}
 	if !reflect.DeepEqual(ctx, exp) {
 		diffMaps(t, ctx, exp)

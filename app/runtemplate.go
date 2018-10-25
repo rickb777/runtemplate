@@ -9,7 +9,7 @@ package app
 import (
 	"fmt"
 	"github.com/go-playground/statics/static"
-	. "github.com/rickb777/runtemplate/support"
+	. "github.com/rickb777/runtemplate/app/support"
 	"io"
 	"io/ioutil"
 	"os"

@@ -108,6 +108,14 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 	return result
 }
 
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
+    if list == nil {
+        return nil
+    }
+    return list.m
+}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 	list.s.RLock()
@@ -132,6 +140,10 @@ func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
+    if list == nil {
+        return nil
+    }
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -143,6 +155,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 // Get gets the specified element in the list.
 // Panics if the index is out of range.
 func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
+    if list == nil {
+        return {{.TypeZero}}
+    }
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -150,13 +166,13 @@ func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -165,7 +181,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -176,7 +192,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Init() *{{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -208,12 +224,21 @@ func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list.
+// Size returns the number of items in the list - an alias of Len().
 func (list *{{.UPrefix}}{{.UType}}List) Size() int {
+    if list == nil {
+        return 0
+    }
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	return len(list.m)
+}
+
+// Len returns the number of items in the list - an alias of Size().
+func (list *{{.UPrefix}}{{.UType}}List) Len() int {
+	return list.Size()
 }
 
 // Swap exchanges two elements.
@@ -237,6 +262,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 // ContainsAll determines if the given items are all in the list.
 // This is potentially a slow method and should only be used rarely.
 func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
+	if list == nil {
+		return len(i) > 0
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -251,6 +280,10 @@ func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
 func (list *{{.UPrefix}}{{.UType}}List) Exists(p func({{.PType}}) bool) bool {
+	if list == nil {
+		return false
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -264,6 +297,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Exists(p func({{.PType}}) bool) bool {
 
 // Forall verifies that all elements of {{.UPrefix}}{{.UType}}List return true for the predicate p.
 func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.PType}}) bool) bool {
+	if list == nil {
+		return true
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -278,6 +315,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.PType}}) bool) bool {
 // Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
+	if list == nil {
+		return
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -286,17 +327,20 @@ func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 	}
 }
 
-// Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// Send returns a channel that will send all the elements in order. A goroutine is created to
+// send the elements; this only terminates when all the elements have been consumed. The
+// channel will be closed when all the elements have been sent.
 func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
-		list.s.RLock()
-		defer list.s.RUnlock()
+	    if list != nil {
+		    list.s.RLock()
+		    defer list.s.RUnlock()
 
-		for _, v := range list.m {
-			ch <- v
-		}
+    		for _, v := range list.m {
+	    		ch <- v
+		    }
+        }
 		close(ch)
 	}()
 	return ch
@@ -315,12 +359,20 @@ func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 //
 // The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doReverse()
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doReverse() *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
@@ -351,6 +403,10 @@ func (list *{{.UPrefix}}{{.UType}}List) DoShuffle() *{{.UPrefix}}{{.UType}}List 
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doShuffle() *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
@@ -368,6 +424,13 @@ func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
 
 // Append adds items to the current list, returning the modified list.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+	    if len(more) == 0 {
+	    	return nil
+	    }
+	    list = Make{{.UPrefix}}{{.UType}}List(0, len(more))
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doAppend(more...)
@@ -384,6 +447,14 @@ func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) *{{.UPrefix
 // The modified list is returned.
 // Panics if the index is out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+	    if len(more) == 0 {
+	    	return nil
+	    }
+	    list = Make{{.UPrefix}}{{.UType}}List(0, len(more))
+    	return list.doInsertAt(index, more...)
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doInsertAt(index, more...)
@@ -475,6 +546,10 @@ func (list *{{.UPrefix}}{{.UType}}List) doDeleteAt(index, n int) *{{.UPrefix}}{{
 //
 // The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+        return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doKeepWhere(p)
@@ -498,6 +573,10 @@ func (list *{{.UPrefix}}{{.UType}}List) doKeepWhere(p func({{.PType}}) bool) *{{
 // Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -514,7 +593,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List 
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -534,6 +613,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -551,7 +634,7 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}L
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}List {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -573,6 +656,10 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -593,6 +680,10 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.U
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -614,6 +705,10 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 // Find returns the first {{.Type}} that returns true for predicate p.
 // False is returned if none match.
 func (list *{{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
+	if list == nil {
+		return {{.TypeZero}}, false
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -636,6 +731,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}
 //
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -657,6 +756,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPre
 //
 // The original list is not modified
 func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.UPrefix}}{{.UType}}List, *{{.UPrefix}}{{.UType}}List) {
+	if list == nil {
+		return nil, nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -681,6 +784,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	result := Make{{.UPrefix}}{{.UType}}List(len(list.m), len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -699,6 +806,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	result := Make{{.UPrefix}}{{.UType}}List(0, len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -767,6 +878,10 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 
 // DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
 func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -850,7 +965,12 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
+// Nil lists are considered to be empty.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
+	if list == nil {
+        return other == nil || len(other.m) == 0
+	}
+
 	list.s.RLock()
 	other.s.RLock()
 	defer list.s.RUnlock()
@@ -892,6 +1012,10 @@ func (sl sortable{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -903,6 +1027,10 @@ func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.PType}}) bool) 
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -1002,6 +1130,10 @@ func (list *{{.UPrefix}}{{.UType}}List) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list *{{.UPrefix}}{{.UType}}List) MkString3(before, between, after string) string {
+	if list == nil {
+		return ""
+	}
+
 	return list.mkString3Bytes(before, between, after).String()
 }
 
@@ -1029,7 +1161,7 @@ func (list *{{.UPrefix}}{{.UType}}List) UnmarshalJSON(b []byte) error {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    return json.Unmarshal(b, &list.m)
+	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
@@ -1037,7 +1169,7 @@ func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-    buf, err := json.Marshal(list.m)
+	buf, err := json.Marshal(list.m)
 	return buf, err
 }
 {{- end}}
@@ -1051,8 +1183,8 @@ func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-    buf := bytes.NewBuffer(b)
-    return gob.NewDecoder(buf).Decode(&list.m)
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&list.m)
 }
 
 // GobDecode implements 'gob' encoding for this list type.
@@ -1061,8 +1193,8 @@ func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-    buf := &bytes.Buffer{}
-    err := gob.NewEncoder(buf).Encode(list.m)
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(list.m)
 	return buf.Bytes(), err
 }
 

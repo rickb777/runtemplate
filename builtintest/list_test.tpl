@@ -4,8 +4,8 @@
 package {{.Package}}
 
 import (
-    "bytes"
 {{- if .GobEncode}}
+    "bytes"
     "encoding/gob"
 {{- end}}
     "encoding/json"
@@ -62,12 +62,12 @@ func TestConvert{{.UType}}List(t *testing.T) {
 		t.Errorf("Expected %v but got %v", a, b)
 	}
 }
+{{- if .Append}}
 
-{{if .Append}}
 func Test{{.UType}}ListAppend(t *testing.T) {
-	a := NewX1{{.UType}}List(1, 2, 3)
+	var a *X1{{.UType}}List
 
-	b := a.Append(4, 5).Append(6, 7)
+	b := a.Append(1, 2, 3).Append(4, 5).Append(6, 7)
 
 	if b.Size() != 7 {
 		t.Errorf("Expected 5 but got %d", a.Size())
@@ -85,40 +85,53 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 func Test{{.UType}}ListDoInsertAt(t *testing.T) {
     cases := []struct{
         i int
+        act *X1{{.UType}}List
         more []{{.PType}}
         exp *X1{{.UType}}List
     }{
         {
             0,
+            nil,
+            []{{.PType}}{10, 11},
+            NewX1{{.UType}}List(10, 11),
+        },
+        {
+            0,
+            nil,
+            nil,
+            nil,
+        },
+        {
+            0,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
             []{{.PType}}{10, 11},
             NewX1{{.UType}}List(10, 11, 1, 2, 3, 4, 5, 6),
         },
         {
             2,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
             []{{.PType}}{10, 11, 12},
             NewX1{{.UType}}List(1, 2, 10, 11, 12, 3, 4, 5, 6),
         },
         {
             6,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
             []{{.PType}}{10, 11},
             NewX1{{.UType}}List(1, 2, 3, 4, 5, 6, 10, 11),
         },
         {
             3,
+            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
             []{{.PType}}{},
             NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
         },
     }
 
     for i, c := range cases {
-        act := NewX1{{.UType}}List(1, 2, 3, 4, 5, 6)
-        r := act.DoInsertAt(c.i, c.more...)
+        r := c.act.DoInsertAt(c.i, c.more...)
 
-        if !act.Equals(c.exp) {
-            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, act{{.M}})
-        }
-        if !act.Equals(r) {
-            t.Errorf("%d: Expected %+v but got %+v", i, r{{.M}}, act{{.M}})
+        if !r.Equals(c.exp) {
+            t.Errorf("%d: Expected %+v but got %+v", i, c.exp{{.M}}, c.act{{.M}})
         }
     }
 }
@@ -229,13 +242,17 @@ func Test{{.UType}}ListDoDeleteLast(t *testing.T) {
         }
     }
 }
+{{- end}}
+{{- if and .Mutable .Numeric}}
 
-{{end}}
-{{if and .Mutable .Numeric}}
 func Test{{.UType}}ListDoKeepWhere(t *testing.T) {
     cases := []struct{
         act, exp *X1{{.UType}}List
     }{
+        {
+            nil,
+            nil,
+        },
         {
             NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
             NewX1{{.UType}}List(2, 4, 6),
@@ -255,11 +272,10 @@ func Test{{.UType}}ListDoKeepWhere(t *testing.T) {
         }
     }
 }
+{{- end}}
 
-{{end}}
 func Test{{.UType}}ListClone(t *testing.T) {
-	a := NewX1{{.UType}}List(1, 2)
-
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
 	b := a.Clone()
 
 	if !a.Equals(b) {
@@ -271,16 +287,34 @@ func Test{{.UType}}ListClone(t *testing.T) {
 	if a.Equals(c) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", a{{.M}}, c{{.M}})
 	}
+{{- if .Mutable}}
+
+	a = nil
+	b = a.Clone()
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a{{.M}}, b{{.M}})
+	}
+{{- end}}
 }
 
 func Test{{.UType}}ListSend(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
-
 	b := BuildX1{{.UType}}ListFromChan(a.Send())
 
 	if !a.Equals(b) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a{{.M}}, b{{.M}})
 	}
+{{- if .Mutable}}
+
+    // check correct nil handling
+	a = nil
+	b = BuildX1{{.UType}}ListFromChan(a.Send())
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a{{.M}}, b{{.M}})
+	}
+{{- end}}
 }
 
 func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
@@ -305,23 +339,162 @@ func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
 	}
 }
 
-{{if .Find}}
-func Test{{.UType}}ListFind(t *testing.T) {
+func Test{{.UType}}ListContains(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
-	b := a.Find(func(v int) bool {
+	found := a.Contains(3)
+
+	if !found {
+		t.Errorf("Expected to find 3.")
+	}
+
+	found = a.Contains(5)
+
+	if found {
+		t.Errorf("Expected not to find 5.")
+	}
+
+    // check correct nil handling
+    a = nil
+    a.Contains(3)
+}
+
+func Test{{.UType}}ListContainsAll(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+
+	found := a.ContainsAll(3)
+
+	if !found {
+		t.Errorf("Expected to find 3.")
+	}
+
+	found = a.ContainsAll(1, 3, 5, 7)
+
+	if found {
+		t.Errorf("Expected not to find 1,3,5,7.")
+	}
+
+    // check correct nil handling
+    a = nil
+    a.ContainsAll(3)
+}
+
+func Test{{.UType}}ListFind(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	b, found := a.Find(func(v int) bool {
 		return v > 2
 	})
 
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
 	if b != 3 {
-		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
+		t.Errorf("Expected '3' but got '%+v'", b)
+	}
+
+	b, found = a.Find(func(v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	_, found = a.Find(func(v int) bool {
+		return v > 0
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
 	}
 }
 
-{{end}}
+func Test{{.UType}}ListForall(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	found := a.Forall(func(v int) bool {
+		return v > 0
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+	found = a.Forall(func(v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	found = a.Forall(func(v int) bool {
+		return v > 0
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+}
+
+func Test{{.UType}}ListExists(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	found := a.Exists(func(v int) bool {
+		return v > 2
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+	found = a.Exists(func(v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	found = a.Exists(func(v int) bool {
+		return v > 0
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+}
+
+func Test{{.UType}}ListForeach(t *testing.T) {
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	s := 0
+
+	a.Foreach(func(v int) {
+		s += v
+	})
+
+	if s != 10 {
+		t.Errorf("Got %d", s)
+	}
+
+    // check correct nil handling
+    a = nil
+	a.Foreach(func(v int) {
+		s += v
+	})
+
+	if s != 10 {
+		t.Errorf("Got %d", s)
+	}
+}
+
 func Test{{.UType}}ListFilter(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
-
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
@@ -329,11 +502,27 @@ func Test{{.UType}}ListFilter(t *testing.T) {
 	if !b.Equals(NewX1{{.UType}}List(3, 4)) {
 		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
 	}
+
+	b = a.Filter(func(v int) bool {
+		return v > 100
+	})
+
+	if !b.IsEmpty() {
+		t.Errorf("Expected empty but got '%+v'", b{{.M}})
+	}
+
+    a = nil
+	b = a.Filter(func(v int) bool {
+		return v > 0
+	})
+
+	if !b.IsEmpty() {
+		t.Errorf("Expected empty but got '%+v'", b{{.M}})
+	}
 }
 
 func Test{{.UType}}ListPartition(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
-
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
@@ -345,11 +534,23 @@ func Test{{.UType}}ListPartition(t *testing.T) {
 	if !c.Equals(NewX1{{.UType}}List(1, 2)) {
 		t.Errorf("Expected '1, 2' but got '%+v'", c{{.M}})
 	}
+
+	a = nil
+	b, c = a.Partition(func(v int) bool {
+		return v > 2
+	})
+
+	if !b.IsEmpty() {
+		t.Errorf("Expected empty but got '%+v'", b{{.M}})
+	}
+
+	if !c.IsEmpty() {
+		t.Errorf("Expected empty but got '%+v'", b{{.M}})
+	}
 }
 
 func Test{{.UType}}ListTransform(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
-
 	b := a.Map(func(v int) int {
 		return v * v
 	})
@@ -358,11 +559,19 @@ func Test{{.UType}}ListTransform(t *testing.T) {
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp, b{{.M}})
 	}
+
+	a = nil
+	b = a.Map(func(v int) int {
+		return v * v
+	})
+
+	if !b.IsEmpty() {
+		t.Errorf("Expected empty but got '%+v'", b{{.M}})
+	}
 }
 
 func Test{{.UType}}ListFlatMap(t *testing.T) {
 	a := NewX1{{.UType}}List(1, 2, 3, 4, 5)
-
 	b := a.FlatMap(func(v {{.Type}}) []{{.Type}} {
 	    if v > 3 {
 	        return nil
@@ -374,35 +583,57 @@ func Test{{.UType}}ListFlatMap(t *testing.T) {
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp, b{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	b = a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	    if v > 3 {
+	        return nil
+	    }
+		return []{{.Type}}{v * 2, v * 3}
+	})
+
+	if !b.IsEmpty() {
+		t.Errorf("Expected empty but got '%+v'", b{{.M}})
+	}
 }
 
-{{if .Mutable}}
-func Test{{.UType}}ListSort(t *testing.T) {
+func Test{{.UType}}ListSorted(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
-
 	b := a.Sorted()
 
+{{if .Mutable}}
 	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
+		t.Errorf("Expected '-2, 4, 7, 9, 13' but got '%+v'", a{{.M}})
 	}
+{{end}}
 
 	if !b.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
+		t.Errorf("Expected '-2, 4, 7, 9, 13' but got '%+v'", b{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Sorted()
 }
 
-func Test{{.UType}}ListStableSort(t *testing.T) {
+func Test{{.UType}}ListStableSorted(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
-
 	b := a.StableSorted()
 
+{{if .Mutable}}
 	if !a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", a{{.M}})
+		t.Errorf("Expected '-2, 4, 7, 9, 13' but got '%+v'", a{{.M}})
 	}
+{{end}}
 
 	if !b.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", b{{.M}})
+		t.Errorf("Expected '-2, 4, 7, 9, 13' but got '%+v'", b{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.StableSorted()
 }
 
 func Test{{.UType}}ListReverseOdd(t *testing.T) {
@@ -419,6 +650,10 @@ func Test{{.UType}}ListReverseOdd(t *testing.T) {
 	if !c.Equals(a) {
 		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, c{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Reverse()
 }
 
 func Test{{.UType}}ListReverseEven(t *testing.T) {
@@ -436,6 +671,29 @@ func Test{{.UType}}ListReverseEven(t *testing.T) {
 		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, c{{.M}})
 	}
 }
+{{- if .Mutable}}
+
+func Test{{.UType}}ListDoReverse(t *testing.T) {
+	a1 := NewX1{{.UType}}List(13, 4, 7, -2, 9, 17)
+	a2 := a1.Clone()
+
+	b := a2.DoReverse()
+
+	if b.Equals(a1) {
+		t.Errorf("Expected reverse of '%+v' but got '%+v'", a1{{.M}}, b{{.M}})
+	}
+
+	c := b.DoReverse()
+
+	if !c.Equals(a1) {
+		t.Errorf("Expected '%+v' but got '%+v'", a1{{.M}}, c{{.M}})
+	}
+
+    // check correct nil handling
+	a1 = nil
+	a1.DoReverse()
+}
+{{- end}}
 
 func Test{{.UType}}ListShuffle(t *testing.T) {
 	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 1000)...)
@@ -447,14 +705,17 @@ func Test{{.UType}}ListShuffle(t *testing.T) {
 	}
 
 	// prove that the same set of numbers is present
-	b.Sorted()
+	c := b.Sorted()
 
-	if !b.Equals(a) {
-		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+	if !c.Equals(a) {
+		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, c{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Shuffle()
 }
 
-{{end}}
 func Test{{.UType}}ListTake(t *testing.T) {
 	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
@@ -481,6 +742,11 @@ func Test{{.UType}}ListTake(t *testing.T) {
 	if e.Size() != 100 || e.Head() != 1 || e.Last() != 100 {
 		t.Errorf("Expected list from 1 to 100 but got '%+v'", e{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Take(0)
+	a.TakeLast(0)
 }
 
 func Test{{.UType}}ListDrop(t *testing.T) {
@@ -509,6 +775,11 @@ func Test{{.UType}}ListDrop(t *testing.T) {
 	if e.Size() != 0 {
 		t.Errorf("Expected empty list but got '%+v'", e{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Drop(0)
+	a.DropLast(0)
 }
 
 func Test{{.UType}}ListTakeWhile(t *testing.T) {
@@ -529,6 +800,12 @@ func Test{{.UType}}ListTakeWhile(t *testing.T) {
 	if c.Size() != 100 || c.Head() != 1 || c.Last() != 100 {
 		t.Errorf("Expected list from 1 to 100 but got '%+v'", b{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.TakeWhile(func(v int) bool {
+		return v <= 20
+	})
 }
 
 func Test{{.UType}}ListDropWhile(t *testing.T) {
@@ -549,6 +826,12 @@ func Test{{.UType}}ListDropWhile(t *testing.T) {
 	if c.Size() != 0 {
 		t.Errorf("Expected empty list but got '%+v'", b{{.M}})
 	}
+
+    // check correct nil handling
+	a = nil
+	a.DropWhile(func(v int) bool {
+		return v <= 20
+	})
 }
 
 func Test{{.UType}}ListDistinctBy(t *testing.T) {
@@ -561,6 +844,12 @@ func Test{{.UType}}ListDistinctBy(t *testing.T) {
 	if !c.Equals(NewX1{{.UType}}List(1, 2, 3, 4, 5)) {
 		t.Errorf("Expected 1 to 5 but got '%+v'", c{{.M}})
 	}
+
+    // check correct nil handling
+    a = nil
+	a.DistinctBy(func(v1, v2 int) bool {
+		return v1 == v2
+	})
 }
 
 func Test{{.UType}}ListIndexWhere(t *testing.T) {
@@ -651,6 +940,10 @@ func Test{{.UType}}ListMkString(t *testing.T) {
 	if c != "13|4|7|-2|9" {
 		t.Errorf("Expected '13|4|7|-2|9' but got %q", c)
 	}
+
+    // check correct nil handling
+    a = nil
+	a.MkString("|")
 }
 
 func Test{{.UType}}ListMkString3(t *testing.T) {
@@ -661,9 +954,13 @@ func Test{{.UType}}ListMkString3(t *testing.T) {
 	if c != "<13, 4, 7, -2, 9>" {
 		t.Errorf("Expected '<13, 4, 7, -2, 9>' but got %q", c)
 	}
-}
 
-{{if .GobEncode}}
+    // check correct nil handling
+    a = nil
+	a.MkString3("<", ", ", ">")
+}
+{{- if .GobEncode}}
+
 func Test{{.UType}}ListGobEncode(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 	b := NewX1{{.UType}}List()
@@ -685,20 +982,19 @@ func Test{{.UType}}ListGobEncode(t *testing.T) {
 		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
 	}
 }
+{{- end}}
 
-{{end}}
 func Test{{.UType}}ListJsonEncode(t *testing.T) {
 	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
 	b := NewX1{{.UType}}List()
 
-    buf := &bytes.Buffer{}
-    err := json.NewEncoder(buf).Encode(a)
+    buf, err := json.Marshal(a)
 
 	if err != nil {
 		t.Errorf("Got %v", err)
 	}
 
-    err = json.NewDecoder(buf).Decode(&b)
+    err = json.Unmarshal(buf, &b)
 
 	if err != nil {
 		t.Errorf("Got %v", err)

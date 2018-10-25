@@ -110,19 +110,21 @@ The values are supplemented by additional entries in the template's context. For
  * `.LType` - the type name having its first character converted to lowercase - useful for internal identifiers; dots are removed.
  * `.TypeStar` - a '*' if the type is a pointer type, otherwise blank
  * `.TypeAmp` - a '&' if the type is a pointer type, otherwise blank
+ * `.TypeZero` - `nil` if the type is a pointer type, otherwise the zero value for the type
  * `.HasType` - set to `true` to allow conditional expressions (it defaults to false if undefined)
 
 This table shows two examples of context symbols defined for Type=Foo and Type=*Foo.
 
-|              |  `Type=big.Int`  |  `Type=*big.Int`  |
-| ------------ | ---------------- | ----------------- |
-| `.Type`      |  `big.Int`       |  `big.Int`        |
-| `.PType`     |  `big.Int`       |  `*big.Int`       |
-| `.UType`     |  `BigInt`        |  `BigInt`         |
-| `.LType`     |  `bigInt`        |  `bigInt`         |
-| `.TypeStar`  |  blank           |  `*`              |
-| `.TypeAmp`   |  blank           |  `&`              |
-| `.HasType`   |  `true`          |  `true`           |
+|              |  `Type=big.Int`   |  `Type=*big.Int`  |
+| ------------ | ----------------- | ----------------- |
+| `.Type`      |  `big.Int`        |  `big.Int`        |
+| `.PType`     |  `big.Int`        |  `*big.Int`       |
+| `.UType`     |  `BigInt`         |  `BigInt`         |
+| `.LType`     |  `bigInt`         |  `bigInt`         |
+| `.TypeStar`  |  blank            |  `*`              |
+| `.TypeAmp`   |  blank            |  `&`              |
+| `.TypeZero`  | `*(new(big.Int))` |  `nil`            |
+| `.HasType`   |  `true`           |  `true`           |
 
 Be aware that your shell might expand `*` so you may need suitable quote marks, such as `'Type=*Foo'`. This is not needed when using go:generate comment lines.
 

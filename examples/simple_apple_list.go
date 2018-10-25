@@ -216,6 +216,12 @@ func (list SimpleAppleList) Reverse() SimpleAppleList {
 	return result
 }
 
+// DoReverse returns a copy of SimpleAppleList with all elements in the reverse order.
+// This is an alias for Reverse.
+func (list SimpleAppleList) DoReverse() SimpleAppleList {
+	return list.Reverse()
+}
+
 // Shuffle returns a shuffled copy of SimpleAppleList, using a version of the Fisher-Yates shuffle.
 func (list SimpleAppleList) Shuffle() SimpleAppleList {
 	result := list.Clone()

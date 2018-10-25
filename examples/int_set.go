@@ -79,16 +79,25 @@ func BuildIntSetFromChan(source <-chan int) *IntSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice.
-func (set *IntSet) ToSlice() []int {
-	set.s.RLock()
-	defer set.s.RUnlock()
+// slice returns the internal elements of the current set. This is a seam for testing etc.
+func (set *IntSet) slice() []int {
+	if set == nil {
+		return nil
+	}
 
 	var s []int
 	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
+}
+
+// ToSlice returns the elements of the current set as a slice.
+func (set *IntSet) ToSlice() []int {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	return set.slice()
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
@@ -103,8 +112,12 @@ func (set *IntSet) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the set. It does not clone the underlying elements.
 func (set *IntSet) Clone() *IntSet {
+	if set == nil {
+		return nil
+	}
+
 	clonedSet := NewIntSet()
 
 	set.s.RLock()
@@ -140,6 +153,10 @@ func (set *IntSet) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set *IntSet) Size() int {
+	if set == nil {
+		return 0
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -169,6 +186,10 @@ func (set *IntSet) doAdd(i int) {
 
 // Contains determines if a given item is already in the set.
 func (set *IntSet) Contains(i int) bool {
+	if set == nil {
+		return false
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -178,6 +199,10 @@ func (set *IntSet) Contains(i int) bool {
 
 // ContainsAll determines if the given items are all in the set.
 func (set *IntSet) ContainsAll(i ...int) bool {
+	if set == nil {
+		return false
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -193,6 +218,14 @@ func (set *IntSet) ContainsAll(i ...int) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *IntSet) IsSubset(other *IntSet) bool {
+	if set.IsEmpty() {
+		return !other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return false
+	}
+
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -208,11 +241,27 @@ func (set *IntSet) IsSubset(other *IntSet) bool {
 
 // IsSuperset determines if every item of this set is in the other set.
 func (set *IntSet) IsSuperset(other *IntSet) bool {
+	if set.IsEmpty() {
+		return other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return true
+	}
+
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
 func (set *IntSet) Union(other *IntSet) *IntSet {
+	if set == nil {
+		return other
+	}
+
+	if other == nil {
+		return set
+	}
+
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -227,6 +276,10 @@ func (set *IntSet) Union(other *IntSet) *IntSet {
 
 // Intersect returns a new set with items that exist only in both sets.
 func (set *IntSet) Intersect(other *IntSet) *IntSet {
+	if set == nil || other == nil {
+		return nil
+	}
+
 	intersection := NewIntSet()
 
 	set.s.RLock()
@@ -254,6 +307,14 @@ func (set *IntSet) Intersect(other *IntSet) *IntSet {
 
 // Difference returns a new set with items in the current set but not in the other set
 func (set *IntSet) Difference(other *IntSet) *IntSet {
+	if set == nil {
+		return nil
+	}
+
+	if other == nil {
+		return set
+	}
+
 	differencedSet := NewIntSet()
 
 	set.s.RLock()
@@ -279,10 +340,12 @@ func (set *IntSet) SymmetricDifference(other *IntSet) *IntSet {
 
 // Clear clears the entire set to be the empty set.
 func (set *IntSet) Clear() {
-	set.s.Lock()
-	defer set.s.Unlock()
+	if set != nil {
+		set.s.Lock()
+		defer set.s.Unlock()
 
-	set.m = make(map[int]struct{})
+		set.m = make(map[int]struct{})
+	}
 }
 
 // Remove removes a single item from the set.
@@ -300,11 +363,13 @@ func (set *IntSet) Remove(i int) {
 func (set *IntSet) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
-		set.s.RLock()
-		defer set.s.RUnlock()
+		if set != nil {
+			set.s.RLock()
+			defer set.s.RUnlock()
 
-		for v, _ := range set.m {
-			ch <- v
+			for v, _ := range set.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -321,6 +386,10 @@ func (set *IntSet) Send() <-chan int {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *IntSet) Forall(fn func(int) bool) bool {
+	if set == nil {
+		return true
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -336,6 +405,10 @@ func (set *IntSet) Forall(fn func(int) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *IntSet) Exists(fn func(int) bool) bool {
+	if set == nil {
+		return false
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -350,6 +423,10 @@ func (set *IntSet) Exists(fn func(int) bool) bool {
 // Foreach iterates over intSet and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
 func (set *IntSet) Foreach(fn func(int)) {
+	if set == nil {
+		return
+	}
+
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -381,6 +458,10 @@ func (set *IntSet) Find(fn func(int) bool) (int, bool) {
 //
 // The original set is not modified
 func (set *IntSet) Filter(fn func(int) bool) *IntSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -400,6 +481,10 @@ func (set *IntSet) Filter(fn func(int) bool) *IntSet {
 //
 // The original set is not modified
 func (set *IntSet) Partition(p func(int) bool) (*IntSet, *IntSet) {
+	if set == nil {
+		return nil, nil
+	}
+
 	matching := NewIntSet()
 	others := NewIntSet()
 	set.s.RLock()
@@ -421,6 +506,10 @@ func (set *IntSet) Partition(p func(int) bool) (*IntSet, *IntSet) {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *IntSet) Map(fn func(int) int) *IntSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -439,6 +528,10 @@ func (set *IntSet) Map(fn func(int) int) *IntSet {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *IntSet) FlatMap(fn func(int) []int) *IntSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewIntSet()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -575,6 +668,14 @@ func (set *IntSet) Sum() int {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *IntSet) Equals(other *IntSet) bool {
+	if set == nil {
+		return other == nil || other.IsEmpty()
+	}
+
+	if other == nil {
+		return set.IsEmpty()
+	}
+
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -583,11 +684,13 @@ func (set *IntSet) Equals(other *IntSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -609,7 +712,7 @@ func (set *IntSet) StringList() []string {
 
 // String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (set *IntSet) String() string {
-	return set.mkString3Bytes("[", ", ", "]").String()
+	return set.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -619,6 +722,9 @@ func (set *IntSet) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (set *IntSet) MkString3(before, between, after string) string {
+	if set == nil {
+		return ""
+	}
 	return set.mkString3Bytes(before, between, after).String()
 }
 
@@ -669,6 +775,10 @@ func (set *IntSet) MarshalJSON() ([]byte, error) {
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
 func (set *IntSet) StringMap() map[string]bool {
+	if set == nil {
+		return nil
+	}
+
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true

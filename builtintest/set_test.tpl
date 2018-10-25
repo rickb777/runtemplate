@@ -4,8 +4,8 @@
 package {{.Package}}
 
 import (
-    "bytes"
 {{- if .GobEncode}}
+    "bytes"
     "encoding/gob"
 {{- end}}
     "encoding/json"
@@ -62,43 +62,8 @@ func TestConvert{{.UType}}Set(t *testing.T) {
 		t.Errorf("Expected %v but got %v", a, b)
 	}
 }
+{{- if .Mutable}}
 
-{{if .Mutable}}
-func TestMutable{{.UType}}SetRemove(t *testing.T) {
-	a := NewX1{{.UType}}Set(6, 3, 1)
-
-	a.Remove(3)
-
-	if a.Size() != 2 {
-		t.Errorf("Expected 2 but got %d", a.Size())
-	}
-
-	if !(a.Contains(6) && a.Contains(1)) {
-		t.Error("should have only items 6 and 1 in the set")
-	}
-
-	a.Remove(6)
-	a.Remove(1)
-
-	if a.Size() != 0 {
-		t.Error("should be an empty set after removing 6 and 1")
-	}
-}
-
-{{end}}
-func Test{{.UType}}SetContainsAll(t *testing.T) {
-	a := NewX1{{.UType}}Set(8, 6, 7, 5, 3, 0, 9)
-
-	if !a.ContainsAll(8, 6, 7, 5, 3, 0, 9) {
-		t.Error("should contain phone number")
-	}
-
-	if a.ContainsAll(8, 6, 11, 5, 3, 0, 9) {
-		t.Error("should not have all of these numbers")
-	}
-}
-
-{{if .Mutable}}
 func TestMutable{{.UType}}SetCardinality(t *testing.T) {
 	a := NewX1{{.UType}}Set()
 
@@ -128,18 +93,60 @@ func TestMutable{{.UType}}SetCardinality(t *testing.T) {
 	}
 }
 
-{{end}}
+func TestMutable{{.UType}}SetRemove(t *testing.T) {
+	a := NewX1{{.UType}}Set(6, 3, 1)
+
+	a.Remove(3)
+
+	if a.Size() != 2 {
+		t.Errorf("Expected 2 but got %d", a.Size())
+	}
+
+	if !(a.Contains(6) && a.Contains(1)) {
+		t.Error("should have only items 6 and 1 in the set")
+	}
+
+	a.Remove(6)
+	a.Remove(1)
+
+	if a.Size() != 0 {
+		t.Error("should be an empty set after removing 6 and 1")
+	}
+}
+{{- end}}
+
+func Test{{.UType}}SetContainsAll(t *testing.T) {
+	a := NewX1{{.UType}}Set(8, 6, 7, 5, 3, 0, 9)
+
+	if !a.ContainsAll(8, 6, 7, 5, 3, 0, 9) {
+		t.Error("should contain phone number")
+	}
+
+	if a.ContainsAll(8, 6, 11, 5, 3, 0, 9) {
+		t.Error("should not have all of these numbers")
+	}
+}
+
 func Test{{.UType}}SetIsSubset(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 5, 7)
 	b := NewX1{{.UType}}Set(3, 5, 7)
 	c := NewX1{{.UType}}Set(3, 5, 7, 72)
 
 	if !b.IsSubset(a) {
-		t.Errorf("Expected '%+v' to be a subset of '%+v'", b, a)
+		t.Errorf("Expected '%s' to be a subset of '%s'", b, a)
 	}
 
 	if c.IsSubset(a) {
-		t.Errorf("Expected '%+v' not to be a subset of '%+v'", c, a)
+		t.Errorf("Expected '%s' not to be a subset of '%s'", c, a)
+	}
+
+    // check correct nil handling
+    a = nil
+	if b.IsSubset(a) {
+		t.Errorf("Expected '%s' not to be a subset of '%s'", b, a)
+	}
+	if !a.IsSubset(b) {
+		t.Errorf("Expected '%s' to be a subset of '%s'", a, b)
 	}
 }
 
@@ -149,11 +156,20 @@ func Test{{.UType}}SetIsSuperSet(t *testing.T) {
 	c := NewX1{{.UType}}Set(5, 2, 11, 42)
 
 	if !a.IsSuperset(b) {
-		t.Errorf("Expected '%+v' to be a superset of '%+v'", a, b)
+		t.Errorf("Expected '%s' to be a superset of '%s'", a, b)
 	}
 
 	if a.IsSuperset(c) {
-		t.Errorf("Expected '%+v' not to be a superset of '%+v'", a, b)
+		t.Errorf("Expected '%s' not to be a superset of '%s'", a, b)
+	}
+
+    // check correct nil handling
+    a = nil
+	if !b.IsSuperset(a) {
+		t.Errorf("Expected '%s' not to be a superset of '%s'", b, a)
+	}
+	if a.IsSuperset(b) {
+		t.Errorf("Expected '%s' to be a superset of '%s'", a, b)
 	}
 }
 
@@ -164,22 +180,34 @@ func Test{{.UType}}SetUnion(t *testing.T) {
 
 	c := a.Union(b)
 
-	if c.Size() != 5 {
-		t.Errorf("Expected 5 but got %d", c.Size())
+	if !c.Equals(NewX1{{.UType}}Set(1, 2, 3, 4, 5)) {
+		t.Errorf("Expected 5 but got %v", c)
 	}
 
 	d := NewX1{{.UType}}Set(10, 14, 0)
 
 	e := c.Union(d)
-	if e.Size() != 8 {
-		t.Errorf("Expected 8 but got %d", e.Size())
+	if !e.Equals(NewX1{{.UType}}Set(1, 2, 3, 4, 5, 10, 14, 0)) {
+		t.Errorf("Expected 8 but got %v", e)
 	}
 
 	f := NewX1{{.UType}}Set(14, 3)
 
 	g := f.Union(e)
-	if g.Size() != 8 {
-		t.Errorf("Expected 8 but got %d", g.Size())
+	if !g.Equals(NewX1{{.UType}}Set(1, 2, 3, 4, 5, 10, 14, 0)) {
+		t.Errorf("Expected 8 but got %v", g)
+	}
+
+    // check correct nil handling
+    a = nil
+	c = a.Union(b)
+	d = b.Union(a)
+
+	if !c.Equals(b) {
+		t.Errorf("Expected 5 but got %s", c)
+	}
+	if !d.Equals(b) {
+		t.Errorf("Expected 5 but got %s", d)
 	}
 }
 
@@ -187,75 +215,211 @@ func Test{{.UType}}SetIntersection(t *testing.T) {
 	a1 := NewX1{{.UType}}Set(1, 3, 5, 7)
 	a2 := NewX1{{.UType}}Set(1, 3, 5, 7, 10)
 
-	b1 := NewX1{{.UType}}Set(2, 4, 6)
+	b1 := NewX1{{.UType}}Set(0, 2, 4, 6)
 	b2 := NewX1{{.UType}}Set(2, 4, 6, 10)
 
-	c1 := a1.Intersect(b1)
+	c1 := a1.Intersect(a2)
 	c2 := b1.Intersect(a1)
 
-	if c1.NonEmpty() || c2.NonEmpty() {
-		t.Errorf("Expected 0 but got %d and %d", c1.Size(), c2.Size())
+	if !c1.Equals(NewX1IntSet(1, 3, 5, 7)) {
+		t.Errorf("Expected 4 but got %v", c1)
 	}
 
-	d1 := a2.Intersect(b2)
+	if c2.NonEmpty() {
+		t.Errorf("Expected 4 but got %v", c2)
+	}
+
+	d1 := a1.Intersect(a2)
 	d2 := b2.Intersect(a2)
 
-	if !(d1.Size() == 1 && d1.Contains(10)) {
-		t.Errorf("d1 should have a size of 1 and contain 10: %+v", d1)
+	if !d1.Equals(NewX1IntSet(1, 3, 5, 7)) {
+		t.Errorf("Expected 4 but got %s", d1)
 	}
 
-	if !(d2.Size() == 1 && d2.Contains(10)) {
-		t.Errorf("d2 should have a size of 1 and contain 10: %+v", d2)
+	if !d2.Equals(NewX1IntSet(10)) {
+		t.Errorf("Expected 1 but got %s", d2)
+	}
+
+    // check correct nil handling
+    a1 = nil
+	c1 = a1.Intersect(b1)
+	d1 = b1.Intersect(a1)
+
+	if c1.NonEmpty() {
+		t.Errorf("Expected empty but got %s", c1)
+	}
+	if d1.NonEmpty() {
+		t.Errorf("Expected empty but got %s", d1)
 	}
 }
 
 func Test{{.UType}}SetDifference(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3)
-
 	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.Difference(b)
+	d := b.Difference(a)
 
-	if !(c.Size() == 1 && c.Contains(2)) {
-		t.Error("the difference of set a to b is the set of 1 item: 2")
+	if !c.Equals(NewX1IntSet(2)) {
+		t.Errorf("Expected [2] but got %s", c)
+	}
+
+    // check correct nil handling
+    a = nil
+	c = a.Difference(b)
+	d = b.Difference(a)
+
+	if !c.Equals(a) {
+		t.Errorf("Expected none but got %s", c)
+	}
+	if !d.Equals(b) {
+		t.Errorf("Expected 5 but got %s", d)
 	}
 }
 
 func Test{{.UType}}SetSymmetricDifference(t *testing.T) {
-	a := NewX1{{.UType}}Set(1, 2, 3, 45)
-
+	a := NewX1{{.UType}}Set(1, 2, 3, 50)
 	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.SymmetricDifference(b)
+	d := b.SymmetricDifference(a)
 
-	if !(c.Size() == 6 && c.Contains(2) && c.Contains(45) && c.Contains(4) && c.Contains(5) && c.Contains(6) && c.Contains(99)) {
-		t.Error("the symmetric difference of set a to b is the set of 6 items: 2, 45, 4, 5, 6, 99")
+	if !c.Equals(NewX1IntSet(2, 4, 5, 6, 50, 99)) {
+		t.Errorf("Expected none but got %s", c)
+	}
+
+    // check correct nil handling
+    a = nil
+	c = a.Difference(b)
+	d = b.Difference(a)
+
+	if !c.Equals(a) {
+		t.Errorf("Expected none but got %s", c)
+	}
+	if !d.Equals(b) {
+		t.Errorf("Expected 5 but got %s", d)
 	}
 }
 
-func Test{{.UType}}SetEqual(t *testing.T) {
+func Test{{.UType}}SetEquals(t *testing.T) {
 	a := NewX1{{.UType}}Set()
 	b := NewX1{{.UType}}Set()
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+		t.Errorf("Expected '%s' to equal '%s'", a, b)
 	}
 
 	c := NewX1{{.UType}}Set(1, 3, 5, 6, 8)
 	d := NewX1{{.UType}}Set(1, 3, 5, 6, 9)
 
 	if c.Equals(d) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", c, d)
+		t.Errorf("Expected '%s' not to equal '%s'", c, d)
 	}
+
+    // check correct nil handling
+    a = nil
+    if a.Equals(b) != b.Equals(a) {
+        t.Fail()
+    }
 }
 
 func Test{{.UType}}SetSend(t *testing.T) {
 	a := NewX1{{.UType}}Set(1, 2, 3, 4)
-
 	b := BuildX1{{.UType}}SetFromChan(a.Send())
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+		t.Errorf("Expected '%s' to equal '%s'", a, b)
+	}
+{{- if .Mutable}}
+
+    // check correct nil handling
+	a = nil
+	b = BuildX1{{.UType}}SetFromChan(a.Send())
+
+	if !a.Equals(b) {
+		t.Errorf("Expected '%+v' to equal '%+v'", a{{.M}}, b{{.M}})
+	}
+{{- end}}
+}
+
+func Test{{.UType}}SetForall(t *testing.T) {
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	found := a.Forall(func(v int) bool {
+		return v > 0
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+	found = a.Forall(func(v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	found = a.Forall(func(v int) bool {
+		return v > 0
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+}
+
+func Test{{.UType}}SetExists(t *testing.T) {
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	found := a.Exists(func(v int) bool {
+		return v > 2
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+	found = a.Exists(func(v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	found = a.Exists(func(v int) bool {
+		return v > 0
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+}
+
+func Test{{.UType}}SetForeach(t *testing.T) {
+	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	s := 0
+
+	a.Foreach(func(v int) {
+		s += v
+	})
+
+	if s != 10 {
+		t.Errorf("Got %d", s)
+	}
+
+    // check correct nil handling
+    a = nil
+	a.Foreach(func(v int) {
+		s += v
+	})
+
+	if s != 10 {
+		t.Errorf("Got %d", s)
 	}
 }
 
@@ -267,8 +431,14 @@ func Test{{.UType}}SetFilter(t *testing.T) {
 	})
 
 	if !b.Equals(NewX1{{.UType}}Set(3, 4)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", b)
+		t.Errorf("Expected '3, 4' but got '%s'", b)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Filter(func(v int) bool {
+		return v > 2
+	})
 }
 
 func Test{{.UType}}SetPartition(t *testing.T) {
@@ -279,12 +449,18 @@ func Test{{.UType}}SetPartition(t *testing.T) {
 	})
 
 	if !b.Equals(NewX1{{.UType}}Set(3, 4)) {
-		t.Errorf("Expected '3, 4' but got '%+v'", b)
+		t.Errorf("Expected '3, 4' but got '%s'", b)
 	}
 
 	if !c.Equals(NewX1{{.UType}}Set(1, 2)) {
-		t.Errorf("Expected '1, 2' but got '%+v'", c)
+		t.Errorf("Expected '1, 2' but got '%s'", c)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Partition(func(v int) bool {
+		return v > 2
+	})
 }
 
 func Test{{.UType}}SetTransform(t *testing.T) {
@@ -295,8 +471,14 @@ func Test{{.UType}}SetTransform(t *testing.T) {
 	})
 
 	if !b.Equals(NewX1{{.UType}}Set(1, 4, 9, 16)) {
-		t.Errorf("Expected '1, 4, 9, 16' but got '%+v'", b{{.M}})
+		t.Errorf("Expected '1, 4, 9, 16' but got '%s'", b)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Map(func(v {{.Type}}) {{.Type}} {
+		return v * v
+	})
 }
 
 func Test{{.UType}}SetFlatMap(t *testing.T) {
@@ -311,8 +493,17 @@ func Test{{.UType}}SetFlatMap(t *testing.T) {
 
     exp := NewX1{{.UType}}Set(2, 3, 4, 6, 6, 9)
 	if !b.Equals(exp) {
-		t.Errorf("Expected '%+v' but got '%+v'", exp, b{{.M}})
+		t.Errorf("Expected '%s' but got '%s'", exp, b)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	    if v > 3 {
+	        return nil
+	    }
+		return []int{v * 2, v * 3}
+	})
 }
 
 func Test{{.UType}}SetStringMap(t *testing.T) {
@@ -323,12 +514,16 @@ func Test{{.UType}}SetStringMap(t *testing.T) {
 	for _, c := range a.ToSlice() {
 		s := fmt.Sprintf("%d", c)
 		if _, ok := b[s]; !ok {
-			t.Errorf("Expected '%s' but got '%+v'", s, b)
+			t.Errorf("Expected '%s' but got '%v'", s, b)
 		}
 	}
-}
 
-{{if .Mutable}}
+    // check correct nil handling
+	a = nil
+	a.StringMap()
+}
+{{- if .Mutable}}
+
 func TestMutable{{.UType}}SetClear(t *testing.T) {
 	a := NewX1{{.UType}}Set(2, 5, 9, 10)
 
@@ -337,6 +532,10 @@ func TestMutable{{.UType}}SetClear(t *testing.T) {
 	if a.Size() != 0 {
 		t.Errorf("Expected 0 but got %d", a.Size())
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Clear()
 }
 
 func TestMutable{{.UType}}SetClone(t *testing.T) {
@@ -345,22 +544,26 @@ func TestMutable{{.UType}}SetClone(t *testing.T) {
 	b := a.Clone()
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a, b)
+		t.Errorf("Expected '%s' to equal '%s'", a, b)
 	}
 
 	a.Add(3)
 	if a.Equals(b) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a, b)
+		t.Errorf("Expected '%s' not to equal '%s'", a, b)
 	}
 
 	c := a.Clone()
 	c.Remove(1)
 
 	if a.Equals(c) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a, c)
+		t.Errorf("Expected '%s' not to equal '%s'", a, c)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Clone()
 }
-{{end}}
+{{- end}}
 
 func Test{{.UType}}SetMkString(t *testing.T) {
 	a := NewX1{{.UType}}Set(13, 4)
@@ -370,6 +573,10 @@ func Test{{.UType}}SetMkString(t *testing.T) {
 	if c != "13|4" && c != "4|13" {
 		t.Errorf("Expected '13|4' but got %q", c)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.MkString("|")
 }
 
 func Test{{.UType}}SetMkString3(t *testing.T) {
@@ -380,6 +587,10 @@ func Test{{.UType}}SetMkString3(t *testing.T) {
 	if c != "<13, 4>" && c != "<4, 13>" {
 		t.Errorf("Expected '13|4' but got %q", c)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.MkString3("<", ",", ">")
 }
 
 {{if .GobEncode}}
@@ -401,7 +612,7 @@ func Test{{.UType}}SetGobEncode(t *testing.T) {
 	}
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+		t.Errorf("Expected '%s' but got '%s'", a, b)
 	}
 }
 
@@ -410,20 +621,19 @@ func Test{{.UType}}SetJsonEncode(t *testing.T) {
 	a := NewX1{{.UType}}Set(13, 4, 7, -2, 9)
 	b := NewX1{{.UType}}Set()
 
-    buf := &bytes.Buffer{}
-    err := json.NewEncoder(buf).Encode(a)
+    buf, err := json.Marshal(a)
 
 	if err != nil {
 		t.Errorf("Got %v", err)
 	}
 
-    err = json.NewDecoder(buf).Decode(&b)
+    err = json.Unmarshal(buf, &b)
 
 	if err != nil {
 		t.Errorf("Got %v", err)
 	}
 
 	if !a.Equals(b) {
-		t.Errorf("Expected '%+v' but got '%+v'", a{{.M}}, b{{.M}})
+		t.Errorf("Expected '%s' but got '%s'", a, b)
 	}
 }

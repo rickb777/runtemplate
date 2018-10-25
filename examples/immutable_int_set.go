@@ -78,6 +78,9 @@ func BuildImmutableIntSetFromChan(source <-chan int) *ImmutableIntSet {
 
 // ToSlice returns the elements of the current set as a slice.
 func (set *ImmutableIntSet) ToSlice() []int {
+	if set == nil {
+		return nil
+	}
 
 	var s []int
 	for v, _ := range set.m {
@@ -125,6 +128,10 @@ func (set *ImmutableIntSet) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set *ImmutableIntSet) Size() int {
+	if set == nil {
+		return 0
+	}
+
 	return len(set.m)
 }
 
@@ -157,6 +164,9 @@ func (set *ImmutableIntSet) doAdd(i int) {
 
 // Contains determines if a given item is already in the set.
 func (set *ImmutableIntSet) Contains(i int) bool {
+	if set == nil {
+		return false
+	}
 
 	_, found := set.m[i]
 	return found
@@ -164,6 +174,9 @@ func (set *ImmutableIntSet) Contains(i int) bool {
 
 // ContainsAll determines if the given items are all in the set.
 func (set *ImmutableIntSet) ContainsAll(i ...int) bool {
+	if set == nil {
+		return false
+	}
 
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -177,6 +190,13 @@ func (set *ImmutableIntSet) ContainsAll(i ...int) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *ImmutableIntSet) IsSubset(other *ImmutableIntSet) bool {
+	if set.IsEmpty() {
+		return !other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return false
+	}
 
 	for v, _ := range set.m {
 		if !other.Contains(v) {
@@ -188,11 +208,27 @@ func (set *ImmutableIntSet) IsSubset(other *ImmutableIntSet) bool {
 
 // IsSuperset determines if every item of this set is in the other set.
 func (set *ImmutableIntSet) IsSuperset(other *ImmutableIntSet) bool {
+	if set.IsEmpty() {
+		return other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return true
+	}
+
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
 func (set *ImmutableIntSet) Union(other *ImmutableIntSet) *ImmutableIntSet {
+	if set == nil {
+		return other
+	}
+
+	if other == nil {
+		return set
+	}
+
 	unionedSet := NewImmutableIntSet()
 
 	for v, _ := range set.m {
@@ -208,6 +244,10 @@ func (set *ImmutableIntSet) Union(other *ImmutableIntSet) *ImmutableIntSet {
 
 // Intersect returns a new set with items that exist only in both sets.
 func (set *ImmutableIntSet) Intersect(other *ImmutableIntSet) *ImmutableIntSet {
+	if set == nil || other == nil {
+		return nil
+	}
+
 	intersection := NewImmutableIntSet()
 
 	// loop over smaller set
@@ -230,6 +270,14 @@ func (set *ImmutableIntSet) Intersect(other *ImmutableIntSet) *ImmutableIntSet {
 
 // Difference returns a new set with items in the current set but not in the other set
 func (set *ImmutableIntSet) Difference(other *ImmutableIntSet) *ImmutableIntSet {
+	if set == nil {
+		return nil
+	}
+
+	if other == nil {
+		return set
+	}
+
 	differencedSet := NewImmutableIntSet()
 
 	for v, _ := range set.m {
@@ -250,6 +298,10 @@ func (set *ImmutableIntSet) SymmetricDifference(other *ImmutableIntSet) *Immutab
 
 // Remove removes a single item from the set. A new set is returned that has all the elements except the removed one.
 func (set *ImmutableIntSet) Remove(i int) *ImmutableIntSet {
+	if set == nil {
+		return nil
+	}
+
 	clonedSet := NewImmutableIntSet()
 
 	for v, _ := range set.m {
@@ -268,8 +320,10 @@ func (set *ImmutableIntSet) Remove(i int) *ImmutableIntSet {
 func (set *ImmutableIntSet) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
-		for v, _ := range set.m {
-			ch <- v
+		if set != nil {
+			for v, _ := range set.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -286,6 +340,9 @@ func (set *ImmutableIntSet) Send() <-chan int {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *ImmutableIntSet) Forall(fn func(int) bool) bool {
+	if set == nil {
+		return true
+	}
 
 	for v, _ := range set.m {
 		if !fn(v) {
@@ -299,6 +356,9 @@ func (set *ImmutableIntSet) Forall(fn func(int) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *ImmutableIntSet) Exists(fn func(int) bool) bool {
+	if set == nil {
+		return false
+	}
 
 	for v, _ := range set.m {
 		if fn(v) {
@@ -310,6 +370,9 @@ func (set *ImmutableIntSet) Exists(fn func(int) bool) bool {
 
 // Foreach iterates over intSet and executes the passed func against each element.
 func (set *ImmutableIntSet) Foreach(fn func(int)) {
+	if set == nil {
+		return
+	}
 
 	for v, _ := range set.m {
 		fn(v)
@@ -335,6 +398,10 @@ func (set *ImmutableIntSet) Find(fn func(int) bool) (int, bool) {
 
 // Filter returns a new ImmutableIntSet whose elements return true for func.
 func (set *ImmutableIntSet) Filter(fn func(int) bool) *ImmutableIntSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewImmutableIntSet()
 
 	for v, _ := range set.m {
@@ -350,6 +417,10 @@ func (set *ImmutableIntSet) Filter(fn func(int) bool) *ImmutableIntSet {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (set *ImmutableIntSet) Partition(p func(int) bool) (*ImmutableIntSet, *ImmutableIntSet) {
+	if set == nil {
+		return nil, nil
+	}
+
 	matching := NewImmutableIntSet()
 	others := NewImmutableIntSet()
 
@@ -368,6 +439,10 @@ func (set *ImmutableIntSet) Partition(p func(int) bool) (*ImmutableIntSet, *Immu
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *ImmutableIntSet) Map(fn func(int) int) *ImmutableIntSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewImmutableIntSet()
 
 	for v, _ := range set.m {
@@ -383,6 +458,10 @@ func (set *ImmutableIntSet) Map(fn func(int) int) *ImmutableIntSet {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *ImmutableIntSet) FlatMap(fn func(int) []int) *ImmutableIntSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewImmutableIntSet()
 
 	for v, _ := range set.m {
@@ -503,15 +582,24 @@ func (set *ImmutableIntSet) Sum() int {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *ImmutableIntSet) Equals(other *ImmutableIntSet) bool {
+	if set == nil {
+		return other == nil || other.IsEmpty()
+	}
+
+	if other == nil {
+		return set.IsEmpty()
+	}
 
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -531,7 +619,7 @@ func (set *ImmutableIntSet) StringList() []string {
 
 // String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (set *ImmutableIntSet) String() string {
-	return set.mkString3Bytes("[", ", ", "]").String()
+	return set.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -541,6 +629,9 @@ func (set *ImmutableIntSet) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (set *ImmutableIntSet) MkString3(before, between, after string) string {
+	if set == nil {
+		return ""
+	}
 	return set.mkString3Bytes(before, between, after).String()
 }
 
@@ -584,6 +675,10 @@ func (set *ImmutableIntSet) MarshalJSON() ([]byte, error) {
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
 func (set *ImmutableIntSet) StringMap() map[string]bool {
+	if set == nil {
+		return nil
+	}
+
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true

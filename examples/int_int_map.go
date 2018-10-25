@@ -63,22 +63,22 @@ func (ts IntIntTuples) Values(values ...int) IntIntTuples {
 
 //-------------------------------------------------------------------------------------------------
 
-func newIntIntMap() IntIntMap {
-	return IntIntMap{
+func newIntIntMap() *IntIntMap {
+	return &IntIntMap{
 		s: &sync.RWMutex{},
 		m: make(map[int]int),
 	}
 }
 
 // NewIntIntMap creates and returns a reference to a map containing one item.
-func NewIntIntMap1(k int, v int) IntIntMap {
+func NewIntIntMap1(k int, v int) *IntIntMap {
 	mm := newIntIntMap()
 	mm.m[k] = v
 	return mm
 }
 
 // NewIntIntMap creates and returns a reference to a map, optionally containing some items.
-func NewIntIntMap(kv ...IntIntTuple) IntIntMap {
+func NewIntIntMap(kv ...IntIntTuple) *IntIntMap {
 	mm := newIntIntMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
@@ -87,7 +87,11 @@ func NewIntIntMap(kv ...IntIntTuple) IntIntMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm IntIntMap) Keys() []int {
+func (mm *IntIntMap) Keys() []int {
+	if mm == nil {
+		return nil
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -95,11 +99,16 @@ func (mm IntIntMap) Keys() []int {
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
+
 	return s
 }
 
 // Values returns the values of the current map as a slice.
-func (mm IntIntMap) Values() []int {
+func (mm *IntIntMap) Values() []int {
+	if mm == nil {
+		return nil
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -107,23 +116,38 @@ func (mm IntIntMap) Values() []int {
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
+
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm IntIntMap) ToSlice() []IntIntTuple {
-	mm.s.RLock()
-	defer mm.s.RUnlock()
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (mm *IntIntMap) slice() []IntIntTuple {
+	if mm == nil {
+		return nil
+	}
 
 	var s []IntIntTuple
 	for k, v := range mm.m {
 		s = append(s, IntIntTuple{k, v})
 	}
+
 	return s
 }
 
+// ToSlice returns the key/value pairs as a slice
+func (mm *IntIntMap) ToSlice() []IntIntTuple {
+	if mm == nil {
+		return nil
+	}
+
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	return mm.slice()
+}
+
 // Get returns one of the items in the map, if present.
-func (mm IntIntMap) Get(k int) (int, bool) {
+func (mm *IntIntMap) Get(k int) (int, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -132,7 +156,7 @@ func (mm IntIntMap) Get(k int) (int, bool) {
 }
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm IntIntMap) Put(k int, v int) bool {
+func (mm *IntIntMap) Put(k int, v int) bool {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -142,7 +166,11 @@ func (mm IntIntMap) Put(k int, v int) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm IntIntMap) ContainsKey(k int) bool {
+func (mm *IntIntMap) ContainsKey(k int) bool {
+	if mm == nil {
+		return false
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -151,7 +179,11 @@ func (mm IntIntMap) ContainsKey(k int) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm IntIntMap) ContainsAllKeys(kk ...int) bool {
+func (mm *IntIntMap) ContainsAllKeys(kk ...int) bool {
+	if mm == nil {
+		return len(kk) == 0
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -165,22 +197,31 @@ func (mm IntIntMap) ContainsAllKeys(kk ...int) bool {
 
 // Clear clears the entire map.
 func (mm *IntIntMap) Clear() {
-	mm.s.Lock()
-	defer mm.s.Unlock()
+	if mm != nil {
+		mm.s.Lock()
+		defer mm.s.Unlock()
 
-	mm.m = make(map[int]int)
+		mm.m = make(map[int]int)
+	}
 }
 
 // Remove a single item from the map.
-func (mm IntIntMap) Remove(k int) {
-	mm.s.Lock()
-	defer mm.s.Unlock()
+func (mm *IntIntMap) Remove(k int) {
+	if mm != nil {
+		mm.s.Lock()
+		defer mm.s.Unlock()
 
-	delete(mm.m, k)
+		delete(mm.m, k)
+	}
 }
 
 // Pop removes a single item from the map, returning the value present until removal.
-func (mm IntIntMap) Pop(k int) (int, bool) {
+// The boolean result is true only if the key had been present.
+func (mm *IntIntMap) Pop(k int) (int, bool) {
+	if mm == nil {
+		return 0, false
+	}
+
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
@@ -190,7 +231,11 @@ func (mm IntIntMap) Pop(k int) (int, bool) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm IntIntMap) Size() int {
+func (mm *IntIntMap) Size() int {
+	if mm == nil {
+		return 0
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -198,18 +243,18 @@ func (mm IntIntMap) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm IntIntMap) IsEmpty() bool {
+func (mm *IntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm IntIntMap) NonEmpty() bool {
+func (mm *IntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
-func (mm IntIntMap) DropWhere(fn func(int, int) bool) IntIntTuples {
+func (mm *IntIntMap) DropWhere(fn func(int, int) bool) IntIntTuples {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -225,12 +270,14 @@ func (mm IntIntMap) DropWhere(fn func(int, int) bool) IntIntTuples {
 
 // Foreach applies a function to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm IntIntMap) Foreach(fn func(int, int)) {
-	mm.s.Lock()
-	defer mm.s.Unlock()
+func (mm *IntIntMap) Foreach(fn func(int, int)) {
+	if mm != nil {
+		mm.s.Lock()
+		defer mm.s.Unlock()
 
-	for k, v := range mm.m {
-		fn(k, v)
+		for k, v := range mm.m {
+			fn(k, v)
+		}
 	}
 }
 
@@ -240,7 +287,11 @@ func (mm IntIntMap) Foreach(fn func(int, int)) {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm IntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm *IntIntMap) Forall(fn func(int, int) bool) bool {
+	if mm == nil {
+		return true
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -249,13 +300,18 @@ func (mm IntIntMap) Forall(fn func(int, int) bool) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm IntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm *IntIntMap) Exists(fn func(int, int) bool) bool {
+	if mm == nil {
+		return false
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -264,12 +320,13 @@ func (mm IntIntMap) Exists(fn func(int, int) bool) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (mm IntIntMap) Find(fn func(int, int) bool) (IntIntTuple, bool) {
+func (mm *IntIntMap) Find(fn func(int, int) bool) (IntIntTuple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
@@ -284,7 +341,11 @@ func (mm IntIntMap) Find(fn func(int, int) bool) (IntIntTuple, bool) {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm IntIntMap) Filter(fn func(int, int) bool) IntIntMap {
+func (mm *IntIntMap) Filter(fn func(int, int) bool) *IntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -294,13 +355,18 @@ func (mm IntIntMap) Filter(fn func(int, int) bool) IntIntMap {
 			result.m[k] = v
 		}
 	}
+
 	return result
 }
 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm IntIntMap) Partition(fn func(int, int) bool) (matching IntIntMap, others IntIntMap) {
+func (mm *IntIntMap) Partition(fn func(int, int) bool) (matching *IntIntMap, others *IntIntMap) {
+	if mm == nil {
+		return nil, nil
+	}
+
 	matching = NewIntIntMap()
 	others = NewIntIntMap()
 	mm.s.RLock()
@@ -321,7 +387,11 @@ func (mm IntIntMap) Partition(fn func(int, int) bool) (matching IntIntMap, other
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm IntIntMap) Map(fn func(int, int) (int, int)) IntIntMap {
+func (mm *IntIntMap) Map(fn func(int, int) (int, int)) *IntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -340,7 +410,11 @@ func (mm IntIntMap) Map(fn func(int, int) (int, int)) IntIntMap {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm IntIntMap) FlatMap(fn func(int, int) []IntIntTuple) IntIntMap {
+func (mm *IntIntMap) FlatMap(fn func(int, int) []IntIntTuple) *IntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -358,7 +432,11 @@ func (mm IntIntMap) FlatMap(fn func(int, int) []IntIntTuple) IntIntMap {
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm IntIntMap) Equals(other IntIntMap) bool {
+func (mm *IntIntMap) Equals(other *IntIntMap) bool {
+	if mm == nil || other == nil {
+		return mm.IsEmpty() && other.IsEmpty()
+	}
+
 	mm.s.RLock()
 	other.s.RLock()
 	defer mm.s.RUnlock()
@@ -377,7 +455,11 @@ func (mm IntIntMap) Equals(other IntIntMap) bool {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm IntIntMap) Clone() IntIntMap {
+func (mm *IntIntMap) Clone() *IntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewIntIntMap()
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -390,26 +472,29 @@ func (mm IntIntMap) Clone() IntIntMap {
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm IntIntMap) String() string {
+func (mm *IntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm IntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm *IntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm IntIntMap) MkString(sep string) string {
+func (mm *IntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm IntIntMap) MkString3(before, between, after string) string {
+func (mm *IntIntMap) MkString3(before, between, after string) string {
+	if mm == nil {
+		return ""
+	}
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (mm *IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""

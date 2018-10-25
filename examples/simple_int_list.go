@@ -240,6 +240,12 @@ func (list SimpleIntList) Reverse() SimpleIntList {
 	return result
 }
 
+// DoReverse returns a copy of SimpleIntList with all elements in the reverse order.
+// This is an alias for Reverse.
+func (list SimpleIntList) DoReverse() SimpleIntList {
+	return list.Reverse()
+}
+
 // Shuffle returns a shuffled copy of SimpleIntList, using a version of the Fisher-Yates shuffle.
 func (list SimpleIntList) Shuffle() SimpleIntList {
 	result := list.Clone()

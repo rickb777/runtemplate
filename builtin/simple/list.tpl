@@ -253,6 +253,12 @@ func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
 	return result
 }
 
+// DoReverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
+// This is an alias for Reverse.
+func (list {{.UPrefix}}{{.UType}}List) DoReverse() {{.UPrefix}}{{.UType}}List {
+    return list.Reverse()
+}
+
 // Shuffle returns a shuffled copy of {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
 func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
 	result := list.Clone()

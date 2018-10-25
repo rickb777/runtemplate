@@ -9,7 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/rickb777/runtemplate/app"
-	. "github.com/rickb777/runtemplate/support"
+	. "github.com/rickb777/runtemplate/app/support"
 	"strings"
 )
 

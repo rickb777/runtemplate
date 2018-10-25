@@ -12,6 +12,8 @@ import (
     "encoding/json"
 	"strings"
 {{- end}}
+	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -26,6 +28,55 @@ func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
 	if len(s) != 1 {
 		t.Errorf("Expected 1 but got %d", len(s))
 	}
+
+    // check correct nil handling
+    a = nil
+    a.ToSlice()
+}
+
+func TestIm{{.UKey}}{{.UType}}MapSize(t *testing.T) {
+	a1 := NewTX1{{.UKey}}{{.UType}}Map()
+	a2 := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
+
+	if a1.Size() != 0 {
+		t.Errorf("Expected 0 but got %d", a1.Size())
+	}
+
+	if a2.Size() != 1 {
+		t.Errorf("Expected 1 but got %d", a2.Size())
+	}
+
+    // check correct nil handling
+    a1 = nil
+    a1.Size()
+}
+
+func Test{{.UKey}}{{.UType}}Keys(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4, 2).Values(4, 0, 5)...)
+
+    k := a.Keys()
+    sort.Ints(k)
+	if !reflect.DeepEqual(k, []int{2, 4, 8}) {
+		t.Errorf("Expected [2,4,8] but got %v", k)
+	}
+
+    // check correct nil handling
+    a = nil
+    a.Keys()
+}
+
+func Test{{.UKey}}{{.UType}}Values(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4, 2).Values(4, 0, 5)...)
+
+    v := a.Values()
+    sort.Ints(v)
+	if !reflect.DeepEqual(v, []int{0, 4, 5}) {
+		t.Errorf("Expected [0,4,5] but got %v", v)
+	}
+
+    // check correct nil handling
+    a = nil
+    a.Values()
 }
 
 func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
@@ -38,19 +89,10 @@ func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
 	if a.ContainsAllKeys(8, 6, 11, 1, 2) {
 		t.Errorf("Got %+v", a)
 	}
-}
 
-func TestIm{{.UKey}}{{.UType}}MapCardinality(t *testing.T) {
-	a1 := NewTX1{{.UKey}}{{.UType}}Map()
-	a2 := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
-
-	if a1.Size() != 0 {
-		t.Errorf("Expected 0 but got %d", a1.Size())
-	}
-
-	if a2.Size() != 1 {
-		t.Errorf("Expected 1 but got %d", a2.Size())
-	}
+    // check correct nil handling
+    a = nil
+    a.ContainsAllKeys()
 }
 
 func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
@@ -87,6 +129,11 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
 	if !b3.Equals(a3) {
 		t.Errorf("Expected '%+v' to equal '%+v'", a3, b3)
 	}
+
+    // check correct nil handling
+    a1 = nil
+    a1.Equals(b1)
+    b1.Equals(a1)
 }
 
 //func TestIm{{.UKey}}{{.UType}}MapSend(t *testing.T) {
@@ -102,8 +149,109 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
 //	}
 //}
 
+func Test{{.UType}}MapForall(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+
+	found := a.Forall(func(k, v int) bool {
+		return v > 0
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+	found = a.Forall(func(k, v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	found = a.Forall(func(k, v int) bool {
+		return v > 0
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	a.Forall(func(k, v int) bool {
+		return v > 0
+	})
+}
+
+func Test{{.UType}}MapExists(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+
+	found := a.Exists(func(k, v int) bool {
+		return v > 2
+	})
+
+	if !found {
+		t.Errorf("Expected to find.")
+	}
+
+	found = a.Exists(func(k, v int) bool {
+		return v > 100
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	found = a.Exists(func(k, v int) bool {
+		return v > 0
+	})
+
+	if found {
+		t.Errorf("Expected not to find.")
+	}
+
+    // check correct nil handling
+    a = nil
+	a.Exists(func(k, v int) bool {
+		return v > 2
+	})
+}
+
+func Test{{.UType}}MapForeach(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+	s := 0
+
+	a.Foreach(func(k, v int) {
+		s += v
+	})
+
+	if s != 6 {
+		t.Errorf("Got %d", s)
+	}
+
+    // check correct nil handling
+    a = nil
+	a.Foreach(func(k, v int) {
+		s += v
+	})
+
+	if s != 6 {
+		t.Errorf("Got %d", s)
+	}
+
+    // check correct nil handling
+    a = nil
+	a.Foreach(func(k, v int) {
+		s += v
+	})
+}
+
 func Test{{.UType}}MapFilter(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 1}, TX1{{.UKey}}{{.UType}}Tuple{1, 2}, TX1{{.UKey}}{{.UType}}Tuple{2, 3})
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	b := a.Filter(func(k, v int) bool {
 		return v > 2
@@ -113,6 +261,12 @@ func Test{{.UType}}MapFilter(t *testing.T) {
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp, b)
 	}
+
+    // check correct nil handling
+    a = nil
+	a.Filter(func(k, v int) bool {
+		return v > 2
+	})
 }
 
 func Test{{.UType}}MapPartition(t *testing.T) {
@@ -131,6 +285,12 @@ func Test{{.UType}}MapPartition(t *testing.T) {
 	if !c.Equals(exp2) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp2{{.M}}, c{{.M}})
 	}
+
+    // check correct nil handling
+    a = nil
+	a.Partition(func(k, v int) bool {
+		return v > 2
+	})
 }
 
 func Test{{.UType}}MapTransform(t *testing.T) {
@@ -144,6 +304,12 @@ func Test{{.UType}}MapTransform(t *testing.T) {
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp{{.M}}, b{{.M}})
 	}
+
+    // check correct nil handling
+    a = nil
+	a.Map(func(k, v int) (int, int) {
+		return k + 1, v * v
+	})
 }
 
 func Test{{.UType}}MapFlatMap(t *testing.T) {
@@ -164,16 +330,62 @@ func Test{{.UType}}MapFlatMap(t *testing.T) {
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp{{.M}}, b{{.M}})
 	}
+
+    // check correct nil handling
+    a = nil
+	a.FlatMap(func(k {{.Key}}, v {{.Type}}) []TX1{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+        return nil
+	})
+}
+{{- if .Mutable}}
+
+func TestMu{{.UKey}}{{.UType}}MapPop(t *testing.T) {
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+
+	v, y := a.Pop(8)
+
+	if !y {
+		t.Errorf("Expected popped value")
+	}
+	if v != 2 {
+		t.Errorf("Expected popped 2 but got %d", v)
+	}
+	if a.Size() != 2 {
+		t.Errorf("Expected 2 but got %d", a.Size())
+	}
+
+	v, y = a.Pop(8)
+
+	if y {
+		t.Errorf("Expected no popped value")
+	}
+	if a.Size() != 2 {
+		t.Errorf("Expected 2 but got %d", a.Size())
+	}
+
+	if !(a.ContainsKey(1) && a.ContainsKey(2)) {
+		t.Errorf("Got %+v", a)
+	}
+
+	a.Pop(1)
+	a.Pop(2)
+
+	if a.NonEmpty() {
+		t.Errorf("Got %+v", a)
+	}
+
+    // check correct nil handling
+	a = nil
+	_, y = a.Pop(1)
+	if y {
+		t.Errorf("Expected no popped value")
+	}
 }
 
-{{if .Mutable}}
-
 func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map1(3, 1)
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
-	a.Put(1, 5)
-	a.Put(2, 5)
-	a.Remove(3)
+	a.Remove(8)
 
 	if a.Size() != 2 {
 		t.Errorf("Expected 2 but got %d", a.Size())
@@ -186,9 +398,13 @@ func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
 	a.Remove(2)
 	a.Remove(1)
 
-	if a.Size() != 0 {
+	if a.NonEmpty() {
 		t.Errorf("Got %+v", a)
 	}
+
+    // check correct nil handling
+	a = nil
+	a.Remove(1)
 }
 
 func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
@@ -211,6 +427,12 @@ func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
 	if !(a.ContainsKey(9) && a.ContainsKey(13)) {
 		t.Errorf("Got %+v", a)
 	}
+
+    // check correct nil handling
+    a = nil
+	if a.ContainsKey(71) {
+		t.Error("should not contain 71")
+	}
 }
 
 func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
@@ -221,6 +443,10 @@ func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
 	if a.Size() != 0 {
 		t.Errorf("Got %+v", a)
 	}
+
+    // check correct nil handling
+    a = nil
+    a.Clear()
 }
 
 func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
@@ -245,9 +471,12 @@ func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
 	if a2.Equals(c) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", a2, c)
 	}
-}
 
-{{end}}
+    // check correct nil handling
+    a1 = nil
+    a1.Clone()
+}
+{{- end}}
 
 func Test{{.UType}}MapMkString(t *testing.T) {
 	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4).Values(4, 0)...)
@@ -257,6 +486,10 @@ func Test{{.UType}}MapMkString(t *testing.T) {
 	if c != "8:4|4:0" && c != "4:0|8:4" {
 		t.Errorf("Expected '8:4|4:0' but got %q", c)
 	}
+
+    // check correct nil handling
+    a = nil
+	a.MkString("|")
 }
 
 func Test{{.UType}}MapMkString3(t *testing.T) {
@@ -267,6 +500,10 @@ func Test{{.UType}}MapMkString3(t *testing.T) {
 	if c != "<8:4,4:0>" && c != "<4:0,8:4>" {
 		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
 	}
+
+    // check correct nil handling
+    a = nil
+	a.MkString3("<", ",", ">")
 }
 {{- if .GobEncode}}
 

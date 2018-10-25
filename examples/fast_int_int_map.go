@@ -60,21 +60,21 @@ func (ts FastIntIntTuples) Values(values ...int) FastIntIntTuples {
 
 //-------------------------------------------------------------------------------------------------
 
-func newFastIntIntMap() FastIntIntMap {
-	return FastIntIntMap{
+func newFastIntIntMap() *FastIntIntMap {
+	return &FastIntIntMap{
 		m: make(map[int]int),
 	}
 }
 
 // NewFastIntIntMap creates and returns a reference to a map containing one item.
-func NewFastIntIntMap1(k int, v int) FastIntIntMap {
+func NewFastIntIntMap1(k int, v int) *FastIntIntMap {
 	mm := newFastIntIntMap()
 	mm.m[k] = v
 	return mm
 }
 
 // NewFastIntIntMap creates and returns a reference to a map, optionally containing some items.
-func NewFastIntIntMap(kv ...FastIntIntTuple) FastIntIntMap {
+func NewFastIntIntMap(kv ...FastIntIntTuple) *FastIntIntMap {
 	mm := newFastIntIntMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
@@ -83,44 +83,65 @@ func NewFastIntIntMap(kv ...FastIntIntTuple) FastIntIntMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm FastIntIntMap) Keys() []int {
+func (mm *FastIntIntMap) Keys() []int {
+	if mm == nil {
+		return nil
+	}
 
 	var s []int
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
+
 	return s
 }
 
 // Values returns the values of the current map as a slice.
-func (mm FastIntIntMap) Values() []int {
+func (mm *FastIntIntMap) Values() []int {
+	if mm == nil {
+		return nil
+	}
 
 	var s []int
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
+
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm FastIntIntMap) ToSlice() []FastIntIntTuple {
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (mm *FastIntIntMap) slice() []FastIntIntTuple {
+	if mm == nil {
+		return nil
+	}
 
 	var s []FastIntIntTuple
 	for k, v := range mm.m {
 		s = append(s, FastIntIntTuple{k, v})
 	}
+
 	return s
 }
 
+// ToSlice returns the key/value pairs as a slice
+func (mm *FastIntIntMap) ToSlice() []FastIntIntTuple {
+	if mm == nil {
+		return nil
+	}
+
+	return mm.slice()
+}
+
 // Get returns one of the items in the map, if present.
-func (mm FastIntIntMap) Get(k int) (int, bool) {
+func (mm *FastIntIntMap) Get(k int) (int, bool) {
 
 	v, found := mm.m[k]
 	return v, found
 }
 
 // Put adds an item to the current map, replacing any prior value.
-func (mm FastIntIntMap) Put(k int, v int) bool {
+func (mm *FastIntIntMap) Put(k int, v int) bool {
 
 	_, found := mm.m[k]
 	mm.m[k] = v
@@ -128,14 +149,20 @@ func (mm FastIntIntMap) Put(k int, v int) bool {
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm FastIntIntMap) ContainsKey(k int) bool {
+func (mm *FastIntIntMap) ContainsKey(k int) bool {
+	if mm == nil {
+		return false
+	}
 
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm FastIntIntMap) ContainsAllKeys(kk ...int) bool {
+func (mm *FastIntIntMap) ContainsAllKeys(kk ...int) bool {
+	if mm == nil {
+		return len(kk) == 0
+	}
 
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
@@ -147,18 +174,26 @@ func (mm FastIntIntMap) ContainsAllKeys(kk ...int) bool {
 
 // Clear clears the entire map.
 func (mm *FastIntIntMap) Clear() {
+	if mm != nil {
 
-	mm.m = make(map[int]int)
+		mm.m = make(map[int]int)
+	}
 }
 
 // Remove a single item from the map.
-func (mm FastIntIntMap) Remove(k int) {
+func (mm *FastIntIntMap) Remove(k int) {
+	if mm != nil {
 
-	delete(mm.m, k)
+		delete(mm.m, k)
+	}
 }
 
 // Pop removes a single item from the map, returning the value present until removal.
-func (mm FastIntIntMap) Pop(k int) (int, bool) {
+// The boolean result is true only if the key had been present.
+func (mm *FastIntIntMap) Pop(k int) (int, bool) {
+	if mm == nil {
+		return 0, false
+	}
 
 	v, found := mm.m[k]
 	delete(mm.m, k)
@@ -166,24 +201,27 @@ func (mm FastIntIntMap) Pop(k int) (int, bool) {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm FastIntIntMap) Size() int {
+func (mm *FastIntIntMap) Size() int {
+	if mm == nil {
+		return 0
+	}
 
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm FastIntIntMap) IsEmpty() bool {
+func (mm *FastIntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm FastIntIntMap) NonEmpty() bool {
+func (mm *FastIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
-func (mm FastIntIntMap) DropWhere(fn func(int, int) bool) FastIntIntTuples {
+func (mm *FastIntIntMap) DropWhere(fn func(int, int) bool) FastIntIntTuples {
 
 	removed := make(FastIntIntTuples, 0)
 	for k, v := range mm.m {
@@ -197,10 +235,12 @@ func (mm FastIntIntMap) DropWhere(fn func(int, int) bool) FastIntIntTuples {
 
 // Foreach applies a function to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm FastIntIntMap) Foreach(fn func(int, int)) {
+func (mm *FastIntIntMap) Foreach(fn func(int, int)) {
+	if mm != nil {
 
-	for k, v := range mm.m {
-		fn(k, v)
+		for k, v := range mm.m {
+			fn(k, v)
+		}
 	}
 }
 
@@ -210,32 +250,40 @@ func (mm FastIntIntMap) Foreach(fn func(int, int)) {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm FastIntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm *FastIntIntMap) Forall(fn func(int, int) bool) bool {
+	if mm == nil {
+		return true
+	}
 
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
 		}
 	}
+
 	return true
 }
 
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm FastIntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm *FastIntIntMap) Exists(fn func(int, int) bool) bool {
+	if mm == nil {
+		return false
+	}
 
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
 		}
 	}
+
 	return false
 }
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (mm FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
+func (mm *FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
 
 	for k, v := range mm.m {
 		if fn(k, v) {
@@ -248,7 +296,11 @@ func (mm FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm FastIntIntMap) Filter(fn func(int, int) bool) FastIntIntMap {
+func (mm *FastIntIntMap) Filter(fn func(int, int) bool) *FastIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewFastIntIntMap()
 
 	for k, v := range mm.m {
@@ -256,13 +308,18 @@ func (mm FastIntIntMap) Filter(fn func(int, int) bool) FastIntIntMap {
 			result.m[k] = v
 		}
 	}
+
 	return result
 }
 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm FastIntIntMap) Partition(fn func(int, int) bool) (matching FastIntIntMap, others FastIntIntMap) {
+func (mm *FastIntIntMap) Partition(fn func(int, int) bool) (matching *FastIntIntMap, others *FastIntIntMap) {
+	if mm == nil {
+		return nil, nil
+	}
+
 	matching = NewFastIntIntMap()
 	others = NewFastIntIntMap()
 
@@ -281,7 +338,11 @@ func (mm FastIntIntMap) Partition(fn func(int, int) bool) (matching FastIntIntMa
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm FastIntIntMap) Map(fn func(int, int) (int, int)) FastIntIntMap {
+func (mm *FastIntIntMap) Map(fn func(int, int) (int, int)) *FastIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewFastIntIntMap()
 
 	for k1, v1 := range mm.m {
@@ -298,7 +359,11 @@ func (mm FastIntIntMap) Map(fn func(int, int) (int, int)) FastIntIntMap {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm FastIntIntMap) FlatMap(fn func(int, int) []FastIntIntTuple) FastIntIntMap {
+func (mm *FastIntIntMap) FlatMap(fn func(int, int) []FastIntIntTuple) *FastIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewFastIntIntMap()
 
 	for k1, v1 := range mm.m {
@@ -314,7 +379,10 @@ func (mm FastIntIntMap) FlatMap(fn func(int, int) []FastIntIntTuple) FastIntIntM
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm FastIntIntMap) Equals(other FastIntIntMap) bool {
+func (mm *FastIntIntMap) Equals(other *FastIntIntMap) bool {
+	if mm == nil || other == nil {
+		return mm.IsEmpty() && other.IsEmpty()
+	}
 
 	if mm.Size() != other.Size() {
 		return false
@@ -329,7 +397,11 @@ func (mm FastIntIntMap) Equals(other FastIntIntMap) bool {
 }
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
-func (mm FastIntIntMap) Clone() FastIntIntMap {
+func (mm *FastIntIntMap) Clone() *FastIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewFastIntIntMap()
 
 	for k, v := range mm.m {
@@ -340,26 +412,29 @@ func (mm FastIntIntMap) Clone() FastIntIntMap {
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm FastIntIntMap) String() string {
+func (mm *FastIntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm FastIntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm *FastIntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm FastIntIntMap) MkString(sep string) string {
+func (mm *FastIntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm FastIntIntMap) MkString3(before, between, after string) string {
+func (mm *FastIntIntMap) MkString3(before, between, after string) string {
+	if mm == nil {
+		return ""
+	}
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm FastIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (mm *FastIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""

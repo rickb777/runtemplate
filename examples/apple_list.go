@@ -68,6 +68,14 @@ func BuildAppleListFromChan(source <-chan Apple) *AppleList {
 	return result
 }
 
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list *AppleList) slice() []Apple {
+	if list == nil {
+		return nil
+	}
+	return list.m
+}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *AppleList) ToSlice() []Apple {
 	list.s.RLock()
@@ -92,6 +100,10 @@ func (list *AppleList) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *AppleList) Clone() *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -103,6 +115,10 @@ func (list *AppleList) Clone() *AppleList {
 // Get gets the specified element in the list.
 // Panics if the index is out of range.
 func (list *AppleList) Get(i int) Apple {
+	if list == nil {
+		return *(new(Apple))
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -110,13 +126,13 @@ func (list *AppleList) Get(i int) Apple {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *AppleList) Head() Apple {
 	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *AppleList) Last() Apple {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -125,7 +141,7 @@ func (list *AppleList) Last() Apple {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *AppleList) Tail() *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -136,7 +152,7 @@ func (list *AppleList) Tail() *AppleList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *AppleList) Init() *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -168,12 +184,21 @@ func (list *AppleList) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list.
+// Size returns the number of items in the list - an alias of Len().
 func (list *AppleList) Size() int {
+	if list == nil {
+		return 0
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	return len(list.m)
+}
+
+// Len returns the number of items in the list - an alias of Size().
+func (list *AppleList) Len() int {
+	return list.Size()
 }
 
 // Swap exchanges two elements.
@@ -196,6 +221,10 @@ func (list *AppleList) Contains(v Apple) bool {
 // ContainsAll determines if the given items are all in the list.
 // This is potentially a slow method and should only be used rarely.
 func (list *AppleList) ContainsAll(i ...Apple) bool {
+	if list == nil {
+		return len(i) > 0
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -209,6 +238,10 @@ func (list *AppleList) ContainsAll(i ...Apple) bool {
 
 // Exists verifies that one or more elements of AppleList return true for the predicate p.
 func (list *AppleList) Exists(p func(Apple) bool) bool {
+	if list == nil {
+		return false
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -222,6 +255,10 @@ func (list *AppleList) Exists(p func(Apple) bool) bool {
 
 // Forall verifies that all elements of AppleList return true for the predicate p.
 func (list *AppleList) Forall(p func(Apple) bool) bool {
+	if list == nil {
+		return true
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -236,6 +273,10 @@ func (list *AppleList) Forall(p func(Apple) bool) bool {
 // Foreach iterates over AppleList and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *AppleList) Foreach(fn func(Apple)) {
+	if list == nil {
+		return
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -244,16 +285,19 @@ func (list *AppleList) Foreach(fn func(Apple)) {
 	}
 }
 
-// Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// Send returns a channel that will send all the elements in order. A goroutine is created to
+// send the elements; this only terminates when all the elements have been consumed. The
+// channel will be closed when all the elements have been sent.
 func (list *AppleList) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
-		list.s.RLock()
-		defer list.s.RUnlock()
+		if list != nil {
+			list.s.RLock()
+			defer list.s.RUnlock()
 
-		for _, v := range list.m {
-			ch <- v
+			for _, v := range list.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -273,12 +317,20 @@ func (list *AppleList) Reverse() *AppleList {
 //
 // The modified list is returned.
 func (list *AppleList) DoReverse() *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doReverse()
 }
 
 func (list *AppleList) doReverse() *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
@@ -309,6 +361,10 @@ func (list *AppleList) DoShuffle() *AppleList {
 }
 
 func (list *AppleList) doShuffle() *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
@@ -326,6 +382,13 @@ func (list *AppleList) Add(more ...Apple) {
 
 // Append adds items to the current list, returning the modified list.
 func (list *AppleList) Append(more ...Apple) *AppleList {
+	if list == nil {
+		if len(more) == 0 {
+			return nil
+		}
+		list = MakeAppleList(0, len(more))
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doAppend(more...)
@@ -342,6 +405,14 @@ func (list *AppleList) doAppend(more ...Apple) *AppleList {
 // The modified list is returned.
 // Panics if the index is out of range.
 func (list *AppleList) DoInsertAt(index int, more ...Apple) *AppleList {
+	if list == nil {
+		if len(more) == 0 {
+			return nil
+		}
+		list = MakeAppleList(0, len(more))
+		return list.doInsertAt(index, more...)
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doInsertAt(index, more...)
@@ -433,6 +504,10 @@ func (list *AppleList) doDeleteAt(index, n int) *AppleList {
 //
 // The modified list is returned.
 func (list *AppleList) DoKeepWhere(p func(Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doKeepWhere(p)
@@ -456,6 +531,10 @@ func (list *AppleList) doKeepWhere(p func(Apple) bool) *AppleList {
 // Take returns a slice of AppleList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *AppleList) Take(n int) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -472,7 +551,7 @@ func (list *AppleList) Take(n int) *AppleList {
 //
 // The original list is not modified.
 func (list *AppleList) Drop(n int) *AppleList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -492,6 +571,10 @@ func (list *AppleList) Drop(n int) *AppleList {
 //
 // The original list is not modified.
 func (list *AppleList) TakeLast(n int) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -509,7 +592,7 @@ func (list *AppleList) TakeLast(n int) *AppleList {
 //
 // The original list is not modified.
 func (list *AppleList) DropLast(n int) *AppleList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -531,6 +614,10 @@ func (list *AppleList) DropLast(n int) *AppleList {
 //
 // The original list is not modified.
 func (list *AppleList) TakeWhile(p func(Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -551,6 +638,10 @@ func (list *AppleList) TakeWhile(p func(Apple) bool) *AppleList {
 //
 // The original list is not modified.
 func (list *AppleList) DropWhile(p func(Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -572,6 +663,10 @@ func (list *AppleList) DropWhile(p func(Apple) bool) *AppleList {
 // Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
 func (list *AppleList) Find(p func(Apple) bool) (Apple, bool) {
+	if list == nil {
+		return *(new(Apple)), false
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -589,6 +684,10 @@ func (list *AppleList) Find(p func(Apple) bool) (Apple, bool) {
 //
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *AppleList) Filter(p func(Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -610,6 +709,10 @@ func (list *AppleList) Filter(p func(Apple) bool) *AppleList {
 //
 // The original list is not modified
 func (list *AppleList) Partition(p func(Apple) bool) (*AppleList, *AppleList) {
+	if list == nil {
+		return nil, nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -634,6 +737,10 @@ func (list *AppleList) Partition(p func(Apple) bool) (*AppleList, *AppleList) {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *AppleList) Map(fn func(Apple) Apple) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	result := MakeAppleList(len(list.m), len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -652,6 +759,10 @@ func (list *AppleList) Map(fn func(Apple) Apple) *AppleList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *AppleList) FlatMap(fn func(Apple) []Apple) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	result := MakeAppleList(0, len(list.m))
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -720,6 +831,10 @@ func (list *AppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 
 // DistinctBy returns a new AppleList whose elements are unique, where equality is defined by a passed func.
 func (list *AppleList) DistinctBy(equal func(Apple, Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -785,7 +900,12 @@ func (list *AppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
+// Nil lists are considered to be empty.
 func (list *AppleList) Equals(other *AppleList) bool {
+	if list == nil {
+		return other == nil || len(other.m) == 0
+	}
+
 	list.s.RLock()
 	other.s.RLock()
 	defer list.s.RUnlock()
@@ -826,6 +946,10 @@ func (sl sortableAppleList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list *AppleList) SortBy(less func(i, j Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 
@@ -837,6 +961,10 @@ func (list *AppleList) SortBy(less func(i, j Apple) bool) *AppleList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list *AppleList) StableSortBy(less func(i, j Apple) bool) *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 

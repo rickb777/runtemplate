@@ -64,6 +64,14 @@ func BuildImmutableAppleListFromChan(source <-chan Apple) *ImmutableAppleList {
 	return result
 }
 
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list *ImmutableAppleList) slice() []Apple {
+	if list == nil {
+		return nil
+	}
+	return list.m
+}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *ImmutableAppleList) ToSlice() []Apple {
 
@@ -92,25 +100,28 @@ func (list *ImmutableAppleList) Clone() *ImmutableAppleList {
 // Get gets the specified element in the list.
 // Panics if the index is out of range.
 func (list *ImmutableAppleList) Get(i int) Apple {
+	if list == nil {
+		return *(new(Apple))
+	}
 
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableAppleList) Head() Apple {
 	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableAppleList) Last() Apple {
 
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableAppleList) Tail() *ImmutableAppleList {
 
 	result := newImmutableAppleList(0, 0)
@@ -119,7 +130,7 @@ func (list *ImmutableAppleList) Tail() *ImmutableAppleList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableAppleList) Init() *ImmutableAppleList {
 
 	result := newImmutableAppleList(0, 0)
@@ -151,20 +162,25 @@ func (list *ImmutableAppleList) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *ImmutableAppleList) Size() int {
+	if list == nil {
+		return 0
+	}
 
 	return len(list.m)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 func (list *ImmutableAppleList) Len() int {
-
-	return len(list.m)
+	return list.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of ImmutableAppleList return true for the predicate p.
 func (list *ImmutableAppleList) Exists(p func(Apple) bool) bool {
+	if list == nil {
+		return false
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -176,6 +192,9 @@ func (list *ImmutableAppleList) Exists(p func(Apple) bool) bool {
 
 // Forall verifies that all elements of ImmutableAppleList return true for the predicate p.
 func (list *ImmutableAppleList) Forall(p func(Apple) bool) bool {
+	if list == nil {
+		return true
+	}
 
 	for _, v := range list.m {
 		if !p(v) {
@@ -187,28 +206,38 @@ func (list *ImmutableAppleList) Forall(p func(Apple) bool) bool {
 
 // Foreach iterates over ImmutableAppleList and executes function fn against each element.
 func (list *ImmutableAppleList) Foreach(fn func(Apple)) {
+	if list == nil {
+		return
+	}
 
 	for _, v := range list.m {
 		fn(v)
 	}
 }
 
-// Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// Send returns a channel that will send all the elements in order. A goroutine is created to
+// send the elements; this only terminates when all the elements have been consumed. The
+// channel will be closed when all the elements have been sent.
 func (list *ImmutableAppleList) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
-
-		for _, v := range list.m {
-			ch <- v
+		if list != nil {
+			for _, v := range list.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
 	return ch
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // Reverse returns a copy of ImmutableAppleList with all elements in the reverse order.
 func (list *ImmutableAppleList) Reverse() *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	numItems := len(list.m)
 	result := newImmutableAppleList(numItems, numItems)
@@ -219,8 +248,14 @@ func (list *ImmutableAppleList) Reverse() *ImmutableAppleList {
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // Shuffle returns a shuffled copy of ImmutableAppleList, using a version of the Fisher-Yates shuffle.
 func (list *ImmutableAppleList) Shuffle() *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
+
 	result := NewImmutableAppleList(list.m...)
 	numItems := len(result.m)
 	for i := 0; i < numItems; i++ {
@@ -233,6 +268,13 @@ func (list *ImmutableAppleList) Shuffle() *ImmutableAppleList {
 // Append returns a new list with all original items and all in `more`; they retain their order.
 // The original list is not altered.
 func (list *ImmutableAppleList) Append(more ...Apple) *ImmutableAppleList {
+	if list == nil {
+		if len(more) == 0 {
+			return nil
+		}
+		return NewImmutableAppleList(more...)
+	}
+
 	newList := NewImmutableAppleList(list.m...)
 	newList.doAppend(more...)
 	return newList
@@ -247,10 +289,10 @@ func (list *ImmutableAppleList) doAppend(more ...Apple) {
 // Take returns a slice of ImmutableAppleList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *ImmutableAppleList) Take(n int) *ImmutableAppleList {
-
-	if n > len(list.m) {
+	if list == nil || n > len(list.m) {
 		return list
 	}
+
 	result := newImmutableAppleList(0, 0)
 	result.m = list.m[0:n]
 	return result
@@ -259,7 +301,7 @@ func (list *ImmutableAppleList) Take(n int) *ImmutableAppleList {
 // Drop returns a slice of ImmutableAppleList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 func (list *ImmutableAppleList) Drop(n int) *ImmutableAppleList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -274,6 +316,9 @@ func (list *ImmutableAppleList) Drop(n int) *ImmutableAppleList {
 // TakeLast returns a slice of ImmutableAppleList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *ImmutableAppleList) TakeLast(n int) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	l := len(list.m)
 	if n > l {
@@ -287,7 +332,7 @@ func (list *ImmutableAppleList) TakeLast(n int) *ImmutableAppleList {
 // DropLast returns a slice of ImmutableAppleList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 func (list *ImmutableAppleList) DropLast(n int) *ImmutableAppleList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -304,6 +349,9 @@ func (list *ImmutableAppleList) DropLast(n int) *ImmutableAppleList {
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
 func (list *ImmutableAppleList) TakeWhile(p func(Apple) bool) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableAppleList(0, 0)
 	for _, v := range list.m {
@@ -320,6 +368,9 @@ func (list *ImmutableAppleList) TakeWhile(p func(Apple) bool) *ImmutableAppleLis
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
 func (list *ImmutableAppleList) DropWhile(p func(Apple) bool) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableAppleList(0, 0)
 	adding := false
@@ -338,7 +389,10 @@ func (list *ImmutableAppleList) DropWhile(p func(Apple) bool) *ImmutableAppleLis
 
 // Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
-func (list ImmutableAppleList) Find(p func(Apple) bool) (Apple, bool) {
+func (list *ImmutableAppleList) Find(p func(Apple) bool) (Apple, bool) {
+	if list == nil {
+		return *(new(Apple)), false
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -352,6 +406,9 @@ func (list ImmutableAppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 // Filter returns a new ImmutableAppleList whose elements return true for predicate p.
 func (list *ImmutableAppleList) Filter(p func(Apple) bool) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableAppleList(0, len(list.m)/2)
 
@@ -369,6 +426,9 @@ func (list *ImmutableAppleList) Filter(p func(Apple) bool) *ImmutableAppleList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list *ImmutableAppleList) Partition(p func(Apple) bool) (*ImmutableAppleList, *ImmutableAppleList) {
+	if list == nil {
+		return nil, nil
+	}
 
 	matching := newImmutableAppleList(0, len(list.m)/2)
 	others := newImmutableAppleList(0, len(list.m)/2)
@@ -390,6 +450,10 @@ func (list *ImmutableAppleList) Partition(p func(Apple) bool) (*ImmutableAppleLi
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *ImmutableAppleList) Map(fn func(Apple) Apple) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
+
 	result := newImmutableAppleList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
@@ -405,6 +469,10 @@ func (list *ImmutableAppleList) Map(fn func(Apple) Apple) *ImmutableAppleList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *ImmutableAppleList) FlatMap(fn func(Apple) []Apple) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
+
 	result := newImmutableAppleList(0, len(list.m))
 
 	for _, v := range list.m {
@@ -429,7 +497,6 @@ func (list *ImmutableAppleList) CountBy(predicate func(Apple) bool) (result int)
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list *ImmutableAppleList) MinBy(less func(Apple, Apple) bool) Apple {
-
 	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
@@ -448,7 +515,6 @@ func (list *ImmutableAppleList) MinBy(less func(Apple, Apple) bool) Apple {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list *ImmutableAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
-
 	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
@@ -465,6 +531,9 @@ func (list *ImmutableAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 
 // DistinctBy returns a new ImmutableAppleList whose elements are unique, where equality is defined by a passed func.
 func (list *ImmutableAppleList) DistinctBy(equal func(Apple, Apple) bool) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableAppleList(0, len(list.m))
 Outer:
@@ -539,6 +608,9 @@ func (sl sortableImmutableAppleList) Swap(i, j int) {
 
 // SortBy returns a new list in which the elements are sorted by a specified ordering.
 func (list *ImmutableAppleList) SortBy(less func(i, j Apple) bool) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	result := NewImmutableAppleList(list.m...)
 	sort.Sort(sortableImmutableAppleList{less, result.m})
@@ -548,6 +620,9 @@ func (list *ImmutableAppleList) SortBy(less func(i, j Apple) bool) *ImmutableApp
 // StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
 func (list *ImmutableAppleList) StableSortBy(less func(i, j Apple) bool) *ImmutableAppleList {
+	if list == nil {
+		return nil
+	}
 
 	result := NewImmutableAppleList(list.m...)
 	sort.Stable(sortableImmutableAppleList{less, result.m})

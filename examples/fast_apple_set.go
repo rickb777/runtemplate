@@ -52,14 +52,23 @@ func BuildFastAppleSetFromChan(source <-chan Apple) *FastAppleSet {
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice.
-func (set *FastAppleSet) ToSlice() []Apple {
+// slice returns the internal elements of the current set. This is a seam for testing etc.
+func (set *FastAppleSet) slice() []Apple {
+	if set == nil {
+		return nil
+	}
 
 	var s []Apple
 	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
+}
+
+// ToSlice returns the elements of the current set as a slice.
+func (set *FastAppleSet) ToSlice() []Apple {
+
+	return set.slice()
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
@@ -72,8 +81,12 @@ func (set *FastAppleSet) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the set. It does not clone the underlying elements.
 func (set *FastAppleSet) Clone() *FastAppleSet {
+	if set == nil {
+		return nil
+	}
+
 	clonedSet := NewFastAppleSet()
 
 	for v, _ := range set.m {
@@ -106,6 +119,9 @@ func (set *FastAppleSet) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set *FastAppleSet) Size() int {
+	if set == nil {
+		return 0
+	}
 
 	return len(set.m)
 }
@@ -131,6 +147,9 @@ func (set *FastAppleSet) doAdd(i Apple) {
 
 // Contains determines if a given item is already in the set.
 func (set *FastAppleSet) Contains(i Apple) bool {
+	if set == nil {
+		return false
+	}
 
 	_, found := set.m[i]
 	return found
@@ -138,6 +157,9 @@ func (set *FastAppleSet) Contains(i Apple) bool {
 
 // ContainsAll determines if the given items are all in the set.
 func (set *FastAppleSet) ContainsAll(i ...Apple) bool {
+	if set == nil {
+		return false
+	}
 
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -151,6 +173,13 @@ func (set *FastAppleSet) ContainsAll(i ...Apple) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *FastAppleSet) IsSubset(other *FastAppleSet) bool {
+	if set.IsEmpty() {
+		return !other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return false
+	}
 
 	for v, _ := range set.m {
 		if !other.Contains(v) {
@@ -162,11 +191,27 @@ func (set *FastAppleSet) IsSubset(other *FastAppleSet) bool {
 
 // IsSuperset determines if every item of this set is in the other set.
 func (set *FastAppleSet) IsSuperset(other *FastAppleSet) bool {
+	if set.IsEmpty() {
+		return other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return true
+	}
+
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
 func (set *FastAppleSet) Union(other *FastAppleSet) *FastAppleSet {
+	if set == nil {
+		return other
+	}
+
+	if other == nil {
+		return set
+	}
+
 	unionedSet := set.Clone()
 
 	for v, _ := range other.m {
@@ -178,6 +223,10 @@ func (set *FastAppleSet) Union(other *FastAppleSet) *FastAppleSet {
 
 // Intersect returns a new set with items that exist only in both sets.
 func (set *FastAppleSet) Intersect(other *FastAppleSet) *FastAppleSet {
+	if set == nil || other == nil {
+		return nil
+	}
+
 	intersection := NewFastAppleSet()
 
 	// loop over smaller set
@@ -200,6 +249,14 @@ func (set *FastAppleSet) Intersect(other *FastAppleSet) *FastAppleSet {
 
 // Difference returns a new set with items in the current set but not in the other set
 func (set *FastAppleSet) Difference(other *FastAppleSet) *FastAppleSet {
+	if set == nil {
+		return nil
+	}
+
+	if other == nil {
+		return set
+	}
+
 	differencedSet := NewFastAppleSet()
 
 	for v, _ := range set.m {
@@ -220,8 +277,10 @@ func (set *FastAppleSet) SymmetricDifference(other *FastAppleSet) *FastAppleSet 
 
 // Clear clears the entire set to be the empty set.
 func (set *FastAppleSet) Clear() {
+	if set != nil {
 
-	set.m = make(map[Apple]struct{})
+		set.m = make(map[Apple]struct{})
+	}
 }
 
 // Remove removes a single item from the set.
@@ -237,9 +296,11 @@ func (set *FastAppleSet) Remove(i Apple) {
 func (set *FastAppleSet) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
+		if set != nil {
 
-		for v, _ := range set.m {
-			ch <- v
+			for v, _ := range set.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -256,6 +317,9 @@ func (set *FastAppleSet) Send() <-chan Apple {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *FastAppleSet) Forall(fn func(Apple) bool) bool {
+	if set == nil {
+		return true
+	}
 
 	for v, _ := range set.m {
 		if !fn(v) {
@@ -269,6 +333,9 @@ func (set *FastAppleSet) Forall(fn func(Apple) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *FastAppleSet) Exists(fn func(Apple) bool) bool {
+	if set == nil {
+		return false
+	}
 
 	for v, _ := range set.m {
 		if fn(v) {
@@ -281,6 +348,9 @@ func (set *FastAppleSet) Exists(fn func(Apple) bool) bool {
 // Foreach iterates over AppleSet and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
 func (set *FastAppleSet) Foreach(fn func(Apple)) {
+	if set == nil {
+		return
+	}
 
 	for v, _ := range set.m {
 		fn(v)
@@ -308,6 +378,10 @@ func (set *FastAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 //
 // The original set is not modified
 func (set *FastAppleSet) Filter(fn func(Apple) bool) *FastAppleSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewFastAppleSet()
 
 	for v, _ := range set.m {
@@ -325,6 +399,10 @@ func (set *FastAppleSet) Filter(fn func(Apple) bool) *FastAppleSet {
 //
 // The original set is not modified
 func (set *FastAppleSet) Partition(p func(Apple) bool) (*FastAppleSet, *FastAppleSet) {
+	if set == nil {
+		return nil, nil
+	}
+
 	matching := NewFastAppleSet()
 	others := NewFastAppleSet()
 
@@ -344,6 +422,10 @@ func (set *FastAppleSet) Partition(p func(Apple) bool) (*FastAppleSet, *FastAppl
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *FastAppleSet) Map(fn func(Apple) Apple) *FastAppleSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewFastAppleSet()
 
 	for v, _ := range set.m {
@@ -360,6 +442,10 @@ func (set *FastAppleSet) Map(fn func(Apple) Apple) *FastAppleSet {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *FastAppleSet) FlatMap(fn func(Apple) []Apple) *FastAppleSet {
+	if set == nil {
+		return nil
+	}
+
 	result := NewFastAppleSet()
 
 	for v, _ := range set.m {
@@ -430,15 +516,24 @@ func (set *FastAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *FastAppleSet) Equals(other *FastAppleSet) bool {
+	if set == nil {
+		return other == nil || other.IsEmpty()
+	}
+
+	if other == nil {
+		return set.IsEmpty()
+	}
 
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }
 

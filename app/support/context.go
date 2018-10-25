@@ -57,6 +57,22 @@ func setTypeInContext(k, v string, context map[string]interface{}) {
 		context[k+"Star"] = star
 		context[k+"Amp"] = amp
 		context["P"+k] = p
+		if star == "*" {
+			context[k+"Zero"] = "nil"
+		} else {
+			switch v {
+			case "string":
+				context[k+"Zero"] = `""`
+			case "bool":
+				context[k+"Zero"] = `false`
+			case "int", "int8", "int16", "int32", "int64",
+				"uint", "uint8", "uint16", "uint32", "uint64",
+				"float32", "float64", "byte", "rune":
+				context[k+"Zero"] = `0`
+			default:
+				context[k+"Zero"] = fmt.Sprintf("*(new(%s))", v)
+			}
+		}
 	}
 }
 

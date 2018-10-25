@@ -87,6 +87,14 @@ func BuildFastIntListFromChan(source <-chan int) *FastIntList {
 	return result
 }
 
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list *FastIntList) slice() []int {
+	if list == nil {
+		return nil
+	}
+	return list.m
+}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *FastIntList) ToSlice() []int {
 
@@ -107,6 +115,9 @@ func (list *FastIntList) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *FastIntList) Clone() *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	return NewFastIntList(list.m...)
 }
@@ -116,25 +127,28 @@ func (list *FastIntList) Clone() *FastIntList {
 // Get gets the specified element in the list.
 // Panics if the index is out of range.
 func (list *FastIntList) Get(i int) int {
+	if list == nil {
+		return 0
+	}
 
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *FastIntList) Head() int {
 	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *FastIntList) Last() int {
 
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *FastIntList) Tail() *FastIntList {
 
 	result := MakeFastIntList(0, 0)
@@ -143,7 +157,7 @@ func (list *FastIntList) Tail() *FastIntList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *FastIntList) Init() *FastIntList {
 
 	result := MakeFastIntList(0, 0)
@@ -173,10 +187,18 @@ func (list *FastIntList) IsSet() bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// Size returns the number of items in the list.
+// Size returns the number of items in the list - an alias of Len().
 func (list *FastIntList) Size() int {
+	if list == nil {
+		return 0
+	}
 
 	return len(list.m)
+}
+
+// Len returns the number of items in the list - an alias of Size().
+func (list *FastIntList) Len() int {
+	return list.Size()
 }
 
 // Swap exchanges two elements.
@@ -197,6 +219,9 @@ func (list *FastIntList) Contains(v int) bool {
 // ContainsAll determines if the given items are all in the list.
 // This is potentially a slow method and should only be used rarely.
 func (list *FastIntList) ContainsAll(i ...int) bool {
+	if list == nil {
+		return len(i) > 0
+	}
 
 	for _, v := range i {
 		if !list.Contains(v) {
@@ -208,6 +233,9 @@ func (list *FastIntList) ContainsAll(i ...int) bool {
 
 // Exists verifies that one or more elements of FastIntList return true for the predicate p.
 func (list *FastIntList) Exists(p func(int) bool) bool {
+	if list == nil {
+		return false
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -219,6 +247,9 @@ func (list *FastIntList) Exists(p func(int) bool) bool {
 
 // Forall verifies that all elements of FastIntList return true for the predicate p.
 func (list *FastIntList) Forall(p func(int) bool) bool {
+	if list == nil {
+		return true
+	}
 
 	for _, v := range list.m {
 		if !p(v) {
@@ -231,20 +262,26 @@ func (list *FastIntList) Forall(p func(int) bool) bool {
 // Foreach iterates over FastIntList and executes function fn against each element.
 // The function can safely alter the values via side-effects.
 func (list *FastIntList) Foreach(fn func(int)) {
+	if list == nil {
+		return
+	}
 
 	for _, v := range list.m {
 		fn(v)
 	}
 }
 
-// Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// Send returns a channel that will send all the elements in order. A goroutine is created to
+// send the elements; this only terminates when all the elements have been consumed. The
+// channel will be closed when all the elements have been sent.
 func (list *FastIntList) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
+		if list != nil {
 
-		for _, v := range list.m {
-			ch <- v
+			for _, v := range list.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -264,10 +301,18 @@ func (list *FastIntList) Reverse() *FastIntList {
 //
 // The modified list is returned.
 func (list *FastIntList) DoReverse() *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	return list.doReverse()
 }
 
 func (list *FastIntList) doReverse() *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
 	for i := 0; i < mid; i++ {
@@ -296,6 +341,10 @@ func (list *FastIntList) DoShuffle() *FastIntList {
 }
 
 func (list *FastIntList) doShuffle() *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
@@ -313,6 +362,13 @@ func (list *FastIntList) Add(more ...int) {
 
 // Append adds items to the current list, returning the modified list.
 func (list *FastIntList) Append(more ...int) *FastIntList {
+	if list == nil {
+		if len(more) == 0 {
+			return nil
+		}
+		list = MakeFastIntList(0, len(more))
+	}
+
 	return list.doAppend(more...)
 }
 
@@ -327,6 +383,14 @@ func (list *FastIntList) doAppend(more ...int) *FastIntList {
 // The modified list is returned.
 // Panics if the index is out of range.
 func (list *FastIntList) DoInsertAt(index int, more ...int) *FastIntList {
+	if list == nil {
+		if len(more) == 0 {
+			return nil
+		}
+		list = MakeFastIntList(0, len(more))
+		return list.doInsertAt(index, more...)
+	}
+
 	return list.doInsertAt(index, more...)
 }
 
@@ -410,6 +474,10 @@ func (list *FastIntList) doDeleteAt(index, n int) *FastIntList {
 //
 // The modified list is returned.
 func (list *FastIntList) DoKeepWhere(p func(int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	return list.doKeepWhere(p)
 }
 
@@ -431,6 +499,9 @@ func (list *FastIntList) doKeepWhere(p func(int) bool) *FastIntList {
 // Take returns a slice of FastIntList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *FastIntList) Take(n int) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	if n > len(list.m) {
 		return list
@@ -445,7 +516,7 @@ func (list *FastIntList) Take(n int) *FastIntList {
 //
 // The original list is not modified.
 func (list *FastIntList) Drop(n int) *FastIntList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -462,6 +533,9 @@ func (list *FastIntList) Drop(n int) *FastIntList {
 //
 // The original list is not modified.
 func (list *FastIntList) TakeLast(n int) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	l := len(list.m)
 	if n > l {
@@ -477,7 +551,7 @@ func (list *FastIntList) TakeLast(n int) *FastIntList {
 //
 // The original list is not modified.
 func (list *FastIntList) DropLast(n int) *FastIntList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -496,6 +570,9 @@ func (list *FastIntList) DropLast(n int) *FastIntList {
 //
 // The original list is not modified.
 func (list *FastIntList) TakeWhile(p func(int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := MakeFastIntList(0, 0)
 	for _, v := range list.m {
@@ -514,6 +591,9 @@ func (list *FastIntList) TakeWhile(p func(int) bool) *FastIntList {
 //
 // The original list is not modified.
 func (list *FastIntList) DropWhile(p func(int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := MakeFastIntList(0, 0)
 	adding := false
@@ -533,6 +613,9 @@ func (list *FastIntList) DropWhile(p func(int) bool) *FastIntList {
 // Find returns the first int that returns true for predicate p.
 // False is returned if none match.
 func (list *FastIntList) Find(p func(int) bool) (int, bool) {
+	if list == nil {
+		return 0, false
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -548,6 +631,9 @@ func (list *FastIntList) Find(p func(int) bool) (int, bool) {
 //
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
 func (list *FastIntList) Filter(p func(int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := MakeFastIntList(0, len(list.m)/2)
 
@@ -567,6 +653,9 @@ func (list *FastIntList) Filter(p func(int) bool) *FastIntList {
 //
 // The original list is not modified
 func (list *FastIntList) Partition(p func(int) bool) (*FastIntList, *FastIntList) {
+	if list == nil {
+		return nil, nil
+	}
 
 	matching := MakeFastIntList(0, len(list.m)/2)
 	others := MakeFastIntList(0, len(list.m)/2)
@@ -589,6 +678,10 @@ func (list *FastIntList) Partition(p func(int) bool) (*FastIntList, *FastIntList
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *FastIntList) Map(fn func(int) int) *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	result := MakeFastIntList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
@@ -605,6 +698,10 @@ func (list *FastIntList) Map(fn func(int) int) *FastIntList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *FastIntList) FlatMap(fn func(int) []int) *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	result := MakeFastIntList(0, len(list.m))
 
 	for _, v := range list.m {
@@ -665,6 +762,9 @@ func (list *FastIntList) MaxBy(less func(int, int) bool) int {
 
 // DistinctBy returns a new FastIntList whose elements are unique, where equality is defined by a passed func.
 func (list *FastIntList) DistinctBy(equal func(int, int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := MakeFastIntList(0, len(list.m))
 Outer:
@@ -737,7 +837,11 @@ func (list *FastIntList) Sum() int {
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
+// Nil lists are considered to be empty.
 func (list *FastIntList) Equals(other *FastIntList) bool {
+	if list == nil {
+		return other == nil || len(other.m) == 0
+	}
 
 	if len(list.m) != len(other.m) {
 		return false
@@ -774,6 +878,9 @@ func (sl sortableFastIntList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list *FastIntList) SortBy(less func(i, j int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	sort.Sort(sortableFastIntList{less, list.m})
 	return list
@@ -783,6 +890,9 @@ func (list *FastIntList) SortBy(less func(i, j int) bool) *FastIntList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list *FastIntList) StableSortBy(less func(i, j int) bool) *FastIntList {
+	if list == nil {
+		return nil
+	}
 
 	sort.Stable(sortableFastIntList{less, list.m})
 	return list
@@ -871,6 +981,10 @@ func (list *FastIntList) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list *FastIntList) MkString3(before, between, after string) string {
+	if list == nil {
+		return ""
+	}
+
 	return list.mkString3Bytes(before, between, after).String()
 }
 

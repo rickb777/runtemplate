@@ -87,6 +87,14 @@ func BuildImmutableIntListFromChan(source <-chan int) *ImmutableIntList {
 	return result
 }
 
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list *ImmutableIntList) slice() []int {
+	if list == nil {
+		return nil
+	}
+	return list.m
+}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *ImmutableIntList) ToSlice() []int {
 
@@ -115,25 +123,28 @@ func (list *ImmutableIntList) Clone() *ImmutableIntList {
 // Get gets the specified element in the list.
 // Panics if the index is out of range.
 func (list *ImmutableIntList) Get(i int) int {
+	if list == nil {
+		return 0
+	}
 
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableIntList) Head() int {
 	return list.Get(0)
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableIntList) Last() int {
 
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableIntList) Tail() *ImmutableIntList {
 
 	result := newImmutableIntList(0, 0)
@@ -142,7 +153,7 @@ func (list *ImmutableIntList) Tail() *ImmutableIntList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list *ImmutableIntList) Init() *ImmutableIntList {
 
 	result := newImmutableIntList(0, 0)
@@ -174,14 +185,16 @@ func (list *ImmutableIntList) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *ImmutableIntList) Size() int {
+	if list == nil {
+		return 0
+	}
 
 	return len(list.m)
 }
 
 // Len returns the number of items in the list - an alias of Size().
 func (list *ImmutableIntList) Len() int {
-
-	return len(list.m)
+	return list.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -196,6 +209,9 @@ func (list *ImmutableIntList) Contains(v int) bool {
 // ContainsAll determines if the given items are all in the list.
 // This is potentially a slow method and should only be used rarely.
 func (list *ImmutableIntList) ContainsAll(i ...int) bool {
+	if list == nil {
+		return len(i) > 0
+	}
 
 	for _, v := range i {
 		if !list.Contains(v) {
@@ -207,6 +223,9 @@ func (list *ImmutableIntList) ContainsAll(i ...int) bool {
 
 // Exists verifies that one or more elements of ImmutableIntList return true for the predicate p.
 func (list *ImmutableIntList) Exists(p func(int) bool) bool {
+	if list == nil {
+		return false
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -218,6 +237,9 @@ func (list *ImmutableIntList) Exists(p func(int) bool) bool {
 
 // Forall verifies that all elements of ImmutableIntList return true for the predicate p.
 func (list *ImmutableIntList) Forall(p func(int) bool) bool {
+	if list == nil {
+		return true
+	}
 
 	for _, v := range list.m {
 		if !p(v) {
@@ -229,28 +251,38 @@ func (list *ImmutableIntList) Forall(p func(int) bool) bool {
 
 // Foreach iterates over ImmutableIntList and executes function fn against each element.
 func (list *ImmutableIntList) Foreach(fn func(int)) {
+	if list == nil {
+		return
+	}
 
 	for _, v := range list.m {
 		fn(v)
 	}
 }
 
-// Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// Send returns a channel that will send all the elements in order. A goroutine is created to
+// send the elements; this only terminates when all the elements have been consumed. The
+// channel will be closed when all the elements have been sent.
 func (list *ImmutableIntList) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
-
-		for _, v := range list.m {
-			ch <- v
+		if list != nil {
+			for _, v := range list.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
 	return ch
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // Reverse returns a copy of ImmutableIntList with all elements in the reverse order.
 func (list *ImmutableIntList) Reverse() *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	numItems := len(list.m)
 	result := newImmutableIntList(numItems, numItems)
@@ -261,8 +293,14 @@ func (list *ImmutableIntList) Reverse() *ImmutableIntList {
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // Shuffle returns a shuffled copy of ImmutableIntList, using a version of the Fisher-Yates shuffle.
 func (list *ImmutableIntList) Shuffle() *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
+
 	result := NewImmutableIntList(list.m...)
 	numItems := len(result.m)
 	for i := 0; i < numItems; i++ {
@@ -275,6 +313,13 @@ func (list *ImmutableIntList) Shuffle() *ImmutableIntList {
 // Append returns a new list with all original items and all in `more`; they retain their order.
 // The original list is not altered.
 func (list *ImmutableIntList) Append(more ...int) *ImmutableIntList {
+	if list == nil {
+		if len(more) == 0 {
+			return nil
+		}
+		return NewImmutableIntList(more...)
+	}
+
 	newList := NewImmutableIntList(list.m...)
 	newList.doAppend(more...)
 	return newList
@@ -289,10 +334,10 @@ func (list *ImmutableIntList) doAppend(more ...int) {
 // Take returns a slice of ImmutableIntList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *ImmutableIntList) Take(n int) *ImmutableIntList {
-
-	if n > len(list.m) {
+	if list == nil || n > len(list.m) {
 		return list
 	}
+
 	result := newImmutableIntList(0, 0)
 	result.m = list.m[0:n]
 	return result
@@ -301,7 +346,7 @@ func (list *ImmutableIntList) Take(n int) *ImmutableIntList {
 // Drop returns a slice of ImmutableIntList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 func (list *ImmutableIntList) Drop(n int) *ImmutableIntList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -316,6 +361,9 @@ func (list *ImmutableIntList) Drop(n int) *ImmutableIntList {
 // TakeLast returns a slice of ImmutableIntList containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole original list is returned.
 func (list *ImmutableIntList) TakeLast(n int) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	l := len(list.m)
 	if n > l {
@@ -329,7 +377,7 @@ func (list *ImmutableIntList) TakeLast(n int) *ImmutableIntList {
 // DropLast returns a slice of ImmutableIntList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 func (list *ImmutableIntList) DropLast(n int) *ImmutableIntList {
-	if n == 0 {
+	if list == nil || n == 0 {
 		return list
 	}
 
@@ -346,6 +394,9 @@ func (list *ImmutableIntList) DropLast(n int) *ImmutableIntList {
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
 func (list *ImmutableIntList) TakeWhile(p func(int) bool) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableIntList(0, 0)
 	for _, v := range list.m {
@@ -362,6 +413,9 @@ func (list *ImmutableIntList) TakeWhile(p func(int) bool) *ImmutableIntList {
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
 func (list *ImmutableIntList) DropWhile(p func(int) bool) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableIntList(0, 0)
 	adding := false
@@ -380,7 +434,10 @@ func (list *ImmutableIntList) DropWhile(p func(int) bool) *ImmutableIntList {
 
 // Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list ImmutableIntList) Find(p func(int) bool) (int, bool) {
+func (list *ImmutableIntList) Find(p func(int) bool) (int, bool) {
+	if list == nil {
+		return 0, false
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -394,6 +451,9 @@ func (list ImmutableIntList) Find(p func(int) bool) (int, bool) {
 
 // Filter returns a new ImmutableIntList whose elements return true for predicate p.
 func (list *ImmutableIntList) Filter(p func(int) bool) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableIntList(0, len(list.m)/2)
 
@@ -411,6 +471,9 @@ func (list *ImmutableIntList) Filter(p func(int) bool) *ImmutableIntList {
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 func (list *ImmutableIntList) Partition(p func(int) bool) (*ImmutableIntList, *ImmutableIntList) {
+	if list == nil {
+		return nil, nil
+	}
 
 	matching := newImmutableIntList(0, len(list.m)/2)
 	others := newImmutableIntList(0, len(list.m)/2)
@@ -432,6 +495,10 @@ func (list *ImmutableIntList) Partition(p func(int) bool) (*ImmutableIntList, *I
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *ImmutableIntList) Map(fn func(int) int) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
+
 	result := newImmutableIntList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
@@ -447,6 +514,10 @@ func (list *ImmutableIntList) Map(fn func(int) int) *ImmutableIntList {
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (list *ImmutableIntList) FlatMap(fn func(int) []int) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
+
 	result := newImmutableIntList(0, len(list.m))
 
 	for _, v := range list.m {
@@ -471,7 +542,6 @@ func (list *ImmutableIntList) CountBy(predicate func(int) bool) (result int) {
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
 func (list *ImmutableIntList) MinBy(less func(int, int) bool) int {
-
 	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
@@ -490,7 +560,6 @@ func (list *ImmutableIntList) MinBy(less func(int, int) bool) int {
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list *ImmutableIntList) MaxBy(less func(int, int) bool) int {
-
 	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
@@ -507,6 +576,9 @@ func (list *ImmutableIntList) MaxBy(less func(int, int) bool) int {
 
 // DistinctBy returns a new ImmutableIntList whose elements are unique, where equality is defined by a passed func.
 func (list *ImmutableIntList) DistinctBy(equal func(int, int) bool) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := newImmutableIntList(0, len(list.m))
 Outer:
@@ -580,6 +652,9 @@ func (list *ImmutableIntList) Sum() int {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list *ImmutableIntList) Equals(other *ImmutableIntList) bool {
+	if list == nil {
+		return other == nil || len(other.m) == 0
+	}
 
 	if len(list.m) != len(other.m) {
 		return false
@@ -615,6 +690,9 @@ func (sl sortableImmutableIntList) Swap(i, j int) {
 
 // SortBy returns a new list in which the elements are sorted by a specified ordering.
 func (list *ImmutableIntList) SortBy(less func(i, j int) bool) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := NewImmutableIntList(list.m...)
 	sort.Sort(sortableImmutableIntList{less, result.m})
@@ -624,6 +702,9 @@ func (list *ImmutableIntList) SortBy(less func(i, j int) bool) *ImmutableIntList
 // StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
 func (list *ImmutableIntList) StableSortBy(less func(i, j int) bool) *ImmutableIntList {
+	if list == nil {
+		return nil
+	}
 
 	result := NewImmutableIntList(list.m...)
 	sort.Stable(sortableImmutableIntList{less, result.m})
@@ -711,6 +792,10 @@ func (list *ImmutableIntList) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list *ImmutableIntList) MkString3(before, between, after string) string {
+	if list == nil {
+		return ""
+	}
+
 	return list.mkString3Bytes(before, between, after).String()
 }
 

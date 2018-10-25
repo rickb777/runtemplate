@@ -33,10 +33,10 @@ package threadsafe
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=X1 Type=Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 
-//go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true
-//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true M:.m GobEncode:true JsonEncode:true Append:true
-//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true M:.m GobEncode:true JsonEncode:true Append:true
-//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true M:.m GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true Comparable:true
+//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
 // Code generation with pointer values
 

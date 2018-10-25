@@ -61,21 +61,21 @@ func (ts ImmutableIntIntTuples) Values(values ...int) ImmutableIntIntTuples {
 
 //-------------------------------------------------------------------------------------------------
 
-func newImmutableIntIntMap() ImmutableIntIntMap {
-	return ImmutableIntIntMap{
+func newImmutableIntIntMap() *ImmutableIntIntMap {
+	return &ImmutableIntIntMap{
 		m: make(map[int]int),
 	}
 }
 
 // NewImmutableIntIntMap creates and returns a reference to a map containing one item.
-func NewImmutableIntIntMap1(k int, v int) ImmutableIntIntMap {
+func NewImmutableIntIntMap1(k int, v int) *ImmutableIntIntMap {
 	mm := newImmutableIntIntMap()
 	mm.m[k] = v
 	return mm
 }
 
 // NewImmutableIntIntMap creates and returns a reference to a map, optionally containing some items.
-func NewImmutableIntIntMap(kv ...ImmutableIntIntTuple) ImmutableIntIntMap {
+func NewImmutableIntIntMap(kv ...ImmutableIntIntTuple) *ImmutableIntIntMap {
 	mm := newImmutableIntIntMap()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
@@ -84,47 +84,74 @@ func NewImmutableIntIntMap(kv ...ImmutableIntIntTuple) ImmutableIntIntMap {
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm ImmutableIntIntMap) Keys() []int {
+func (mm *ImmutableIntIntMap) Keys() []int {
+	if mm == nil {
+		return nil
+	}
+
 	var s []int
 	for k, _ := range mm.m {
 		s = append(s, k)
 	}
+
 	return s
 }
 
 // Values returns the values of the current map as a slice.
-func (mm ImmutableIntIntMap) Values() []int {
+func (mm *ImmutableIntIntMap) Values() []int {
+	if mm == nil {
+		return nil
+	}
 
 	var s []int
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
+
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm ImmutableIntIntMap) ToSlice() []ImmutableIntIntTuple {
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (mm *ImmutableIntIntMap) slice() []ImmutableIntIntTuple {
+	if mm == nil {
+		return nil
+	}
+
 	var s []ImmutableIntIntTuple
 	for k, v := range mm.m {
 		s = append(s, ImmutableIntIntTuple{k, v})
 	}
+
 	return s
 }
 
+// ToSlice returns the key/value pairs as a slice
+func (mm *ImmutableIntIntMap) ToSlice() []ImmutableIntIntTuple {
+	return mm.slice()
+}
+
 // Get returns one of the items in the map, if present.
-func (mm ImmutableIntIntMap) Get(k int) (int, bool) {
+func (mm *ImmutableIntIntMap) Get(k int) (int, bool) {
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm ImmutableIntIntMap) ContainsKey(k int) bool {
+func (mm *ImmutableIntIntMap) ContainsKey(k int) bool {
+	if mm == nil {
+		return false
+	}
+
 	_, found := mm.m[k]
 	return found
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm ImmutableIntIntMap) ContainsAllKeys(kk ...int) bool {
+func (mm *ImmutableIntIntMap) ContainsAllKeys(kk ...int) bool {
+	if mm == nil {
+		return len(kk) == 0
+	}
+
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
 			return false
@@ -134,18 +161,32 @@ func (mm ImmutableIntIntMap) ContainsAllKeys(kk ...int) bool {
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm ImmutableIntIntMap) Size() int {
+func (mm *ImmutableIntIntMap) Size() int {
+	if mm == nil {
+		return 0
+	}
+
 	return len(mm.m)
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm ImmutableIntIntMap) IsEmpty() bool {
+func (mm *ImmutableIntIntMap) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm ImmutableIntIntMap) NonEmpty() bool {
+func (mm *ImmutableIntIntMap) NonEmpty() bool {
 	return mm.Size() > 0
+}
+
+// Foreach applies a function to every element in the map.
+// The function can safely alter the values via side-effects.
+func (mm *ImmutableIntIntMap) Foreach(fn func(int, int)) {
+	if mm != nil {
+		for k, v := range mm.m {
+			fn(k, v)
+		}
+	}
 }
 
 // Forall applies a predicate function to every element in the map. If the function returns false,
@@ -154,30 +195,40 @@ func (mm ImmutableIntIntMap) NonEmpty() bool {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm ImmutableIntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm *ImmutableIntIntMap) Forall(fn func(int, int) bool) bool {
+	if mm == nil {
+		return true
+	}
+
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
 		}
 	}
+
 	return true
 }
 
 // Exists applies a predicate function to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm ImmutableIntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm *ImmutableIntIntMap) Exists(fn func(int, int) bool) bool {
+	if mm == nil {
+		return false
+	}
+
 	for k, v := range mm.m {
 		if fn(k, v) {
 			return true
 		}
 	}
+
 	return false
 }
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-func (mm ImmutableIntIntMap) Find(fn func(int, int) bool) (ImmutableIntIntTuple, bool) {
+func (mm *ImmutableIntIntMap) Find(fn func(int, int) bool) (ImmutableIntIntTuple, bool) {
 
 	for k, v := range mm.m {
 		if fn(k, v) {
@@ -190,7 +241,11 @@ func (mm ImmutableIntIntMap) Find(fn func(int, int) bool) (ImmutableIntIntTuple,
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm ImmutableIntIntMap) Filter(fn func(int, int) bool) ImmutableIntIntMap {
+func (mm *ImmutableIntIntMap) Filter(fn func(int, int) bool) *ImmutableIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewImmutableIntIntMap()
 
 	for k, v := range mm.m {
@@ -198,13 +253,18 @@ func (mm ImmutableIntIntMap) Filter(fn func(int, int) bool) ImmutableIntIntMap {
 			result.m[k] = v
 		}
 	}
+
 	return result
 }
 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm ImmutableIntIntMap) Partition(fn func(int, int) bool) (matching ImmutableIntIntMap, others ImmutableIntIntMap) {
+func (mm *ImmutableIntIntMap) Partition(fn func(int, int) bool) (matching *ImmutableIntIntMap, others *ImmutableIntIntMap) {
+	if mm == nil {
+		return nil, nil
+	}
+
 	matching = NewImmutableIntIntMap()
 	others = NewImmutableIntIntMap()
 
@@ -222,7 +282,11 @@ func (mm ImmutableIntIntMap) Partition(fn func(int, int) bool) (matching Immutab
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm ImmutableIntIntMap) Map(fn func(int, int) (int, int)) ImmutableIntIntMap {
+func (mm *ImmutableIntIntMap) Map(fn func(int, int) (int, int)) *ImmutableIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewImmutableIntIntMap()
 
 	for k1, v1 := range mm.m {
@@ -238,7 +302,11 @@ func (mm ImmutableIntIntMap) Map(fn func(int, int) (int, int)) ImmutableIntIntMa
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm ImmutableIntIntMap) FlatMap(fn func(int, int) []ImmutableIntIntTuple) ImmutableIntIntMap {
+func (mm *ImmutableIntIntMap) FlatMap(fn func(int, int) []ImmutableIntIntTuple) *ImmutableIntIntMap {
+	if mm == nil {
+		return nil
+	}
+
 	result := NewImmutableIntIntMap()
 
 	for k1, v1 := range mm.m {
@@ -254,7 +322,11 @@ func (mm ImmutableIntIntMap) FlatMap(fn func(int, int) []ImmutableIntIntTuple) I
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm ImmutableIntIntMap) Equals(other ImmutableIntIntMap) bool {
+func (mm *ImmutableIntIntMap) Equals(other *ImmutableIntIntMap) bool {
+	if mm == nil || other == nil {
+		return mm.IsEmpty() && other.IsEmpty()
+	}
+
 	if mm.Size() != other.Size() {
 		return false
 	}
@@ -268,32 +340,35 @@ func (mm ImmutableIntIntMap) Equals(other ImmutableIntIntMap) bool {
 }
 
 // Clone returns the same map, which is immutable.
-func (mm ImmutableIntIntMap) Clone() ImmutableIntIntMap {
+func (mm *ImmutableIntIntMap) Clone() *ImmutableIntIntMap {
 	return mm
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm ImmutableIntIntMap) String() string {
+func (mm *ImmutableIntIntMap) String() string {
 	return mm.MkString3("map[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm ImmutableIntIntMap) MarshalJSON() ([]byte, error) {
+//func (mm *ImmutableIntIntMap) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm ImmutableIntIntMap) MkString(sep string) string {
+func (mm *ImmutableIntIntMap) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
-func (mm ImmutableIntIntMap) MkString3(before, between, after string) string {
+func (mm *ImmutableIntIntMap) MkString3(before, between, after string) string {
+	if mm == nil {
+		return ""
+	}
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm ImmutableIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (mm *ImmutableIntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""

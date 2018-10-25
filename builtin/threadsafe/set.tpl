@@ -96,16 +96,25 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefi
 	return set
 }
 
-// ToSlice returns the elements of the current set as a slice.
-func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
-	set.s.RLock()
-	defer set.s.RUnlock()
+// slice returns the internal elements of the current set. This is a seam for testing etc.
+func (set *{{.UPrefix}}{{.UType}}Set) slice() []{{.Type}} {
+	if set == nil {
+		return nil
+	}
 
 	var s []{{.Type}}
 	for v, _ := range set.m {
 		s = append(s, v)
 	}
 	return s
+}
+
+// ToSlice returns the elements of the current set as a slice.
+func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	return set.slice()
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
@@ -120,8 +129,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the set. It does not clone the underlying elements.
 func (set *{{.UPrefix}}{{.UType}}Set) Clone() *{{.UPrefix}}{{.UType}}Set {
+	if set == nil {
+		return nil
+	}
+
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
 
 	set.s.RLock()
@@ -157,6 +170,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSet() bool {
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
 func (set *{{.UPrefix}}{{.UType}}Set) Size() int {
+	if set == nil {
+		return 0
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -186,6 +203,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 
 // Contains determines if a given item is already in the set.
 func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
+	if set == nil {
+		return false
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -195,6 +216,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 
 // ContainsAll determines if the given items are all in the set.
 func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
+	if set == nil {
+		return false
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -210,6 +235,14 @@ func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 
 // IsSubset determines if every item in the other set is in this set.
 func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set) bool {
+	if set.IsEmpty() {
+		return !other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return false
+	}
+
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -225,11 +258,27 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 
 // IsSuperset determines if every item of this set is in the other set.
 func (set *{{.UPrefix}}{{.UType}}Set) IsSuperset(other *{{.UPrefix}}{{.UType}}Set) bool {
+	if set.IsEmpty() {
+		return other.IsEmpty()
+	}
+
+	if other.IsEmpty() {
+		return true
+	}
+
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
 func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+	if set == nil {
+		return other
+	}
+
+	if other == nil {
+		return set
+	}
+
 	unionedSet := set.Clone()
 
 	other.s.RLock()
@@ -244,6 +293,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{
 
 // Intersect returns a new set with items that exist only in both sets.
 func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+	if set == nil || other == nil {
+		return nil
+	}
+
 	intersection := New{{.UPrefix}}{{.UType}}Set()
 
 	set.s.RLock()
@@ -271,6 +324,14 @@ func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set
 
 // Difference returns a new set with items in the current set but not in the other set
 func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+	if set == nil {
+		return nil
+	}
+
+	if other == nil {
+		return set
+	}
+
 	differencedSet := New{{.UPrefix}}{{.UType}}Set()
 
 	set.s.RLock()
@@ -296,10 +357,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) SymmetricDifference(other *{{.UPrefix}}{{.
 
 // Clear clears the entire set to be the empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
-	set.s.Lock()
-	defer set.s.Unlock()
+	if set != nil {
+	    set.s.Lock()
+	    defer set.s.Unlock()
 
-	set.m = make(map[{{.Type}}]struct{})
+    	set.m = make(map[{{.Type}}]struct{})
+	}
 }
 
 // Remove removes a single item from the set.
@@ -317,11 +380,13 @@ func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
 	go func() {
-		set.s.RLock()
-		defer set.s.RUnlock()
+        if set != nil {
+    		set.s.RLock()
+	    	defer set.s.RUnlock()
 
-		for v, _ := range set.m {
-			ch <- v
+    		for v, _ := range set.m {
+	    		ch <- v
+		    }
 		}
 		close(ch)
 	}()
@@ -338,6 +403,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (set *{{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
+	if set == nil {
+		return true
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -353,6 +422,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *{{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
+	if set == nil {
+		return false
+	}
+
 	set.s.RLock()
 	defer set.s.RUnlock()
 
@@ -367,6 +440,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 // Foreach iterates over {{.Type}}Set and executes the passed func against each element.
 // The function can safely alter the values via side-effects.
 func (set *{{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
+	if set == nil {
+		return
+	}
+
 	set.s.Lock()
 	defer set.s.Unlock()
 
@@ -401,6 +478,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}}
 //
 // The original set is not modified
 func (set *{{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) *{{.UPrefix}}{{.UType}}Set {
+	if set == nil {
+		return nil
+	}
+
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -420,6 +501,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) *{{.UPrefi
 //
 // The original set is not modified
 func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPrefix}}{{.UType}}Set, *{{.UPrefix}}{{.UType}}Set) {
+	if set == nil {
+		return nil, nil
+	}
+
 	matching := New{{.UPrefix}}{{.UType}}Set()
 	others := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
@@ -441,6 +526,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPr
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *{{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}Set {
+	if set == nil {
+		return nil
+	}
+
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -459,6 +548,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) *{{.UP
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}Set {
+	if set == nil {
+		return nil
+	}
+
 	result := New{{.UPrefix}}{{.UType}}Set()
 	set.s.RLock()
 	defer set.s.RUnlock()
@@ -599,6 +692,14 @@ func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) bool {
+	if set == nil {
+        return other == nil || other.IsEmpty()
+	}
+
+    if other == nil {
+        return set.IsEmpty()
+    }
+
 	set.s.RLock()
 	other.s.RLock()
 	defer set.s.RUnlock()
@@ -607,11 +708,13 @@ func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) b
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v, _ := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -634,7 +737,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
 
 // String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (set *{{.UPrefix}}{{.UType}}Set) String() string {
-	return set.mkString3Bytes("[", ", ", "]").String()
+	return set.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -644,6 +747,9 @@ func (set *{{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (set *{{.UPrefix}}{{.UType}}Set) MkString3(before, between, after string) string {
+	if set == nil {
+		return ""
+	}
 	return set.mkString3Bytes(before, between, after).String()
 }
 
@@ -671,15 +777,15 @@ func (set *{{.UPrefix}}{{.UType}}Set) UnmarshalJSON(b []byte) error {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-    values := make([]{{.PType}}, 0)
-    err := json.Unmarshal(b, &values)
-    if err != nil {
-        return err
-    }
+	values := make([]{{.PType}}, 0)
+	err := json.Unmarshal(b, &values)
+	if err != nil {
+		return err
+	}
 
-    s2 := New{{.UPrefix}}{{.UType}}Set(values...)
-    *set = *s2
-    return nil
+	s2 := New{{.UPrefix}}{{.UType}}Set(values...)
+	*set = *s2
+	return nil
 }
 
 // MarshalJSON implements JSON encoding for this set type.
@@ -687,13 +793,17 @@ func (set *{{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-    buf, err := json.Marshal(set.ToSlice())
+	buf, err := json.Marshal(set.ToSlice())
 	return buf, err
 }
 
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
 func (set *{{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
+	if set == nil {
+		return nil
+	}
+
 	strings := make(map[string]bool)
 	for v, _ := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true
@@ -711,8 +821,8 @@ func (set *{{.UPrefix}}{{.UType}}Set) GobDecode(b []byte) error {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-    buf := bytes.NewBuffer(b)
-    return gob.NewDecoder(buf).Decode(&set.m)
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&set.m)
 }
 
 // GobDecode implements 'gob' encoding for this set type.
@@ -721,8 +831,8 @@ func (set {{.UPrefix}}{{.UType}}Set) GobEncode() ([]byte, error) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-    buf := &bytes.Buffer{}
-    err := gob.NewEncoder(buf).Encode(set.m)
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(set.m)
 	return buf.Bytes(), err
 }
 
