@@ -18,9 +18,9 @@ func TestCreateContextCore(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
 	types := Pairs([]Pair{})
 	others := Pairs([]Pair{})
-	ctx := CreateContext(m, "output.txt", types, others)
+	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	if len(ctx) != 9 {
+	if len(ctx) != 10 {
 		t.Fatalf("Got len %d %+v", len(ctx), ctx)
 	}
 
@@ -29,6 +29,7 @@ func TestCreateContextCore(t *testing.T) {
 	expectPresent(t, ctx, "GOROOT")
 	expectPresent(t, ctx, "GOARCH")
 	expectPresent(t, ctx, "GOPATH")
+	expectPresent(t, ctx, "AppVersion")
 
 	exp := map[string]interface{}{
 		"OutFile":      "output.txt",
@@ -46,9 +47,9 @@ func TestCreateContext(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
 	types := Pairs([]Pair{{"B", "*FooBar"}, {"C", "vv3"}})
 	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
-	ctx := CreateContext(m, "output.txt", types, others)
+	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	if len(ctx) != 27 {
+	if len(ctx) != 30 {
 		t.Fatalf("Got len %d %+v", len(ctx), ctx)
 	}
 
@@ -58,29 +59,32 @@ func TestCreateContext(t *testing.T) {
 	expectPresent(t, ctx, "GOARCH")
 	expectPresent(t, ctx, "GOPATH")
 	expectPresent(t, ctx, "OutFile")
+	expectPresent(t, ctx, "AppVersion")
 	expectPresent(t, ctx, "TemplatePath")
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
 	expectPresent(t, ctx, "I1")
 
 	exp := map[string]interface{}{
-		"B":     "FooBar",
-		"UB":    "FooBar",
-		"LB":    "fooBar",
-		"PB":    "*FooBar",
-		"C":     "vv3",
-		"UC":    "Vv3",
-		"LC":    "vv3",
-		"PC":    "vv3",
-		"HasB":  true,
-		"HasC":  true,
-		"HasI1": true,
-		"BAmp":  "&",
-		"CAmp":  "",
-		"BStar": "*",
-		"CStar": "",
-		"BZero": "nil",
-		"CZero": "*(new(vv3))",
+		"B":      "FooBar",
+		"UB":     "FooBar",
+		"LB":     "fooBar",
+		"PB":     "*FooBar",
+		"C":      "vv3",
+		"UC":     "Vv3",
+		"LC":     "vv3",
+		"PC":     "vv3",
+		"HasB":   true,
+		"HasC":   true,
+		"HasI1":  true,
+		"BAmp":   "&",
+		"CAmp":   "",
+		"BStar":  "*",
+		"CStar":  "",
+		"BIsPtr": true,
+		"CIsPtr": false,
+		"BZero":  "nil",
+		"CZero":  "*(new(vv3))",
 	}
 	if !reflect.DeepEqual(ctx, exp) {
 		diffMaps(t, ctx, exp)
@@ -92,9 +96,9 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
 	types := Pairs([]Pair{{"Type", "*big.Int"}})
 	others := Pairs([]Pair{})
-	ctx := CreateContext(m, "output.txt", types, others)
+	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	if len(ctx) != 20 {
+	if len(ctx) != 22 {
 		t.Fatalf("Got len %d %+v", len(ctx), ctx)
 	}
 
@@ -104,22 +108,24 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	expectPresent(t, ctx, "GOARCH")
 	expectPresent(t, ctx, "GOPATH")
 	expectPresent(t, ctx, "OutFile")
+	expectPresent(t, ctx, "AppVersion")
 	expectPresent(t, ctx, "TemplatePath")
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
 
 	exp := map[string]interface{}{
-		"Type":     "big.Int",
-		"UType":    "Int",
-		"LType":    "int",
-		"PType":    "*big.Int",
-		"Prefix":   "",
-		"UPrefix":  "",
-		"LPrefix":  "",
-		"HasType":  true,
-		"TypeAmp":  "&",
-		"TypeStar": "*",
-		"TypeZero": "nil",
+		"Type":      "big.Int",
+		"UType":     "Int",
+		"LType":     "int",
+		"PType":     "*big.Int",
+		"Prefix":    "",
+		"UPrefix":   "",
+		"LPrefix":   "",
+		"HasType":   true,
+		"TypeIsPtr": true,
+		"TypeAmp":   "&",
+		"TypeStar":  "*",
+		"TypeZero":  "nil",
 	}
 	if !reflect.DeepEqual(ctx, exp) {
 		diffMaps(t, ctx, exp)

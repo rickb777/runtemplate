@@ -37,16 +37,14 @@ func choosePackage(outputFile string) (string, string) {
 
 func setTypeInContext(k, v string, context map[string]interface{}) {
 	p := v
-	star := ""
-	amp := ""
+	ptr := false
 
 	if len(v) > 0 && v[0] == '*' {
 		v = v[1:]
-		star = "*"
-		amp = "&"
+		ptr = true
 	}
 
-	Debug("setTypeInContext %s=%s for %s, star=%s, amp=%s\n", k, v, p, star, amp)
+	Debug("setTypeInContext %s=%s for %s, ptr=%v\n", k, v, p, ptr)
 
 	rs := RichString(v).RemoveBeforeLast('.')
 	context[k] = v
@@ -54,12 +52,15 @@ func setTypeInContext(k, v string, context map[string]interface{}) {
 	context["L"+k] = rs.FirstLower().String()
 
 	if !strings.HasSuffix(k, Prefix) {
-		context[k+"Star"] = star
-		context[k+"Amp"] = amp
 		context["P"+k] = p
-		if star == "*" {
+		context[k+"IsPtr"] = ptr
+		if ptr {
+			context[k+"Star"] = "*"
+			context[k+"Amp"] = "&"
 			context[k+"Zero"] = "nil"
 		} else {
+			context[k+"Star"] = ""
+			context[k+"Amp"] = ""
 			switch v {
 			case "string":
 				context[k+"Zero"] = `""`
@@ -116,7 +117,7 @@ func addPairInContext(pp Pair, context map[string]interface{}) {
 	}
 }
 
-func CreateContext(templateFile FileMeta, outputFile string, types, others Pairs) map[string]interface{} {
+func CreateContext(templateFile FileMeta, outputFile string, types, others Pairs, appVersion string) map[string]interface{} {
 	// Context will be passed to the template as a map.
 	context := make(map[string]interface{})
 	context["GOARCH"] = runtime.GOARCH
@@ -130,6 +131,7 @@ func CreateContext(templateFile FileMeta, outputFile string, types, others Pairs
 	context["OutFile"] = outputFile
 	context["TemplateFile"] = templateFile.Name
 	context["TemplatePath"] = templateFile.Path
+	context["AppVersion"] = appVersion
 
 	// define automatic prefix template values with default blank value.
 	for _, p := range types {

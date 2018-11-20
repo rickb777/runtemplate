@@ -121,6 +121,7 @@ This table shows two examples of context symbols defined for Type=Foo and Type=*
 | `.PType`     |  `big.Int`        |  `*big.Int`       |
 | `.UType`     |  `BigInt`         |  `BigInt`         |
 | `.LType`     |  `bigInt`         |  `bigInt`         |
+| `.TypeIsPtr` |  false            |  true             |
 | `.TypeStar`  |  blank            |  `*`              |
 | `.TypeAmp`   |  blank            |  `&`              |
 | `.TypeZero`  | `*(new(big.Int))` |  `nil`            |
@@ -146,6 +147,7 @@ Additional settings are also made available:
  * `.TemplateFile` - the template name as specified
  * `.TemplatePath` - the location and name of the actual template file used
  * `.Package` - the name of the directory of the output file (often the current directory)
+ * `.AppVersion` - the version of Runtemplate that is being used
  * `.GOARCH`, `.GOOS`, `.GOPATH`, `GOROOT` - the value of Go environment variables.
 
 Some filters are also included that may be helpful.

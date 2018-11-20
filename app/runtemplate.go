@@ -174,7 +174,7 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types,
 		}
 	}
 
-	context := CreateContext(foundTemplate, outputFile, types, others)
+	context := CreateContext(foundTemplate, outputFile, types, others, "")
 	Debug("context %+v\n", context)
 
 	runTheTemplate(foundTemplate, outputFile, context)
