@@ -1,5 +1,7 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // No other options are available.
+// by runtemplate {{.AppVersion}}
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package {{.Package}}
 

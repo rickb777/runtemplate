@@ -3,6 +3,8 @@
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Numeric:{{.Numeric}} Stringer:{{.Stringer}} Mutable:always
+// by runtemplate {{.AppVersion}}
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package {{.Package}}
 

@@ -3,6 +3,8 @@
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:disabled
+// by runtemplate {{.AppVersion}}
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package {{.Package}}
 

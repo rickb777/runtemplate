@@ -1,4 +1,6 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}} ToType={{.ToType}}
+// by runtemplate {{.AppVersion}}
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package {{.Package}}
 
