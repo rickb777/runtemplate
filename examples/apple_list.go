@@ -3,6 +3,8 @@
 //
 // Generated from threadsafe/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
+// by runtemplate v2.1.0-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package examples
 

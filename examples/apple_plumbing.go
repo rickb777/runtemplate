@@ -1,5 +1,7 @@
 // Generated from plumbing/plumbing.tpl with Type=Apple
 // No other options are available.
+// by runtemplate v2.1.0-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package examples
 

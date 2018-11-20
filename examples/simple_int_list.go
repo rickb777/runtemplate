@@ -3,6 +3,8 @@
 //
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
+// by runtemplate v2.1.0-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
 
 package examples
 
