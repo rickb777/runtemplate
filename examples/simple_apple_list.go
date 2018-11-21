@@ -3,7 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
-// by runtemplate v2.2.0-dirty
+// by runtemplate v2.2.0-1-g7886bb4-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -331,7 +331,7 @@ func (list SimpleAppleList) DropWhile(p func(Apple) bool) SimpleAppleList {
 	adding := false
 
 	for _, v := range list {
-		if !p(v) || adding {
+		if adding || !p(v) {
 			adding = true
 			result = append(result, v)
 		}

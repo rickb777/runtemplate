@@ -3,7 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
-// by runtemplate v2.2.0-dirty
+// by runtemplate v2.2.0-1-g7886bb4-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -355,7 +355,7 @@ func (list SimpleIntList) DropWhile(p func(int) bool) SimpleIntList {
 	adding := false
 
 	for _, v := range list {
-		if !p(v) || adding {
+		if adding || !p(v) {
 			adding = true
 			result = append(result, v)
 		}

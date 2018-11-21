@@ -368,7 +368,7 @@ func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPr
 	adding := false
 
 	for _, v := range list {
-		if !p(v) || adding {
+		if adding || !p(v) {
 			adding = true
 			result = append(result, v)
 		}

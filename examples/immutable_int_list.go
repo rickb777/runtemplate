@@ -3,7 +3,7 @@
 //
 // Generated from immutable/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:disabled
-// by runtemplate v2.2.0-dirty
+// by runtemplate v2.2.0-1-g7886bb4-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -438,7 +438,7 @@ func (list *ImmutableIntList) DropWhile(p func(int) bool) *ImmutableIntList {
 	adding := false
 
 	for _, v := range list.m {
-		if !p(v) || adding {
+		if adding || !p(v) {
 			adding = true
 			result.m = append(result.m, v)
 		}

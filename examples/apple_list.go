@@ -3,7 +3,7 @@
 //
 // Generated from threadsafe/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
-// by runtemplate v2.2.0-dirty
+// by runtemplate v2.2.0-1-g7886bb4-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -693,7 +693,7 @@ func (list *AppleList) DropWhile(p func(Apple) bool) *AppleList {
 	adding := false
 
 	for _, v := range list.m {
-		if !p(v) || adding {
+		if adding || !p(v) {
 			adding = true
 			result.m = append(result.m, v)
 		}
