@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:disabled
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -140,32 +140,44 @@ func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
-    if list == nil {
-        return {{.TypeZero}}
-    }
-
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
-	return list.Get(0)
+	return list.m[0]
+}
+
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
+func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
+    if list == nil || len(list.m) == 0 {
+        return {{.TypeZero}}
+    }
+	return list.m[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
+	return list.m[len(list.m)-1]
+}
 
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
+func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
+    if list == nil || len(list.m) == 0 {
+        return {{.TypeZero}}
+    }
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
-
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[1:]
 	return result
@@ -174,7 +186,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Init() *{{.UPrefix}}{{.UType}}List {
-
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
@@ -271,6 +282,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.Type}}) bool) bool {
 }
 
 // Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
+// The function receives copies that do not alter the list elements when they are changed.
 func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.Type}})) {
 	if list == nil {
 		return
@@ -353,9 +365,9 @@ func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) {
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List {
-	if list == nil || n > len(list.m) {
+	if list == nil || n >= len(list.m) {
 		return list
 	}
 
@@ -371,25 +383,27 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 		return list
 	}
 
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
+	if n >= len(list.m) {
+		return nil
 	}
+
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	result.m = list.m[n:]
 	return result
 }
 
 // TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
 	}
 
 	l := len(list.m)
-	if n > l {
+	if n >= l {
 		return list
 	}
+
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[l-n:]
 	return result
@@ -403,12 +417,13 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 	}
 
 	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
+	if n >= l {
+		return nil
 	}
-	return list
+
+	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+    result.m = list.m[:l-n]
+	return result
 }
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the

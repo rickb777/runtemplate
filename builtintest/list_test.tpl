@@ -328,6 +328,14 @@ func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
 		t.Errorf("Expected 4 but got %d", a.Last())
 	}
 
+	if a.HeadOption() != 1 {
+		t.Errorf("Expected 1 but got %d", a.HeadOption())
+	}
+
+	if a.LastOption() != 4 {
+		t.Errorf("Expected 4 but got %d", a.LastOption())
+	}
+
 	tail := a.Tail()
 	if !tail.Equals(NewX1{{.UType}}List(2, 3, 4)) {
 		t.Errorf("Expected '2, 3, 4' but got '%+v'", tail{{.M}})
@@ -336,6 +344,17 @@ func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
 	init := a.Init()
 	if !init.Equals(NewX1{{.UType}}List(1, 2, 3)) {
 		t.Errorf("Expected '1, 2, 3' but got '%+v'", init{{.M}})
+	}
+
+    // check correct nil handling
+    a = nil
+
+	if a.HeadOption() != 0 {
+		t.Errorf("Expected 0 but got %d", a.HeadOption())
+	}
+
+	if a.LastOption() != 0 {
+		t.Errorf("Expected 0 but got %d", a.LastOption())
 	}
 }
 

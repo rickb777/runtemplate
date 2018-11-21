@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -837,5 +837,4 @@ func (set {{.UPrefix}}{{.UType}}Set) GobEncode() ([]byte, error) {
 	err := gob.NewEncoder(buf).Encode(set.m)
 	return buf.Bytes(), err
 }
-
 {{- end}}

@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
 // options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} ValueList:{{.ValueList}} Mutable:always
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -587,5 +587,4 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobEncode() ([]byte, error) {
     err := gob.NewEncoder(buf).Encode(mm.m)
 	return buf.Bytes(), err
 }
-
 {{- end}}

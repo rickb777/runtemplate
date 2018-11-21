@@ -3,8 +3,8 @@
 //
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
-// by runtemplate v2.1.0-dirty
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// by runtemplate v2.1.1-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -85,37 +85,55 @@ func (list SimpleAppleList) Get(i int) Apple {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleAppleList) Head() Apple {
 	return list[0]
 }
 
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns the zero value.
+func (list SimpleAppleList) HeadOption() Apple {
+	if list.IsEmpty() {
+		return *(new(Apple))
+	}
+	return list[0]
+}
+
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleAppleList) Last() Apple {
 	return list[len(list)-1]
 }
 
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns the zero value.
+func (list SimpleAppleList) LastOption() Apple {
+	if list.IsEmpty() {
+		return *(new(Apple))
+	}
+	return list[len(list)-1]
+}
+
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleAppleList) Tail() SimpleAppleList {
 	return SimpleAppleList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleAppleList) Init() SimpleAppleList {
 	return SimpleAppleList(list[:len(list)-1])
 }
 
 // IsEmpty tests whether SimpleAppleList is empty.
 func (list SimpleAppleList) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether SimpleAppleList is empty.
 func (list SimpleAppleList) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -187,7 +205,7 @@ func (list SimpleAppleList) Forall(fn func(Apple) bool) bool {
 	return true
 }
 
-// Foreach iterates over SimpleAppleList and executes the passed func against each element.
+// Foreach iterates over SimpleAppleList and executes function fn against each element.
 func (list SimpleAppleList) Foreach(fn func(Apple)) {
 	for _, v := range list {
 		fn(v)
@@ -195,7 +213,8 @@ func (list SimpleAppleList) Foreach(fn func(Apple)) {
 }
 
 // Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
 func (list SimpleAppleList) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
@@ -206,6 +225,8 @@ func (list SimpleAppleList) Send() <-chan Apple {
 	}()
 	return ch
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Reverse returns a copy of SimpleAppleList with all elements in the reverse order.
 func (list SimpleAppleList) Reverse() SimpleAppleList {
@@ -223,6 +244,8 @@ func (list SimpleAppleList) Reverse() SimpleAppleList {
 func (list SimpleAppleList) DoReverse() SimpleAppleList {
 	return list.Reverse()
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of SimpleAppleList, using a version of the Fisher-Yates shuffle.
 func (list SimpleAppleList) Shuffle() SimpleAppleList {
@@ -287,7 +310,7 @@ func (list SimpleAppleList) DropLast(n int) SimpleAppleList {
 
 // TakeWhile returns a new SimpleAppleList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list SimpleAppleList) TakeWhile(p func(Apple) bool) SimpleAppleList {
 	result := MakeSimpleAppleList(0, 0)
 	for _, v := range list {
@@ -302,7 +325,7 @@ func (list SimpleAppleList) TakeWhile(p func(Apple) bool) SimpleAppleList {
 
 // DropWhile returns a new SimpleAppleList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list SimpleAppleList) DropWhile(p func(Apple) bool) SimpleAppleList {
 	result := MakeSimpleAppleList(0, 0)
 	adding := false
@@ -319,12 +342,12 @@ func (list SimpleAppleList) DropWhile(p func(Apple) bool) SimpleAppleList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function.
+// Find returns the first Apple that returns true for predicate p.
 // False is returned if none match.
-func (list SimpleAppleList) Find(fn func(Apple) bool) (Apple, bool) {
+func (list SimpleAppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -334,13 +357,14 @@ func (list SimpleAppleList) Find(fn func(Apple) bool) (Apple, bool) {
 
 }
 
-// Filter returns a new SimpleAppleList whose elements return true for func.
-// The original list is not modified
-func (list SimpleAppleList) Filter(fn func(Apple) bool) SimpleAppleList {
+// Filter returns a new SimpleAppleList whose elements return true for predicate p.
+//
+// The original list is not modified.
+func (list SimpleAppleList) Filter(p func(Apple) bool) SimpleAppleList {
 	result := MakeSimpleAppleList(0, len(list)/2)
 
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			result = append(result, v)
 		}
 	}
@@ -352,7 +376,8 @@ func (list SimpleAppleList) Filter(fn func(Apple) bool) SimpleAppleList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-// The original list is not modified
+//
+// The original list is not modified.
 func (list SimpleAppleList) Partition(p func(Apple) bool) (SimpleAppleList, SimpleAppleList) {
 	matching := MakeSimpleAppleList(0, len(list)/2)
 	others := MakeSimpleAppleList(0, len(list)/2)

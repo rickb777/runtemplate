@@ -3,8 +3,8 @@
 //
 // Generated from immutable/list.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:disabled
-// by runtemplate v2.1.0-dirty
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// by runtemplate v2.1.1-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -100,32 +100,44 @@ func (list *ImmutableAppleList) Clone() *ImmutableAppleList {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 func (list *ImmutableAppleList) Get(i int) Apple {
-	if list == nil {
-		return *(new(Apple))
-	}
-
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty.
 func (list *ImmutableAppleList) Head() Apple {
-	return list.Get(0)
+	return list.m[0]
+}
+
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns the zero value.
+func (list *ImmutableAppleList) HeadOption() Apple {
+	if list == nil || len(list.m) == 0 {
+		return *(new(Apple))
+	}
+	return list.m[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty.
 func (list *ImmutableAppleList) Last() Apple {
+	return list.m[len(list.m)-1]
+}
 
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns the zero value.
+func (list *ImmutableAppleList) LastOption() Apple {
+	if list == nil || len(list.m) == 0 {
+		return *(new(Apple))
+	}
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty.
 func (list *ImmutableAppleList) Tail() *ImmutableAppleList {
-
 	result := newImmutableAppleList(0, 0)
 	result.m = list.m[1:]
 	return result
@@ -134,7 +146,6 @@ func (list *ImmutableAppleList) Tail() *ImmutableAppleList {
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty.
 func (list *ImmutableAppleList) Init() *ImmutableAppleList {
-
 	result := newImmutableAppleList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
@@ -207,6 +218,7 @@ func (list *ImmutableAppleList) Forall(p func(Apple) bool) bool {
 }
 
 // Foreach iterates over ImmutableAppleList and executes function fn against each element.
+// The function receives copies that do not alter the list elements when they are changed.
 func (list *ImmutableAppleList) Foreach(fn func(Apple)) {
 	if list == nil {
 		return
@@ -289,9 +301,9 @@ func (list *ImmutableAppleList) doAppend(more ...Apple) {
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of ImmutableAppleList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *ImmutableAppleList) Take(n int) *ImmutableAppleList {
-	if list == nil || n > len(list.m) {
+	if list == nil || n >= len(list.m) {
 		return list
 	}
 
@@ -307,25 +319,27 @@ func (list *ImmutableAppleList) Drop(n int) *ImmutableAppleList {
 		return list
 	}
 
-	result := newImmutableAppleList(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
+	if n >= len(list.m) {
+		return nil
 	}
+
+	result := newImmutableAppleList(0, 0)
+	result.m = list.m[n:]
 	return result
 }
 
 // TakeLast returns a slice of ImmutableAppleList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *ImmutableAppleList) TakeLast(n int) *ImmutableAppleList {
 	if list == nil {
 		return nil
 	}
 
 	l := len(list.m)
-	if n > l {
+	if n >= l {
 		return list
 	}
+
 	result := newImmutableAppleList(0, 0)
 	result.m = list.m[l-n:]
 	return result
@@ -339,12 +353,13 @@ func (list *ImmutableAppleList) DropLast(n int) *ImmutableAppleList {
 	}
 
 	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
+	if n >= l {
+		return nil
 	}
-	return list
+
+	result := newImmutableAppleList(0, 0)
+	result.m = list.m[:l-n]
+	return result
 }
 
 // TakeWhile returns a new ImmutableAppleList containing the leading elements of the source list. Whilst the

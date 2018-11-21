@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:always
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -155,12 +155,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
-    if list == nil {
-        return {{.TypeZero}}
-    }
-
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -170,7 +166,26 @@ func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty.
 func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
-	return list.Get(0)
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	return list.m[0]
+}
+
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
+func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
+    if list == nil {
+        return {{.TypeZero}}
+    }
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+    if len(list.m) == 0 {
+        return {{.TypeZero}}
+    }
+	return list.m[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -179,6 +194,22 @@ func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
+	return list.m[len(list.m)-1]
+}
+
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
+func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
+    if list == nil {
+        return {{.TypeZero}}
+    }
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+    if len(list.m) == 0 {
+        return {{.TypeZero}}
+    }
 	return list.m[len(list.m)-1]
 }
 
@@ -329,9 +360,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 	}
 }
 
-// Send returns a channel that will send all the elements in order. A goroutine is created to
-// send the elements; this only terminates when all the elements have been consumed. The
-// channel will be closed when all the elements have been sent.
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
 func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
@@ -354,10 +385,24 @@ func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
-	return list.Clone().doReverse()
+	if list == nil {
+		return nil
+	}
+
+	list.s.Lock()
+	defer list.s.Unlock()
+
+	numItems := len(list.m)
+	result := Make{{.UPrefix}}{{.UType}}List(numItems, numItems)
+	last := numItems - 1
+	for i, v := range list.m {
+		result.m[last-i] = v
+	}
+	return result
 }
 
 // DoReverse alters a {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
+// Unlike Reverse, it does not allocate new memory.
 //
 // The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List {
@@ -367,13 +412,6 @@ func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List 
 
 	list.s.Lock()
 	defer list.s.Unlock()
-	return list.doReverse()
-}
-
-func (list *{{.UPrefix}}{{.UType}}List) doReverse() *{{.UPrefix}}{{.UType}}List {
-	if list == nil {
-		return nil
-	}
 
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
@@ -573,7 +611,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doKeepWhere(p func({{.PType}}) bool) *{{
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of {{.UPrefix}}{{.UType}}List containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
@@ -582,9 +620,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	if n > len(list.m) {
+	if n >= len(list.m) {
 		return list
 	}
+
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[0:n]
 	return result
@@ -602,16 +641,17 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
+	if n >= len(list.m) {
+		return nil
 	}
+
+	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
+	result.m = list.m[n:]
 	return result
 }
 
 // TakeLast returns a slice of {{.UPrefix}}{{.UType}}List containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}List {
@@ -623,9 +663,10 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}L
 	defer list.s.RUnlock()
 
 	l := len(list.m)
-	if n > l {
+	if n >= l {
 		return list
 	}
+
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[l-n:]
 	return result
@@ -644,12 +685,13 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 	defer list.s.RUnlock()
 
 	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
+	if n >= l {
+		return nil
 	}
-	return list
+
+	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
+    result.m = list.m[:l-n]
+	return result
 }
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
@@ -1199,5 +1241,4 @@ func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	err := gob.NewEncoder(buf).Encode(list.m)
 	return buf.Bytes(), err
 }
-
 {{- end}}

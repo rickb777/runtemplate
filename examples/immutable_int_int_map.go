@@ -3,8 +3,8 @@
 //
 // Generated from immutable/map.tpl with Key=int Type=int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:disabled
-// by runtemplate v2.1.0-dirty
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// by runtemplate v2.1.1-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 

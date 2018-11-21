@@ -3,8 +3,8 @@
 //
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
-// by runtemplate v2.1.0-dirty
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// by runtemplate v2.1.1-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -109,37 +109,55 @@ func (list SimpleIntList) Get(i int) int {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleIntList) Head() int {
 	return list[0]
 }
 
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns the zero value.
+func (list SimpleIntList) HeadOption() int {
+	if list.IsEmpty() {
+		return 0
+	}
+	return list[0]
+}
+
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleIntList) Last() int {
 	return list[len(list)-1]
 }
 
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns the zero value.
+func (list SimpleIntList) LastOption() int {
+	if list.IsEmpty() {
+		return 0
+	}
+	return list[len(list)-1]
+}
+
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleIntList) Tail() SimpleIntList {
 	return SimpleIntList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list SimpleIntList) Init() SimpleIntList {
 	return SimpleIntList(list[:len(list)-1])
 }
 
 // IsEmpty tests whether SimpleIntList is empty.
 func (list SimpleIntList) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether SimpleIntList is empty.
 func (list SimpleIntList) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -211,7 +229,7 @@ func (list SimpleIntList) Forall(fn func(int) bool) bool {
 	return true
 }
 
-// Foreach iterates over SimpleIntList and executes the passed func against each element.
+// Foreach iterates over SimpleIntList and executes function fn against each element.
 func (list SimpleIntList) Foreach(fn func(int)) {
 	for _, v := range list {
 		fn(v)
@@ -219,7 +237,8 @@ func (list SimpleIntList) Foreach(fn func(int)) {
 }
 
 // Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
 func (list SimpleIntList) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
@@ -230,6 +249,8 @@ func (list SimpleIntList) Send() <-chan int {
 	}()
 	return ch
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Reverse returns a copy of SimpleIntList with all elements in the reverse order.
 func (list SimpleIntList) Reverse() SimpleIntList {
@@ -247,6 +268,8 @@ func (list SimpleIntList) Reverse() SimpleIntList {
 func (list SimpleIntList) DoReverse() SimpleIntList {
 	return list.Reverse()
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of SimpleIntList, using a version of the Fisher-Yates shuffle.
 func (list SimpleIntList) Shuffle() SimpleIntList {
@@ -311,7 +334,7 @@ func (list SimpleIntList) DropLast(n int) SimpleIntList {
 
 // TakeWhile returns a new SimpleIntList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list SimpleIntList) TakeWhile(p func(int) bool) SimpleIntList {
 	result := MakeSimpleIntList(0, 0)
 	for _, v := range list {
@@ -326,7 +349,7 @@ func (list SimpleIntList) TakeWhile(p func(int) bool) SimpleIntList {
 
 // DropWhile returns a new SimpleIntList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list SimpleIntList) DropWhile(p func(int) bool) SimpleIntList {
 	result := MakeSimpleIntList(0, 0)
 	adding := false
@@ -343,12 +366,12 @@ func (list SimpleIntList) DropWhile(p func(int) bool) SimpleIntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function.
+// Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (list SimpleIntList) Find(fn func(int) bool) (int, bool) {
+func (list SimpleIntList) Find(p func(int) bool) (int, bool) {
 
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -358,13 +381,14 @@ func (list SimpleIntList) Find(fn func(int) bool) (int, bool) {
 
 }
 
-// Filter returns a new SimpleIntList whose elements return true for func.
-// The original list is not modified
-func (list SimpleIntList) Filter(fn func(int) bool) SimpleIntList {
+// Filter returns a new SimpleIntList whose elements return true for predicate p.
+//
+// The original list is not modified.
+func (list SimpleIntList) Filter(p func(int) bool) SimpleIntList {
 	result := MakeSimpleIntList(0, len(list)/2)
 
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			result = append(result, v)
 		}
 	}
@@ -376,7 +400,8 @@ func (list SimpleIntList) Filter(fn func(int) bool) SimpleIntList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-// The original list is not modified
+//
+// The original list is not modified.
 func (list SimpleIntList) Partition(p func(int) bool) (SimpleIntList, SimpleIntList) {
 	matching := MakeSimpleIntList(0, len(list)/2)
 	others := MakeSimpleIntList(0, len(list)/2)

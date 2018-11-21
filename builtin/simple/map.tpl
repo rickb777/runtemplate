@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
 // options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} ValueList:{{.ValueList}} Mutable:always
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -299,8 +299,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType
 
 	return result
 }
+{{- if .Comparable}}
 
-{{if .Comparable}}
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
@@ -316,8 +316,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other {{.UPrefix}}{{.UKey}}{
 	}
 	return true
 }
+{{- end}}
 
-{{end -}}
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
@@ -326,8 +326,8 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UTy
 	}
 	return result
 }
+{{- if .Stringer}}
 
-{{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
@@ -378,4 +378,4 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, aft
 	b.WriteString(after)
 	return b
 }
-{{end}}
+{{- end}}

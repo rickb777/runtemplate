@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -120,37 +120,55 @@ func (list {{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty
+// Panics if list is empty.
 func (list {{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 	return list[0]
 }
 
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
+func (list {{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
+    if list.IsEmpty() {
+        return {{.TypeZero}}
+    }
+	return list[0]
+}
+
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty
+// Panics if list is empty.
 func (list {{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 	return list[len(list)-1]
 }
 
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
+func (list {{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
+    if list.IsEmpty() {
+        return {{.TypeZero}}
+    }
+	return list[len(list)-1]
+}
+
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty
+// Panics if list is empty.
 func (list {{.UPrefix}}{{.UType}}List) Tail() {{.UPrefix}}{{.UType}}List {
 	return {{.UPrefix}}{{.UType}}List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty
+// Panics if list is empty.
 func (list {{.UPrefix}}{{.UType}}List) Init() {{.UPrefix}}{{.UType}}List {
 	return {{.UPrefix}}{{.UType}}List(list[:len(list)-1])
 }
 
 // IsEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
 func (list {{.UPrefix}}{{.UType}}List) IsEmpty() bool {
-	return list.Len() == 0
+	return list.Size() == 0
 }
 
 // NonEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
 func (list {{.UPrefix}}{{.UType}}List) NonEmpty() bool {
-	return list.Len() > 0
+	return list.Size() > 0
 }
 
 // IsSequence returns true for lists.
@@ -183,8 +201,8 @@ func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 }
 
 //-------------------------------------------------------------------------------------------------
+{{- if .Comparable}}
 
-{{if .Comparable}}
 // Contains determines if a given item is already in the list.
 func (list {{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 	return list.Exists(func (x {{.PType}}) bool {
@@ -202,8 +220,8 @@ func (list {{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	}
 	return true
 }
+{{- end}}
 
-{{end -}}
 // Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}List return true for the passed func.
 func (list {{.UPrefix}}{{.UType}}List) Exists(fn func({{.PType}}) bool) bool {
 	for _, v := range list {
@@ -224,7 +242,7 @@ func (list {{.UPrefix}}{{.UType}}List) Forall(fn func({{.PType}}) bool) bool {
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes the passed func against each element.
+// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
 func (list {{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 	for _, v := range list {
 		fn(v)
@@ -232,7 +250,8 @@ func (list {{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 }
 
 // Send returns a channel that will send all the elements in order.
-// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
 func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
@@ -243,6 +262,8 @@ func (list {{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	}()
 	return ch
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Reverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
@@ -260,6 +281,8 @@ func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
 func (list {{.UPrefix}}{{.UType}}List) DoReverse() {{.UPrefix}}{{.UType}}List {
     return list.Reverse()
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
 func (list {{.UPrefix}}{{.UType}}List) Shuffle() {{.UPrefix}}{{.UType}}List {
@@ -324,7 +347,7 @@ func (list {{.UPrefix}}{{.UType}}List) DropLast(n int) {{.UPrefix}}{{.UType}}Lis
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
-// elemense are excluded.
+// elements are excluded.
 func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	for _, v := range list {
@@ -339,7 +362,7 @@ func (list {{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) {{.UPr
 
 // DropWhile returns a new {{.UPrefix}}{{.UType}}List containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
-// elemense are added.
+// elements are added.
 func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	adding := false
@@ -356,12 +379,12 @@ func (list {{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) {{.UPr
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for some function.
+// Find returns the first {{.Type}} that returns true for predicate p.
 // False is returned if none match.
-func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
+func (list {{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
 
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -374,13 +397,14 @@ func (list {{.UPrefix}}{{.UType}}List) Find(fn func({{.PType}}) bool) ({{.PType}
 {{end}}
 }
 
-// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for func.
-// The original list is not modified
-func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
+// Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for predicate p.
+//
+// The original list is not modified.
+func (list {{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) {{.UPrefix}}{{.UType}}List {
 	result := Make{{.UPrefix}}{{.UType}}List(0, len(list)/2)
 
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			result = append(result, v)
 		}
 	}
@@ -392,7 +416,8 @@ func (list {{.UPrefix}}{{.UType}}List) Filter(fn func({{.PType}}) bool) {{.UPref
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-// The original list is not modified
+//
+// The original list is not modified.
 func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UPrefix}}{{.UType}}List, {{.UPrefix}}{{.UType}}List) {
 	matching := Make{{.UPrefix}}{{.UType}}List(0, len(list)/2)
 	others := Make{{.UPrefix}}{{.UType}}List(0, len(list)/2)
@@ -539,8 +564,8 @@ func (list {{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, 
 	}
 	return -1
 }
+{{- if .Numeric}}
 
-{{if .Numeric}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is numeric.
 
@@ -552,9 +577,9 @@ func (list {{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 	}
 	return sum
 }
+{{- end}}
+{{- if .Comparable}}
 
-{{end -}}
-{{if .Comparable}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is comparable.
 
@@ -574,8 +599,8 @@ func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) 
 
 	return true
 }
+{{- end}}
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 type sortable{{.UPrefix}}{{.UType}}List struct {
@@ -611,8 +636,8 @@ func (list {{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.PType}}) b
 	sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, list})
 	return list
 }
+{{- if .Ordered}}
 
-{{if .Ordered}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
 
@@ -647,9 +672,9 @@ func (list {{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 	})
 	return {{.TypeStar}}m
 }
+{{- end}}
+{{- if .Stringer}}
 
-{{end -}}
-{{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
@@ -679,4 +704,4 @@ func (list {{.UPrefix}}{{.UType}}List) MkString3(before, between, after string) 
 	b.WriteString(after)
 	return b.String()
 }
-{{end}}
+{{- end}}

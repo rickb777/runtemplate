@@ -2,8 +2,8 @@
 //
 // Generated from fast/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
-// by runtemplate v2.1.0-dirty
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// by runtemplate v2.1.1-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -104,11 +104,8 @@ func (list *FastAppleList) Clone() *FastAppleList {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 func (list *FastAppleList) Get(i int) Apple {
-	if list == nil {
-		return *(new(Apple))
-	}
 
 	return list.m[i]
 }
@@ -116,13 +113,40 @@ func (list *FastAppleList) Get(i int) Apple {
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty.
 func (list *FastAppleList) Head() Apple {
-	return list.Get(0)
+
+	return list.m[0]
+}
+
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns the zero value.
+func (list *FastAppleList) HeadOption() Apple {
+	if list == nil {
+		return *(new(Apple))
+	}
+
+	if len(list.m) == 0 {
+		return *(new(Apple))
+	}
+	return list.m[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty.
 func (list *FastAppleList) Last() Apple {
 
+	return list.m[len(list.m)-1]
+}
+
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns the zero value.
+func (list *FastAppleList) LastOption() Apple {
+	if list == nil {
+		return *(new(Apple))
+	}
+
+	if len(list.m) == 0 {
+		return *(new(Apple))
+	}
 	return list.m[len(list.m)-1]
 }
 
@@ -250,9 +274,9 @@ func (list *FastAppleList) Foreach(fn func(Apple)) {
 	}
 }
 
-// Send returns a channel that will send all the elements in order. A goroutine is created to
-// send the elements; this only terminates when all the elements have been consumed. The
-// channel will be closed when all the elements have been sent.
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
 func (list *FastAppleList) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
@@ -273,21 +297,24 @@ func (list *FastAppleList) Send() <-chan Apple {
 //
 // The original list is not modified.
 func (list *FastAppleList) Reverse() *FastAppleList {
-	return list.Clone().doReverse()
-}
-
-// DoReverse alters a FastAppleList with all elements in the reverse order.
-//
-// The modified list is returned.
-func (list *FastAppleList) DoReverse() *FastAppleList {
 	if list == nil {
 		return nil
 	}
 
-	return list.doReverse()
+	numItems := len(list.m)
+	result := MakeFastAppleList(numItems, numItems)
+	last := numItems - 1
+	for i, v := range list.m {
+		result.m[last-i] = v
+	}
+	return result
 }
 
-func (list *FastAppleList) doReverse() *FastAppleList {
+// DoReverse alters a FastAppleList with all elements in the reverse order.
+// Unlike Reverse, it does not allocate new memory.
+//
+// The modified list is returned.
+func (list *FastAppleList) DoReverse() *FastAppleList {
 	if list == nil {
 		return nil
 	}
@@ -476,15 +503,16 @@ func (list *FastAppleList) doKeepWhere(p func(Apple) bool) *FastAppleList {
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of FastAppleList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *FastAppleList) Take(n int) *FastAppleList {
 	if list == nil {
 		return nil
 	}
 
-	if n > len(list.m) {
+	if n >= len(list.m) {
 		return list
 	}
+
 	result := MakeFastAppleList(0, 0)
 	result.m = list.m[0:n]
 	return result
@@ -499,16 +527,17 @@ func (list *FastAppleList) Drop(n int) *FastAppleList {
 		return list
 	}
 
-	result := MakeFastAppleList(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
+	if n >= len(list.m) {
+		return nil
 	}
+
+	result := MakeFastAppleList(0, 0)
+	result.m = list.m[n:]
 	return result
 }
 
 // TakeLast returns a slice of FastAppleList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 //
 // The original list is not modified.
 func (list *FastAppleList) TakeLast(n int) *FastAppleList {
@@ -517,9 +546,10 @@ func (list *FastAppleList) TakeLast(n int) *FastAppleList {
 	}
 
 	l := len(list.m)
-	if n > l {
+	if n >= l {
 		return list
 	}
+
 	result := MakeFastAppleList(0, 0)
 	result.m = list.m[l-n:]
 	return result
@@ -535,12 +565,13 @@ func (list *FastAppleList) DropLast(n int) *FastAppleList {
 	}
 
 	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
+	if n >= l {
+		return nil
 	}
-	return list
+
+	result := MakeFastAppleList(0, 0)
+	result.m = list.m[:l-n]
+	return result
 }
 
 // TakeWhile returns a new FastAppleList containing the leading elements of the source list. Whilst the

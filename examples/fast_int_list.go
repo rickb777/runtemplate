@@ -2,8 +2,8 @@
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
-// by runtemplate v2.1.0-dirty
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// by runtemplate v2.1.1-dirty
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -127,11 +127,8 @@ func (list *FastIntList) Clone() *FastIntList {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 func (list *FastIntList) Get(i int) int {
-	if list == nil {
-		return 0
-	}
 
 	return list.m[i]
 }
@@ -139,13 +136,40 @@ func (list *FastIntList) Get(i int) int {
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty.
 func (list *FastIntList) Head() int {
-	return list.Get(0)
+
+	return list.m[0]
+}
+
+// HeadOption gets the first element in the list, if possible.
+// Otherwise returns the zero value.
+func (list *FastIntList) HeadOption() int {
+	if list == nil {
+		return 0
+	}
+
+	if len(list.m) == 0 {
+		return 0
+	}
+	return list.m[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty.
 func (list *FastIntList) Last() int {
 
+	return list.m[len(list.m)-1]
+}
+
+// LastOption gets the last element in the list, if possible.
+// Otherwise returns the zero value.
+func (list *FastIntList) LastOption() int {
+	if list == nil {
+		return 0
+	}
+
+	if len(list.m) == 0 {
+		return 0
+	}
 	return list.m[len(list.m)-1]
 }
 
@@ -273,9 +297,9 @@ func (list *FastIntList) Foreach(fn func(int)) {
 	}
 }
 
-// Send returns a channel that will send all the elements in order. A goroutine is created to
-// send the elements; this only terminates when all the elements have been consumed. The
-// channel will be closed when all the elements have been sent.
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
 func (list *FastIntList) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
@@ -296,21 +320,24 @@ func (list *FastIntList) Send() <-chan int {
 //
 // The original list is not modified.
 func (list *FastIntList) Reverse() *FastIntList {
-	return list.Clone().doReverse()
-}
-
-// DoReverse alters a FastIntList with all elements in the reverse order.
-//
-// The modified list is returned.
-func (list *FastIntList) DoReverse() *FastIntList {
 	if list == nil {
 		return nil
 	}
 
-	return list.doReverse()
+	numItems := len(list.m)
+	result := MakeFastIntList(numItems, numItems)
+	last := numItems - 1
+	for i, v := range list.m {
+		result.m[last-i] = v
+	}
+	return result
 }
 
-func (list *FastIntList) doReverse() *FastIntList {
+// DoReverse alters a FastIntList with all elements in the reverse order.
+// Unlike Reverse, it does not allocate new memory.
+//
+// The modified list is returned.
+func (list *FastIntList) DoReverse() *FastIntList {
 	if list == nil {
 		return nil
 	}
@@ -499,15 +526,16 @@ func (list *FastIntList) doKeepWhere(p func(int) bool) *FastIntList {
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of FastIntList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list *FastIntList) Take(n int) *FastIntList {
 	if list == nil {
 		return nil
 	}
 
-	if n > len(list.m) {
+	if n >= len(list.m) {
 		return list
 	}
+
 	result := MakeFastIntList(0, 0)
 	result.m = list.m[0:n]
 	return result
@@ -522,16 +550,17 @@ func (list *FastIntList) Drop(n int) *FastIntList {
 		return list
 	}
 
-	result := MakeFastIntList(0, 0)
-	l := len(list.m)
-	if n < l {
-		result.m = list.m[n:]
+	if n >= len(list.m) {
+		return nil
 	}
+
+	result := MakeFastIntList(0, 0)
+	result.m = list.m[n:]
 	return result
 }
 
 // TakeLast returns a slice of FastIntList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 //
 // The original list is not modified.
 func (list *FastIntList) TakeLast(n int) *FastIntList {
@@ -540,9 +569,10 @@ func (list *FastIntList) TakeLast(n int) *FastIntList {
 	}
 
 	l := len(list.m)
-	if n > l {
+	if n >= l {
 		return list
 	}
+
 	result := MakeFastIntList(0, 0)
 	result.m = list.m[l-n:]
 	return result
@@ -558,12 +588,13 @@ func (list *FastIntList) DropLast(n int) *FastIntList {
 	}
 
 	l := len(list.m)
-	if n > l {
-		list.m = list.m[l:]
-	} else {
-		list.m = list.m[0 : l-n]
+	if n >= l {
+		return nil
 	}
-	return list
+
+	result := MakeFastIntList(0, 0)
+	result.m = list.m[:l-n]
+	return result
 }
 
 // TakeWhile returns a new FastIntList containing the leading elements of the source list. Whilst the

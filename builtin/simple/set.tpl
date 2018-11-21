@@ -4,7 +4,7 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Numeric:{{.Numeric}} Stringer:{{.Stringer}} Mutable:always
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md#simplelisttpl
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 
@@ -385,8 +385,8 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 	}
 	return
 }
+{{- if .Ordered}}
 
-{{if .Ordered}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is ordered.
 
@@ -405,8 +405,8 @@ func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
 		return a < b
 	})
 }
+{{- end}}
 
-{{end -}}
 // MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
@@ -446,8 +446,8 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 	}
 	return m
 }
+{{- if .Numeric}}
 
-{{if .Numeric}}
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type}} is numeric.
 
@@ -459,8 +459,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 	}
 	return sum
 }
+{{- end}}
 
-{{end -}}
 //-------------------------------------------------------------------------------------------------
 
 // Equals determines if two sets are equal to each other.
@@ -477,8 +477,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 	}
 	return true
 }
+{{- if .Stringer}}
 
-{{if .Stringer}}
 //-------------------------------------------------------------------------------------------------
 
 func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
@@ -546,4 +546,4 @@ func (set {{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 	}
 	return strings
 }
-{{end}}
+{{- end}}
