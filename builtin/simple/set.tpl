@@ -520,20 +520,20 @@ func (set {{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after strin
 
 // UnmarshalJSON implements JSON decoding for this set type.
 func (set {{.UPrefix}}{{.UType}}Set) UnmarshalJSON(b []byte) error {
-    values := make([]{{.PType}}, 0)
-    buf := bytes.NewBuffer(b)
-    err := json.NewDecoder(buf).Decode(&values)
-    if err != nil {
-        return err
-    }
-    set.Add(values...)
-    return nil
+	values := make([]{{.PType}}, 0)
+	buf := bytes.NewBuffer(b)
+	err := json.NewDecoder(buf).Decode(&values)
+	if err != nil {
+		return err
+	}
+	set.Add(values...)
+	return nil
 }
 
 // MarshalJSON implements JSON encoding for this set type.
 func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
-    buf := &bytes.Buffer{}
-    err := json.NewEncoder(buf).Encode(set.ToSlice())
+	buf := &bytes.Buffer{}
+	err := json.NewEncoder(buf).Encode(set.ToSlice())
 	return buf.Bytes(), err
 }
 

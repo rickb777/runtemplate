@@ -341,10 +341,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) *{{.UPrefix}}{{.UType}
 func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
 	go func() {
-        if set != nil {
-    		for v, _ := range set.m {
-	    		ch <- v
-		    }
+		if set != nil {
+			for v, _ := range set.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -613,12 +613,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 // Order of items is not relevent for sets to be equal.
 func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) bool {
 	if set == nil {
-        return other == nil || other.IsEmpty()
+		return other == nil || other.IsEmpty()
 	}
 
-    if other == nil {
-        return set.IsEmpty()
-    }
+	if other == nil {
+		return set.IsEmpty()
+	}
 
 	if set.Size() != other.Size() {
 		return false

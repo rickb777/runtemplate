@@ -108,10 +108,10 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
 func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
-    if list == nil {
-        return nil
-    }
-    return list.m
+	if list == nil {
+		return nil
+	}
+	return list.m
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -154,9 +154,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
-    if list == nil || len(list.m) == 0 {
-        return {{.TypeZero}}
-    }
+	if list == nil || len(list.m) == 0 {
+		return {{.TypeZero}}
+	}
 	return list.m[0]
 }
 
@@ -169,9 +169,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
-    if list == nil || len(list.m) == 0 {
-        return {{.TypeZero}}
-    }
+	if list == nil || len(list.m) == 0 {
+		return {{.TypeZero}}
+	}
 	return list.m[len(list.m)-1]
 }
 
@@ -215,9 +215,9 @@ func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *{{.UPrefix}}{{.UType}}List) Size() int {
-    if list == nil {
-        return 0
-    }
+	if list == nil {
+		return 0
+	}
 
 	return len(list.m)
 }
@@ -299,11 +299,11 @@ func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.Type}})) {
 func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
-	    if list != nil {
-    		for _, v := range list.m {
-	    		ch <- v
-		    }
-        }
+		if list != nil {
+			for _, v := range list.m {
+				ch <- v
+			}
+		}
 		close(ch)
 	}()
 	return ch
@@ -347,10 +347,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 // The original list is not altered.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
-	    if len(more) == 0 {
-	    	return nil
-	    }
-    	return New{{.UPrefix}}{{.UType}}List(more...)
+		if len(more) == 0 {
+			return nil
+		}
+		return New{{.UPrefix}}{{.UType}}List(more...)
 	}
 
 	newList := New{{.UPrefix}}{{.UType}}List(list.m...)
@@ -422,7 +422,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 	}
 
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
-    result.m = list.m[:l-n]
+	result.m = list.m[:l-n]
 	return result
 }
 
@@ -697,7 +697,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // Order of items is not relevent for sets to be equal.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
 	if list == nil {
-        return other == nil || len(other.m) == 0
+		return other == nil || len(other.m) == 0
 	}
 
 	if len(list.m) != len(other.m) {
@@ -866,12 +866,12 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 
 // UnmarshalJSON implements JSON decoding for this list type.
 func (list *{{.UPrefix}}{{.UType}}List) UnmarshalJSON(b []byte) error {
-    return json.Unmarshal(b, &list.m)
+	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
 func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
-    buf, err := json.Marshal(list.m)
+	buf, err := json.Marshal(list.m)
 	return buf, err
 }
 {{- end}}
@@ -882,15 +882,15 @@ func (list {{.UPrefix}}{{.UType}}List) MarshalJSON() ([]byte, error) {
 // GobDecode implements 'gob' decoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
-    buf := bytes.NewBuffer(b)
-    return gob.NewDecoder(buf).Decode(&list.m)
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&list.m)
 }
 
 // GobDecode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
-    buf := &bytes.Buffer{}
-    err := gob.NewEncoder(buf).Encode(list.m)
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(list.m)
 	return buf.Bytes(), err
 }
 

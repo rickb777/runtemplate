@@ -3,7 +3,7 @@
 //
 // Generated from simple/set.tpl with Type=Apple
 // options: Numeric:<no value> Stringer:false Mutable:always
-// by runtemplate v2.2.0-1-g7886bb4-dirty
+// by runtemplate v2.2.0-2-gcde6999-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

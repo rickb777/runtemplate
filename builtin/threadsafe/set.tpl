@@ -360,10 +360,10 @@ func (set *{{.UPrefix}}{{.UType}}Set) SymmetricDifference(other *{{.UPrefix}}{{.
 // Clear clears the entire set to be the empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 	if set != nil {
-	    set.s.Lock()
-	    defer set.s.Unlock()
+		set.s.Lock()
+		defer set.s.Unlock()
 
-    	set.m = make(map[{{.Type}}]struct{})
+		set.m = make(map[{{.Type}}]struct{})
 	}
 }
 
@@ -382,13 +382,13 @@ func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 	ch := make(chan {{.Type}})
 	go func() {
-        if set != nil {
-    		set.s.RLock()
-	    	defer set.s.RUnlock()
+		if set != nil {
+			set.s.RLock()
+			defer set.s.RUnlock()
 
-    		for v, _ := range set.m {
-	    		ch <- v
-		    }
+			for v, _ := range set.m {
+				ch <- v
+			}
 		}
 		close(ch)
 	}()
@@ -695,12 +695,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 // Order of items is not relevent for sets to be equal.
 func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) bool {
 	if set == nil {
-        return other == nil || other.IsEmpty()
+		return other == nil || other.IsEmpty()
 	}
 
-    if other == nil {
-        return set.IsEmpty()
-    }
+	if other == nil {
+		return set.IsEmpty()
+	}
 
 	set.s.RLock()
 	other.s.RLock()

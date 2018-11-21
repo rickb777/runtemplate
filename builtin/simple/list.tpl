@@ -128,9 +128,9 @@ func (list {{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list {{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
-    if list.IsEmpty() {
-        return {{.TypeZero}}
-    }
+	if list.IsEmpty() {
+		return {{.TypeZero}}
+	}
 	return list[0]
 }
 
@@ -143,9 +143,9 @@ func (list {{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list {{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
-    if list.IsEmpty() {
-        return {{.TypeZero}}
-    }
+	if list.IsEmpty() {
+		return {{.TypeZero}}
+	}
 	return list[len(list)-1]
 }
 
@@ -279,7 +279,7 @@ func (list {{.UPrefix}}{{.UType}}List) Reverse() {{.UPrefix}}{{.UType}}List {
 // DoReverse returns a copy of {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 // This is an alias for Reverse.
 func (list {{.UPrefix}}{{.UType}}List) DoReverse() {{.UPrefix}}{{.UType}}List {
-    return list.Reverse()
+	return list.Reverse()
 }
 
 //-------------------------------------------------------------------------------------------------

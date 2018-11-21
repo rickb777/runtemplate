@@ -112,10 +112,10 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
 func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
-    if list == nil {
-        return nil
-    }
-    return list.m
+	if list == nil {
+		return nil
+	}
+	return list.m
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -142,9 +142,9 @@ func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
-    if list == nil {
-        return nil
-    }
+	if list == nil {
+		return nil
+	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -175,16 +175,16 @@ func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
-    if list == nil {
-        return {{.TypeZero}}
-    }
+	if list == nil {
+		return {{.TypeZero}}
+	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-    if len(list.m) == 0 {
-        return {{.TypeZero}}
-    }
+	if len(list.m) == 0 {
+		return {{.TypeZero}}
+	}
 	return list.m[0]
 }
 
@@ -200,16 +200,16 @@ func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
-    if list == nil {
-        return {{.TypeZero}}
-    }
+	if list == nil {
+		return {{.TypeZero}}
+	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-    if len(list.m) == 0 {
-        return {{.TypeZero}}
-    }
+	if len(list.m) == 0 {
+		return {{.TypeZero}}
+	}
 	return list.m[len(list.m)-1]
 }
 
@@ -259,9 +259,9 @@ func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 
 // Size returns the number of items in the list - an alias of Len().
 func (list *{{.UPrefix}}{{.UType}}List) Size() int {
-    if list == nil {
-        return 0
-    }
+	if list == nil {
+		return 0
+	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -366,14 +366,14 @@ func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 func (list *{{.UPrefix}}{{.UType}}List) Send() <-chan {{.PType}} {
 	ch := make(chan {{.PType}})
 	go func() {
-	    if list != nil {
-		    list.s.RLock()
-		    defer list.s.RUnlock()
+		if list != nil {
+			list.s.RLock()
+			defer list.s.RUnlock()
 
-    		for _, v := range list.m {
-	    		ch <- v
-		    }
-        }
+			for _, v := range list.m {
+				ch <- v
+			}
+		}
 		close(ch)
 	}()
 	return ch
@@ -465,10 +465,10 @@ func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
 // Append adds items to the current list, returning the modified list.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
-	    if len(more) == 0 {
-	    	return nil
-	    }
-	    list = Make{{.UPrefix}}{{.UType}}List(0, len(more))
+		if len(more) == 0 {
+			return nil
+		}
+		list = Make{{.UPrefix}}{{.UType}}List(0, len(more))
 	}
 
 	list.s.Lock()
@@ -488,11 +488,11 @@ func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) *{{.UPrefix
 // Panics if the index is out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
-	    if len(more) == 0 {
-	    	return nil
-	    }
-	    list = Make{{.UPrefix}}{{.UType}}List(0, len(more))
-    	return list.doInsertAt(index, more...)
+		if len(more) == 0 {
+			return nil
+		}
+		list = Make{{.UPrefix}}{{.UType}}List(0, len(more))
+		return list.doInsertAt(index, more...)
 	}
 
 	list.s.Lock()
@@ -587,7 +587,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doDeleteAt(index, n int) *{{.UPrefix}}{{
 // The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
-        return nil
+		return nil
 	}
 
 	list.s.Lock()
@@ -690,7 +690,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 	}
 
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
-    result.m = list.m[:l-n]
+	result.m = list.m[:l-n]
 	return result
 }
 
@@ -1012,7 +1012,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // Nil lists are considered to be empty.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
 	if list == nil {
-        return other == nil || len(other.m) == 0
+		return other == nil || len(other.m) == 0
 	}
 
 	list.s.RLock()

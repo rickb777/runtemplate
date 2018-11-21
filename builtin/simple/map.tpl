@@ -48,18 +48,18 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PTyp
 func {{.UPrefix}}{{.UKey}}{{.UType}}Zip(keys ...{{.PKey}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	ts := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, len(keys))
 	for i, k := range keys {
-	    ts[i].Key = k
+		ts[i].Key = k
 	}
 	return ts
 }
 
 // Values sets the values in a tuple slice. Use this with {{.UPrefix}}{{.UKey}}{{.UType}}Zip.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-    if len(ts) != len(values) {
-        panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
-    }
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
 	for i, v := range values {
-	    ts[i].Val = v
+		ts[i].Val = v
 	}
 	return ts
 }

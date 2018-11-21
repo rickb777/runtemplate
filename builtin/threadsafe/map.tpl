@@ -58,18 +58,18 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PTyp
 func {{.UPrefix}}{{.UKey}}{{.UType}}Zip(keys ...{{.PKey}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	ts := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, len(keys))
 	for i, k := range keys {
-	    ts[i].Key = k
+		ts[i].Key = k
 	}
 	return ts
 }
 
 // Values sets the values in a tuple slice. Use this with {{.UPrefix}}{{.UKey}}{{.UType}}Zip.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-    if len(ts) != len(values) {
-        panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
-    }
+	if len(ts) != len(values) {
+		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
+	}
 	for i, v := range values {
-	    ts[i].Val = v
+		ts[i].Val = v
 	}
 	return ts
 }
@@ -101,9 +101,9 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 
 // Keys returns the keys of the current map as a slice.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}} {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -118,9 +118,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}
 
 // Values returns the values of the current map as a slice.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}} {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -135,9 +135,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.Value
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) slice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
 	for k, v := range mm.m {
@@ -149,9 +149,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) slice() []{{.UPrefix}}{{.UKey}}{{.
 
 // ToSlice returns the key/value pairs as a slice
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -180,9 +180,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Put(k {{.PKey}}, v {{.PType}}) boo
 
 // ContainsKey determines if a given item is already in the map.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
-    if mm == nil {
-        return false
-    }
+	if mm == nil {
+		return false
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -193,9 +193,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 
 // ContainsAllKeys determines if the given items are all in the map.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bool {
-    if mm == nil {
-        return len(kk) == 0
-    }
+	if mm == nil {
+		return len(kk) == 0
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -210,30 +210,30 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) b
 
 // Clear clears the entire map.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clear() {
-    if mm != nil {
-    	mm.s.Lock()
-	    defer mm.s.Unlock()
+	if mm != nil {
+		mm.s.Lock()
+		defer mm.s.Unlock()
 
-	    mm.m = make(map[{{.PKey}}]{{.PType}})
-    }
+		mm.m = make(map[{{.PKey}}]{{.PType}})
+	}
 }
 
 // Remove a single item from the map.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	if mm != nil {
-	    mm.s.Lock()
-	    defer mm.s.Unlock()
+		mm.s.Lock()
+		defer mm.s.Unlock()
 
-	    delete(mm.m, k)
+		delete(mm.m, k)
 	}
 }
 
 // Pop removes a single item from the map, returning the value present until removal.
 // The boolean result is true only if the key had been present.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Pop(k {{.PKey}}) ({{.PType}}, bool) {
-    if mm == nil {
-        return {{.TypeZero}}, false
-    }
+	if mm == nil {
+		return {{.TypeZero}}, false
+	}
 
 	mm.s.Lock()
 	defer mm.s.Unlock()
@@ -245,9 +245,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Pop(k {{.PKey}}) ({{.PType}}, bool
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
-    if mm == nil {
-        return 0
-    }
+	if mm == nil {
+		return 0
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -284,13 +284,13 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PT
 // Foreach applies a function to every element in the map.
 // The function can safely alter the values via side-effects.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(fn func({{.PKey}}, {{.PType}})) {
-    if mm != nil {
-    	mm.s.Lock()
-	    defer mm.s.Unlock()
+	if mm != nil {
+		mm.s.Lock()
+		defer mm.s.Unlock()
 
-    	for k, v := range mm.m {
-	    	fn(k, v)
-	    }
+		for k, v := range mm.m {
+			fn(k, v)
+		}
 	}
 }
 
@@ -301,9 +301,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(fn func({{.PKey}}, {{.PTyp
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}}) bool) bool {
-    if mm == nil {
-        return true
-    }
+	if mm == nil {
+		return true
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -321,9 +321,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}}) bool) bool {
-    if mm == nil {
-        return false
-    }
+	if mm == nil {
+		return false
+	}
 
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -355,9 +355,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
@@ -376,9 +376,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching *{{.UPrefix}}{{.UKey}}{{.UType}}Map, others *{{.UPrefix}}{{.UKey}}{{.UType}}Map) {
-    if mm == nil {
-        return nil, nil
-    }
+	if mm == nil {
+		return nil, nil
+	}
 
 	matching = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	others = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
@@ -401,9 +401,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PT
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
@@ -424,9 +424,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}})
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType}}) []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
@@ -447,9 +447,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PTyp
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other *{{.UPrefix}}{{.UKey}}{{.UType}}Map) bool {
-    if mm == nil || other == nil {
-        return mm.IsEmpty() && other.IsEmpty()
-    }
+	if mm == nil || other == nil {
+		return mm.IsEmpty() && other.IsEmpty()
+	}
 
 	mm.s.RLock()
 	other.s.RLock()
@@ -471,9 +471,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other *{{.UPrefix}}{{.UKey}
 
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-    if mm == nil {
-        return nil
-    }
+	if mm == nil {
+		return nil
+	}
 
 	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.s.RLock()
@@ -506,9 +506,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
 {{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(before, between, after string) string {
-    if mm == nil {
-        return ""
-    }
+	if mm == nil {
+		return ""
+	}
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
@@ -550,8 +550,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) UnmarshalJSON(b []byte) error {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-    buf := bytes.NewBuffer(b)
-    return json.NewDecoder(buf).Decode(&mm.m)
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&mm.m)
 }
 
 // MarshalJSON implements JSON encoding for this map type.
@@ -559,7 +559,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    return json.Marshal(mm.m)
+	return json.Marshal(mm.m)
 }
 {{- end}}
 {{- end}}
@@ -573,8 +573,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobDecode(b []byte) error {
 	mm.s.Lock()
 	defer mm.s.Unlock()
 
-    buf := bytes.NewBuffer(b)
-    return gob.NewDecoder(buf).Decode(&mm.m)
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
 // GobDecode implements 'gob' encoding for this map type.
@@ -583,8 +583,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobEncode() ([]byte, error) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-    buf := &bytes.Buffer{}
-    err := gob.NewEncoder(buf).Encode(mm.m)
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(mm.m)
 	return buf.Bytes(), err
 }
 {{- end}}
