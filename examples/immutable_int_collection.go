@@ -1,6 +1,6 @@
 // Generated from immutable/collection.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:disabled
-// by runtemplate v2.1.1-dirty
+// by runtemplate v2.2.0-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
