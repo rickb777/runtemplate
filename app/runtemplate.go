@@ -139,7 +139,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	}
 }
 
-func Generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs) {
+func Generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs, appVersion string) {
 	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
 	mustLoadBuiltins()

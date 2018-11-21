@@ -9,13 +9,13 @@
 package {{.Package}}
 
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 {{- end}}
 	"fmt"
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 // {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a map

@@ -62,5 +62,5 @@ func main() {
 
 	types, others, leftover := SplitKeyValArgs(args)
 	failIfLeftoversExist(leftover)
-	app.Generate(tpl, output1, force, deps, types, others)
+	app.Generate(tpl, output1, force, deps, types, others, appVersion)
 }

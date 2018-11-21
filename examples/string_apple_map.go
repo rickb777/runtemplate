@@ -3,7 +3,7 @@
 //
 // Generated from threadsafe/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v2.2.0-2-gcde6999-dirty
+// by runtemplate v2.2.1-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

@@ -10,7 +10,7 @@ package {{.Package}}
 
 {{if or .Stringer .HasImport}}
 import (
-{{if .Stringer}}
+{{- if .Stringer}}
 	"bytes"
 	"encoding/json"
 	"fmt"

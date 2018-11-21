@@ -1,4 +1,3 @@
-app/version.go
 builtintest/*/[px]_*.go
 builtintest/*/int_*.go
 builtintest/*/[px][12]_*.go

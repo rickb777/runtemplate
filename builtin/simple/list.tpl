@@ -11,12 +11,13 @@ package {{.Package}}
 import (
 {{- if .Stringer}}
 	"bytes"
-	"fmt" {{- end}}
+	"fmt"
+{{- end}}
 	"math/rand"
 	"sort"
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 // {{.UPrefix}}{{.UType}}List is a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
