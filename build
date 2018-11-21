@@ -4,19 +4,6 @@ cd $(dirname $0)
 PATH=$HOME/go/bin:$PATH
 unset GOPATH
 
-#---------- Write version datea to Go source file ----------
-
-VFILE=version.go
-
-echo "// Updated manually & automatically by build script" > $VFILE
-echo "package main" >> $VFILE
-echo "" >> $VFILE
-echo "const (" >> $VFILE
-echo -e "\tappVersion = \"$(git describe --tags --dirty 2>/dev/null)\"" >> $VFILE
-echo ")" >> $VFILE
-
-#---------- Build stuff ----------
-
 go mod download
 
 ./builtintest/clean
@@ -50,5 +37,3 @@ echo
 echo Template Testing...
 go test ./...
 #go test $coveralls_testflags $GOBUILDFLAG $@ .
-
-git checkout app/version.go

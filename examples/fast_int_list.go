@@ -2,7 +2,7 @@
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
-// by runtemplate v2.2.1-dirty
+// by runtemplate v2.2.2-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

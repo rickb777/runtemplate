@@ -1,6 +1,4 @@
-// Updated manually & automatically by build script
 package main
 
-const (
-	appVersion = "v2.2.2"
-)
+// appVersion is updated manually just prior to the next tag to be used.
+const appVersion = "v2.2.3"

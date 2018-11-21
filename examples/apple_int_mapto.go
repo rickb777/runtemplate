@@ -1,5 +1,5 @@
 // Generated from plumbing/mapTo.tpl with Type=Apple ToType=int
-// by runtemplate v2.2.1-dirty
+// by runtemplate v2.2.2-dirty
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
