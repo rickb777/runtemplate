@@ -113,7 +113,7 @@ The values are supplemented by additional entries in the template's context. For
  * `.TypeZero` - `nil` if the type is a pointer type, otherwise the zero value for the type
  * `.HasType` - set to `true` to allow conditional expressions (it defaults to false if undefined)
 
-This table shows two examples of context symbols defined for Type=Foo and Type=*Foo.
+This table shows two examples of context symbols defined for Type=big.Int and Type=*big.Int.
 
 |              |  `Type=big.Int`   |  `Type=*big.Int`  |
 | ------------ | ----------------- | ----------------- |
