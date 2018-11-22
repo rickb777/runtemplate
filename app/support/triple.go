@@ -6,14 +6,6 @@ type Triple struct {
 
 type Triples []Triple
 
-func (triples Triples) Keys() []string {
-	var list []string
-	for _, p := range triples {
-		list = append(list, p.Key)
-	}
-	return list
-}
-
 func (triples Triples) TValues() []string {
 	var list []string
 	for _, p := range triples {

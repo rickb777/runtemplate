@@ -5,14 +5,6 @@ import (
 	"testing"
 )
 
-func TestPairsKeys(t *testing.T) {
-	g := NewGomegaWithT(t)
-
-	triples := Triples([]Triple{{"x", "1", "a"}, {"y", "*Foo", "b"}, {"z", "3", "c"}})
-	keys := triples.Keys()
-	g.Expect(keys).To(Equal([]string{"x", "y", "z"}))
-}
-
 func TestPairsPValues(t *testing.T) {
 	g := NewGomegaWithT(t)
 
