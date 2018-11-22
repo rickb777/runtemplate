@@ -53,7 +53,7 @@ func setTypeInContext(pp Type, context map[string]interface{}) {
 	k := pp.Key
 
 	if !strings.HasSuffix(k, Prefix) {
-		context["P"+k] = pp.Val
+		context["P"+k] = pp.Val[0]
 		context[k+"IsPtr"] = pp.Ptr()
 		if pp.Ptr() {
 			context[k+"Star"] = "*"

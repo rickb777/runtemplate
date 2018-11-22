@@ -9,6 +9,19 @@ type Pair struct {
 	Key, Val string
 }
 
+func NewPair(a string) Pair {
+	co := strings.IndexByte(a, ':')
+	if co < 0 {
+		return Pair{"", ""}
+	}
+	k, v := a[:co], a[co+1:]
+	return Pair{Key: k, Val: v}
+}
+
+func (p Pair) Valid() bool {
+	return p.Key != ""
+}
+
 type Pairs []Pair
 
 //-------------------------------------------------------------------------------------------------
@@ -20,6 +33,9 @@ type Type struct {
 
 func NewType(a string) Type {
 	eq := strings.IndexByte(a, '=')
+	if eq < 0 {
+		return Type{"", nil}
+	}
 	k, v := a[:eq], a[eq+1:]
 	return Type{Key: k, Val: strings.Split(v, "/")}
 }
@@ -29,7 +45,7 @@ func (t Type) Valid() bool {
 }
 
 func (t Type) Ptr() bool {
-	return t.Val[0][0] == '*'
+	return len(t.Val) > 0 && t.Val[0][0] == '*'
 }
 
 func (t Type) Elem() string {

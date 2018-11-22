@@ -57,20 +57,16 @@ func SplitKeyValArgs(args []string) (Types, Pairs, []string) {
 
 	for _, a := range args {
 		found := false
-		eq := strings.LastIndexByte(a, '=')
-		co := strings.LastIndexByte(a, ':')
-		if eq >= 0 {
-			tr := NewType(a)
-			if tr.Valid() {
-				types = append(types, tr)
-			}
+		co := strings.IndexByte(a, ':')
+		tr := NewType(a)
+		if tr.Valid() {
+			types = append(types, tr)
+			found = true
 		} else if co >= 0 {
 			k, v := a[:co], a[co+1:]
-			if k != "" {
-				p := Pair{Key: k, Val: expandSpecialChars(v)}
-				others = append(others, p)
-				found = true
-			}
+			p := Pair{Key: k, Val: expandSpecialChars(v)}
+			others = append(others, p)
+			found = p.Valid()
 		}
 		if !found {
 			leftover = append(leftover, a)

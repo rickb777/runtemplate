@@ -148,7 +148,7 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types 
 
 	youngestDep := foundTemplate
 
-	if outputFile == "" && len(types.TValues()) > 0 {
+	if outputFile == "" && len(types) > 0 {
 		keys := strings.Join(types.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideLastOr0('.')
 		tf = RichString(tf).RemoveBeforeLast('/').ToLower()

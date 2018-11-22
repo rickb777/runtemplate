@@ -8,7 +8,7 @@ import (
 func TestPairsTValues(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	triples := Types([]Type{NewType("x=1/a"), NewType("y=*big.Int/b"), NewType("z=3/c")})
+	triples := Types([]Type{NewType("x=1/a"), NewType("y=*big.Int"), NewType("z=3/Cho")})
 	keys := triples.TValues()
-	g.Expect(keys).To(Equal([]string{"1", "bigInt", "3"}))
+	g.Expect(keys).To(Equal([]string{"a", "bigInt", "Cho"}))
 }
