@@ -36,78 +36,53 @@ func choosePackage(outputFile string) (string, string) {
 	return wd, pkg.String()
 }
 
-func setAnyInContext(k, v string, context map[string]interface{}) {
-	if !strings.HasSuffix(k, Prefix) {
-		Debug("setAnyInContext %s=%s\n", k, v)
-		context[k] = v
-		context["U"+k] = "Any"
-		context["L"+k] = "any"
-		context[k+"IsPtr"] = false
-		context[k+"Star"] = ""
-		context[k+"Amp"] = ""
-		context[k+"Zero"] = "nil"
-	}
-}
+func setIdentInContext(pp Type, context map[string]interface{}) {
+	Debug("setIdentInContext %+v\n", pp)
 
-func setTypeInContext(k, v string, context map[string]interface{}) {
-	p := v
-	ptr := false
-
-	if len(v) > 0 && v[0] == '*' {
-		v = v[1:]
-		ptr = true
-	}
-
-	Debug("setTypeInContext %s=%s for %s, ptr=%v\n", k, v, p, ptr)
-
-	rs := RichString(v).NoDots()
-	context[k] = v
+	k := pp.Key
+	e := pp.Elem()
+	rs := RichString(pp.Ident()).NoDots()
+	context[k] = e
 	context["U"+k] = rs.FirstUpper().String()
 	context["L"+k] = rs.FirstLower().String()
+}
+
+func setTypeInContext(pp Type, context map[string]interface{}) {
+	Debug("setTypeInContext %+v\n", pp)
+
+	k := pp.Key
 
 	if !strings.HasSuffix(k, Prefix) {
-		context["P"+k] = p
-		context[k+"IsPtr"] = ptr
-		if ptr {
+		context["P"+k] = pp.Val
+		context[k+"IsPtr"] = pp.Ptr()
+		if pp.Ptr() {
 			context[k+"Star"] = "*"
 			context[k+"Amp"] = "&"
 			context[k+"Zero"] = "nil"
 		} else {
 			context[k+"Star"] = ""
 			context[k+"Amp"] = ""
-			switch v {
-			case "string":
-				context[k+"Zero"] = `""`
-			case "bool":
-				context[k+"Zero"] = `false`
-			case "int", "int8", "int16", "int32", "int64",
-				"uint", "uint8", "uint16", "uint32", "uint64",
-				"float32", "float64", "byte", "rune":
-				context[k+"Zero"] = `0`
-			default:
-				context[k+"Zero"] = fmt.Sprintf("*(new(%s))", v)
-			}
+			context[k+"Zero"] = pp.Zero()
 		}
 	}
 }
 
-func setPairTypeInContext(pp Triple, context map[string]interface{}) {
+func setPairTypeInContext(pp Type, context map[string]interface{}) {
 	k := pp.Key
 	v := pp.Val
-	switch v {
+	switch v[0] {
 	case "true":
 		context[k] = true
 	case "false":
 		context[k] = false
-	case "interface{}":
-		setAnyInContext(k, v, context)
 	default:
-		setTypeInContext(k, v, context)
+		setIdentInContext(pp, context)
+		setTypeInContext(pp, context)
 	}
 	context["Has"+k] = true
 }
 
-func addPairInContext(pp Triple, context map[string]interface{}) {
+func addPairInContext(pp Pair, context map[string]interface{}) {
 	k := pp.Key
 	v := pp.Val
 	switch v {
@@ -146,7 +121,7 @@ func contextInfo1(key string, context map[string]interface{}) {
 	delete(context, key)
 }
 
-func contextInfo(others Triples, context map[string]interface{}) {
+func contextInfo(others Pairs, context map[string]interface{}) {
 	contextInfo1("AppVersion", context)
 	contextInfo1("PWD", context)
 	contextInfo1("Package", context)
@@ -179,7 +154,7 @@ func contextInfo(others Triples, context map[string]interface{}) {
 	}
 }
 
-func CreateContext(templateFile FileMeta, outputFile string, types, others Triples, appVersion string) map[string]interface{} {
+func CreateContext(templateFile FileMeta, outputFile string, types Types, others Pairs, appVersion string) map[string]interface{} {
 	// Context will be passed to the template as a map.
 	context := make(map[string]interface{})
 	context["GOARCH"] = runtime.GOARCH
@@ -200,7 +175,7 @@ func CreateContext(templateFile FileMeta, outputFile string, types, others Tripl
 		if strings.HasSuffix(p.Key, "Type") {
 			l := len(p.Key)
 			k := p.Key[:l-4]
-			setTypeInContext(k+Prefix, "", context)
+			setIdentInContext(NewType(k+Prefix+"="), context)
 		}
 	}
 

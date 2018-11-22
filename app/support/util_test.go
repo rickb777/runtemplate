@@ -34,7 +34,7 @@ func TestSplitKeyValArgs2(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	types, others, left := SplitKeyValArgs([]string{"w=t1", "x=t2", "foo", "y=xyz/abc", "a:v1", "z=t3", "b:v2", `c:a\n\tb`, ""})
-	g.Expect(types).To(Equal(Triples([]Triple{{"w", "t1", ""}, {"x", "t2", ""}, {"y", "xyz", "abc"}, {"z", "t3", ""}})))
-	g.Expect(others).To(Equal(Triples([]Triple{{"a", "v1", ""}, {"b", "v2", ""}, {"c", "a\n\tb", ""}})))
+	g.Expect(types).To(Equal(Types([]Type{NewType("w=t1"), NewType("x=t2"), NewType("y=xyz/abc"), NewType("z=t3")})))
+	g.Expect(others).To(Equal(Pairs([]Pair{{"a", "v1"}, {"b", "v2"}, {"c", "a\n\tb"}})))
 	g.Expect(left).To(Equal([]string{"foo", ""}))
 }

@@ -50,32 +50,24 @@ func expandSpecialChars(s string) string {
 	return strings.Replace(s2, `\t`, "\t", -1)
 }
 
-func SplitKeyValArgs(args []string) (Triples, Triples, []string) {
-	var types []Triple
-	var others []Triple
+func SplitKeyValArgs(args []string) (Types, Pairs, []string) {
+	var types Types
+	var others Pairs
 	var leftover []string
+
 	for _, a := range args {
 		found := false
-		k, v := "", ""
 		eq := strings.LastIndexByte(a, '=')
 		co := strings.LastIndexByte(a, ':')
-		sl := strings.LastIndexByte(a, '/')
 		if eq >= 0 {
-			k, v = a[:eq], a[eq+1:]
-			if k != "" && v != "" {
-				if sl > eq {
-					p := Triple{Key: a[:eq], Val: a[eq+1 : sl], Alt: a[sl+1:]}
-					types = append(types, p)
-				} else {
-					p := Triple{Key: a[:eq], Val: a[eq+1:], Alt: ""}
-					types = append(types, p)
-				}
-				found = true
+			tr := NewType(a)
+			if tr.Valid() {
+				types = append(types, tr)
 			}
 		} else if co >= 0 {
-			k, v = a[:co], a[co+1:]
+			k, v := a[:co], a[co+1:]
 			if k != "" {
-				p := Triple{Key: a[:co], Val: expandSpecialChars(a[co+1:]), Alt: ""}
+				p := Pair{Key: k, Val: expandSpecialChars(v)}
 				others = append(others, p)
 				found = true
 			}
@@ -84,5 +76,5 @@ func SplitKeyValArgs(args []string) (Triples, Triples, []string) {
 			leftover = append(leftover, a)
 		}
 	}
-	return Triples(types), Triples(others), leftover
+	return types, others, leftover
 }

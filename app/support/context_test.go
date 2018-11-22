@@ -17,8 +17,8 @@ func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
 
 func TestCreateContextCore(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Triples([]Triple{})
-	others := Triples([]Triple{})
+	types := Types([]Type{})
+	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
 	if len(ctx) != 10 {
@@ -46,8 +46,8 @@ func TestCreateContextCore(t *testing.T) {
 
 func TestCreateContext(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Triples([]Triple{{"B", "*FooBar", ""}, {"C", "vv3", ""}})
-	others := Triples([]Triple{{"I1", "X1", ""}, {"I1", "X2", ""}, {"I1", "X3", ""}})
+	types := Types([]Type{NewType("B=*FooBar"), NewType("C=vv3")})
+	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
 	if len(ctx) != 30 {
@@ -95,8 +95,8 @@ func TestCreateContext(t *testing.T) {
 
 func TestCreateContextWithDottedType(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Triples([]Triple{{"Type", "*big.Int", ""}})
-	others := Triples([]Triple{})
+	types := Types([]Type{NewType("Type=*big.Int")})
+	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
 	if len(ctx) != 22 {
