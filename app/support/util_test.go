@@ -1,52 +1,40 @@
 package support
 
 import (
-	"reflect"
+	. "github.com/onsi/gomega"
 	"testing"
 )
 
 func TestFindTemplateArg1(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	tpl, args := FindTemplateArg("", nil)
-	if tpl != "" {
-		t.Errorf("Want '', got %q", tpl)
-	}
-	if len(args) != 0 {
-		t.Errorf("Want [], got %+v", args)
-	}
+	g.Expect(tpl).To(Equal(""))
+	g.Expect(len(args)).To(Equal(0))
 }
 
 func TestFindTemplateArg2(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	tpl, args := FindTemplateArg("", []string{"x=1", "y=2", "f.tpl", "z=3"})
-	if tpl != "f.tpl" {
-		t.Errorf("Want 'f.tpl', got %q", tpl)
-	}
-	if !reflect.DeepEqual(args, []string{"x=1", "y=2", "z=3"}) {
-		t.Fatalf("Got %+v", args)
-	}
+	g.Expect(tpl).To(Equal("f.tpl"))
+	g.Expect(args).To(Equal([]string{"x=1", "y=2", "z=3"}))
 }
 
 func TestSplitKeyValArgs1(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	types, others, left := SplitKeyValArgs(nil)
-	if len(types) != 0 {
-		t.Errorf("Want [], got types '%+v'", types)
-	}
-	if len(others) != 0 {
-		t.Errorf("Want [], got others '%+v'", others)
-	}
-	if len(left) != 0 {
-		t.Errorf("Want [], got leftovers %+v", left)
-	}
+	g.Expect(types).To(HaveLen(0))
+	g.Expect(others).To(HaveLen(0))
+	g.Expect(left).To(HaveLen(0))
 }
 
 func TestSplitKeyValArgs2(t *testing.T) {
-	types, others, left := SplitKeyValArgs([]string{"x=t1", "y=t2", "foo", "a:v1", "z=t3", "b:v2", `c:a\n\tb`, ""})
-	if !reflect.DeepEqual(types, Triples([]Triple{{"x", "t1", ""}, {"y", "t2", ""}, {"z", "t3", ""}})) {
-		t.Fatalf("Got types %+v", types)
-	}
-	if !reflect.DeepEqual(others, Triples([]Triple{{"a", "v1", ""}, {"b", "v2", ""}, {"c", "a\n\tb", ""}})) {
-		t.Fatalf("Got others %+v", others)
-	}
-	if !reflect.DeepEqual(left, []string{"foo", ""}) {
-		t.Fatalf("Got leftovers %+v", left)
-	}
+	g := NewGomegaWithT(t)
+
+	types, others, left := SplitKeyValArgs([]string{"w=t1", "x=t2", "foo", "y=xyz/abc", "a:v1", "z=t3", "b:v2", `c:a\n\tb`, ""})
+	g.Expect(types).To(Equal(Triples([]Triple{{"w", "t1", ""}, {"x", "t2", ""}, {"y", "xyz", "abc"}, {"z", "t3", ""}})))
+	g.Expect(others).To(Equal(Triples([]Triple{{"a", "v1", ""}, {"b", "v2", ""}, {"c", "a\n\tb", ""}})))
+	g.Expect(left).To(Equal([]string{"foo", ""}))
 }
