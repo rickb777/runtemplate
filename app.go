@@ -42,12 +42,18 @@ func main() {
 	var depsList Strings
 	flag.Var(&depsList, "deps", "List of other dependent files (separated by commas). May appear several times.")
 
-	var force bool
+	var force, showVersion bool
 	flag.BoolVar(&Verbose, "v", false, "Verbose progress messages.")
+	flag.BoolVar(&ShowContextInfo, "i", false, "Show the context.")
 	flag.BoolVar(&force, "f", false, "Force output generation, even if up to date.")
 	flag.BoolVar(&Dbg, "z", false, "Debug messages.")
+	flag.BoolVar(&showVersion, "version", false, "Show the version.")
 
 	flag.Parse()
+
+	if showVersion {
+		fmt.Println(appVersion)
+	}
 
 	tpl, args := FindTemplateArg(tpl, flag.Args())
 

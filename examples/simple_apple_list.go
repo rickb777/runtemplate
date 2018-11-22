@@ -3,7 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
-// by runtemplate v2.2.3
+// by runtemplate v2.2.4
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -351,10 +351,8 @@ func (list SimpleAppleList) Find(p func(Apple) bool) (Apple, bool) {
 			return v, true
 		}
 	}
-
 	var empty Apple
 	return empty, false
-
 }
 
 // Filter returns a new SimpleAppleList whose elements return true for predicate p.

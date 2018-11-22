@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+var ShowContextInfo = false
 var Verbose = false
 var Dbg = false
 
@@ -15,7 +16,7 @@ func Fail(args ...interface{}) {
 	os.Exit(1)
 }
 
-func Info(msg string, args ...interface{}) {
+func Progress(msg string, args ...interface{}) {
 	if Verbose {
 		fmt.Printf(msg, args...)
 	}
@@ -49,26 +50,32 @@ func expandSpecialChars(s string) string {
 	return strings.Replace(s2, `\t`, "\t", -1)
 }
 
-func SplitKeyValArgs(args []string) (Pairs, Pairs, []string) {
-	var types []Pair
-	var others []Pair
+func SplitKeyValArgs(args []string) (Triples, Triples, []string) {
+	var types []Triple
+	var others []Triple
 	var leftover []string
 	for _, a := range args {
 		found := false
 		k, v := "", ""
 		eq := strings.LastIndexByte(a, '=')
 		co := strings.LastIndexByte(a, ':')
+		sl := strings.LastIndexByte(a, '/')
 		if eq >= 0 {
 			k, v = a[:eq], a[eq+1:]
 			if k != "" && v != "" {
-				p := Pair{a[:eq], a[eq+1:]}
-				types = append(types, p)
+				if sl > eq {
+					p := Triple{Key: a[:eq], Val: a[eq+1 : sl], Alt: a[sl+1:]}
+					types = append(types, p)
+				} else {
+					p := Triple{Key: a[:eq], Val: a[eq+1:], Alt: ""}
+					types = append(types, p)
+				}
 				found = true
 			}
 		} else if co >= 0 {
 			k, v = a[:co], a[co+1:]
 			if k != "" {
-				p := Pair{a[:co], expandSpecialChars(a[co+1:])}
+				p := Triple{Key: a[:co], Val: expandSpecialChars(a[co+1:]), Alt: ""}
 				others = append(others, p)
 				found = true
 			}
@@ -77,5 +84,5 @@ func SplitKeyValArgs(args []string) (Pairs, Pairs, []string) {
 			leftover = append(leftover, a)
 		}
 	}
-	return Pairs(types), Pairs(others), leftover
+	return Triples(types), Triples(others), leftover
 }

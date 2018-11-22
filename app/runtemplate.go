@@ -139,7 +139,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	}
 }
 
-func Generate(templateFile, outputFile string, force bool, deps []string, types, others Pairs, appVersion string) {
+func Generate(templateFile, outputFile string, force bool, deps []string, types, others Triples, appVersion string) {
 	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
 	mustLoadBuiltins()
@@ -169,7 +169,7 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types,
 			if len(deps) > 0 {
 				than = than + ", " + strings.Join(deps, ", ")
 			}
-			Info("%s is already newer than %s.\n", outputFile, than)
+			Progress("%s is already newer than %s.\n", outputFile, than)
 			return
 		}
 	}
@@ -178,5 +178,5 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types,
 	Debug("context %+v\n", context)
 
 	runTheTemplate(foundTemplate, outputFile, context)
-	Info("Generated %s.\n", outputFile)
+	Progress("Generated %s.\n", outputFile)
 }

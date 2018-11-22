@@ -390,12 +390,12 @@ func (list {{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}}
 		}
 	}
 
-{{if eq .TypeStar "*"}}
+{{- if eq .TypeStar "*"}}
 	return nil, false
-{{else}}
+{{- else}}
 	var empty {{.Type}}
 	return empty, false
-{{end}}
+{{- end}}
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for predicate p.

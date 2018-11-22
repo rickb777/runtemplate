@@ -1,22 +1,22 @@
 package support
 
-type Pair struct {
-	Key, Val string
+type Triple struct {
+	Key, Val, Alt string
 }
 
-type Pairs []Pair
+type Triples []Triple
 
-func (pairs Pairs) Keys() []string {
+func (triples Triples) Keys() []string {
 	var list []string
-	for _, p := range pairs {
+	for _, p := range triples {
 		list = append(list, p.Key)
 	}
 	return list
 }
 
-func (pairs Pairs) TValues() []string {
+func (triples Triples) TValues() []string {
 	var list []string
-	for _, p := range pairs {
+	for _, p := range triples {
 		switch p.Val {
 		case "true", "false": // drop
 		default:
@@ -24,15 +24,15 @@ func (pairs Pairs) TValues() []string {
 			if len(v) > 0 && v[0] == '*' {
 				v = v[1:]
 			}
-			list = append(list, RichString(v).RemoveBeforeLast('.').String())
+			list = append(list, RichString(v).NoDots().String())
 		}
 	}
 	return list
 }
 
-func (pairs Pairs) PValues() []string {
+func (triples Triples) PValues() []string {
 	var list []string
-	for _, p := range pairs {
+	for _, p := range triples {
 		switch p.Val {
 		case "true", "false": // drop
 		default:

@@ -3,7 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
-// by runtemplate v2.2.3
+// by runtemplate v2.2.4
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -375,10 +375,8 @@ func (list SimpleIntList) Find(p func(int) bool) (int, bool) {
 			return v, true
 		}
 	}
-
 	var empty int
 	return empty, false
-
 }
 
 // Filter returns a new SimpleIntList whose elements return true for predicate p.

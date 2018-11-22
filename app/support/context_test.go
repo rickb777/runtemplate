@@ -8,6 +8,7 @@ import (
 )
 
 func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
+	t.Helper()
 	if _, ok := ctx[key]; !ok {
 		t.Fatalf("Missing %s; Got len %d %+v", key, len(ctx), ctx)
 	}
@@ -16,8 +17,8 @@ func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
 
 func TestCreateContextCore(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Pairs([]Pair{})
-	others := Pairs([]Pair{})
+	types := Triples([]Triple{})
+	others := Triples([]Triple{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
 	if len(ctx) != 10 {
@@ -45,8 +46,8 @@ func TestCreateContextCore(t *testing.T) {
 
 func TestCreateContext(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Pairs([]Pair{{"B", "*FooBar"}, {"C", "vv3"}})
-	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
+	types := Triples([]Triple{{"B", "*FooBar", ""}, {"C", "vv3", ""}})
+	others := Triples([]Triple{{"I1", "X1", ""}, {"I1", "X2", ""}, {"I1", "X3", ""}})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
 	if len(ctx) != 30 {
@@ -94,8 +95,8 @@ func TestCreateContext(t *testing.T) {
 
 func TestCreateContextWithDottedType(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Pairs([]Pair{{"Type", "*big.Int"}})
-	others := Pairs([]Pair{})
+	types := Triples([]Triple{{"Type", "*big.Int", ""}})
+	others := Triples([]Triple{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
 	if len(ctx) != 22 {
@@ -115,8 +116,8 @@ func TestCreateContextWithDottedType(t *testing.T) {
 
 	exp := map[string]interface{}{
 		"Type":      "big.Int",
-		"UType":     "Int",
-		"LType":     "int",
+		"UType":     "BigInt",
+		"LType":     "bigInt",
 		"PType":     "*big.Int",
 		"Prefix":    "",
 		"UPrefix":   "",
@@ -162,6 +163,7 @@ func TestChoosePackage(t *testing.T) {
 }
 
 func diffMaps(t *testing.T, a, b map[string]interface{}) {
+	t.Helper()
 	if len(a) > len(b) {
 		diffMaps(t, b, a)
 	} else {
