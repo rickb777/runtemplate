@@ -35,7 +35,7 @@ func TestSplitKeyValArgs2(t *testing.T) {
 
 	types, others, left := SplitKeyValArgs([]string{"w=t1", "x=t2", "foo", "y=xyz/abc/123", "a:v1", "z=t3", "b:v2", `c:a\n\tb`, "q:", ""})
 
-	g.Expect(types).To(Equal(Types([]Type{NewType("w=t1"), NewType("x=t2"), NewType("y=xyz/abc/123"), NewType("z=t3")})))
-	g.Expect(others).To(Equal(Pairs([]Pair{{"a", "v1"}, {"b", "v2"}, {"c", "a\n\tb"}, {"q", ""}})))
+	g.Expect(types).To(Equal(Tuples([]Tuple{NewTuple("w=t1"), NewTuple("x=t2"), NewTuple("y=xyz/abc/123"), NewTuple("z=t3")})))
+	g.Expect(others).To(Equal(Pairs([]Pair{NewPair("a:v1"), NewPair("b:v2"), NewPair("c:a\n\tb"), NewPair("q:")})))
 	g.Expect(left).To(Equal([]string{"foo", ""}))
 }

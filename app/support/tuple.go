@@ -26,50 +26,79 @@ type Pairs []Pair
 
 //-------------------------------------------------------------------------------------------------
 
+func noStar(s string) string {
+	if s != "" && s[0] == '*' {
+		return s[1:]
+	}
+	return s
+}
+
 type Type struct {
-	Key string
-	Val []string
+	s     string
+	ident RichString
+	zero  string
 }
 
-func NewType(a string) Type {
-	eq := strings.IndexByte(a, '=')
-	if eq < 0 {
-		return Type{"", nil}
+func NewType(s string) Type {
+	if strings.HasPrefix(s, "/") {
+		return Type{}
 	}
-	k, v := a[:eq], a[eq+1:]
-	return Type{Key: k, Val: strings.Split(v, "/")}
-}
-
-func (t Type) Valid() bool {
-	return t.Key != "" && len(t.Val) > 0 && t.Val[0] != ""
-}
-
-func (t Type) Ptr() bool {
-	return len(t.Val) > 0 && t.Val[0][0] == '*'
-}
-
-func (t Type) Elem() string {
-	v := t.Val[0]
-	if len(v) > 0 && v[0] == '*' {
-		return v[1:]
+	ss := strings.Split(s, "/")
+	switch len(ss) {
+	case 0:
+		return Type{}
+	case 1:
+		return Type{s: ss[0], ident: RichString(noStar(ss[0])).NoDots()}
+	case 2:
+		return Type{s: ss[0], ident: RichString(ss[1]).NoDots()}
 	}
-	return v
+	return Type{s: ss[0], ident: RichString(ss[1]), zero: ss[2]}
 }
 
-func (t Type) Ident() string {
-	if len(t.Val) > 1 {
-		return t.Val[1]
+func (t Type) NonBlank() bool {
+	return t.s != ""
+}
+
+func (t Type) IsPtr() bool {
+	return len(t.s) > 0 && t.s[0] == '*'
+}
+
+func (t Type) P() string {
+	return t.s
+}
+
+func (t Type) String() string {
+	if t.IsPtr() {
+		return t.s[1:]
 	}
-	return t.Elem()
+	return t.s
+}
+
+func (t Type) Star() string {
+	if t.IsPtr() {
+		return "*"
+	}
+	return ""
+}
+
+func (t Type) Amp() string {
+	if t.IsPtr() {
+		return "&"
+	}
+	return ""
 }
 
 func (t Type) Zero() string {
-	if len(t.Val) > 2 {
-		return t.Val[2]
+	if t.zero != "" {
+		return t.zero
 	}
+
+	if t.IsPtr() {
+		return "nil"
+	}
+
 	// this assumes Go code generation
-	v := t.Val[0]
-	switch v {
+	switch t.s {
 	case "string":
 		return `""`
 	case "bool":
@@ -81,17 +110,41 @@ func (t Type) Zero() string {
 	case "interface{}":
 		return "nil"
 	}
-	return fmt.Sprintf("*(new(%s))", v)
+	return fmt.Sprintf("*(new(%s))", t.s)
+}
+
+func (t Type) Ident() RichString {
+	return t.ident
 }
 
 //-------------------------------------------------------------------------------------------------
 
-type Types []Type
+type Tuple struct {
+	Key string
+	Type
+}
 
-func (triples Types) TValues() []string {
+func NewTuple(a string) Tuple {
+	eq := strings.IndexByte(a, '=')
+	if eq < 0 {
+		return Tuple{}
+	}
+	k, v := a[:eq], a[eq+1:]
+	return Tuple{Key: k, Type: NewType(v)}
+}
+
+func (t Tuple) Valid() bool {
+	return t.Key != "" && t.NonBlank()
+}
+
+//-------------------------------------------------------------------------------------------------
+
+type Tuples []Tuple
+
+func (triples Tuples) TValues() []string {
 	var list []string
 	for _, p := range triples {
-		list = append(list, RichString(p.Ident()).NoDots().String())
+		list = append(list, p.Ident().NoDots().String())
 	}
 	return list
 }

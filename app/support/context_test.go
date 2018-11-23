@@ -17,13 +17,9 @@ func TestCreateContextCore(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Types([]Type{})
+	types := Tuples([]Tuple{})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
-
-	if len(ctx) != 10 {
-		t.Fatalf("Got len %d %+v", len(ctx), ctx)
-	}
 
 	expectPresent(g, ctx, "PWD")
 	expectPresent(g, ctx, "GOOS")
@@ -45,13 +41,11 @@ func TestCreateContext(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Types([]Type{NewType("B=*FooBar"), NewType("C=vv3")})
+	b := NewTuple("B=*FooBar")
+	c := NewTuple("C=vv3")
+	types := Tuples([]Tuple{b, c})
 	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
-
-	if len(ctx) != 30 {
-		t.Fatalf("Got len %d %+v", len(ctx), ctx)
-	}
 
 	expectPresent(g, ctx, "PWD")
 	expectPresent(g, ctx, "GOOS")
@@ -66,11 +60,11 @@ func TestCreateContext(t *testing.T) {
 	expectPresent(g, ctx, "I1")
 
 	exp := map[string]interface{}{
-		"B":      "FooBar",
+		"B":      b,
 		"UB":     "FooBar",
 		"LB":     "fooBar",
 		"PB":     "*FooBar",
-		"C":      "vv3",
+		"C":      c,
 		"UC":     "Vv3",
 		"LC":     "vv3",
 		"PC":     "vv3",
@@ -93,13 +87,10 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
-	types := Types([]Type{NewType("Type=*big.Int")})
+	bigInt := NewTuple("Tuple=*big.Int")
+	types := Tuples([]Tuple{bigInt})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
-
-	if len(ctx) != 22 {
-		t.Fatalf("Got len %d %+v", len(ctx), ctx)
-	}
 
 	expectPresent(g, ctx, "PWD")
 	expectPresent(g, ctx, "GOOS")
@@ -113,7 +104,7 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	expectPresent(g, ctx, "Package")
 
 	exp := map[string]interface{}{
-		"Type":      "big.Int",
+		"Tuple":     bigInt,
 		"UType":     "BigInt",
 		"LType":     "bigInt",
 		"PType":     "*big.Int",
@@ -125,6 +116,55 @@ func TestCreateContextWithDottedType(t *testing.T) {
 		"TypeAmp":   "&",
 		"TypeStar":  "*",
 		"TypeZero":  "nil",
+	}
+	g.Expect(ctx).To(matchers.DeepEqual(exp))
+}
+
+func TestCreateContextWithPrefix(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	m := FileMeta{"/a/b/c", "foo", time.Time{}, false}
+	types := Tuples([]Tuple{NewTuple("OneType=Apple"), NewTuple("TwoType=Pear/Pear/nil"), NewTuple("OnePrefix=Foo")})
+	others := Pairs([]Pair{})
+	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
+
+	expectPresent(g, ctx, "PWD")
+	expectPresent(g, ctx, "GOOS")
+	expectPresent(g, ctx, "GOROOT")
+	expectPresent(g, ctx, "GOARCH")
+	expectPresent(g, ctx, "GOPATH")
+	expectPresent(g, ctx, "OutFile")
+	expectPresent(g, ctx, "AppVersion")
+	expectPresent(g, ctx, "TemplatePath")
+	expectPresent(g, ctx, "TemplateFile")
+	expectPresent(g, ctx, "Package")
+
+	exp := map[string]interface{}{
+		"OneType":      "Apple",
+		"TwoType":      "Pear",
+		"UOneType":     "Apple",
+		"UTwoType":     "Pear",
+		"LOneType":     "apple",
+		"LTwoType":     "pear",
+		"POneType":     "Apple",
+		"PTwoType":     "Pear",
+		"OnePrefix":    "Foo",
+		"TwoPrefix":    "",
+		"UOnePrefix":   "Foo",
+		"UTwoPrefix":   "",
+		"LOnePrefix":   "foo",
+		"LTwoPrefix":   "",
+		"HasOneType":   true,
+		"HasTwoType":   true,
+		"HasOnePrefix": true,
+		"OneTypeIsPtr": false,
+		"TwoTypeIsPtr": false,
+		"OneTypeAmp":   "",
+		"TwoTypeAmp":   "",
+		"OneTypeStar":  "",
+		"TwoTypeStar":  "",
+		"OneTypeZero":  "*(new(Apple))",
+		"TwoTypeZero":  "nil",
 	}
 	g.Expect(ctx).To(matchers.DeepEqual(exp))
 }

@@ -10,11 +10,6 @@ import (
 
 const Prefix = "Prefix"
 
-func abort(format string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, args...)
-	os.Exit(1)
-}
-
 func choosePackage(outputFile string) (string, string) {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -36,41 +31,34 @@ func choosePackage(outputFile string) (string, string) {
 	return wd, pkg.String()
 }
 
-func setIdentInContext(pp Type, context map[string]interface{}) {
+func setIdentInContext(pp Tuple, context map[string]interface{}) {
 	Debug("setIdentInContext %+v\n", pp)
 
 	k := pp.Key
-	e := pp.Elem()
-	rs := RichString(pp.Ident()).NoDots()
-	context[k] = e
+	rs := pp.Ident().NoDots()
+	context[k] = pp
 	context["U"+k] = rs.FirstUpper().String()
 	context["L"+k] = rs.FirstLower().String()
 }
 
-func setTypeInContext(pp Type, context map[string]interface{}) {
+func setTypeInContext(pp Tuple, context map[string]interface{}) {
 	Debug("setTypeInContext %+v\n", pp)
 
 	k := pp.Key
 
 	if !strings.HasSuffix(k, Prefix) {
-		context["P"+k] = pp.Val[0]
-		context[k+"IsPtr"] = pp.Ptr()
-		if pp.Ptr() {
-			context[k+"Star"] = "*"
-			context[k+"Amp"] = "&"
-			context[k+"Zero"] = "nil"
-		} else {
-			context[k+"Star"] = ""
-			context[k+"Amp"] = ""
-			context[k+"Zero"] = pp.Zero()
-		}
+		context["P"+k] = pp.s
+		context[k+"IsPtr"] = pp.IsPtr()
+		context[k+"Star"] = pp.Star()
+		context[k+"Amp"] = pp.Amp()
+		context[k+"Zero"] = pp.Zero()
 	}
 }
 
-func setPairTypeInContext(pp Type, context map[string]interface{}) {
+func setPairTypeInContext(pp Tuple, context map[string]interface{}) {
 	k := pp.Key
-	v := pp.Val
-	switch v[0] {
+	v := pp.s
+	switch v {
 	case "true":
 		context[k] = true
 	case "false":
@@ -154,7 +142,7 @@ func contextInfo(others Pairs, context map[string]interface{}) {
 	}
 }
 
-func CreateContext(templateFile FileMeta, outputFile string, types Types, others Pairs, appVersion string) map[string]interface{} {
+func CreateContext(templateFile FileMeta, outputFile string, types Tuples, others Pairs, appVersion string) map[string]interface{} {
 	// Context will be passed to the template as a map.
 	context := make(map[string]interface{})
 	context["GOARCH"] = runtime.GOARCH
@@ -172,10 +160,10 @@ func CreateContext(templateFile FileMeta, outputFile string, types Types, others
 
 	// define automatic prefix template values with default blank value.
 	for _, p := range types {
-		if strings.HasSuffix(p.Key, "Type") {
+		if strings.HasSuffix(p.Key, "Tuple") {
 			l := len(p.Key)
 			k := p.Key[:l-4]
-			setIdentInContext(NewType(k+Prefix+"="), context)
+			setIdentInContext(NewTuple(k+Prefix+"="), context)
 		}
 	}
 

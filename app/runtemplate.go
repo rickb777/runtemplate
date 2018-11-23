@@ -84,14 +84,14 @@ func makeFuncMap() template.FuncMap {
 		},
 		// splitDotFirst returns the first part of a string split on a "."
 		// Useful for the case in which you want the package name from a passed value
-		// like "package.Type"
+		// like "package.Tuple"
 		"splitDotFirst": func(s string) RichString {
 			first, _ := RichString(s).DivideLastOr0('.')
 			return first
 		},
 		// splitDotLast returns the last part of a string split on a "."
 		// Useful for the case in which you want the type name from a passed value
-		// like "package.Type"
+		// like "package.Tuple"
 		"splitDotLast": func(s string) RichString {
 			_, second := RichString(s).DivideLastOr0('.')
 			return second
@@ -139,7 +139,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	}
 }
 
-func Generate(templateFile, outputFile string, force bool, deps []string, types Types, others Pairs, appVersion string) {
+func Generate(templateFile, outputFile string, force bool, deps []string, types Tuples, others Pairs, appVersion string) {
 	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, types)
 
 	mustLoadBuiltins()

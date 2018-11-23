@@ -50,15 +50,15 @@ func expandSpecialChars(s string) string {
 	return strings.Replace(s2, `\t`, "\t", -1)
 }
 
-func SplitKeyValArgs(args []string) (Types, Pairs, []string) {
-	var types Types
+func SplitKeyValArgs(args []string) (Tuples, Pairs, []string) {
+	var types Tuples
 	var others Pairs
 	var leftover []string
 
 	for _, a := range args {
 		found := false
 		co := strings.IndexByte(a, ':')
-		tr := NewType(a)
+		tr := NewTuple(a)
 		if tr.Valid() {
 			types = append(types, tr)
 			found = true
