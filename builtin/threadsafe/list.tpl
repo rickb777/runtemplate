@@ -120,6 +120,10 @@ func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
 
 // ToSlice returns the elements of the current list as a slice.
 func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -140,7 +144,7 @@ func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
@@ -245,12 +249,12 @@ func (list *{{.UPrefix}}{{.UType}}List) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list *{{.UPrefix}}{{.UType}}List) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 	return false
 }
@@ -296,7 +300,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	list.s.RLock()

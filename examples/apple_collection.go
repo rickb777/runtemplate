@@ -21,7 +21,7 @@ type AppleSizer interface {
 type AppleCollection interface {
 	AppleSizer
 
-	// IsSequence returns true for lists.
+	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
 	// IsSet returns false for lists.

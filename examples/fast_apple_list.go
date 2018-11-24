@@ -76,6 +76,9 @@ func (list *FastAppleList) slice() []Apple {
 
 // ToSlice returns the elements of the current list as a slice.
 func (list *FastAppleList) ToSlice() []Apple {
+	if list == nil {
+		return nil
+	}
 
 	s := make([]Apple, len(list.m), len(list.m))
 	copy(s, list.m)
@@ -92,7 +95,7 @@ func (list *FastAppleList) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list *FastAppleList) Clone() *FastAppleList {
 	if list == nil {
 		return nil
@@ -178,12 +181,12 @@ func (list *FastAppleList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list *FastAppleList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *FastAppleList) IsSet() bool {
 	return false
 }
@@ -223,7 +226,7 @@ func (list *FastAppleList) Contains(v Apple) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *FastAppleList) ContainsAll(i ...Apple) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	for _, v := range i {

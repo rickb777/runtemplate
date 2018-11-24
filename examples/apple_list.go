@@ -80,6 +80,10 @@ func (list *AppleList) slice() []Apple {
 
 // ToSlice returns the elements of the current list as a slice.
 func (list *AppleList) ToSlice() []Apple {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -100,7 +104,7 @@ func (list *AppleList) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list *AppleList) Clone() *AppleList {
 	if list == nil {
 		return nil
@@ -205,12 +209,12 @@ func (list *AppleList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list *AppleList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *AppleList) IsSet() bool {
 	return false
 }
@@ -255,7 +259,7 @@ func (list *AppleList) Contains(v Apple) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *AppleList) ContainsAll(i ...Apple) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	list.s.RLock()

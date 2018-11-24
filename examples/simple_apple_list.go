@@ -136,12 +136,12 @@ func (list SimpleAppleList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list SimpleAppleList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list SimpleAppleList) IsSet() bool {
 	return false
 }

@@ -99,6 +99,9 @@ func (list *FastIntList) slice() []int {
 
 // ToSlice returns the elements of the current list as a slice.
 func (list *FastIntList) ToSlice() []int {
+	if list == nil {
+		return nil
+	}
 
 	s := make([]int, len(list.m), len(list.m))
 	copy(s, list.m)
@@ -115,7 +118,7 @@ func (list *FastIntList) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list *FastIntList) Clone() *FastIntList {
 	if list == nil {
 		return nil
@@ -201,12 +204,12 @@ func (list *FastIntList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list *FastIntList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *FastIntList) IsSet() bool {
 	return false
 }
@@ -246,7 +249,7 @@ func (list *FastIntList) Contains(v int) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *FastIntList) ContainsAll(i ...int) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	for _, v := range i {

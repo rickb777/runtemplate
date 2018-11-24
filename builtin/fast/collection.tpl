@@ -54,7 +54,7 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	{{.UPrefix}}{{.UType}}MkStringer
 {{- end}}
 
-	// IsSequence returns true for lists.
+	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
 	// IsSet returns false for lists.

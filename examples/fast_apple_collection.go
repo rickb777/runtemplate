@@ -21,7 +21,7 @@ type FastAppleSizer interface {
 type FastAppleCollection interface {
 	FastAppleSizer
 
-	// IsSequence returns true for lists.
+	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
 	// IsSet returns false for lists.

@@ -172,12 +172,12 @@ func (list {{.UPrefix}}{{.UType}}List) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list {{.UPrefix}}{{.UType}}List) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list {{.UPrefix}}{{.UType}}List) IsSet() bool {
 	return false
 }

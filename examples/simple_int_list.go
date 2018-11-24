@@ -160,12 +160,12 @@ func (list SimpleIntList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list SimpleIntList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list SimpleIntList) IsSet() bool {
 	return false
 }

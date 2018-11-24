@@ -14,10 +14,10 @@ package fast
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=Apple  Stringer:false Comparable:true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X2 Type=big.Int Import:"math/big"
 
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=string  Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=int     Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=Apple   Stringer:false Comparable:true
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X2 Type=big.Int Import:"math/big"
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=string  ToList:true Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=int     ToList:true Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=Apple   ToList:true Stringer:false Comparable:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X2 Type=big.Int ToList:true Import:"math/big"
 
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=string Stringer:true  Ordered:false Numeric:false
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=int    Stringer:true  Ordered:true  Numeric:true GobEncode:true
@@ -53,6 +53,11 @@ package fast
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*int    Stringer:true  Comparable:true Ordered:true  Numeric:true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*Apple  Stringer:false Comparable:true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=P2 Type=*big.Int Import:"math/big"
+
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P1 Type=*string  ToList:true Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P1 Type=*int     ToList:true Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P1 Type=*Apple   ToList:true Stringer:false Comparable:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P2 Type=*big.Int ToList:true Import:"math/big"
 
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*int    Type=*int     Comparable:true Stringer:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*string  Comparable:true

@@ -9,7 +9,6 @@
 package {{.Package}}
 
 import (
-	"sync"
 {{- if .HasImport}}
 	{{.Import}}
 {{- end}}
@@ -28,7 +27,6 @@ type {{.UPrefix}}{{.UType}}Queue struct {
 	length    int
 	cap       int
 	overwrite bool
-	s         *sync.RWMutex
 }
 
 // New{{.UPrefix}}{{.UType}}Queue returns a new queue of {{.PType}}. The behaviour when adding
@@ -45,7 +43,6 @@ func New{{.UPrefix}}{{.UType}}Queue(size int, overwrite bool) *{{.UPrefix}}{{.UT
 		length:    0,
 		cap:       size,
 		overwrite: overwrite,
-		s:         &sync.RWMutex{},
 	}
 }
 
@@ -66,36 +63,26 @@ func (queue {{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
 
 // IsEmpty returns true if the queue is empty.
 func (queue {{.UPrefix}}{{.UType}}Queue) IsEmpty() bool {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
 func (queue {{.UPrefix}}{{.UType}}Queue) NonEmpty() bool {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // IsFull returns true if the queue is full.
 func (queue {{.UPrefix}}{{.UType}}Queue) IsFull() bool {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 	return queue.length == queue.cap
 }
 
 // Space returns the space available in the queue.
 func (queue {{.UPrefix}}{{.UType}}Queue) Space() int {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 	return queue.cap - queue.length
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
 func (queue {{.UPrefix}}{{.UType}}Queue) Size() int {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 	return queue.length
 }
 
@@ -129,8 +116,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
 		return nil
 	}
 
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 
 	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
     queue.toSlice(list.m)
@@ -144,8 +129,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
 		return nil
 	}
 
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 
 	return queue.toSlice(make([]{{.PType}}, queue.length))
 }
@@ -166,8 +149,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
 		return nil
 	}
 
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 
     front, back := queue.frontAndBack()
 	var s []interface{}
@@ -188,8 +169,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 		return nil
 	}
 
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 
 	buffer := queue.toSlice(make([]{{.PType}}, queue.cap))
 
@@ -200,7 +179,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
         length:    queue.length,
         cap:       queue.cap,
         overwrite: queue.overwrite,
-        s:         &sync.RWMutex{},
     }
 }
 
@@ -213,8 +191,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 //
 // If the capacity is too small for the number of items, the excess items are returned.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) []{{.PType}} {
-	queue.s.Lock()
-	defer queue.s.Unlock()
 	return queue.doPush(items...)
 }
 
@@ -262,8 +238,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType
 // empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
 // The boolean is true only if the element was available.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
-	queue.s.Lock()
-	defer queue.s.Unlock()
 
 	if queue.length == 0 {
 		return {{.TypeZero}}, false
@@ -281,8 +255,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
 // it returns all the available elements, so in this case the returned slice
 // will be shorter than n.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
-	queue.s.Lock()
-	defer queue.s.Unlock()
 
 	if queue.length == 0 {
 		return nil
@@ -309,8 +281,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
 func (queue *{{.UPrefix}}{{.UType}}Queue) HeadOption() {{.PType}} {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		return {{.TypeZero}}
@@ -322,8 +292,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) HeadOption() {{.PType}} {
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
 func (queue *{{.UPrefix}}{{.UType}}Queue) LastOption() {{.PType}} {
-	queue.s.RLock()
-	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		return {{.TypeZero}}

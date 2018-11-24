@@ -109,12 +109,12 @@ func (set *FastAppleSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (set *FastAppleSet) IsSequence() bool {
 	return false
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (set *FastAppleSet) IsSet() bool {
 	return true
 }

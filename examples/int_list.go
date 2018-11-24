@@ -103,6 +103,10 @@ func (list *IntList) slice() []int {
 
 // ToSlice returns the elements of the current list as a slice.
 func (list *IntList) ToSlice() []int {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -123,7 +127,7 @@ func (list *IntList) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list *IntList) Clone() *IntList {
 	if list == nil {
 		return nil
@@ -228,12 +232,12 @@ func (list *IntList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for ordered lists and queues.
 func (list *IntList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *IntList) IsSet() bool {
 	return false
 }
@@ -278,7 +282,7 @@ func (list *IntList) Contains(v int) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *IntList) ContainsAll(i ...int) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	list.s.RLock()
