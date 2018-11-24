@@ -87,6 +87,9 @@ func (list *FastAppleList) ToSlice() []Apple {
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *FastAppleList) ToInterfaceSlice() []interface{} {
+	if list == nil {
+		return nil
+	}
 
 	var s []interface{}
 	for _, v := range list.m {

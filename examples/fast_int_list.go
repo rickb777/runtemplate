@@ -110,6 +110,9 @@ func (list *FastIntList) ToSlice() []int {
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *FastIntList) ToInterfaceSlice() []interface{} {
+	if list == nil {
+		return nil
+	}
 
 	var s []interface{}
 	for _, v := range list.m {

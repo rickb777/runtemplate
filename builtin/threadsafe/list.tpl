@@ -134,6 +134,10 @@ func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 

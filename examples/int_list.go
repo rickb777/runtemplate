@@ -117,6 +117,10 @@ func (list *IntList) ToSlice() []int {
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *IntList) ToInterfaceSlice() []interface{} {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 

@@ -263,6 +263,28 @@ func Test{{.UType}}ListClone(t *testing.T) {
 	g.Expect(b.IsEmpty()).To(BeTrue())
 {{- end}}
 }
+{{- if .Append}}
+
+func Test{{.UType}}ListToSlice(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	b1 := a.ToSlice()
+	b2 := a.ToInterfaceSlice()
+
+	g.Expect(b1).To(Equal([]{{.PType}}{1, 2, 3, 4}))
+	g.Expect(b2).To(Equal([]interface{}{1, 2, 3, 4}))
+{{- if .Mutable}}
+
+	a = nil
+	b1 = a.ToSlice()
+	b2 = a.ToInterfaceSlice()
+
+	g.Expect(b1).To(HaveLen(0))
+	g.Expect(b2).To(HaveLen(0))
+{{- end}}
+}
+{{- end}}
 
 func Test{{.UType}}ListSend(t *testing.T) {
 	g := NewGomegaWithT(t)
