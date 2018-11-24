@@ -7,7 +7,7 @@ cd builtin
 
 cat threadsafe/collection.tpl > fast/collection.tpl
 
-for tpl in list.tpl map.tpl set.tpl; do
+for tpl in list.tpl queue.tpl map.tpl set.tpl; do
   echo $tpl
   cat threadsafe/$tpl | \
       fgrep -v '"sync"' | fgrep -v 'sync.RWMutex' | \

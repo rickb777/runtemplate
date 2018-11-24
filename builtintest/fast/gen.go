@@ -14,6 +14,11 @@ package fast
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=Apple  Stringer:false Comparable:true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X2 Type=big.Int Import:"math/big"
 
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=string  Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=int     Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=Apple   Stringer:false Comparable:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X2 Type=big.Int Import:"math/big"
+
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=string Stringer:true  Ordered:false Numeric:false
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=int    Stringer:true  Ordered:true  Numeric:true GobEncode:true
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=Apple  Stringer:false
@@ -32,6 +37,7 @@ package fast
 
 //go:generate runtemplate -tpl ../collection_test.tpl  Type=int Mutable:true Numeric:true
 //go:generate runtemplate -tpl ../list_test.tpl        Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true
+//go:generate runtemplate -tpl ../queue_test.tpl       Type=int Mutable:true M:
 //go:generate runtemplate -tpl ../set_test.tpl         Type=int Mutable:true Numeric:true M:.m GobEncode:true Append:true
 //go:generate runtemplate -tpl ../map_test.tpl Key=int Type=int Mutable:true Numeric:true M:.m GobEncode:true
 
