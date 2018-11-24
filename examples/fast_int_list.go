@@ -365,6 +365,10 @@ func (list *FastIntList) DoReverse() *FastIntList {
 //
 // The original list is not modified.
 func (list *FastIntList) Shuffle() *FastIntList {
+	if list == nil {
+		return nil
+	}
+
 	return list.Clone().doShuffle()
 }
 
@@ -372,14 +376,14 @@ func (list *FastIntList) Shuffle() *FastIntList {
 //
 // The modified list is returned.
 func (list *FastIntList) DoShuffle() *FastIntList {
-	return list.doShuffle()
-}
-
-func (list *FastIntList) doShuffle() *FastIntList {
 	if list == nil {
 		return nil
 	}
 
+	return list.doShuffle()
+}
+
+func (list *FastIntList) doShuffle() *FastIntList {
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)

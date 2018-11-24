@@ -396,6 +396,10 @@ func (list *AppleList) DoReverse() *AppleList {
 //
 // The original list is not modified.
 func (list *AppleList) Shuffle() *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	return list.Clone().doShuffle()
 }
 
@@ -403,16 +407,16 @@ func (list *AppleList) Shuffle() *AppleList {
 //
 // The modified list is returned.
 func (list *AppleList) DoShuffle() *AppleList {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doShuffle()
 }
 
 func (list *AppleList) doShuffle() *AppleList {
-	if list == nil {
-		return nil
-	}
-
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)

@@ -438,6 +438,10 @@ func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List 
 //
 // The original list is not modified.
 func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	return list.Clone().doShuffle()
 }
 
@@ -445,16 +449,16 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 //
 // The modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoShuffle() *{{.UPrefix}}{{.UType}}List {
+	if list == nil {
+		return nil
+	}
+
 	list.s.Lock()
 	defer list.s.Unlock()
 	return list.doShuffle()
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doShuffle() *{{.UPrefix}}{{.UType}}List {
-	if list == nil {
-		return nil
-	}
-
 	numItems := len(list.m)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)

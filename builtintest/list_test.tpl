@@ -640,7 +640,7 @@ func Test{{.UType}}ListDoReverse(t *testing.T) {
 func Test{{.UType}}ListShuffle(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 1000)...)
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
 
 	b := a.Shuffle()
 
@@ -655,6 +655,29 @@ func Test{{.UType}}ListShuffle(t *testing.T) {
 	a = nil
 	a.Shuffle()
 }
+{{- if and .Append .Mutable}}
+
+func Test{{.UType}}ListDoShuffle(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+
+	b := a.Clone()
+	c := b.DoShuffle()
+
+	g.Expect(b.Equals(a)).To(BeFalse(), "%v %v", a, b)
+	g.Expect(b.Equals(c)).To(BeTrue(), "%v %v", c, b)
+
+	// prove that the same set of numbers is present
+	d := b.Sorted()
+
+	g.Expect(d.Equals(a)).To(BeTrue(), "%v %v", a, d)
+
+    // check correct nil handling
+	a = nil
+	a.DoShuffle()
+}
+{{- end}}
 
 func Test{{.UType}}ListTake(t *testing.T) {
 	g := NewGomegaWithT(t)
