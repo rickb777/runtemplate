@@ -3,6 +3,7 @@
 // The types must not be shared between goroutines.
 package simple
 
+//-------------------------------------------------------------------------------------------------
 // Code generation with non-pointer values
 
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=string  Stringer:true  Comparable:true Ordered:false Numeric:false
@@ -29,6 +30,7 @@ package simple
 //go:generate runtemplate -tpl ../set_test.tpl          Type=int Mutable:true M:
 //go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int Mutable:true M:
 
+//-------------------------------------------------------------------------------------------------
 // Code generation with pointer values
 
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=P1 Type=*string  Stringer:true  Comparable:true Ordered:false Numeric:false
@@ -42,6 +44,8 @@ package simple
 //go:generate runtemplate -tpl simple/map.tpl   Prefix=SP1 Key=*string Type=*big.Int  Import:"math/big"
 //go:generate runtemplate -tpl simple/map.tpl   Prefix=SP1 Key=*Apple  Type=*string
 //go:generate runtemplate -tpl simple/map.tpl   Prefix=SP1 Key=*Apple  Type=*Pear
+
+//-------------------------------------------------------------------------------------------------
 
 type Apple struct{}
 type Pear struct{}

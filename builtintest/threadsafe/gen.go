@@ -1,7 +1,8 @@
 // This package contains example collection types using the thread-safe templates.
-// Encapsulation of the underlying data is also provided.
+// Encapsulation of the underlying data is a feature.
 package threadsafe
 
+//-------------------------------------------------------------------------------------------------
 // Code generation with non-pointer values
 
 //go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=X1 Type=string Stringer:true Comparable:true
@@ -14,11 +15,6 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X1 Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X1 Type=Apple  Stringer:false Comparable:true
 //go:generate runtemplate -tpl threadsafe/list.tpl       Prefix=X2 Type=big.Int Import:"math/big"
-
-//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X1 Type=string  ToList:true Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X1 Type=int     ToList:true Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X1 Type=Apple   ToList:true Stringer:false Comparable:true
-//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X2 Type=big.Int ToList:true Import:"math/big"
 
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=string Stringer:true  Ordered:false Numeric:false
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=int    Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true
@@ -34,16 +30,22 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=Apple  Type=Pear                    Stringer:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX2 Key=Apple  Type=big.Int  Import:"math/big"
 
+//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X1 Type=string  ToList:true Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X1 Type=int     ToList:true Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X1 Type=Apple   ToList:true Stringer:false Comparable:true
+//go:generate runtemplate -tpl threadsafe/queue.tpl      Prefix=X2 Type=big.Int ToList:true Import:"math/big"
+
 //go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email SortableSlice:true
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=X1 Type=Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 
 //go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true Comparable:true
 //go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
-//go:generate runtemplate -tpl ../queue_test.tpl         Type=int Mutable:true M:
+//go:generate runtemplate -tpl ../queue_test.tpl         Type=int Mutable:true Numeric:true                 M:
 //go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
 //go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
+//-------------------------------------------------------------------------------------------------
 // Code generation with pointer values
 
 //go:generate runtemplate -tpl threadsafe/collection.tpl Prefix=P1 Type=*string Stringer:true Comparable:true
@@ -70,6 +72,8 @@ package threadsafe
 
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=P1 Type=*Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=P1 Type=*Apple ToPrefix=P1 ToType=*Pear
+
+//-------------------------------------------------------------------------------------------------
 
 type Apple struct {
 	N int

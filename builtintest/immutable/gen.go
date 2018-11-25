@@ -1,6 +1,8 @@
-// This package contains example collection types using the non-thread-safe templates. Encapsulation of the underlying data is provided.
+// This package contains example collection types using the non-thread-safe templates.
+// Encapsulation of the underlying data is a feature.
 package immutable
 
+//-------------------------------------------------------------------------------------------------
 // Code generation with non-pointer values
 
 //go:generate runtemplate -tpl immutable/collection.tpl Prefix=X1 Type=string Stringer:true Comparable:true
@@ -35,6 +37,7 @@ package immutable
 //go:generate runtemplate -tpl ../set_test.tpl           Type=int Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
+//-------------------------------------------------------------------------------------------------
 // Code generation with pointer values
 
 //zz:generate runtemplate -tpl immutable/collection.tpl Prefix=P1 Type=*string Stringer:true Comparable:true
@@ -53,6 +56,8 @@ package immutable
 //zz:generate runtemplate -tpl immutable/map.tpl        Prefix=TP1 Key=*string Type=*Apple
 //zz:generate runtemplate -tpl immutable/map.tpl        Prefix=TP1 Key=*Apple  Type=*string
 //zz:generate runtemplate -tpl immutable/map.tpl        Prefix=TP1 Key=*Apple  Type=*Pear
+
+//-------------------------------------------------------------------------------------------------
 
 type Apple struct {
 	N int
