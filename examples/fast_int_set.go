@@ -13,7 +13,7 @@ import (
 	"fmt"
 )
 
-// FastIntSet is the primary type that represents a set
+// FastIntSet is the primary type that represents a set.
 type FastIntSet struct {
 	m map[int]struct{}
 }

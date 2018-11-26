@@ -16,11 +16,12 @@ import (
 	"sort"
 )
 
-// ImmutableIntList contains a slice of type int. Use it where you would use []int.
-// To add items to the list, simply use the normal built-in append function.
-// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
+// ImmutableIntList contains a slice of type int. It is designed
+// to be immutable - ideal for race-free reference lists etc.
+// It encapsulates the slice and provides methods to access it.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
+//
+// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type ImmutableIntList struct {
 	m []int

@@ -16,11 +16,10 @@ import (
 	"sync"
 )
 
-// AppleList contains a slice of type Apple. Use it where you would use []Apple.
-// To add items to the list, simply use the normal built-in append function.
+// AppleList contains a slice of type Apple.
+// It encapsulates the slice and provides methods to access or mutate it.
+//
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type AppleList struct {
 	s *sync.RWMutex
@@ -370,7 +369,7 @@ func (list *AppleList) Reverse() *AppleList {
 // DoReverse alters a AppleList with all elements in the reverse order.
 // Unlike Reverse, it does not allocate new memory.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *AppleList) DoReverse() *AppleList {
 	if list == nil {
 		return nil
@@ -405,7 +404,7 @@ func (list *AppleList) Shuffle() *AppleList {
 
 // DoShuffle returns a shuffled AppleList, using a version of the Fisher-Yates shuffle.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *AppleList) DoShuffle() *AppleList {
 	if list == nil {
 		return nil
@@ -432,7 +431,8 @@ func (list *AppleList) Add(more ...Apple) {
 	list.Append(more...)
 }
 
-// Append adds items to the current list, returning the modified list.
+// Append adds items to the current list.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 func (list *AppleList) Append(more ...Apple) *AppleList {
 	if list == nil {
 		if len(more) == 0 {
@@ -454,7 +454,7 @@ func (list *AppleList) doAppend(more ...Apple) *AppleList {
 // DoInsertAt modifies a AppleList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
-// The modified list is returned.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if the index is out of range.
 func (list *AppleList) DoInsertAt(index int, more ...Apple) *AppleList {
 	if list == nil {
@@ -499,7 +499,7 @@ func (list *AppleList) doInsertAt(index int, more ...Apple) *AppleList {
 // DoDeleteFirst modifies a AppleList by deleting n elements from the start of
 // the list.
 //
-// The modified list is returned.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *AppleList) DoDeleteFirst(n int) *AppleList {
 	list.s.Lock()
@@ -510,7 +510,7 @@ func (list *AppleList) DoDeleteFirst(n int) *AppleList {
 // DoDeleteLast modifies a AppleList by deleting n elements from the end of
 // the list.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *AppleList) DoDeleteLast(n int) *AppleList {
 	list.s.Lock()
@@ -520,7 +520,7 @@ func (list *AppleList) DoDeleteLast(n int) *AppleList {
 
 // DoDeleteAt modifies a AppleList by deleting n elements from a given index.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *AppleList) DoDeleteAt(index, n int) *AppleList {
 	list.s.Lock()
@@ -554,7 +554,7 @@ func (list *AppleList) doDeleteAt(index, n int) *AppleList {
 // DoKeepWhere modifies a AppleList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *AppleList) DoKeepWhere(p func(Apple) bool) *AppleList {
 	if list == nil {
 		return nil

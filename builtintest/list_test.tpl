@@ -56,6 +56,9 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 
 	b := a.Append(1, 2, 3).Append(4, 5).Append(6, 7)
 
+	// a is not mutated when it is nil
+	g.Expect(a.Size()).To(Equal(0))
+
 	g.Expect(b.Size()).To(Equal(7))
 	g.Expect(b.Get(3)).To(Equal(4))
 	g.Expect(b.Last()).To(Equal(7))

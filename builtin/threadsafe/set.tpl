@@ -25,7 +25,7 @@ import (
 {{end}}
 )
 
-// {{.UPrefix}}{{.UType}}Set is the primary type that represents a set
+// {{.UPrefix}}{{.UType}}Set is the primary type that represents a set.
 type {{.UPrefix}}{{.UType}}Set struct {
 	s *sync.RWMutex
 	m map[{{.Type}}]struct{}

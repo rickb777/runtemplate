@@ -25,11 +25,10 @@ import (
 {{- end}}
 )
 
-// {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
-// To add items to the list, simply use the normal built-in append function.
+// {{.UPrefix}}{{.UType}}List contains a slice of type {{.PType}}.
+// It encapsulates the slice and provides methods to access or mutate it.
+//
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type {{.UPrefix}}{{.UType}}List struct {
 	m []{{.PType}}
@@ -56,7 +55,7 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.UType}}List, bool) {
 	result := Make{{.UPrefix}}{{.UType}}List(0, len(values))
-{{if and .Numeric (eq .Type .PType)}}
+{{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:
@@ -372,7 +371,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 // DoReverse alters a {{.UPrefix}}{{.UType}}List with all elements in the reverse order.
 // Unlike Reverse, it does not allocate new memory.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
@@ -405,7 +404,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 
 // DoShuffle returns a shuffled {{.UPrefix}}{{.UType}}List, using a version of the Fisher-Yates shuffle.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoShuffle() *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
@@ -430,7 +429,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
 	list.Append(more...)
 }
 
-// Append adds items to the current list, returning the modified list.
+// Append adds items to the current list.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) Append(more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		if len(more) == 0 {
@@ -450,7 +450,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doAppend(more ...{{.PType}}) *{{.UPrefix
 // DoInsertAt modifies a {{.UPrefix}}{{.UType}}List by inserting elements at a given index.
 // This is a generalised version of Append.
 //
-// The modified list is returned.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if the index is out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoInsertAt(index int, more ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
@@ -493,7 +493,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doInsertAt(index int, more ...{{.PType}}
 // DoDeleteFirst modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from the start of
 // the list.
 //
-// The modified list is returned.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoDeleteFirst(n int) *{{.UPrefix}}{{.UType}}List {
 	return list.doDeleteAt(0, n)
@@ -502,7 +502,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DoDeleteFirst(n int) *{{.UPrefix}}{{.UTy
 // DoDeleteLast modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from the end of
 // the list.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoDeleteLast(n int) *{{.UPrefix}}{{.UType}}List {
 	return list.doDeleteAt(len(list.m)-n, n)
@@ -510,7 +510,7 @@ func (list *{{.UPrefix}}{{.UType}}List) DoDeleteLast(n int) *{{.UPrefix}}{{.UTyp
 
 // DoDeleteAt modifies a {{.UPrefix}}{{.UType}}List by deleting n elements from a given index.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *{{.UPrefix}}{{.UType}}List) DoDeleteAt(index, n int) *{{.UPrefix}}{{.UType}}List {
 	return list.doDeleteAt(index, n)
@@ -542,7 +542,7 @@ func (list *{{.UPrefix}}{{.UType}}List) doDeleteAt(index, n int) *{{.UPrefix}}{{
 // DoKeepWhere modifies a {{.UPrefix}}{{.UType}}List by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *{{.UPrefix}}{{.UType}}List) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil

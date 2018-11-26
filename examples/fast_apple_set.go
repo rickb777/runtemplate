@@ -12,7 +12,7 @@ import (
 	"encoding/gob"
 )
 
-// FastAppleSet is the primary type that represents a set
+// FastAppleSet is the primary type that represents a set.
 type FastAppleSet struct {
 	m map[Apple]struct{}
 }

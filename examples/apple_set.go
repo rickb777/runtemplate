@@ -14,7 +14,7 @@ import (
 	"sync"
 )
 
-// AppleSet is the primary type that represents a set
+// AppleSet is the primary type that represents a set.
 type AppleSet struct {
 	s *sync.RWMutex
 	m map[Apple]struct{}

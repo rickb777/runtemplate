@@ -15,7 +15,7 @@ import (
 	"sync"
 )
 
-// IntSet is the primary type that represents a set
+// IntSet is the primary type that represents a set.
 type IntSet struct {
 	s *sync.RWMutex
 	m map[int]struct{}

@@ -17,11 +17,10 @@ import (
 	"sync"
 )
 
-// IntList contains a slice of type int. Use it where you would use []int.
-// To add items to the list, simply use the normal built-in append function.
+// IntList contains a slice of type int.
+// It encapsulates the slice and provides methods to access or mutate it.
+//
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type IntList struct {
 	s *sync.RWMutex
@@ -393,7 +392,7 @@ func (list *IntList) Reverse() *IntList {
 // DoReverse alters a IntList with all elements in the reverse order.
 // Unlike Reverse, it does not allocate new memory.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *IntList) DoReverse() *IntList {
 	if list == nil {
 		return nil
@@ -428,7 +427,7 @@ func (list *IntList) Shuffle() *IntList {
 
 // DoShuffle returns a shuffled IntList, using a version of the Fisher-Yates shuffle.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *IntList) DoShuffle() *IntList {
 	if list == nil {
 		return nil
@@ -455,7 +454,8 @@ func (list *IntList) Add(more ...int) {
 	list.Append(more...)
 }
 
-// Append adds items to the current list, returning the modified list.
+// Append adds items to the current list.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 func (list *IntList) Append(more ...int) *IntList {
 	if list == nil {
 		if len(more) == 0 {
@@ -477,7 +477,7 @@ func (list *IntList) doAppend(more ...int) *IntList {
 // DoInsertAt modifies a IntList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
-// The modified list is returned.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if the index is out of range.
 func (list *IntList) DoInsertAt(index int, more ...int) *IntList {
 	if list == nil {
@@ -522,7 +522,7 @@ func (list *IntList) doInsertAt(index int, more ...int) *IntList {
 // DoDeleteFirst modifies a IntList by deleting n elements from the start of
 // the list.
 //
-// The modified list is returned.
+// If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *IntList) DoDeleteFirst(n int) *IntList {
 	list.s.Lock()
@@ -533,7 +533,7 @@ func (list *IntList) DoDeleteFirst(n int) *IntList {
 // DoDeleteLast modifies a IntList by deleting n elements from the end of
 // the list.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 // Panics if n is large enough to take the index out of range.
 func (list *IntList) DoDeleteLast(n int) *IntList {
 	list.s.Lock()
@@ -543,7 +543,7 @@ func (list *IntList) DoDeleteLast(n int) *IntList {
 
 // DoDeleteAt modifies a IntList by deleting n elements from a given index.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
 func (list *IntList) DoDeleteAt(index, n int) *IntList {
 	list.s.Lock()
@@ -577,7 +577,7 @@ func (list *IntList) doDeleteAt(index, n int) *IntList {
 // DoKeepWhere modifies a IntList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
-// The modified list is returned.
+// The list is modified and the modified list is returned.
 func (list *IntList) DoKeepWhere(p func(int) bool) *IntList {
 	if list == nil {
 		return nil
