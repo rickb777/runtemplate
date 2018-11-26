@@ -1,4 +1,5 @@
 // An encapsulated map[string]Apple.
+// Not thread-safe.
 //
 // Generated from fast/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always

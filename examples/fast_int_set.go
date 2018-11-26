@@ -1,4 +1,5 @@
 // An encapsulated map[int]struct{} used as a set.
+// Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=int
 // options: Comparable:always Numeric:true Ordered:true Stringer:true

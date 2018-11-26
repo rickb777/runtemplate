@@ -1,4 +1,5 @@
 // An encapsulated []{{.Type}}.
+// Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:always

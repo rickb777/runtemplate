@@ -1,4 +1,5 @@
 // An encapsulated []Apple.
+// Not thread-safe.
 //
 // Generated from fast/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always

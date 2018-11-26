@@ -1,4 +1,5 @@
 // An encapsulated map[Apple]struct{} used as a set.
+// Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false

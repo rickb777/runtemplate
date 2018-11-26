@@ -1,4 +1,5 @@
 // An encapsulated map[{{.Type}}]struct{} used as a set.
+// Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}

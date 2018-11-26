@@ -1,4 +1,5 @@
 // An encapsulated []int.
+// Not thread-safe.
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always

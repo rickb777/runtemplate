@@ -1,4 +1,5 @@
 // An encapsulated map[int]int.
+// Not thread-safe.
 //
 // Generated from fast/map.tpl with Key=int Type=int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always

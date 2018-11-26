@@ -1,5 +1,5 @@
 // A queue or fifo that holds {{.Type}}, implemented via a ring buffer.
-// Not thread-safe.
+// Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} ToList:{{.ToList}}
