@@ -63,7 +63,7 @@ func (set SimpleAppleSet) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the set. It does not clone the underlying elements.
 func (set SimpleAppleSet) Clone() SimpleAppleSet {
 	clonedSet := NewSimpleAppleSet()
 	for v := range set {
@@ -118,13 +118,13 @@ func (set SimpleAppleSet) doAdd(i Apple) {
 	set[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set SimpleAppleSet) Contains(i Apple) bool {
 	_, found := set[i]
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set SimpleAppleSet) ContainsAll(i ...Apple) bool {
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -136,7 +136,7 @@ func (set SimpleAppleSet) ContainsAll(i ...Apple) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set SimpleAppleSet) IsSubset(other SimpleAppleSet) bool {
 	for v := range set {
 		if !other.Contains(v) {
@@ -146,12 +146,13 @@ func (set SimpleAppleSet) IsSubset(other SimpleAppleSet) bool {
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set SimpleAppleSet) IsSuperset(other SimpleAppleSet) bool {
 	return other.IsSubset(set)
 }
 
-// Union returns a new set with all items in both sets.
+// Append inserts more items into a clone of the set. It returns the augmented set.
+// The original set is unmodified.
 func (set SimpleAppleSet) Append(more ...Apple) SimpleAppleSet {
 	unionedSet := set.Clone()
 	for _, v := range more {
@@ -207,12 +208,12 @@ func (set SimpleAppleSet) SymmetricDifference(other SimpleAppleSet) SimpleAppleS
 	return aDiff.Union(bDiff)
 }
 
-// Clear clears the entire set to be the empty set.
+// Clear the entire set. Aterwards, it will be an empty set.
 func (set *SimpleAppleSet) Clear() {
 	*set = NewSimpleAppleSet()
 }
 
-// Remove allows the removal of a single item from the set.
+// Remove a single item from the set.
 func (set SimpleAppleSet) Remove(i Apple) {
 	delete(set, i)
 }
@@ -272,6 +273,7 @@ func (set SimpleAppleSet) Foreach(fn func(Apple)) {
 //-------------------------------------------------------------------------------------------------
 
 // Filter returns a new SimpleAppleSet whose elements return true for func.
+//
 // The original set is not modified
 func (set SimpleAppleSet) Filter(fn func(Apple) bool) SimpleAppleSet {
 	result := NewSimpleAppleSet()
@@ -287,6 +289,7 @@ func (set SimpleAppleSet) Filter(fn func(Apple) bool) SimpleAppleSet {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set SimpleAppleSet) Partition(p func(Apple) bool) (SimpleAppleSet, SimpleAppleSet) {
 	matching := NewSimpleAppleSet()
@@ -317,8 +320,8 @@ func (set SimpleAppleSet) Map(fn func(Apple) Apple) SimpleAppleSet {
 }
 
 // FlatMap returns a new SimpleAppleSet by transforming every element with a function fn that
-// returns zero or more items in a slice. The resulting list may have a different size to the original list.
-// The original list is not modified.
+// returns zero or more items in a slice. The resulting set may have a different size to the original set.
+// The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
@@ -349,7 +352,7 @@ func (set SimpleAppleSet) CountBy(predicate func(Apple) bool) (result int) {
 // element is returned. Panics if there are no elements.
 func (set SimpleAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	var m Apple
 	first := true
@@ -369,7 +372,7 @@ func (set SimpleAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 // element is returned. Panics if there are no elements.
 func (set SimpleAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	var m Apple
 	first := true
@@ -386,7 +389,7 @@ func (set SimpleAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set SimpleAppleSet) Equals(other SimpleAppleSet) bool {

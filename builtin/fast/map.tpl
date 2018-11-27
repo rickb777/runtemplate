@@ -126,7 +126,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.Value
 	return s
 }
 
-// slice returns the internal elements of the current list. This is a seam for testing etc.
+// slice returns the internal elements of the map. This is a seam for testing etc.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) slice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
 	if mm == nil {
 		return nil
@@ -242,6 +242,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
+// This is similar to Filter except that the map is modified.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PType}}) bool) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 
 	removed := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, 0)
@@ -306,6 +307,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 
 // Find returns the first {{.Type}} that returns true for some function.
 // False is returned if none match.
+// The original map is not modified.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
 
 	for k, v := range mm.m {
@@ -319,6 +321,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	if mm == nil {
 		return nil
@@ -338,6 +341,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching *{{.UPrefix}}{{.UKey}}{{.UType}}Map, others *{{.UPrefix}}{{.UKey}}{{.UType}}Map) {
 	if mm == nil {
 		return nil, nil

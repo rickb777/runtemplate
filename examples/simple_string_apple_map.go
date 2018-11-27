@@ -171,6 +171,7 @@ func (mm SimpleStringAppleMap) NonEmpty() bool {
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
+// This is similar to Filter except that the map is modified.
 func (mm SimpleStringAppleMap) DropWhere(fn func(string, Apple) bool) SimpleStringAppleTuples {
 	removed := make(SimpleStringAppleTuples, 0)
 	for k, v := range mm {
@@ -202,6 +203,7 @@ func (mm SimpleStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -214,12 +216,13 @@ func (mm SimpleStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 // Find returns the first Apple that returns true for some function.
 // False is returned if none match.
-// The original map is not modified
+// The original map is not modified.
 func (mm SimpleStringAppleMap) Find(fn func(string, Apple) bool) (SimpleStringAppleTuple, bool) {
 	for k, v := range mm {
 		if fn(k, v) {
@@ -232,7 +235,7 @@ func (mm SimpleStringAppleMap) Find(fn func(string, Apple) bool) (SimpleStringAp
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-// The original map is not modified
+// The original map is not modified.
 func (mm SimpleStringAppleMap) Filter(fn func(string, Apple) bool) SimpleStringAppleMap {
 	result := NewSimpleStringAppleMap()
 	for k, v := range mm {
@@ -240,13 +243,14 @@ func (mm SimpleStringAppleMap) Filter(fn func(string, Apple) bool) SimpleStringA
 			result[k] = v
 		}
 	}
+
 	return result
 }
 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-// The original map is not modified
+// The original map is not modified.
 func (mm SimpleStringAppleMap) Partition(fn func(string, Apple) bool) (matching SimpleStringAppleMap, others SimpleStringAppleMap) {
 	matching = NewSimpleStringAppleMap()
 	others = NewSimpleStringAppleMap()

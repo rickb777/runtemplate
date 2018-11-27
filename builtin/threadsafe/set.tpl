@@ -105,7 +105,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) slice() []{{.Type}} {
 	}
 
 	var s []{{.Type}}
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -125,7 +125,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 	defer set.s.RUnlock()
 
 	var s []interface{}
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -142,7 +142,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Clone() *{{.UPrefix}}{{.UType}}Set {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -203,7 +203,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 	set.m[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	if set == nil {
 		return false
@@ -216,7 +216,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	if set == nil {
 		return false
@@ -235,7 +235,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set) bool {
 	if set.IsEmpty() {
 		return !other.IsEmpty()
@@ -250,7 +250,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -258,7 +258,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *{{.UPrefix}}{{.UType}}Set) IsSuperset(other *{{.UPrefix}}{{.UType}}Set) bool {
 	if set.IsEmpty() {
 		return other.IsEmpty()
@@ -286,7 +286,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v, _ := range other.m {
+	for v := range other.m {
 		unionedSet.doAdd(v)
 	}
 
@@ -308,13 +308,13 @@ func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v, _ := range set.m {
+		for v := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v, _ := range other.m {
+		for v := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -341,7 +341,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Se
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -357,7 +357,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) SymmetricDifference(other *{{.UPrefix}}{{.
 	return aDiff.Union(bDiff)
 }
 
-// Clear clears the entire set to be the empty set.
+// Clear the entire set. Aterwards, it will be an empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 	if set != nil {
 		set.s.Lock()
@@ -367,7 +367,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 	}
 }
 
-// Remove removes a single item from the set.
+// Remove a single item from the set.
 func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	set.s.Lock()
 	defer set.s.Unlock()
@@ -386,7 +386,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 			set.s.RLock()
 			defer set.s.RUnlock()
 
-			for v, _ := range set.m {
+			for v := range set.m {
 				ch <- v
 			}
 		}
@@ -412,7 +412,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -431,7 +431,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -449,20 +449,20 @@ func (set *{{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		fn(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for some function.
-// False is returned if none match.
+// Find returns the first {{.Type}} that returns true for some function. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set *{{.UPrefix}}{{.UType}}Set) Find(fn func({{.PType}}) bool) ({{.PType}}, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return v, true
 		}
@@ -488,7 +488,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) *{{.UPrefi
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -496,7 +496,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) *{{.UPrefi
 	return result
 }
 
-// Partition returns two new {{.Type}}Lists whose elements return true or false for the predicate, p.
+// Partition returns two new {{.Type}}Sets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -512,7 +512,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPr
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -536,7 +536,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) *{{.UP
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 
@@ -558,7 +558,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) 
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		for _, x := range fn(v) {
 			result.m[x] = struct{}{}
 		}
@@ -572,7 +572,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (r
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -592,7 +592,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
 
 	var m {{.Type}}
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -611,7 +611,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
 
 	var m {{.Type}}
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -636,7 +636,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool
 
 	var m {{.Type}}
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -660,7 +660,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool
 
 	var m {{.Type}}
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -681,7 +681,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 	defer set.s.RUnlock()
 
 	sum := {{.Type}}(0)
-	for v, _ := range set.m {
+	for v := range set.m {
 		sum = sum + {{.TypeStar}}v
 	}
 	return sum
@@ -690,7 +690,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) bool {
@@ -711,7 +711,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) b
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -730,7 +730,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
 
 	strings := make([]string, len(set.m))
 	i := 0
-	for v, _ := range set.m {
+	for v := range set.m {
 		strings[i] = fmt.Sprintf("%v", v)
 		i++
 	}
@@ -763,7 +763,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after stri
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = between
@@ -807,7 +807,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 	}
 
 	strings := make(map[string]bool)
-	for v, _ := range set.m {
+	for v := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true
 	}
 	return strings

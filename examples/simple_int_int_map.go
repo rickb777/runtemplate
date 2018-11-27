@@ -171,6 +171,7 @@ func (mm SimpleIntIntMap) NonEmpty() bool {
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
+// This is similar to Filter except that the map is modified.
 func (mm SimpleIntIntMap) DropWhere(fn func(int, int) bool) SimpleIntIntTuples {
 	removed := make(SimpleIntIntTuples, 0)
 	for k, v := range mm {
@@ -202,6 +203,7 @@ func (mm SimpleIntIntMap) Forall(fn func(int, int) bool) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -214,12 +216,13 @@ func (mm SimpleIntIntMap) Exists(fn func(int, int) bool) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
-// The original map is not modified
+// The original map is not modified.
 func (mm SimpleIntIntMap) Find(fn func(int, int) bool) (SimpleIntIntTuple, bool) {
 	for k, v := range mm {
 		if fn(k, v) {
@@ -232,7 +235,7 @@ func (mm SimpleIntIntMap) Find(fn func(int, int) bool) (SimpleIntIntTuple, bool)
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-// The original map is not modified
+// The original map is not modified.
 func (mm SimpleIntIntMap) Filter(fn func(int, int) bool) SimpleIntIntMap {
 	result := NewSimpleIntIntMap()
 	for k, v := range mm {
@@ -240,13 +243,14 @@ func (mm SimpleIntIntMap) Filter(fn func(int, int) bool) SimpleIntIntMap {
 			result[k] = v
 		}
 	}
+
 	return result
 }
 
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-// The original map is not modified
+// The original map is not modified.
 func (mm SimpleIntIntMap) Partition(fn func(int, int) bool) (matching SimpleIntIntMap, others SimpleIntIntMap) {
 	matching = NewSimpleIntIntMap()
 	others = NewSimpleIntIntMap()

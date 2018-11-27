@@ -85,7 +85,7 @@ func (set *FastIntSet) slice() []int {
 	}
 
 	var s []int
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -101,7 +101,7 @@ func (set *FastIntSet) ToSlice() []int {
 func (set *FastIntSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -115,7 +115,7 @@ func (set *FastIntSet) Clone() *FastIntSet {
 
 	clonedSet := NewFastIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -171,7 +171,7 @@ func (set *FastIntSet) doAdd(i int) {
 	set.m[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *FastIntSet) Contains(i int) bool {
 	if set == nil {
 		return false
@@ -181,7 +181,7 @@ func (set *FastIntSet) Contains(i int) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *FastIntSet) ContainsAll(i ...int) bool {
 	if set == nil {
 		return false
@@ -197,7 +197,7 @@ func (set *FastIntSet) ContainsAll(i ...int) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set *FastIntSet) IsSubset(other *FastIntSet) bool {
 	if set.IsEmpty() {
 		return !other.IsEmpty()
@@ -207,7 +207,7 @@ func (set *FastIntSet) IsSubset(other *FastIntSet) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -215,7 +215,7 @@ func (set *FastIntSet) IsSubset(other *FastIntSet) bool {
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *FastIntSet) IsSuperset(other *FastIntSet) bool {
 	if set.IsEmpty() {
 		return other.IsEmpty()
@@ -240,7 +240,7 @@ func (set *FastIntSet) Union(other *FastIntSet) *FastIntSet {
 
 	unionedSet := set.Clone()
 
-	for v, _ := range other.m {
+	for v := range other.m {
 		unionedSet.doAdd(v)
 	}
 
@@ -257,13 +257,13 @@ func (set *FastIntSet) Intersect(other *FastIntSet) *FastIntSet {
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v, _ := range set.m {
+		for v := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v, _ := range other.m {
+		for v := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -285,7 +285,7 @@ func (set *FastIntSet) Difference(other *FastIntSet) *FastIntSet {
 
 	differencedSet := NewFastIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -301,7 +301,7 @@ func (set *FastIntSet) SymmetricDifference(other *FastIntSet) *FastIntSet {
 	return aDiff.Union(bDiff)
 }
 
-// Clear clears the entire set to be the empty set.
+// Clear the entire set. Aterwards, it will be an empty set.
 func (set *FastIntSet) Clear() {
 	if set != nil {
 
@@ -309,7 +309,7 @@ func (set *FastIntSet) Clear() {
 	}
 }
 
-// Remove removes a single item from the set.
+// Remove a single item from the set.
 func (set *FastIntSet) Remove(i int) {
 
 	delete(set.m, i)
@@ -324,7 +324,7 @@ func (set *FastIntSet) Send() <-chan int {
 	go func() {
 		if set != nil {
 
-			for v, _ := range set.m {
+			for v := range set.m {
 				ch <- v
 			}
 		}
@@ -347,7 +347,7 @@ func (set *FastIntSet) Forall(fn func(int) bool) bool {
 		return true
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -363,7 +363,7 @@ func (set *FastIntSet) Exists(fn func(int) bool) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -378,18 +378,18 @@ func (set *FastIntSet) Foreach(fn func(int)) {
 		return
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		fn(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function.
-// False is returned if none match.
+// Find returns the first int that returns true for some function. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set *FastIntSet) Find(fn func(int) bool) (int, bool) {
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return v, true
 		}
@@ -410,7 +410,7 @@ func (set *FastIntSet) Filter(fn func(int) bool) *FastIntSet {
 
 	result := NewFastIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -418,7 +418,7 @@ func (set *FastIntSet) Filter(fn func(int) bool) *FastIntSet {
 	return result
 }
 
-// Partition returns two new intLists whose elements return true or false for the predicate, p.
+// Partition returns two new intSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -432,7 +432,7 @@ func (set *FastIntSet) Partition(p func(int) bool) (*FastIntSet, *FastIntSet) {
 	matching := NewFastIntSet()
 	others := NewFastIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -454,7 +454,7 @@ func (set *FastIntSet) Map(fn func(int) int) *FastIntSet {
 
 	result := NewFastIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 
@@ -474,7 +474,7 @@ func (set *FastIntSet) FlatMap(fn func(int) []int) *FastIntSet {
 
 	result := NewFastIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		for _, x := range fn(v) {
 			result.m[x] = struct{}{}
 		}
@@ -486,7 +486,7 @@ func (set *FastIntSet) FlatMap(fn func(int) []int) *FastIntSet {
 // CountBy gives the number elements of FastIntSet that return true for the passed predicate.
 func (set *FastIntSet) CountBy(predicate func(int) bool) (result int) {
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -503,7 +503,7 @@ func (set *FastIntSet) Min() int {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -520,7 +520,7 @@ func (set *FastIntSet) Max() (result int) {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -541,7 +541,7 @@ func (set *FastIntSet) MinBy(less func(int, int) bool) int {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -562,7 +562,7 @@ func (set *FastIntSet) MaxBy(less func(int, int) bool) int {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -580,7 +580,7 @@ func (set *FastIntSet) MaxBy(less func(int, int) bool) int {
 func (set *FastIntSet) Sum() int {
 
 	sum := int(0)
-	for v, _ := range set.m {
+	for v := range set.m {
 		sum = sum + v
 	}
 	return sum
@@ -588,7 +588,7 @@ func (set *FastIntSet) Sum() int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *FastIntSet) Equals(other *FastIntSet) bool {
@@ -604,7 +604,7 @@ func (set *FastIntSet) Equals(other *FastIntSet) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -620,7 +620,7 @@ func (set *FastIntSet) StringList() []string {
 
 	strings := make([]string, len(set.m))
 	i := 0
-	for v, _ := range set.m {
+	for v := range set.m {
 		strings[i] = fmt.Sprintf("%v", v)
 		i++
 	}
@@ -650,7 +650,7 @@ func (set *FastIntSet) mkString3Bytes(before, between, after string) *bytes.Buff
 	b.WriteString(before)
 	sep := ""
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = between
@@ -690,7 +690,7 @@ func (set *FastIntSet) StringMap() map[string]bool {
 	}
 
 	strings := make(map[string]bool)
-	for v, _ := range set.m {
+	for v := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true
 	}
 	return strings

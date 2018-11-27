@@ -88,7 +88,7 @@ func (set *IntSet) slice() []int {
 	}
 
 	var s []int
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -108,7 +108,7 @@ func (set *IntSet) ToInterfaceSlice() []interface{} {
 	defer set.s.RUnlock()
 
 	var s []interface{}
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -125,7 +125,7 @@ func (set *IntSet) Clone() *IntSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -186,7 +186,7 @@ func (set *IntSet) doAdd(i int) {
 	set.m[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *IntSet) Contains(i int) bool {
 	if set == nil {
 		return false
@@ -199,7 +199,7 @@ func (set *IntSet) Contains(i int) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *IntSet) ContainsAll(i ...int) bool {
 	if set == nil {
 		return false
@@ -218,7 +218,7 @@ func (set *IntSet) ContainsAll(i ...int) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set *IntSet) IsSubset(other *IntSet) bool {
 	if set.IsEmpty() {
 		return !other.IsEmpty()
@@ -233,7 +233,7 @@ func (set *IntSet) IsSubset(other *IntSet) bool {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -241,7 +241,7 @@ func (set *IntSet) IsSubset(other *IntSet) bool {
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *IntSet) IsSuperset(other *IntSet) bool {
 	if set.IsEmpty() {
 		return other.IsEmpty()
@@ -269,7 +269,7 @@ func (set *IntSet) Union(other *IntSet) *IntSet {
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v, _ := range other.m {
+	for v := range other.m {
 		unionedSet.doAdd(v)
 	}
 
@@ -291,13 +291,13 @@ func (set *IntSet) Intersect(other *IntSet) *IntSet {
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v, _ := range set.m {
+		for v := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v, _ := range other.m {
+		for v := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -324,7 +324,7 @@ func (set *IntSet) Difference(other *IntSet) *IntSet {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -340,7 +340,7 @@ func (set *IntSet) SymmetricDifference(other *IntSet) *IntSet {
 	return aDiff.Union(bDiff)
 }
 
-// Clear clears the entire set to be the empty set.
+// Clear the entire set. Aterwards, it will be an empty set.
 func (set *IntSet) Clear() {
 	if set != nil {
 		set.s.Lock()
@@ -350,7 +350,7 @@ func (set *IntSet) Clear() {
 	}
 }
 
-// Remove removes a single item from the set.
+// Remove a single item from the set.
 func (set *IntSet) Remove(i int) {
 	set.s.Lock()
 	defer set.s.Unlock()
@@ -369,7 +369,7 @@ func (set *IntSet) Send() <-chan int {
 			set.s.RLock()
 			defer set.s.RUnlock()
 
-			for v, _ := range set.m {
+			for v := range set.m {
 				ch <- v
 			}
 		}
@@ -395,7 +395,7 @@ func (set *IntSet) Forall(fn func(int) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -414,7 +414,7 @@ func (set *IntSet) Exists(fn func(int) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -432,20 +432,20 @@ func (set *IntSet) Foreach(fn func(int)) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		fn(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function.
-// False is returned if none match.
+// Find returns the first int that returns true for some function. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set *IntSet) Find(fn func(int) bool) (int, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return v, true
 		}
@@ -468,7 +468,7 @@ func (set *IntSet) Filter(fn func(int) bool) *IntSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -476,7 +476,7 @@ func (set *IntSet) Filter(fn func(int) bool) *IntSet {
 	return result
 }
 
-// Partition returns two new intLists whose elements return true or false for the predicate, p.
+// Partition returns two new intSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -492,7 +492,7 @@ func (set *IntSet) Partition(p func(int) bool) (*IntSet, *IntSet) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -516,7 +516,7 @@ func (set *IntSet) Map(fn func(int) int) *IntSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 
@@ -538,7 +538,7 @@ func (set *IntSet) FlatMap(fn func(int) []int) *IntSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		for _, x := range fn(v) {
 			result.m[x] = struct{}{}
 		}
@@ -552,7 +552,7 @@ func (set *IntSet) CountBy(predicate func(int) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -571,7 +571,7 @@ func (set *IntSet) Min() int {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -590,7 +590,7 @@ func (set *IntSet) Max() (result int) {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -614,7 +614,7 @@ func (set *IntSet) MinBy(less func(int, int) bool) int {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -638,7 +638,7 @@ func (set *IntSet) MaxBy(less func(int, int) bool) int {
 
 	var m int
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -658,7 +658,7 @@ func (set *IntSet) Sum() int {
 	defer set.s.RUnlock()
 
 	sum := int(0)
-	for v, _ := range set.m {
+	for v := range set.m {
 		sum = sum + v
 	}
 	return sum
@@ -666,7 +666,7 @@ func (set *IntSet) Sum() int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *IntSet) Equals(other *IntSet) bool {
@@ -687,7 +687,7 @@ func (set *IntSet) Equals(other *IntSet) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -705,7 +705,7 @@ func (set *IntSet) StringList() []string {
 
 	strings := make([]string, len(set.m))
 	i := 0
-	for v, _ := range set.m {
+	for v := range set.m {
 		strings[i] = fmt.Sprintf("%v", v)
 		i++
 	}
@@ -738,7 +738,7 @@ func (set *IntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
 		sep = between
@@ -782,7 +782,7 @@ func (set *IntSet) StringMap() map[string]bool {
 	}
 
 	strings := make(map[string]bool)
-	for v, _ := range set.m {
+	for v := range set.m {
 		strings[fmt.Sprintf("%v", v)] = true
 	}
 	return strings

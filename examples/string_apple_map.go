@@ -123,7 +123,7 @@ func (mm *StringAppleMap) Values() []Apple {
 	return s
 }
 
-// slice returns the internal elements of the current list. This is a seam for testing etc.
+// slice returns the internal elements of the map. This is a seam for testing etc.
 func (mm *StringAppleMap) slice() []StringAppleTuple {
 	if mm == nil {
 		return nil
@@ -257,6 +257,7 @@ func (mm *StringAppleMap) NonEmpty() bool {
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
+// This is similar to Filter except that the map is modified.
 func (mm *StringAppleMap) DropWhere(fn func(string, Apple) bool) StringAppleTuples {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -329,6 +330,7 @@ func (mm *StringAppleMap) Exists(fn func(string, Apple) bool) bool {
 
 // Find returns the first Apple that returns true for some function.
 // False is returned if none match.
+// The original map is not modified.
 func (mm *StringAppleMap) Find(fn func(string, Apple) bool) (StringAppleTuple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
@@ -344,6 +346,7 @@ func (mm *StringAppleMap) Find(fn func(string, Apple) bool) (StringAppleTuple, b
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified.
 func (mm *StringAppleMap) Filter(fn func(string, Apple) bool) *StringAppleMap {
 	if mm == nil {
 		return nil
@@ -365,6 +368,7 @@ func (mm *StringAppleMap) Filter(fn func(string, Apple) bool) *StringAppleMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified.
 func (mm *StringAppleMap) Partition(fn func(string, Apple) bool) (matching *StringAppleMap, others *StringAppleMap) {
 	if mm == nil {
 		return nil, nil

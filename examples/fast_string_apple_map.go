@@ -114,7 +114,7 @@ func (mm *FastStringAppleMap) Values() []Apple {
 	return s
 }
 
-// slice returns the internal elements of the current list. This is a seam for testing etc.
+// slice returns the internal elements of the map. This is a seam for testing etc.
 func (mm *FastStringAppleMap) slice() []FastStringAppleTuple {
 	if mm == nil {
 		return nil
@@ -225,6 +225,7 @@ func (mm *FastStringAppleMap) NonEmpty() bool {
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
+// This is similar to Filter except that the map is modified.
 func (mm *FastStringAppleMap) DropWhere(fn func(string, Apple) bool) FastStringAppleTuples {
 
 	removed := make(FastStringAppleTuples, 0)
@@ -287,6 +288,7 @@ func (mm *FastStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 
 // Find returns the first Apple that returns true for some function.
 // False is returned if none match.
+// The original map is not modified.
 func (mm *FastStringAppleMap) Find(fn func(string, Apple) bool) (FastStringAppleTuple, bool) {
 
 	for k, v := range mm.m {
@@ -300,6 +302,7 @@ func (mm *FastStringAppleMap) Find(fn func(string, Apple) bool) (FastStringApple
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified.
 func (mm *FastStringAppleMap) Filter(fn func(string, Apple) bool) *FastStringAppleMap {
 	if mm == nil {
 		return nil
@@ -319,6 +322,7 @@ func (mm *FastStringAppleMap) Filter(fn func(string, Apple) bool) *FastStringApp
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified.
 func (mm *FastStringAppleMap) Partition(fn func(string, Apple) bool) (matching *FastStringAppleMap, others *FastStringAppleMap) {
 	if mm == nil {
 		return nil, nil

@@ -105,7 +105,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the set. It does not clone the underlying elements.
 func (set {{.UPrefix}}{{.UType}}Set) Clone() {{.UPrefix}}{{.UType}}Set {
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
 	for v := range set {
@@ -160,13 +160,13 @@ func (set {{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
 	set[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	_, found := set[i]
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -178,7 +178,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) bool {
 	for v := range set {
 		if !other.Contains(v) {
@@ -188,12 +188,13 @@ func (set {{.UPrefix}}{{.UType}}Set) IsSubset(other {{.UPrefix}}{{.UType}}Set) b
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set {{.UPrefix}}{{.UType}}Set) IsSuperset(other {{.UPrefix}}{{.UType}}Set) bool {
 	return other.IsSubset(set)
 }
 
-// Union returns a new set with all items in both sets.
+// Append inserts more items into a clone of the set. It returns the augmented set.
+// The original set is unmodified.
 func (set {{.UPrefix}}{{.UType}}Set) Append(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
 	unionedSet := set.Clone()
 	for _, v := range more {
@@ -249,12 +250,12 @@ func (set {{.UPrefix}}{{.UType}}Set) SymmetricDifference(other {{.UPrefix}}{{.UT
 	return aDiff.Union(bDiff)
 }
 
-// Clear clears the entire set to be the empty set.
+// Clear the entire set. Aterwards, it will be an empty set.
 func (set *{{.UPrefix}}{{.UType}}Set) Clear() {
 	*set = New{{.UPrefix}}{{.UType}}Set()
 }
 
-// Remove allows the removal of a single item from the set.
+// Remove a single item from the set.
 func (set {{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) {
 	delete(set, i)
 }
@@ -314,6 +315,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 //-------------------------------------------------------------------------------------------------
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
+//
 // The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
@@ -329,6 +331,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
+//
 // The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
 	matching := New{{.UPrefix}}{{.UType}}Set()
@@ -359,8 +362,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPre
 }
 
 // FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn that
-// returns zero or more items in a slice. The resulting list may have a different size to the original list.
-// The original list is not modified.
+// returns zero or more items in a slice. The resulting set may have a different size to the original set.
+// The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
@@ -412,7 +415,7 @@ func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
 // element is returned. Panics if there are no elements.
 func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	var m {{.Type}}
 	first := true
@@ -432,7 +435,7 @@ func (set {{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool)
 // element is returned. Panics if there are no elements.
 func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	if set.IsEmpty() {
-		panic("Cannot determine the minimum of an empty list.")
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	var m {{.Type}}
 	first := true
@@ -463,7 +466,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) bool {
@@ -482,9 +485,11 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 //-------------------------------------------------------------------------------------------------
 
 func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
-	strings := make([]string, 0)
+	strings := make([]string, len(set))
+	i := 0
 	for v := range set {
-		strings = append(strings, fmt.Sprintf("%v", v))
+		strings[i] = fmt.Sprintf("%v", v)
+		i++
 	}
 	return strings
 }

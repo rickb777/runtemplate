@@ -113,7 +113,7 @@ func (mm *FastIntIntMap) Values() []int {
 	return s
 }
 
-// slice returns the internal elements of the current list. This is a seam for testing etc.
+// slice returns the internal elements of the map. This is a seam for testing etc.
 func (mm *FastIntIntMap) slice() []FastIntIntTuple {
 	if mm == nil {
 		return nil
@@ -224,6 +224,7 @@ func (mm *FastIntIntMap) NonEmpty() bool {
 
 // DropWhere applies a predicate function to every element in the map. If the function returns true,
 // the element is dropped from the map.
+// This is similar to Filter except that the map is modified.
 func (mm *FastIntIntMap) DropWhere(fn func(int, int) bool) FastIntIntTuples {
 
 	removed := make(FastIntIntTuples, 0)
@@ -286,6 +287,7 @@ func (mm *FastIntIntMap) Exists(fn func(int, int) bool) bool {
 
 // Find returns the first int that returns true for some function.
 // False is returned if none match.
+// The original map is not modified.
 func (mm *FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
 
 	for k, v := range mm.m {
@@ -299,6 +301,7 @@ func (mm *FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
 
 // Filter applies a predicate function to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
+// The original map is not modified.
 func (mm *FastIntIntMap) Filter(fn func(int, int) bool) *FastIntIntMap {
 	if mm == nil {
 		return nil
@@ -318,6 +321,7 @@ func (mm *FastIntIntMap) Filter(fn func(int, int) bool) *FastIntIntMap {
 // Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
+// The original map is not modified.
 func (mm *FastIntIntMap) Partition(fn func(int, int) bool) (matching *FastIntIntMap, others *FastIntIntMap) {
 	if mm == nil {
 		return nil, nil

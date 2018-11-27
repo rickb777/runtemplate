@@ -65,7 +65,7 @@ func (set *AppleSet) slice() []Apple {
 	}
 
 	var s []Apple
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -85,7 +85,7 @@ func (set *AppleSet) ToInterfaceSlice() []interface{} {
 	defer set.s.RUnlock()
 
 	var s []interface{}
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -102,7 +102,7 @@ func (set *AppleSet) Clone() *AppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		clonedSet.doAdd(v)
 	}
 	return clonedSet
@@ -163,7 +163,7 @@ func (set *AppleSet) doAdd(i Apple) {
 	set.m[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *AppleSet) Contains(i Apple) bool {
 	if set == nil {
 		return false
@@ -176,7 +176,7 @@ func (set *AppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *AppleSet) ContainsAll(i ...Apple) bool {
 	if set == nil {
 		return false
@@ -195,7 +195,7 @@ func (set *AppleSet) ContainsAll(i ...Apple) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set *AppleSet) IsSubset(other *AppleSet) bool {
 	if set.IsEmpty() {
 		return !other.IsEmpty()
@@ -210,7 +210,7 @@ func (set *AppleSet) IsSubset(other *AppleSet) bool {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -218,7 +218,7 @@ func (set *AppleSet) IsSubset(other *AppleSet) bool {
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *AppleSet) IsSuperset(other *AppleSet) bool {
 	if set.IsEmpty() {
 		return other.IsEmpty()
@@ -246,7 +246,7 @@ func (set *AppleSet) Union(other *AppleSet) *AppleSet {
 	other.s.RLock()
 	defer other.s.RUnlock()
 
-	for v, _ := range other.m {
+	for v := range other.m {
 		unionedSet.doAdd(v)
 	}
 
@@ -268,13 +268,13 @@ func (set *AppleSet) Intersect(other *AppleSet) *AppleSet {
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v, _ := range set.m {
+		for v := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v, _ := range other.m {
+		for v := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -301,7 +301,7 @@ func (set *AppleSet) Difference(other *AppleSet) *AppleSet {
 	defer set.s.RUnlock()
 	defer other.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -317,7 +317,7 @@ func (set *AppleSet) SymmetricDifference(other *AppleSet) *AppleSet {
 	return aDiff.Union(bDiff)
 }
 
-// Clear clears the entire set to be the empty set.
+// Clear the entire set. Aterwards, it will be an empty set.
 func (set *AppleSet) Clear() {
 	if set != nil {
 		set.s.Lock()
@@ -327,7 +327,7 @@ func (set *AppleSet) Clear() {
 	}
 }
 
-// Remove removes a single item from the set.
+// Remove a single item from the set.
 func (set *AppleSet) Remove(i Apple) {
 	set.s.Lock()
 	defer set.s.Unlock()
@@ -346,7 +346,7 @@ func (set *AppleSet) Send() <-chan Apple {
 			set.s.RLock()
 			defer set.s.RUnlock()
 
-			for v, _ := range set.m {
+			for v := range set.m {
 				ch <- v
 			}
 		}
@@ -372,7 +372,7 @@ func (set *AppleSet) Forall(fn func(Apple) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !fn(v) {
 			return false
 		}
@@ -391,7 +391,7 @@ func (set *AppleSet) Exists(fn func(Apple) bool) bool {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return true
 		}
@@ -409,20 +409,20 @@ func (set *AppleSet) Foreach(fn func(Apple)) {
 	set.s.Lock()
 	defer set.s.Unlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		fn(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function.
-// False is returned if none match.
+// Find returns the first Apple that returns true for some function. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set *AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			return v, true
 		}
@@ -445,7 +445,7 @@ func (set *AppleSet) Filter(fn func(Apple) bool) *AppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if fn(v) {
 			result.doAdd(v)
 		}
@@ -453,7 +453,7 @@ func (set *AppleSet) Filter(fn func(Apple) bool) *AppleSet {
 	return result
 }
 
-// Partition returns two new AppleLists whose elements return true or false for the predicate, p.
+// Partition returns two new AppleSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -469,7 +469,7 @@ func (set *AppleSet) Partition(p func(Apple) bool) (*AppleSet, *AppleSet) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -493,7 +493,7 @@ func (set *AppleSet) Map(fn func(Apple) Apple) *AppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		result.m[fn(v)] = struct{}{}
 	}
 
@@ -515,7 +515,7 @@ func (set *AppleSet) FlatMap(fn func(Apple) []Apple) *AppleSet {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		for _, x := range fn(v) {
 			result.m[x] = struct{}{}
 		}
@@ -529,7 +529,7 @@ func (set *AppleSet) CountBy(predicate func(Apple) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if predicate(v) {
 			result++
 		}
@@ -550,7 +550,7 @@ func (set *AppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 
 	var m Apple
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -574,7 +574,7 @@ func (set *AppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 
 	var m Apple
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -587,7 +587,7 @@ func (set *AppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *AppleSet) Equals(other *AppleSet) bool {
@@ -608,7 +608,7 @@ func (set *AppleSet) Equals(other *AppleSet) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
