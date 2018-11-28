@@ -120,7 +120,6 @@ func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 		return nil
 	}
 
-
 	s := make([]{{.PType}}, len(list.m), len(list.m))
 	copy(s, list.m)
 	return s
@@ -131,7 +130,6 @@ func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 	if list == nil {
 		return nil
 	}
-
 
 	var s []interface{}
 	for _, v := range list.m {
@@ -145,7 +143,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Clone() *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
 	}
-
 
 	return New{{.UPrefix}}{{.UType}}List(list.m...)
 }
@@ -173,7 +170,6 @@ func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
 		return {{.TypeZero}}
 	}
 
-
 	if len(list.m) == 0 {
 		return {{.TypeZero}}
 	}
@@ -193,7 +189,6 @@ func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
 	if list == nil {
 		return {{.TypeZero}}
 	}
-
 
 	if len(list.m) == 0 {
 		return {{.TypeZero}}
@@ -247,7 +242,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Size() int {
 		return 0
 	}
 
-
 	return len(list.m)
 }
 
@@ -279,7 +273,6 @@ func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 		return len(i) == 0
 	}
 
-
 	for _, v := range i {
 		if !list.Contains(v) {
 			return false
@@ -295,7 +288,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Exists(p func({{.PType}}) bool) bool {
 		return false
 	}
 
-
 	for _, v := range list.m {
 		if p(v) {
 			return true
@@ -309,7 +301,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.PType}}) bool) bool {
 	if list == nil {
 		return true
 	}
-
 
 	for _, v := range list.m {
 		if !p(v) {
@@ -325,7 +316,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
 	if list == nil {
 		return
 	}
-
 
 	for _, v := range list.m {
 		fn(v)
@@ -359,7 +349,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 		return nil
 	}
 
-
 	numItems := len(list.m)
 	result := Make{{.UPrefix}}{{.UType}}List(numItems, numItems)
 	last := numItems - 1
@@ -377,7 +366,6 @@ func (list *{{.UPrefix}}{{.UType}}List) DoReverse() *{{.UPrefix}}{{.UType}}List 
 	if list == nil {
 		return nil
 	}
-
 
 	mid := (len(list.m) + 1) / 2
 	last := len(list.m) - 1
@@ -574,7 +562,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Take(n int) *{{.UPrefix}}{{.UType}}List 
 		return nil
 	}
 
-
 	if n >= len(list.m) {
 		return list
 	}
@@ -593,7 +580,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Drop(n int) *{{.UPrefix}}{{.UType}}List 
 		return list
 	}
 
-
 	if n >= len(list.m) {
 		return nil
 	}
@@ -611,7 +597,6 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeLast(n int) *{{.UPrefix}}{{.UType}}L
 	if list == nil {
 		return nil
 	}
-
 
 	l := len(list.m)
 	if n >= l {
@@ -632,7 +617,6 @@ func (list *{{.UPrefix}}{{.UType}}List) DropLast(n int) *{{.UPrefix}}{{.UType}}L
 		return list
 	}
 
-
 	l := len(list.m)
 	if n >= l {
 		return nil
@@ -652,7 +636,6 @@ func (list *{{.UPrefix}}{{.UType}}List) TakeWhile(p func({{.PType}}) bool) *{{.U
 	if list == nil {
 		return nil
 	}
-
 
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	for _, v := range list.m {
@@ -675,7 +658,6 @@ func (list *{{.UPrefix}}{{.UType}}List) DropWhile(p func({{.PType}}) bool) *{{.U
 		return nil
 	}
 
-
 	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	adding := false
 
@@ -697,7 +679,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}
 	if list == nil {
 		return {{.TypeZero}}, false
 	}
-
 
 	for _, v := range list.m {
 		if p(v) {
@@ -722,7 +703,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPre
 		return nil
 	}
 
-
 	result := Make{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
 
 	for _, v := range list.m {
@@ -744,7 +724,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 	if list == nil {
 		return nil, nil
 	}
-
 
 	matching := Make{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
 	others := Make{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
@@ -855,7 +834,6 @@ func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PTy
 		return nil
 	}
 
-
 	result := Make{{.UPrefix}}{{.UType}}List(0, len(list.m))
 Outer:
 	for _, v := range list.m {
@@ -936,7 +914,6 @@ func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List
 		return other == nil || len(other.m) == 0
 	}
 
-
 	if len(list.m) != len(other.m) {
 		return false
 	}
@@ -977,7 +954,6 @@ func (list *{{.UPrefix}}{{.UType}}List) SortBy(less func(i, j {{.PType}}) bool) 
 		return nil
 	}
 
-
 	sort.Sort(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
 	return list
 }
@@ -989,7 +965,6 @@ func (list *{{.UPrefix}}{{.UType}}List) StableSortBy(less func(i, j {{.PType}}) 
 	if list == nil {
 		return nil
 	}
-
 
 	sort.Stable(sortable{{.UPrefix}}{{.UType}}List{less, list.m})
 	return list
@@ -1092,7 +1067,6 @@ func (list {{.UPrefix}}{{.UType}}List) mkString3Bytes(before, between, after str
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for _, v := range list.m {
 		b.WriteString(sep)

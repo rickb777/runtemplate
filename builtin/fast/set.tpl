@@ -132,7 +132,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Clone() *{{.UPrefix}}{{.UType}}Set {
 
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
 
-
 	for v := range set.m {
 		clonedSet.doAdd(v)
 	}
@@ -167,7 +166,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Size() int {
 		return 0
 	}
 
-
 	return len(set.m)
 }
 
@@ -196,7 +194,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 		return false
 	}
 
-
 	_, found := set.m[i]
 	return found
 }
@@ -206,7 +203,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	if set == nil {
 		return false
 	}
-
 
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -227,7 +223,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 	if other.IsEmpty() {
 		return false
 	}
-
 
 	for v := range set.m {
 		if !other.Contains(v) {
@@ -262,7 +257,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{
 
 	unionedSet := set.Clone()
 
-
 	for v := range other.m {
 		unionedSet.doAdd(v)
 	}
@@ -277,7 +271,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set
 	}
 
 	intersection := New{{.UPrefix}}{{.UType}}Set()
-
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
@@ -308,7 +301,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Se
 	}
 
 	differencedSet := New{{.UPrefix}}{{.UType}}Set()
-
 
 	for v := range set.m {
 		if !other.Contains(v) {
@@ -372,7 +364,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
 		return true
 	}
 
-
 	for v := range set.m {
 		if !fn(v) {
 			return false
@@ -389,7 +380,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
 		return false
 	}
 
-
 	for v := range set.m {
 		if fn(v) {
 			return true
@@ -404,7 +394,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 	if set == nil {
 		return
 	}
-
 
 	for v := range set.m {
 		fn(v)
@@ -572,7 +561,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool
 		panic("Cannot determine the minimum of an empty set.")
 	}
 
-
 	var m {{.Type}}
 	first := true
 	for v := range set.m {
@@ -593,7 +581,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty set.")
 	}
-
 
 	var m {{.Type}}
 	first := true
@@ -636,7 +623,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) b
 	if other == nil {
 		return set.IsEmpty()
 	}
-
 
 	if set.Size() != other.Size() {
 		return false
@@ -688,7 +674,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after stri
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for v := range set.m {
 		b.WriteString(sep)

@@ -102,7 +102,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}
 		return nil
 	}
 
-
 	var s {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}
 	for k, _ := range mm.m {
 		s = append(s, k)
@@ -116,7 +115,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.Value
 	if mm == nil {
 		return nil
 	}
-
 
 	var s {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}
 	for _, v := range mm.m {
@@ -146,7 +144,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{
 		return nil
 	}
 
-
 	return mm.slice()
 }
 
@@ -171,7 +168,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 		return false
 	}
 
-
 	_, found := mm.m[k]
 	return found
 }
@@ -181,7 +177,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) b
 	if mm == nil {
 		return len(kk) == 0
 	}
-
 
 	for _, k := range kk {
 		if !mm.ContainsKey(k) {
@@ -214,7 +209,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Pop(k {{.PKey}}) ({{.PType}}, bool
 		return {{.TypeZero}}, false
 	}
 
-
 	v, found := mm.m[k]
 	delete(mm.m, k)
 	return v, found
@@ -225,7 +219,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 	if mm == nil {
 		return 0
 	}
-
 
 	return len(mm.m)
 }
@@ -277,7 +270,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 		return true
 	}
 
-
 	for k, v := range mm.m {
 		if !fn(k, v) {
 			return false
@@ -294,7 +286,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 	if mm == nil {
 		return false
 	}
-
 
 	for k, v := range mm.m {
 		if fn(k, v) {
@@ -411,7 +402,6 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other *{{.UPrefix}}{{.UKey}
 	if mm == nil || other == nil {
 		return mm.IsEmpty() && other.IsEmpty()
 	}
-
 
 	if mm.Size() != other.Size() {
 		return false

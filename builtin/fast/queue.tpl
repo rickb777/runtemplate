@@ -112,7 +112,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
 		return nil
 	}
 
-
 	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
 	queue.toSlice(list.m)
 	return list
@@ -124,7 +123,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
 	if queue == nil {
 		return nil
 	}
-
 
 	return queue.toSlice(make([]{{.PType}}, queue.length))
 }
@@ -145,7 +143,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
 		return nil
 	}
 
-
 	front, back := queue.frontAndBack()
 	var s []interface{}
 	for _, v := range front {
@@ -164,7 +161,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 	if queue == nil {
 		return nil
 	}
-
 
 	buffer := queue.toSlice(make([]{{.PType}}, queue.cap))
 

@@ -13,5 +13,6 @@ for tpl in list.tpl queue.tpl map.tpl set.tpl; do
       fgrep -v '"sync"' | fgrep -v 'sync.RWMutex' | \
       fgrep -v 's.Lock()' | fgrep -v 's.Unlock()' | \
       fgrep -v 's.RLock()' | fgrep -v 's.RUnlock()' | \
-      sed 's#Thread-safe#Not thread-safe#' > fast/$tpl
+      sed 's#Thread-safe#Not thread-safe#' | \
+      cat -s > fast/$tpl
 done
