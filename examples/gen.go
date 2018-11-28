@@ -40,6 +40,8 @@ package examples
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=Fast Type=Apple  Stringer:false  GobEncode:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=Fast Key=int    Type=int     Comparable:true Stringer:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=Fast Key=string Type=Apple   GobEncode:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=Fast Type=int
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=Fast Type=Apple
 
 // Threadsafe Examples
 //go:generate runtemplate -tpl threadsafe/collection.tpl Type=int    Stringer:true Comparable:true Ordered:true Numeric:true
@@ -50,6 +52,8 @@ package examples
 //go:generate runtemplate -tpl threadsafe/set.tpl        Type=Apple  Stringer:false GobEncode:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Key=int    Type=int     Comparable:true Stringer:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Key=string Type=Apple   GobEncode:true
+//go:generate runtemplate -tpl threadsafe/queue.tpl      Type=int
+//go:generate runtemplate -tpl threadsafe/queue.tpl      Type=Apple
 
 // Other Categories
 //go:generate runtemplate -tpl types/stringy.tpl         Type=Email SortableSlice:true

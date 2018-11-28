@@ -1,24 +1,21 @@
-// A queue or fifo that holds {{.Type}}, implemented via a ring buffer.
+// A queue or fifo that holds int, implemented via a ring buffer.
 // Thread-safe.
 //
-// Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} ToList:{{.ToList}}
-// by runtemplate {{.AppVersion}}
+// Generated from threadsafe/queue.tpl with Type=int
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> ToList:<no value>
+// by runtemplate v2.2.3
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
-package {{.Package}}
+package examples
 
 import (
 	"sync"
-{{- if .HasImport}}
-	{{.Import}}
-{{- end}}
 )
 
-// {{.UPrefix}}{{.UType}}Queue is a ring buffer containing a slice of type {{.PType}}. It is optimised
+// IntQueue is a ring buffer containing a slice of type int. It is optimised
 // for FIFO operations.
-type {{.UPrefix}}{{.UType}}Queue struct {
-	buffer    []{{.PType}}
+type IntQueue struct {
+	buffer    []int
 	read      int
 	write     int
 	length    int
@@ -27,15 +24,15 @@ type {{.UPrefix}}{{.UType}}Queue struct {
 	s         *sync.RWMutex
 }
 
-// New{{.UPrefix}}{{.UType}}Queue returns a new queue of {{.PType}}. The behaviour when adding
+// NewIntQueue returns a new queue of int. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func New{{.UPrefix}}{{.UType}}Queue(size int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+func NewIntQueue(size int, overwrite bool) *IntQueue {
 	if size < 1 {
 		panic("size must be at least 1")
 	}
-	return &{{.UPrefix}}{{.UType}}Queue{
-		buffer:    make([]{{.PType}}, size),
+	return &IntQueue{
+		buffer:    make([]int, size),
 		read:      0,
 		write:     0,
 		length:    0,
@@ -46,68 +43,68 @@ func New{{.UPrefix}}{{.UType}}Queue(size int, overwrite bool) *{{.UPrefix}}{{.UT
 }
 
 // IsSequence returns true for ordered lists and queues.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsSequence() bool {
+func (queue *IntQueue) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists or queues.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsSet() bool {
+func (queue *IntQueue) IsSet() bool {
 	return false
 }
 
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue {{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
+func (queue IntQueue) IsOverwriting() bool {
 	return queue.overwrite
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue {{.UPrefix}}{{.UType}}Queue) IsEmpty() bool {
+func (queue IntQueue) IsEmpty() bool {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue {{.UPrefix}}{{.UType}}Queue) NonEmpty() bool {
+func (queue IntQueue) NonEmpty() bool {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // IsFull returns true if the queue is full.
-func (queue {{.UPrefix}}{{.UType}}Queue) IsFull() bool {
+func (queue IntQueue) IsFull() bool {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == queue.cap
 }
 
 // Space returns the space available in the queue.
-func (queue {{.UPrefix}}{{.UType}}Queue) Space() int {
+func (queue IntQueue) Space() int {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.cap - queue.length
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue {{.UPrefix}}{{.UType}}Queue) Size() int {
+func (queue IntQueue) Size() int {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue {{.UPrefix}}{{.UType}}Queue) Len() int {
+func (queue IntQueue) Len() int {
 	return queue.Size()
 }
 
 // Cap gets the capacity of this queue.
-func (queue {{.UPrefix}}{{.UType}}Queue) Cap() int {
+func (queue IntQueue) Cap() int {
 	return queue.cap
 }
 
 // frontAndBack gets the front and back portions of the queue. The front portion starts
 // from the read index. The back portion ends at the write index.
-func (queue *{{.UPrefix}}{{.UType}}Queue) frontAndBack() ([]{{.PType}}, []{{.PType}}) {
+func (queue *IntQueue) frontAndBack() ([]int, []int) {
 	if queue == nil || queue.length == 0 {
 		return nil, nil
 	}
@@ -116,26 +113,9 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) frontAndBack() ([]{{.PType}}, []{{.PTy
 	}
 	return queue.buffer[queue.read:], queue.buffer[:queue.write]
 }
-{{- if .ToList}}
-
-// ToList returns the elements of the queue as a list. The returned list is a shallow
-// copy; the queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
-	queue.toSlice(list.m)
-	return list
-}
-{{- end}}
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
+func (queue *IntQueue) ToSlice() []int {
 	if queue == nil {
 		return nil
 	}
@@ -143,10 +123,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-	return queue.toSlice(make([]{{.PType}}, queue.length))
+	return queue.toSlice(make([]int, queue.length))
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
+func (queue *IntQueue) toSlice(s []int) []int {
 	front, back := queue.frontAndBack()
 	copy(s, front)
 	if len(back) > 0 {
@@ -157,7 +137,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
 
 // ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
 // The queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
+func (queue *IntQueue) ToInterfaceSlice() []interface{} {
 	if queue == nil {
 		return nil
 	}
@@ -179,7 +159,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
+func (queue *IntQueue) Clone() *IntQueue {
 	if queue == nil {
 		return nil
 	}
@@ -187,9 +167,9 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-	buffer := queue.toSlice(make([]{{.PType}}, queue.cap))
+	buffer := queue.toSlice(make([]int, queue.cap))
 
-	return &{{.UPrefix}}{{.UType}}Queue{
+	return &IntQueue{
 		buffer:    buffer,
 		read:      0,
 		write:     queue.length,
@@ -202,9 +182,9 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 
 // Resize adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
 // It does not clone the underlying elements.
-//func (queue *{{.UPrefix}}{{.UType}}Queue) Resize(newSize int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+//func (queue *IntQueue) Resize(newSize int, overwrite bool) *IntQueue {
 //	if queue == nil {
-//		return New{{.UPrefix}}{{.UType}}Queue(newSize, overwrite)
+//		return NewIntQueue(newSize, overwrite)
 //	}
 //
 //	queue.s.Lock()
@@ -213,7 +193,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 //	queue.overwrite = overwrite
 //
 //	if newSize != queue.cap {
-//		queue.buffer = queue.toSlice(make([]{{.PType}}, newSize))
+//		queue.buffer = queue.toSlice(make([]int, newSize))
 //		queue.read = 0
 //		queue.write = len(queue.buffer)
 //		queue.length = len(queue.buffer)
@@ -231,13 +211,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 // filled to capacity and any unwritten items are returned.
 //
 // If the capacity is too small for the number of items, the excess items are returned.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) []{{.PType}} {
+func (queue *IntQueue) Push(items ...int) []int {
 	queue.s.Lock()
 	defer queue.s.Unlock()
 	return queue.doPush(items...)
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType}} {
+func (queue *IntQueue) doPush(items ...int) []int {
 	n := len(items)
 
 	space := queue.cap - queue.length
@@ -254,7 +234,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType
 		return surplus
 	}
 
-	if n <= queue.cap - queue.write {
+	if n <= queue.cap-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.buffer[queue.write:], items)
 		queue.write = (queue.write + n) % queue.cap
@@ -278,14 +258,14 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType
 }
 
 // Pop1 removes and returns the oldest item from the queue. If the queue is
-// empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
+// empty, it returns the zero value instead.
 // The boolean is true only if the element was available.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
+func (queue *IntQueue) Pop1() (int, bool) {
 	queue.s.Lock()
 	defer queue.s.Unlock()
 
 	if queue.length == 0 {
-		return {{.TypeZero}}, false
+		return 0, false
 	}
 
 	v := queue.buffer[queue.read]
@@ -299,7 +279,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
 // empty, it returns a nil slice. If n is larger than the current queue length,
 // it returns all the available elements, so in this case the returned slice
 // will be shorter than n.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
+func (queue *IntQueue) Pop(n int) []int {
 	queue.s.Lock()
 	defer queue.s.Unlock()
 
@@ -311,7 +291,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
 		n = queue.length
 	}
 
-	s := make([]{{.PType}}, n)
+	s := make([]int, n)
 	front, back := queue.frontAndBack()
 	// note the length copied is whichever is shorter
 	copy(s, front)
@@ -326,26 +306,26 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
 }
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
-// is empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
-func (queue *{{.UPrefix}}{{.UType}}Queue) HeadOption() {{.PType}} {
+// is empty, it returns the zero value instead.
+func (queue *IntQueue) HeadOption() int {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
-		return {{.TypeZero}}
+		return 0
 	}
 
 	return queue.buffer[queue.read]
 }
 
 // LastOption returns the newest item in the queue without removing it. If the queue
-// is empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
-func (queue *{{.UPrefix}}{{.UType}}Queue) LastOption() {{.PType}} {
+// is empty, it returns the zero value instead.
+func (queue *IntQueue) LastOption() int {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
-		return {{.TypeZero}}
+		return 0
 	}
 
 	i := queue.write - 1

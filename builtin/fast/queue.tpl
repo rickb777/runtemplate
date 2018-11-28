@@ -14,12 +14,8 @@ import (
 {{- end}}
 )
 
-// {{.UPrefix}}{{.UType}}List is a slice of type {{.PType}}. Use it where you would use []{{.PType}}.
-// To add items to the list, simply use the normal built-in append function.
-// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
-// For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
+// {{.UPrefix}}{{.UType}}Queue is a ring buffer containing a slice of type {{.PType}}. It is optimised
+// for FIFO operations.
 type {{.UPrefix}}{{.UType}}Queue struct {
 	buffer    []{{.PType}}
 	read      int
@@ -88,7 +84,7 @@ func (queue {{.UPrefix}}{{.UType}}Queue) Size() int {
 
 // Len gets the current length of this queue. This is an alias for Size.
 func (queue {{.UPrefix}}{{.UType}}Queue) Len() int {
-    return queue.Size()
+	return queue.Size()
 }
 
 // Cap gets the capacity of this queue.
@@ -100,12 +96,12 @@ func (queue {{.UPrefix}}{{.UType}}Queue) Cap() int {
 // from the read index. The back portion ends at the write index.
 func (queue *{{.UPrefix}}{{.UType}}Queue) frontAndBack() ([]{{.PType}}, []{{.PType}}) {
 	if queue == nil || queue.length == 0 {
-	    return nil, nil
-    }
-	if queue.write > queue.read {
-	    return queue.buffer[queue.read:queue.write], nil
+		return nil, nil
 	}
-    return queue.buffer[queue.read:], queue.buffer[:queue.write]
+	if queue.write > queue.read {
+		return queue.buffer[queue.read:queue.write], nil
+	}
+	return queue.buffer[queue.read:], queue.buffer[:queue.write]
 }
 {{- if .ToList}}
 
@@ -118,7 +114,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
 
 
 	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
-    queue.toSlice(list.m)
+	queue.toSlice(list.m)
 	return list
 }
 {{- end}}
@@ -134,11 +130,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
 }
 
 func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
-    front, back := queue.frontAndBack()
-    copy(s, front)
-    if len(back) > 0 {
-        copy(s[len(front):], back)
-    }
+	front, back := queue.frontAndBack()
+	copy(s, front)
+	if len(back) > 0 {
+		copy(s[len(front):], back)
+	}
 	return s
 }
 
@@ -150,20 +146,20 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
 	}
 
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	var s []interface{}
-    for _, v := range front {
-        s = append(s, v)
-    }
+	for _, v := range front {
+		s = append(s, v)
+	}
 
-    for _, v := range back {
-        s = append(s, v)
-    }
+	for _, v := range back {
+		s = append(s, v)
+	}
 
 	return s
 }
 
-// Clone returns a shallow copy of the list. It does not clone the underlying elements.
+// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 	if queue == nil {
 		return nil
@@ -173,14 +169,35 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 	buffer := queue.toSlice(make([]{{.PType}}, queue.cap))
 
 	return &{{.UPrefix}}{{.UType}}Queue{
-        buffer:    buffer,
-        read:      0,
-        write:     queue.length,
-        length:    queue.length,
-        cap:       queue.cap,
-        overwrite: queue.overwrite,
-    }
+		buffer:    buffer,
+		read:      0,
+		write:     queue.length,
+		length:    queue.length,
+		cap:       queue.cap,
+		overwrite: queue.overwrite,
+	}
 }
+
+// Resize adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// It does not clone the underlying elements.
+//func (queue *{{.UPrefix}}{{.UType}}Queue) Resize(newSize int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+//	if queue == nil {
+//		return New{{.UPrefix}}{{.UType}}Queue(newSize, overwrite)
+//	}
+//
+//
+//	queue.overwrite = overwrite
+//
+//	if newSize != queue.cap {
+//		queue.buffer = queue.toSlice(make([]{{.PType}}, newSize))
+//		queue.read = 0
+//		queue.write = len(queue.buffer)
+//		queue.length = len(queue.buffer)
+//		queue.cap = newSize
+//	}
+//
+//	return queue
+//}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -195,23 +212,23 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) []{{.PType}}
 }
 
 func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType}} {
-    n := len(items)
+	n := len(items)
 
-    space := queue.cap - queue.length
+	space := queue.cap - queue.length
 	overwritten := n - space
 
-    if queue.overwrite {
-        space = queue.cap
-    }
-
-	if space < n {
-	    // there is too little space; reject surplus elements
-        surplus := items[space:]
-        queue.doPush(items[:space]...)
-    	return surplus
+	if queue.overwrite {
+		space = queue.cap
 	}
 
-    if n <= queue.cap - queue.write {
+	if space < n {
+		// there is too little space; reject surplus elements
+		surplus := items[space:]
+		queue.doPush(items[:space]...)
+		return surplus
+	}
+
+	if n <= queue.cap - queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.buffer[queue.write:], items)
 		queue.write = (queue.write + n) % queue.cap
@@ -226,12 +243,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType
 	queue.write = n - end
 	queue.length += n
 	if queue.length > queue.cap {
-	    queue.length = queue.cap
+		queue.length = queue.cap
 	}
 	if overwritten > 0 {
 		queue.read = (queue.read + overwritten) % queue.cap
 	}
-    return nil
+	return nil
 }
 
 // Pop1 removes and returns the oldest item from the queue. If the queue is
@@ -260,17 +277,17 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
 		return nil
 	}
 
-    if n > queue.length {
-        n = queue.length
-    }
+	if n > queue.length {
+		n = queue.length
+	}
 
-    s := make([]{{.PType}}, n)
-    front, back := queue.frontAndBack()
-    // note the length copied is whichever is shorter
-    copy(s, front)
-    if n > len(front) {
-        copy(s[len(front):], back)
-    }
+	s := make([]{{.PType}}, n)
+	front, back := queue.frontAndBack()
+	// note the length copied is whichever is shorter
+	copy(s, front)
+	if n > len(front) {
+		copy(s[len(front):], back)
+	}
 
 	queue.read = (queue.read + n) % queue.cap
 	queue.length -= n
@@ -297,10 +314,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) LastOption() {{.PType}} {
 		return {{.TypeZero}}
 	}
 
-    i := queue.write - 1
-    if i < 0 {
-        i = queue.cap - 1
-    }
+	i := queue.write - 1
+	if i < 0 {
+		i = queue.cap - 1
+	}
 
 	return queue.buffer[i]
 }

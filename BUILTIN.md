@@ -33,6 +33,7 @@ The built-in collections support a small number of flags that allow you to contr
  * `Stringer:true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
  * `KeyList:<type>` - for maps only, this provides a slice type for the keys in this map. This is returned from the `Keys()` method. It is also used for sorting the output of the stringer methods by the keys, which affects `MkString3(...)`, `MkString()` and `String()`.
  * `ValueList:<type>` - for maps only, this provides a slice type for the values in this map. This is returned from the `Values()` method.
+ * `ToList:true`, `ToSet:true` - use these if you are generating both set and list types.
  * `Import:<imports>` - extra Go imports; the literals `\n` and `\t` are replaced with their character equivalent, allowing multiple imports. It's likely that single quotes will be needed to enclose the entire Import parameter, because double-quotes are also needed around the import string itself in Go syntax.
 
 The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
@@ -142,6 +143,28 @@ Examples:
  * Threadsafe **AppleList** [source](examples/apple_list.go)  [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleList)
 
 
+### fast/queue.tpl and threadsafe/queue.tpl
+
+This template generates a `<Type>Queue` for some specified type. The type can be a pointer to a type if preferred. A queue
+is very similar to a list, but optimised for FIFO insertion and removal.
+
+Whereas a list has a size that can grow dynamically, a queue has a fixed size. Queues are constructed using the `New<Type>Queue`
+function, which expects the size and a flag controlling what happens if the queue is full. The fixed size of an existing queue 
+can, however, be altered programmatically.
+
+Example use:
+```
+//go:generate runtemplate -tpl fast/queue.tpl        Type=int
+//go:generate runtemplate -tpl threadsafe/queue.tpl  Type=int
+```
+
+Examples: 
+ * Fast **IntQueue** [source](examples/fast_int_queue.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastIntQueue)
+ * Fast **AppleQueue** [source](examples/fast_apple_queue.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#FastAppleQueue)
+ * Threadsafe **IntQueue** [source](examples/int_queue.go) [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#IntQueue)
+ * Threadsafe **AppleQueue** [source](examples/apple_queue.go)  [GoDoc](https://godoc.org/github.com/rickb777/runtemplate/examples#AppleQueue)
+
+
 ### fast/set.tpl and threadsafe/set.tpl
 
 This template generates a `<Type>Set` for some specified type. It accepts both user-defined and built-in Go types. However, these should not be pointer types (a set of pointers would be of little value).
@@ -204,7 +227,9 @@ Examples:
 
 The third kind of collection also encapsulate their data within structs, but in this case the access methods do not allow the internal data to be altered. Such immutable data structures have benefits in many use-cases, such as being easy to share between goroutines without any need for locking.
 
-These immutable collections are constructed via the `NewXxxXxx` functions, all of which accept the input data. 
+These immutable collections are constructed via the `NewXxxXxx` functions, all of which accept the input data.
+
+Note that there is no immutable queue; a list is sufficient instead.
 
 
 ### immutable/list.tpl
