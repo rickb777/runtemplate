@@ -37,7 +37,7 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) {{.UPrefix}}{{.UType}}Set
 // The returned boolean will be false if any of the values could not be converted correctly.
 func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) ({{.UPrefix}}{{.UType}}Set, bool) {
 	set := make({{.UPrefix}}{{.UType}}Set)
-{{if and .Numeric (eq .Type .PType)}}
+{{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:

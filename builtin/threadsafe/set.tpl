@@ -48,7 +48,7 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) *{{.UPrefix}}{{.UType}}Se
 // The returned set will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) (*{{.UPrefix}}{{.UType}}Set, bool) {
 	set := New{{.UPrefix}}{{.UType}}Set()
-{{if and .Numeric (eq .Type .PType)}}
+{{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:

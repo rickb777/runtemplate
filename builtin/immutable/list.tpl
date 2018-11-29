@@ -57,7 +57,7 @@ func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.UType}}List, bool) {
 	result := new{{.UPrefix}}{{.UType}}List(0, len(values))
-{{if and .Numeric (eq .Type .PType)}}
+{{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:
