@@ -223,10 +223,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 
 // Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
 // If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
-// that the remaining data can fit in the space available. If the new queue capacity is the same as the old
-// capacity, the queue is not altered except for adopting the new overwrite flag's value.
+// that the remaining data can fit in the space available.
 //
-// It does not clone the underlying elements.
+// If the new queue capacity is the same as the old capacity, the queue is not altered except for adopting
+// the new overwrite flag's value. Therefore this is the means to change the overwriting behaviour.
+//
+// Reallocate adjusts the storage space but does not clone the underlying elements.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Reallocate(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
 	if queue == nil {
 		return New{{.UPrefix}}{{.UType}}Queue(capacity, overwrite)
