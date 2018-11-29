@@ -708,7 +708,7 @@ AAD//1d6ZjVxhwAA
 					Name:    "set.tpl",
 					Size:    19531,
 					Mode:    os.FileMode(420),
-					ModTime: 1543531960,
+					ModTime: 1543532493,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Q87Y7cNpK/u5+CHuAStdNWZ+NFspjLLGB749wc1o5x49zhYBgLSipNc0ciZZLqmU5v
@@ -792,7 +792,7 @@ Kx6eZ0rHT8Qu3M6Cv2gV+f8CAAD//5SHzzBLTAAA
 						Name:    "queue.tpl",
 						Size:    10125,
 						Mode:    os.FileMode(420),
-						ModTime: 1543531960,
+						ModTime: 1543532493,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9RabY/bNvJ/bX2K+Rf496yr186+KuDGAdrgcjWQS/Yu6b24xeJASyOLDUWqJLWO6+q7
@@ -848,7 +848,7 @@ Ty5u4NYJ4vAyLOYwzHNuT2ufk9L/EwAA//+tWfKZjScAAA==
 						Name:    "map.tpl",
 						Size:    15628,
 						Mode:    os.FileMode(420),
-						ModTime: 1543531960,
+						ModTime: 1543532493,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xbbY/bRpL+PPoVZQHxkguaiu0PAeYwByS7sc+X2GvcOFnceo2gJRZHvSK7me6mxrLC
@@ -919,7 +919,7 @@ ck4+9NeqfU9SXen5KE7dAc9dlPoDwOOpdAtFA0A3sgsaQ9cDOl5EQCfI8+B04azO++oLjdlh+P8FAAD/
 						Name:    "collection.tpl",
 						Size:    4598,
 						Mode:    os.FileMode(420),
-						ModTime: 1543531960,
+						ModTime: 1543532493,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/8xYy27bzBVei09xlhQgU4ssAqTtwjaS1kXsGLDTTZDFkDyUpp4LPRdbCkEgj9G+Xp6k
@@ -955,7 +955,7 @@ F5GHut79jSSNMC/3yst6OS2q6cx60pxuvHymbPrsPwEAAP//b8wCwvYRAAA=
 						Name:    "list.tpl",
 						Size:    32388,
 						Mode:    os.FileMode(420),
-						ModTime: 1543531960,
+						ModTime: 1543532493,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+R9/Y7btpb43/ZTsPPDr5Vv/JGkF+3FNFMgbZre2W3SYpPuxd1gsKAl2mZHIhWSGo87
@@ -1420,5 +1420,5 @@ fZ+a1v8CAAD//xnyRcKTCwAA
 		},
 	})
 }
-// git: "v2.2.6-1-ga2ce21a"
-const appVersion = "v2.2.6"
+// git: "v2.2.7"
+const appVersion = "v2.2.7"

@@ -3,7 +3,7 @@
 //
 // Generated from threadsafe/queue.tpl with Type=int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> ToList:<no value>
-// by runtemplate v2.2.6
+// by runtemplate v2.2.7
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

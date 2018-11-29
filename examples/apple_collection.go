@@ -1,6 +1,6 @@
 // Generated from threadsafe/collection.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false Mutable:always
-// by runtemplate v2.2.6
+// by runtemplate v2.2.7
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
