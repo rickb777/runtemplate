@@ -14,6 +14,9 @@ go mod download
 
 go generate .
 
+echo -e "// git: \"$(git describe --tags 2>/dev/null)\"" >> app/statics.go
+fgrep const version.go >> app/statics.go
+
 echo
 echo App Testing...
 go test ./app/...
@@ -36,7 +39,6 @@ gofmt -l -w examples/*.go
 echo
 echo Template Testing...
 go test ./...
-#go test $coveralls_testflags $GOBUILDFLAG $@ .
 
 echo
 echo Code vetting...
