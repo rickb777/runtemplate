@@ -24,16 +24,16 @@ type FastAppleQueue struct {
 // NewFastAppleQueue returns a new queue of Apple. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func NewFastAppleQueue(size int, overwrite bool) *FastAppleQueue {
-	if size < 1 {
-		panic("size must be at least 1")
+func NewFastAppleQueue(capacity int, overwrite bool) *FastAppleQueue {
+	if capacity < 1 {
+		panic("capacity must be at least 1")
 	}
 	return &FastAppleQueue{
-		buffer:    make([]Apple, size),
+		buffer:    make([]Apple, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
-		cap:       size,
+		cap:       capacity,
 		overwrite: overwrite,
 	}
 }
@@ -54,37 +54,58 @@ func (queue FastAppleQueue) IsOverwriting() bool {
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue FastAppleQueue) IsEmpty() bool {
+func (queue *FastAppleQueue) IsEmpty() bool {
+	if queue == nil {
+		return true
+	}
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue FastAppleQueue) NonEmpty() bool {
+func (queue *FastAppleQueue) NonEmpty() bool {
+	if queue == nil {
+		return false
+	}
 	return queue.length > 0
 }
 
 // IsFull returns true if the queue is full.
-func (queue FastAppleQueue) IsFull() bool {
+func (queue *FastAppleQueue) IsFull() bool {
+	if queue == nil {
+		return false
+	}
 	return queue.length == queue.cap
 }
 
 // Space returns the space available in the queue.
-func (queue FastAppleQueue) Space() int {
+func (queue *FastAppleQueue) Space() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.cap - queue.length
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue FastAppleQueue) Size() int {
+func (queue *FastAppleQueue) Size() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue FastAppleQueue) Len() int {
+func (queue *FastAppleQueue) Len() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.Size()
 }
 
 // Cap gets the capacity of this queue.
-func (queue FastAppleQueue) Cap() int {
+func (queue *FastAppleQueue) Cap() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.cap
 }
 
@@ -112,7 +133,7 @@ func (queue *FastAppleQueue) ToSlice() []Apple {
 func (queue *FastAppleQueue) toSlice(s []Apple) []Apple {
 	front, back := queue.frontAndBack()
 	copy(s, front)
-	if len(back) > 0 {
+	if len(back) > 0 && len(s) >= len(front) {
 		copy(s[len(front):], back)
 	}
 	return s
@@ -156,26 +177,44 @@ func (queue *FastAppleQueue) Clone() *FastAppleQueue {
 	}
 }
 
-// Resize adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
+// that the remaining data can fit in the space available. If the new queue capacity is the same as the old
+// capacity, the queue is not altered except for adopting the new overwrite flag's value.
+//
 // It does not clone the underlying elements.
-//func (queue *FastAppleQueue) Resize(newSize int, overwrite bool) *FastAppleQueue {
-//	if queue == nil {
-//		return NewFastAppleQueue(newSize, overwrite)
-//	}
-//
-//
-//	queue.overwrite = overwrite
-//
-//	if newSize != queue.cap {
-//		queue.buffer = queue.toSlice(make([]Apple, newSize))
-//		queue.read = 0
-//		queue.write = len(queue.buffer)
-//		queue.length = len(queue.buffer)
-//		queue.cap = newSize
-//	}
-//
-//	return queue
-//}
+func (queue *FastAppleQueue) Reallocate(capacity int, overwrite bool) *FastAppleQueue {
+	if queue == nil {
+		return NewFastAppleQueue(capacity, overwrite)
+	}
+
+	if capacity < 1 {
+		panic("capacity must be at least 1")
+	}
+
+	queue.overwrite = overwrite
+
+	if capacity < queue.length {
+		// existing data is too big and has to be trimmed to fit
+		n := queue.length - capacity
+		queue.read = (queue.read + n) % queue.cap
+		queue.length -= n
+	}
+
+	if capacity != queue.cap {
+		oldLength := queue.length
+		queue.buffer = queue.toSlice(make([]Apple, capacity))
+		if oldLength > len(queue.buffer) {
+			oldLength = len(queue.buffer)
+		}
+		queue.read = 0
+		queue.write = oldLength
+		queue.length = oldLength
+		queue.cap = capacity
+	}
+
+	return queue
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -250,7 +289,10 @@ func (queue *FastAppleQueue) Pop1() (Apple, bool) {
 // it returns all the available elements, so in this case the returned slice
 // will be shorter than n.
 func (queue *FastAppleQueue) Pop(n int) []Apple {
+	return queue.doPop(n)
+}
 
+func (queue *FastAppleQueue) doPop(n int) []Apple {
 	if queue.length == 0 {
 		return nil
 	}
@@ -272,6 +314,8 @@ func (queue *FastAppleQueue) Pop(n int) []Apple {
 
 	return s
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is empty, it returns the zero value instead.

@@ -25,12 +25,14 @@ func Test{{.UType}}OverwritingQueue(t *testing.T) {
 	g.Expect(a.IsOverwriting()).To(BeTrue())
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(0))
+	g.Expect(a.Space()).To(Equal(10))
 	g.Expect(a.ToSlice()).To(HaveLen(0))
 
     r1 := a.Push(1, 2, 3, 4, 5, 6)
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(6))
+	g.Expect(a.Space()).To(Equal(4))
 	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6}))
 	g.Expect(r1).To(HaveLen(0))
 
@@ -38,6 +40,7 @@ func Test{{.UType}}OverwritingQueue(t *testing.T) {
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
+	g.Expect(a.Space()).To(Equal(0))
 	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{3, 4, 5, 6, 7, 8, 9, 10, 11, 12}))
 	g.Expect(r2).To(HaveLen(0))
 
@@ -45,6 +48,7 @@ func Test{{.UType}}OverwritingQueue(t *testing.T) {
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
+	g.Expect(a.Space()).To(Equal(0))
 	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{20, 21, 22, 23, 24, 25, 26, 27, 28, 29}))
 	g.Expect(r3).To(Equal([]{{.Type}}{30}))
 }
@@ -57,12 +61,14 @@ func Test{{.UType}}RefusingQueue(t *testing.T) {
 	g.Expect(a.IsOverwriting()).To(BeFalse())
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(0))
+	g.Expect(a.Space()).To(Equal(10))
 	g.Expect(a.ToSlice()).To(HaveLen(0))
 
     r1 := a.Push(1, 2, 3, 4, 5, 6)
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(6))
+	g.Expect(a.Space()).To(Equal(4))
 	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6}))
 	g.Expect(r1).To(HaveLen(0))
 
@@ -70,6 +76,7 @@ func Test{{.UType}}RefusingQueue(t *testing.T) {
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
+	g.Expect(a.Space()).To(Equal(0))
 	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
 	g.Expect(r2).To(Equal([]{{.Type}}{11, 12}))
 
@@ -77,6 +84,7 @@ func Test{{.UType}}RefusingQueue(t *testing.T) {
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
+	g.Expect(a.Space()).To(Equal(0))
 	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
 	g.Expect(r3).To(Equal([]{{.Type}}{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}))
 }
@@ -135,6 +143,26 @@ func Test{{.UType}}QueuePop(t *testing.T) {
 	g.Expect(a.Space()).To(Equal(10))
 }
 
+func Test{{.UType}}QueueHeadLast(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}Queue(10, false)
+
+	g.Expect(a.HeadOption()).To(Equal(0))
+	g.Expect(a.LastOption()).To(Equal(0))
+
+    a.Push(1)
+
+	g.Expect(a.HeadOption()).To(Equal(1))
+	g.Expect(a.LastOption()).To(Equal(1))
+
+    a.Push(2, 3, 4, 5, 6)
+    a.Pop(2)
+
+	g.Expect(a.HeadOption()).To(Equal(3))
+	g.Expect(a.LastOption()).To(Equal(6))
+}
+
 func Test{{.UType}}QueueClone(t *testing.T) {
 	g := NewGomegaWithT(t)
 
@@ -163,4 +191,50 @@ func Test{{.UType}}QueueClone(t *testing.T) {
 	g.Expect(a.Clone().ToSlice()).To(HaveLen(0))
 	g.Expect(a.ToList().ToSlice()).To(HaveLen(0))
 	g.Expect(a.ToInterfaceSlice()).To(HaveLen(0))
+}
+
+func Test{{.UType}}QueueResize(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}Queue(4, false)
+
+	g.Expect(a.IsOverwriting()).To(BeFalse())
+	g.Expect(a.ToSlice()).To(HaveLen(0))
+	g.Expect(a.Cap()).To(Equal(4))
+
+    a.Push(1, 2, 3, 4)
+
+	g.Expect(a.IsFull()).To(BeTrue())
+	g.Expect(a.Size()).To(Equal(4))
+	g.Expect(a.ToSlice()).To(Equal([]int{1, 2, 3, 4}))
+
+    a.Pop1()
+	b := a.Reallocate(6, true)
+
+	g.Expect(a).To(Equal(b))
+	g.Expect(a.IsOverwriting()).To(BeTrue())
+	g.Expect(a.Cap()).To(Equal(6))
+
+	a.Push(5, 6, 7, 8)
+
+	g.Expect(a.Size()).To(Equal(6))
+	g.Expect(b.Size()).To(Equal(6))
+	g.Expect(a.ToSlice()).To(Equal([]int{3, 4, 5, 6, 7, 8}))
+
+    a.Pop1()
+	a.Reallocate(3, true)
+
+	g.Expect(a.IsOverwriting()).To(BeTrue())
+	g.Expect(a.Cap()).To(Equal(3))
+	g.Expect(a.Size()).To(Equal(3))
+	g.Expect(a.ToSlice()).To(Equal([]int{6, 7, 8}))
+
+    // check correct nil handling
+    a = nil
+	b = a.Reallocate(7, false)
+
+	g.Expect(b.IsOverwriting()).To(BeFalse())
+	g.Expect(b.IsEmpty()).To(BeTrue())
+	g.Expect(b.IsFull()).To(BeFalse())
+	g.Expect(b.Cap()).To(Equal(7))
 }

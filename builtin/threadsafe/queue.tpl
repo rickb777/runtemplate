@@ -30,16 +30,16 @@ type {{.UPrefix}}{{.UType}}Queue struct {
 // New{{.UPrefix}}{{.UType}}Queue returns a new queue of {{.PType}}. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func New{{.UPrefix}}{{.UType}}Queue(size int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
-	if size < 1 {
-		panic("size must be at least 1")
+func New{{.UPrefix}}{{.UType}}Queue(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+	if capacity < 1 {
+		panic("capacity must be at least 1")
 	}
 	return &{{.UPrefix}}{{.UType}}Queue{
-		buffer:    make([]{{.PType}}, size),
+		buffer:    make([]{{.PType}}, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
-		cap:       size,
+		cap:       capacity,
 		overwrite: overwrite,
 		s:         &sync.RWMutex{},
 	}
@@ -61,47 +61,68 @@ func (queue {{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue {{.UPrefix}}{{.UType}}Queue) IsEmpty() bool {
+func (queue *{{.UPrefix}}{{.UType}}Queue) IsEmpty() bool {
+    if queue == nil {
+        return true
+    }
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue {{.UPrefix}}{{.UType}}Queue) NonEmpty() bool {
+func (queue *{{.UPrefix}}{{.UType}}Queue) NonEmpty() bool {
+    if queue == nil {
+        return false
+    }
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // IsFull returns true if the queue is full.
-func (queue {{.UPrefix}}{{.UType}}Queue) IsFull() bool {
+func (queue *{{.UPrefix}}{{.UType}}Queue) IsFull() bool {
+    if queue == nil {
+        return false
+    }
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == queue.cap
 }
 
 // Space returns the space available in the queue.
-func (queue {{.UPrefix}}{{.UType}}Queue) Space() int {
+func (queue *{{.UPrefix}}{{.UType}}Queue) Space() int {
+    if queue == nil {
+        return 0
+    }
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.cap - queue.length
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue {{.UPrefix}}{{.UType}}Queue) Size() int {
+func (queue *{{.UPrefix}}{{.UType}}Queue) Size() int {
+    if queue == nil {
+        return 0
+    }
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue {{.UPrefix}}{{.UType}}Queue) Len() int {
+func (queue *{{.UPrefix}}{{.UType}}Queue) Len() int {
+    if queue == nil {
+        return 0
+    }
 	return queue.Size()
 }
 
 // Cap gets the capacity of this queue.
-func (queue {{.UPrefix}}{{.UType}}Queue) Cap() int {
+func (queue *{{.UPrefix}}{{.UType}}Queue) Cap() int {
+    if queue == nil {
+        return 0
+    }
 	return queue.cap
 }
 
@@ -149,7 +170,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
 func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
 	front, back := queue.frontAndBack()
 	copy(s, front)
-	if len(back) > 0 {
+	if len(back) > 0 && len(s) >= len(front) {
 		copy(s[len(front):], back)
 	}
 	return s
@@ -200,28 +221,47 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 	}
 }
 
-// Resize adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
+// that the remaining data can fit in the space available. If the new queue capacity is the same as the old
+// capacity, the queue is not altered except for adopting the new overwrite flag's value.
+//
 // It does not clone the underlying elements.
-//func (queue *{{.UPrefix}}{{.UType}}Queue) Resize(newSize int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
-//	if queue == nil {
-//		return New{{.UPrefix}}{{.UType}}Queue(newSize, overwrite)
-//	}
-//
-//	queue.s.Lock()
-//	defer queue.s.Unlock()
-//
-//	queue.overwrite = overwrite
-//
-//	if newSize != queue.cap {
-//		queue.buffer = queue.toSlice(make([]{{.PType}}, newSize))
-//		queue.read = 0
-//		queue.write = len(queue.buffer)
-//		queue.length = len(queue.buffer)
-//		queue.cap = newSize
-//	}
-//
-//	return queue
-//}
+func (queue *{{.UPrefix}}{{.UType}}Queue) Reallocate(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+	if queue == nil {
+		return New{{.UPrefix}}{{.UType}}Queue(capacity, overwrite)
+	}
+
+	if capacity < 1 {
+		panic("capacity must be at least 1")
+	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
+
+	queue.overwrite = overwrite
+
+	if capacity < queue.length {
+	    // existing data is too big and has to be trimmed to fit
+		n := queue.length - capacity
+    	queue.read = (queue.read + n) % queue.cap
+	    queue.length -= n
+	}
+
+	if capacity != queue.cap {
+	    oldLength := queue.length
+		queue.buffer = queue.toSlice(make([]{{.PType}}, capacity))
+		if oldLength > len(queue.buffer) {
+		    oldLength = len(queue.buffer)
+        }
+		queue.read = 0
+		queue.write = oldLength
+		queue.length = oldLength
+		queue.cap = capacity
+	}
+
+	return queue
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -302,7 +342,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
 func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
 	queue.s.Lock()
 	defer queue.s.Unlock()
+	return queue.doPop(n)
+}
 
+func (queue *{{.UPrefix}}{{.UType}}Queue) doPop(n int) []{{.PType}} {
 	if queue.length == 0 {
 		return nil
 	}
@@ -324,6 +367,8 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
 
 	return s
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.

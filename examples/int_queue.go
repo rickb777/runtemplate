@@ -27,16 +27,16 @@ type IntQueue struct {
 // NewIntQueue returns a new queue of int. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func NewIntQueue(size int, overwrite bool) *IntQueue {
-	if size < 1 {
-		panic("size must be at least 1")
+func NewIntQueue(capacity int, overwrite bool) *IntQueue {
+	if capacity < 1 {
+		panic("capacity must be at least 1")
 	}
 	return &IntQueue{
-		buffer:    make([]int, size),
+		buffer:    make([]int, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
-		cap:       size,
+		cap:       capacity,
 		overwrite: overwrite,
 		s:         &sync.RWMutex{},
 	}
@@ -58,47 +58,68 @@ func (queue IntQueue) IsOverwriting() bool {
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue IntQueue) IsEmpty() bool {
+func (queue *IntQueue) IsEmpty() bool {
+	if queue == nil {
+		return true
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue IntQueue) NonEmpty() bool {
+func (queue *IntQueue) NonEmpty() bool {
+	if queue == nil {
+		return false
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // IsFull returns true if the queue is full.
-func (queue IntQueue) IsFull() bool {
+func (queue *IntQueue) IsFull() bool {
+	if queue == nil {
+		return false
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == queue.cap
 }
 
 // Space returns the space available in the queue.
-func (queue IntQueue) Space() int {
+func (queue *IntQueue) Space() int {
+	if queue == nil {
+		return 0
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.cap - queue.length
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue IntQueue) Size() int {
+func (queue *IntQueue) Size() int {
+	if queue == nil {
+		return 0
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue IntQueue) Len() int {
+func (queue *IntQueue) Len() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.Size()
 }
 
 // Cap gets the capacity of this queue.
-func (queue IntQueue) Cap() int {
+func (queue *IntQueue) Cap() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.cap
 }
 
@@ -129,7 +150,7 @@ func (queue *IntQueue) ToSlice() []int {
 func (queue *IntQueue) toSlice(s []int) []int {
 	front, back := queue.frontAndBack()
 	copy(s, front)
-	if len(back) > 0 {
+	if len(back) > 0 && len(s) >= len(front) {
 		copy(s[len(front):], back)
 	}
 	return s
@@ -180,28 +201,47 @@ func (queue *IntQueue) Clone() *IntQueue {
 	}
 }
 
-// Resize adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
+// that the remaining data can fit in the space available. If the new queue capacity is the same as the old
+// capacity, the queue is not altered except for adopting the new overwrite flag's value.
+//
 // It does not clone the underlying elements.
-//func (queue *IntQueue) Resize(newSize int, overwrite bool) *IntQueue {
-//	if queue == nil {
-//		return NewIntQueue(newSize, overwrite)
-//	}
-//
-//	queue.s.Lock()
-//	defer queue.s.Unlock()
-//
-//	queue.overwrite = overwrite
-//
-//	if newSize != queue.cap {
-//		queue.buffer = queue.toSlice(make([]int, newSize))
-//		queue.read = 0
-//		queue.write = len(queue.buffer)
-//		queue.length = len(queue.buffer)
-//		queue.cap = newSize
-//	}
-//
-//	return queue
-//}
+func (queue *IntQueue) Reallocate(capacity int, overwrite bool) *IntQueue {
+	if queue == nil {
+		return NewIntQueue(capacity, overwrite)
+	}
+
+	if capacity < 1 {
+		panic("capacity must be at least 1")
+	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
+
+	queue.overwrite = overwrite
+
+	if capacity < queue.length {
+		// existing data is too big and has to be trimmed to fit
+		n := queue.length - capacity
+		queue.read = (queue.read + n) % queue.cap
+		queue.length -= n
+	}
+
+	if capacity != queue.cap {
+		oldLength := queue.length
+		queue.buffer = queue.toSlice(make([]int, capacity))
+		if oldLength > len(queue.buffer) {
+			oldLength = len(queue.buffer)
+		}
+		queue.read = 0
+		queue.write = oldLength
+		queue.length = oldLength
+		queue.cap = capacity
+	}
+
+	return queue
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -282,7 +322,10 @@ func (queue *IntQueue) Pop1() (int, bool) {
 func (queue *IntQueue) Pop(n int) []int {
 	queue.s.Lock()
 	defer queue.s.Unlock()
+	return queue.doPop(n)
+}
 
+func (queue *IntQueue) doPop(n int) []int {
 	if queue.length == 0 {
 		return nil
 	}
@@ -304,6 +347,8 @@ func (queue *IntQueue) Pop(n int) []int {
 
 	return s
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is empty, it returns the zero value instead.

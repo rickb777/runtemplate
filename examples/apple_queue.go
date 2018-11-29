@@ -27,16 +27,16 @@ type AppleQueue struct {
 // NewAppleQueue returns a new queue of Apple. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func NewAppleQueue(size int, overwrite bool) *AppleQueue {
-	if size < 1 {
-		panic("size must be at least 1")
+func NewAppleQueue(capacity int, overwrite bool) *AppleQueue {
+	if capacity < 1 {
+		panic("capacity must be at least 1")
 	}
 	return &AppleQueue{
-		buffer:    make([]Apple, size),
+		buffer:    make([]Apple, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
-		cap:       size,
+		cap:       capacity,
 		overwrite: overwrite,
 		s:         &sync.RWMutex{},
 	}
@@ -58,47 +58,68 @@ func (queue AppleQueue) IsOverwriting() bool {
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue AppleQueue) IsEmpty() bool {
+func (queue *AppleQueue) IsEmpty() bool {
+	if queue == nil {
+		return true
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue AppleQueue) NonEmpty() bool {
+func (queue *AppleQueue) NonEmpty() bool {
+	if queue == nil {
+		return false
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // IsFull returns true if the queue is full.
-func (queue AppleQueue) IsFull() bool {
+func (queue *AppleQueue) IsFull() bool {
+	if queue == nil {
+		return false
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length == queue.cap
 }
 
 // Space returns the space available in the queue.
-func (queue AppleQueue) Space() int {
+func (queue *AppleQueue) Space() int {
+	if queue == nil {
+		return 0
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.cap - queue.length
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue AppleQueue) Size() int {
+func (queue *AppleQueue) Size() int {
+	if queue == nil {
+		return 0
+	}
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue AppleQueue) Len() int {
+func (queue *AppleQueue) Len() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.Size()
 }
 
 // Cap gets the capacity of this queue.
-func (queue AppleQueue) Cap() int {
+func (queue *AppleQueue) Cap() int {
+	if queue == nil {
+		return 0
+	}
 	return queue.cap
 }
 
@@ -129,7 +150,7 @@ func (queue *AppleQueue) ToSlice() []Apple {
 func (queue *AppleQueue) toSlice(s []Apple) []Apple {
 	front, back := queue.frontAndBack()
 	copy(s, front)
-	if len(back) > 0 {
+	if len(back) > 0 && len(s) >= len(front) {
 		copy(s[len(front):], back)
 	}
 	return s
@@ -180,28 +201,47 @@ func (queue *AppleQueue) Clone() *AppleQueue {
 	}
 }
 
-// Resize adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+// If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
+// that the remaining data can fit in the space available. If the new queue capacity is the same as the old
+// capacity, the queue is not altered except for adopting the new overwrite flag's value.
+//
 // It does not clone the underlying elements.
-//func (queue *AppleQueue) Resize(newSize int, overwrite bool) *AppleQueue {
-//	if queue == nil {
-//		return NewAppleQueue(newSize, overwrite)
-//	}
-//
-//	queue.s.Lock()
-//	defer queue.s.Unlock()
-//
-//	queue.overwrite = overwrite
-//
-//	if newSize != queue.cap {
-//		queue.buffer = queue.toSlice(make([]Apple, newSize))
-//		queue.read = 0
-//		queue.write = len(queue.buffer)
-//		queue.length = len(queue.buffer)
-//		queue.cap = newSize
-//	}
-//
-//	return queue
-//}
+func (queue *AppleQueue) Reallocate(capacity int, overwrite bool) *AppleQueue {
+	if queue == nil {
+		return NewAppleQueue(capacity, overwrite)
+	}
+
+	if capacity < 1 {
+		panic("capacity must be at least 1")
+	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
+
+	queue.overwrite = overwrite
+
+	if capacity < queue.length {
+		// existing data is too big and has to be trimmed to fit
+		n := queue.length - capacity
+		queue.read = (queue.read + n) % queue.cap
+		queue.length -= n
+	}
+
+	if capacity != queue.cap {
+		oldLength := queue.length
+		queue.buffer = queue.toSlice(make([]Apple, capacity))
+		if oldLength > len(queue.buffer) {
+			oldLength = len(queue.buffer)
+		}
+		queue.read = 0
+		queue.write = oldLength
+		queue.length = oldLength
+		queue.cap = capacity
+	}
+
+	return queue
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -282,7 +322,10 @@ func (queue *AppleQueue) Pop1() (Apple, bool) {
 func (queue *AppleQueue) Pop(n int) []Apple {
 	queue.s.Lock()
 	defer queue.s.Unlock()
+	return queue.doPop(n)
+}
 
+func (queue *AppleQueue) doPop(n int) []Apple {
 	if queue.length == 0 {
 		return nil
 	}
@@ -304,6 +347,8 @@ func (queue *AppleQueue) Pop(n int) []Apple {
 
 	return s
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is empty, it returns the zero value instead.
