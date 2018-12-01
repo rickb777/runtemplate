@@ -3,6 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -17,10 +18,8 @@ import (
 
 // SimpleIntList is a slice of type int. Use it where you would use []int.
 // To add items to the list, simply use the normal built-in append function.
-// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 //
+// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type SimpleIntList []int
 
@@ -33,57 +32,68 @@ func MakeSimpleIntList(length, capacity int) SimpleIntList {
 
 // NewSimpleIntList constructs a new list containing the supplied values, if any.
 func NewSimpleIntList(values ...int) SimpleIntList {
-	result := MakeSimpleIntList(len(values), len(values))
-	copy(result, values)
-	return result
+	list := MakeSimpleIntList(len(values), len(values))
+	copy(list, values)
+	return list
 }
 
 // ConvertSimpleIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertSimpleIntList(values ...interface{}) (SimpleIntList, bool) {
-	result := MakeSimpleIntList(0, len(values))
+	list := MakeSimpleIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			result = append(result, int(i.(int)))
+			list = append(list, int(i.(int)))
 		case int8:
-			result = append(result, int(i.(int8)))
+			list = append(list, int(i.(int8)))
 		case int16:
-			result = append(result, int(i.(int16)))
+			list = append(list, int(i.(int16)))
 		case int32:
-			result = append(result, int(i.(int32)))
+			list = append(list, int(i.(int32)))
 		case int64:
-			result = append(result, int(i.(int64)))
+			list = append(list, int(i.(int64)))
 		case uint:
-			result = append(result, int(i.(uint)))
+			list = append(list, int(i.(uint)))
 		case uint8:
-			result = append(result, int(i.(uint8)))
+			list = append(list, int(i.(uint8)))
 		case uint16:
-			result = append(result, int(i.(uint16)))
+			list = append(list, int(i.(uint16)))
 		case uint32:
-			result = append(result, int(i.(uint32)))
+			list = append(list, int(i.(uint32)))
 		case uint64:
-			result = append(result, int(i.(uint64)))
+			list = append(list, int(i.(uint64)))
 		case float32:
-			result = append(result, int(i.(float32)))
+			list = append(list, int(i.(float32)))
 		case float64:
-			result = append(result, int(i.(float64)))
+			list = append(list, int(i.(float64)))
 		}
 	}
 
-	return result, len(result) == len(values)
+	return list, len(list) == len(values)
 }
 
 // BuildSimpleIntListFromChan constructs a new SimpleIntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildSimpleIntListFromChan(source <-chan int) SimpleIntList {
-	result := MakeSimpleIntList(0, 0)
+	list := MakeSimpleIntList(0, 0)
 	for v := range source {
-		result = append(result, v)
+		list = append(list, v)
 	}
-	return result
+	return list
+}
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list SimpleIntList) ToList() SimpleIntList {
+	return list
+}
+
+// ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
+// because the simple list is merely a dressed-up slice.
+func (list SimpleIntList) ToSlice() SimpleIntList {
+	return list
 }
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
@@ -95,7 +105,7 @@ func (list SimpleIntList) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list SimpleIntList) Clone() SimpleIntList {
 	return NewSimpleIntList(list...)
 }
@@ -103,14 +113,14 @@ func (list SimpleIntList) Clone() SimpleIntList {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 // The simple list is a dressed-up slice and normal slice operations will also work.
 func (list SimpleIntList) Get(i int) int {
 	return list[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleIntList) Head() int {
 	return list[0]
 }
@@ -125,7 +135,7 @@ func (list SimpleIntList) HeadOption() int {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleIntList) Last() int {
 	return list[len(list)-1]
 }
@@ -140,13 +150,13 @@ func (list SimpleIntList) LastOption() int {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleIntList) Tail() SimpleIntList {
 	return SimpleIntList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleIntList) Init() SimpleIntList {
 	return SimpleIntList(list[:len(list)-1])
 }
@@ -210,30 +220,30 @@ func (list SimpleIntList) ContainsAll(i ...int) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of SimpleIntList return true for the passed func.
-func (list SimpleIntList) Exists(fn func(int) bool) bool {
+// Exists verifies that one or more elements of SimpleIntList return true for the predicate p.
+func (list SimpleIntList) Exists(p func(int) bool) bool {
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of SimpleIntList return true for the passed func.
-func (list SimpleIntList) Forall(fn func(int) bool) bool {
+// Forall verifies that all elements of SimpleIntList return true for the predicate p.
+func (list SimpleIntList) Forall(p func(int) bool) bool {
 	for _, v := range list {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over SimpleIntList and executes function fn against each element.
-func (list SimpleIntList) Foreach(fn func(int)) {
+// Foreach iterates over SimpleIntList and executes function f against each element.
+func (list SimpleIntList) Foreach(f func(int)) {
 	for _, v := range list {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -254,41 +264,69 @@ func (list SimpleIntList) Send() <-chan int {
 //-------------------------------------------------------------------------------------------------
 
 // Reverse returns a copy of SimpleIntList with all elements in the reverse order.
+//
+// The original list is not modified.
 func (list SimpleIntList) Reverse() SimpleIntList {
-	numItems := len(list)
-	result := MakeSimpleIntList(numItems, numItems)
-	last := numItems - 1
+	n := len(list)
+	result := MakeSimpleIntList(n, n)
+	last := n - 1
 	for i, v := range list {
 		result[last-i] = v
 	}
 	return result
 }
 
-// DoReverse returns a copy of SimpleIntList with all elements in the reverse order.
-// This is an alias for Reverse.
+// DoReverse alters a SimpleIntList with all elements in the reverse order.
+// Unlike Reverse, it does not allocate new memory.
+//
+// The list is modified and the modified list is returned.
 func (list SimpleIntList) DoReverse() SimpleIntList {
-	return list.Reverse()
+	mid := (len(list) + 1) / 2
+	last := len(list) - 1
+	for i := 0; i < mid; i++ {
+		r := last - i
+		if i != r {
+			list[i], list[r] = list[r], list[i]
+		}
+	}
+	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of SimpleIntList, using a version of the Fisher-Yates shuffle.
+//
+// The original list is not modified.
 func (list SimpleIntList) Shuffle() SimpleIntList {
-	result := list.Clone()
-	numItems := len(list)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
-		result[i], result[r] = result[r], result[i]
+	if list == nil {
+		return nil
 	}
-	return result
+
+	return list.Clone().DoShuffle()
+}
+
+// DoShuffle returns a shuffled SimpleIntList, using a version of the Fisher-Yates shuffle.
+//
+// The list is modified and the modified list is returned.
+func (list SimpleIntList) DoShuffle() SimpleIntList {
+	if list == nil {
+		return nil
+	}
+
+	n := len(list)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
+		list[i], list[r] = list[r], list[i]
+	}
+	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of SimpleIntList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list SimpleIntList) Take(n int) SimpleIntList {
-	if n > len(list) {
+	if n >= len(list) {
 		return list
 	}
 	return list[0:n]
@@ -296,6 +334,8 @@ func (list SimpleIntList) Take(n int) SimpleIntList {
 
 // Drop returns a slice of SimpleIntList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
 func (list SimpleIntList) Drop(n int) SimpleIntList {
 	if n == 0 {
 		return list
@@ -309,10 +349,12 @@ func (list SimpleIntList) Drop(n int) SimpleIntList {
 }
 
 // TakeLast returns a slice of SimpleIntList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
+//
+// The original list is not modified.
 func (list SimpleIntList) TakeLast(n int) SimpleIntList {
 	l := len(list)
-	if n > l {
+	if n >= l {
 		return list
 	}
 	return list[l-n:]
@@ -320,6 +362,8 @@ func (list SimpleIntList) TakeLast(n int) SimpleIntList {
 
 // DropLast returns a slice of SimpleIntList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
 func (list SimpleIntList) DropLast(n int) SimpleIntList {
 	if n == 0 {
 		return list
@@ -336,6 +380,8 @@ func (list SimpleIntList) DropLast(n int) SimpleIntList {
 // TakeWhile returns a new SimpleIntList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
+//
+// The original list is not modified.
 func (list SimpleIntList) TakeWhile(p func(int) bool) SimpleIntList {
 	result := MakeSimpleIntList(0, 0)
 	for _, v := range list {
@@ -351,6 +397,8 @@ func (list SimpleIntList) TakeWhile(p func(int) bool) SimpleIntList {
 // DropWhile returns a new SimpleIntList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
+//
+// The original list is not modified.
 func (list SimpleIntList) DropWhile(p func(int) bool) SimpleIntList {
 	result := MakeSimpleIntList(0, 0)
 	adding := false
@@ -386,7 +434,7 @@ func (list SimpleIntList) Find(p func(int) bool) (int, bool) {
 //
 // The original list is not modified.
 func (list SimpleIntList) Filter(p func(int) bool) SimpleIntList {
-	result := MakeSimpleIntList(0, len(list)/2)
+	result := MakeSimpleIntList(0, len(list))
 
 	for _, v := range list {
 		if p(v) {
@@ -404,8 +452,8 @@ func (list SimpleIntList) Filter(p func(int) bool) SimpleIntList {
 //
 // The original list is not modified.
 func (list SimpleIntList) Partition(p func(int) bool) (SimpleIntList, SimpleIntList) {
-	matching := MakeSimpleIntList(0, len(list)/2)
-	others := MakeSimpleIntList(0, len(list)/2)
+	matching := MakeSimpleIntList(0, len(list))
+	others := MakeSimpleIntList(0, len(list))
 
 	for _, v := range list {
 		if p(v) {
@@ -424,11 +472,11 @@ func (list SimpleIntList) Partition(p func(int) bool) (SimpleIntList, SimpleIntL
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list SimpleIntList) Map(fn func(int) int) SimpleIntList {
+func (list SimpleIntList) Map(f func(int) int) SimpleIntList {
 	result := MakeSimpleIntList(0, len(list))
 
 	for _, v := range list {
-		result = append(result, fn(v))
+		result = append(result, f(v))
 	}
 
 	return result
@@ -450,10 +498,10 @@ func (list SimpleIntList) FlatMap(fn func(int) []int) SimpleIntList {
 	return result
 }
 
-// CountBy gives the number elements of SimpleIntList that return true for the passed predicate.
-func (list SimpleIntList) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of SimpleIntList that return true for the predicate p.
+func (list SimpleIntList) CountBy(p func(int) bool) (result int) {
 	for _, v := range list {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -498,7 +546,7 @@ func (list SimpleIntList) MaxBy(less func(int, int) bool) int {
 	return list[m]
 }
 
-// DistinctBy returns a new SimpleIntList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new SimpleIntList whose elements are unique, where equality is defined by the equal function.
 func (list SimpleIntList) DistinctBy(equal func(int, int) bool) SimpleIntList {
 	result := MakeSimpleIntList(0, len(list))
 Outer:
@@ -513,12 +561,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list SimpleIntList) IndexWhere(p func(int) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list SimpleIntList) IndexWhere2(p func(int) bool, from int) int {
 	for i, v := range list {
@@ -529,13 +577,13 @@ func (list SimpleIntList) IndexWhere2(p func(int) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list SimpleIntList) LastIndexWhere(p func(int) bool) int {
 	return list.LastIndexWhere2(p, len(list))
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list SimpleIntList) LastIndexWhere2(p func(int) bool, before int) int {
 	if before < 0 {
@@ -622,6 +670,7 @@ func (list SimpleIntList) StableSortBy(less func(i, j int) bool) SimpleIntList {
 // These methods are included when int is ordered.
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
+// Sorting happens in-place; the modified list is returned.
 func (list SimpleIntList) Sorted() SimpleIntList {
 	return list.SortBy(func(a, b int) bool {
 		return a < b
@@ -629,6 +678,7 @@ func (list SimpleIntList) Sorted() SimpleIntList {
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
+// Sorting happens in-place; the modified list is returned.
 func (list SimpleIntList) StableSorted() SimpleIntList {
 	return list.StableSortBy(func(a, b int) bool {
 		return a < b
@@ -655,9 +705,18 @@ func (list SimpleIntList) Max() (result int) {
 
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
+func (list SimpleIntList) StringList() []string {
+	strings := make([]string, len(list))
+	for i, v := range list {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
+}
+
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list SimpleIntList) String() string {
-	return list.MkString3("[", ",", "]")
+	return list.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -667,18 +726,24 @@ func (list SimpleIntList) MkString(sep string) string {
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list SimpleIntList) MkString3(before, between, after string) string {
-	b := bytes.Buffer{}
+	if list == nil {
+		return ""
+	}
+
+	return list.mkString3Bytes(before, between, after).String()
+}
+
+func (list SimpleIntList) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
 	b.WriteString(before)
-	l := len(list)
-	if l > 0 {
-		v := list[0]
+	sep := ""
+	for _, v := range list {
+		b.WriteString(sep)
 		b.WriteString(fmt.Sprintf("%v", v))
-		for i := 1; i < l; i++ {
-			v := list[i]
-			b.WriteString(between)
-			b.WriteString(fmt.Sprintf("%v", v))
-		}
+		sep = between
 	}
 	b.WriteString(after)
-	return b.String()
+	return b
 }
+
+//-------------------------------------------------------------------------------------------------

@@ -197,6 +197,46 @@ func Test{{.UType}}QueueClone(t *testing.T) {
 	g.Expect(a.ToInterfaceSlice()).To(HaveLen(0))
 }
 
+func Test{{.UType}}QueueToList(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}Queue(5, false, nil)
+	a.Push(1, 2, 3, 4)
+	b := a.ToList()
+
+	g.Expect(b.ToSlice()).To(Equal([]int{1, 2, 3, 4}))
+
+{{- if .Mutable}}
+
+	a = nil
+	b = a.ToList()
+
+	g.Expect(b.IsEmpty()).To(BeTrue())
+{{- end}}
+}
+
+func Test{{.UType}}QueueToSet(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}Queue(5, false, nil)
+	a.Push(1, 2, 3, 4)
+	b := a.ToSet()
+
+	g.Expect(b.Size()).To(Equal(4))
+	g.Expect(b.Contains(1)).To(BeTrue())
+	g.Expect(b.Contains(2)).To(BeTrue())
+	g.Expect(b.Contains(3)).To(BeTrue())
+	g.Expect(b.Contains(4)).To(BeTrue())
+
+{{- if .Mutable}}
+
+	a = nil
+	b = a.ToSet()
+
+	g.Expect(b.IsEmpty()).To(BeTrue())
+{{- end}}
+}
+
 func Test{{.UType}}QueueResize(t *testing.T) {
 	g := NewGomegaWithT(t)
 

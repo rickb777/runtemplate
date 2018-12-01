@@ -6,15 +6,15 @@ package simple
 //-------------------------------------------------------------------------------------------------
 // Code generation with non-pointer values
 
-//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=string  Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=int     Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=Apple   Stringer:false Comparable:true
+//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=string  ToSet:true   Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=int     ToSet:true   Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=Apple   ToSet:true   Stringer:false Comparable:true
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X2 Type=big.Int Import:"math/big"
 
-//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=string  Stringer:true  Ordered:false Numeric:false
-//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=int     Stringer:true  Ordered:true  Numeric:true
-//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=Apple   Stringer:false
-//go:generate runtemplate -tpl simple/set.tpl   Prefix=X2 Type=url.URL Stringer:true  Comparable:true Import:"net/url"
+//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=string  ToList:true  Stringer:true  Ordered:false Numeric:false
+//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=int     ToList:true  Stringer:true  Ordered:true  Numeric:true
+//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=Apple   ToList:true  Stringer:false
+//go:generate runtemplate -tpl simple/set.tpl   Prefix=X2 Type=url.URL ToList:false Stringer:true  Comparable:true Import:"net/url"
 
 //go:generate runtemplate -tpl simple/map.tpl   Prefix=TX1 Key=int     Type=int       Comparable:true Stringer:true
 //go:generate runtemplate -tpl simple/map.tpl   Prefix=TX1 Key=string  Type=string    Comparable:true Stringer:true

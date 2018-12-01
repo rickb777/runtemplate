@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/set.tpl with Type=Apple
-// options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false
+// options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false ToList:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -55,6 +55,11 @@ func BuildAppleSetFromChan(source <-chan Apple) *AppleSet {
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
+	return set
+}
+
+// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+func (set *AppleSet) ToSet() *AppleSet {
 	return set
 }
 

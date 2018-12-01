@@ -268,6 +268,31 @@ func Test{{.UType}}ListClone(t *testing.T) {
 }
 {{- if .Append}}
 
+func Test{{.UType}}ListToSet(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	b := a.ToSet()
+
+	g.Expect(a.Size()).To(Equal(4))
+	g.Expect(a.Contains(1)).To(BeTrue())
+	g.Expect(a.Contains(2)).To(BeTrue())
+	g.Expect(a.Contains(3)).To(BeTrue())
+	g.Expect(a.Contains(4)).To(BeTrue())
+
+    c := a.ToList()
+	g.Expect(c{{.M}}).To(Equal(a{{.M}}))
+{{- if .Mutable}}
+
+	a = nil
+	b = a.ToSet()
+
+	g.Expect(b.IsEmpty()).To(BeTrue())
+{{- end}}
+}
+{{- end}}
+{{- if .Append}}
+
 func Test{{.UType}}ListToSlice(t *testing.T) {
 	g := NewGomegaWithT(t)
 

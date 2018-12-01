@@ -3,6 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -15,10 +16,8 @@ import (
 
 // SimpleAppleList is a slice of type Apple. Use it where you would use []Apple.
 // To add items to the list, simply use the normal built-in append function.
-// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
-// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 //
+// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type SimpleAppleList []Apple
 
@@ -31,35 +30,46 @@ func MakeSimpleAppleList(length, capacity int) SimpleAppleList {
 
 // NewSimpleAppleList constructs a new list containing the supplied values, if any.
 func NewSimpleAppleList(values ...Apple) SimpleAppleList {
-	result := MakeSimpleAppleList(len(values), len(values))
-	copy(result, values)
-	return result
+	list := MakeSimpleAppleList(len(values), len(values))
+	copy(list, values)
+	return list
 }
 
 // ConvertSimpleAppleList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertSimpleAppleList(values ...interface{}) (SimpleAppleList, bool) {
-	result := MakeSimpleAppleList(0, len(values))
+	list := MakeSimpleAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if ok {
-			result = append(result, v)
+			list = append(list, v)
 		}
 	}
 
-	return result, len(result) == len(values)
+	return list, len(list) == len(values)
 }
 
 // BuildSimpleAppleListFromChan constructs a new SimpleAppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildSimpleAppleListFromChan(source <-chan Apple) SimpleAppleList {
-	result := MakeSimpleAppleList(0, 0)
+	list := MakeSimpleAppleList(0, 0)
 	for v := range source {
-		result = append(result, v)
+		list = append(list, v)
 	}
-	return result
+	return list
+}
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list SimpleAppleList) ToList() SimpleAppleList {
+	return list
+}
+
+// ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
+// because the simple list is merely a dressed-up slice.
+func (list SimpleAppleList) ToSlice() SimpleAppleList {
+	return list
 }
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
@@ -71,7 +81,7 @@ func (list SimpleAppleList) ToInterfaceSlice() []interface{} {
 	return s
 }
 
-// Clone returns a shallow copy of the map. It does not clone the underlying elements.
+// Clone returns a shallow copy of the list. It does not clone the underlying elements.
 func (list SimpleAppleList) Clone() SimpleAppleList {
 	return NewSimpleAppleList(list...)
 }
@@ -79,14 +89,14 @@ func (list SimpleAppleList) Clone() SimpleAppleList {
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
-// Panics if the index is out of range.
+// Panics if the index is out of range or the list is nil.
 // The simple list is a dressed-up slice and normal slice operations will also work.
 func (list SimpleAppleList) Get(i int) Apple {
 	return list[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleAppleList) Head() Apple {
 	return list[0]
 }
@@ -101,7 +111,7 @@ func (list SimpleAppleList) HeadOption() Apple {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleAppleList) Last() Apple {
 	return list[len(list)-1]
 }
@@ -116,13 +126,13 @@ func (list SimpleAppleList) LastOption() Apple {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleAppleList) Tail() SimpleAppleList {
 	return SimpleAppleList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list SimpleAppleList) Init() SimpleAppleList {
 	return SimpleAppleList(list[:len(list)-1])
 }
@@ -186,30 +196,30 @@ func (list SimpleAppleList) ContainsAll(i ...Apple) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of SimpleAppleList return true for the passed func.
-func (list SimpleAppleList) Exists(fn func(Apple) bool) bool {
+// Exists verifies that one or more elements of SimpleAppleList return true for the predicate p.
+func (list SimpleAppleList) Exists(p func(Apple) bool) bool {
 	for _, v := range list {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Forall verifies that all elements of SimpleAppleList return true for the passed func.
-func (list SimpleAppleList) Forall(fn func(Apple) bool) bool {
+// Forall verifies that all elements of SimpleAppleList return true for the predicate p.
+func (list SimpleAppleList) Forall(p func(Apple) bool) bool {
 	for _, v := range list {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Foreach iterates over SimpleAppleList and executes function fn against each element.
-func (list SimpleAppleList) Foreach(fn func(Apple)) {
+// Foreach iterates over SimpleAppleList and executes function f against each element.
+func (list SimpleAppleList) Foreach(f func(Apple)) {
 	for _, v := range list {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -230,41 +240,69 @@ func (list SimpleAppleList) Send() <-chan Apple {
 //-------------------------------------------------------------------------------------------------
 
 // Reverse returns a copy of SimpleAppleList with all elements in the reverse order.
+//
+// The original list is not modified.
 func (list SimpleAppleList) Reverse() SimpleAppleList {
-	numItems := len(list)
-	result := MakeSimpleAppleList(numItems, numItems)
-	last := numItems - 1
+	n := len(list)
+	result := MakeSimpleAppleList(n, n)
+	last := n - 1
 	for i, v := range list {
 		result[last-i] = v
 	}
 	return result
 }
 
-// DoReverse returns a copy of SimpleAppleList with all elements in the reverse order.
-// This is an alias for Reverse.
+// DoReverse alters a SimpleAppleList with all elements in the reverse order.
+// Unlike Reverse, it does not allocate new memory.
+//
+// The list is modified and the modified list is returned.
 func (list SimpleAppleList) DoReverse() SimpleAppleList {
-	return list.Reverse()
+	mid := (len(list) + 1) / 2
+	last := len(list) - 1
+	for i := 0; i < mid; i++ {
+		r := last - i
+		if i != r {
+			list[i], list[r] = list[r], list[i]
+		}
+	}
+	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Shuffle returns a shuffled copy of SimpleAppleList, using a version of the Fisher-Yates shuffle.
+//
+// The original list is not modified.
 func (list SimpleAppleList) Shuffle() SimpleAppleList {
-	result := list.Clone()
-	numItems := len(list)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
-		result[i], result[r] = result[r], result[i]
+	if list == nil {
+		return nil
 	}
-	return result
+
+	return list.Clone().DoShuffle()
+}
+
+// DoShuffle returns a shuffled SimpleAppleList, using a version of the Fisher-Yates shuffle.
+//
+// The list is modified and the modified list is returned.
+func (list SimpleAppleList) DoShuffle() SimpleAppleList {
+	if list == nil {
+		return nil
+	}
+
+	n := len(list)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
+		list[i], list[r] = list[r], list[i]
+	}
+	return list
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Take returns a slice of SimpleAppleList containing the leading n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
 func (list SimpleAppleList) Take(n int) SimpleAppleList {
-	if n > len(list) {
+	if n >= len(list) {
 		return list
 	}
 	return list[0:n]
@@ -272,6 +310,8 @@ func (list SimpleAppleList) Take(n int) SimpleAppleList {
 
 // Drop returns a slice of SimpleAppleList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
 func (list SimpleAppleList) Drop(n int) SimpleAppleList {
 	if n == 0 {
 		return list
@@ -285,10 +325,12 @@ func (list SimpleAppleList) Drop(n int) SimpleAppleList {
 }
 
 // TakeLast returns a slice of SimpleAppleList containing the trailing n elements of the source list.
-// If n is greater than the size of the list, the whole original list is returned.
+// If n is greater than or equal to the size of the list, the whole original list is returned.
+//
+// The original list is not modified.
 func (list SimpleAppleList) TakeLast(n int) SimpleAppleList {
 	l := len(list)
-	if n > l {
+	if n >= l {
 		return list
 	}
 	return list[l-n:]
@@ -296,6 +338,8 @@ func (list SimpleAppleList) TakeLast(n int) SimpleAppleList {
 
 // DropLast returns a slice of SimpleAppleList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
+//
+// The original list is not modified.
 func (list SimpleAppleList) DropLast(n int) SimpleAppleList {
 	if n == 0 {
 		return list
@@ -312,6 +356,8 @@ func (list SimpleAppleList) DropLast(n int) SimpleAppleList {
 // TakeWhile returns a new SimpleAppleList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
+//
+// The original list is not modified.
 func (list SimpleAppleList) TakeWhile(p func(Apple) bool) SimpleAppleList {
 	result := MakeSimpleAppleList(0, 0)
 	for _, v := range list {
@@ -327,6 +373,8 @@ func (list SimpleAppleList) TakeWhile(p func(Apple) bool) SimpleAppleList {
 // DropWhile returns a new SimpleAppleList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
+//
+// The original list is not modified.
 func (list SimpleAppleList) DropWhile(p func(Apple) bool) SimpleAppleList {
 	result := MakeSimpleAppleList(0, 0)
 	adding := false
@@ -362,7 +410,7 @@ func (list SimpleAppleList) Find(p func(Apple) bool) (Apple, bool) {
 //
 // The original list is not modified.
 func (list SimpleAppleList) Filter(p func(Apple) bool) SimpleAppleList {
-	result := MakeSimpleAppleList(0, len(list)/2)
+	result := MakeSimpleAppleList(0, len(list))
 
 	for _, v := range list {
 		if p(v) {
@@ -380,8 +428,8 @@ func (list SimpleAppleList) Filter(p func(Apple) bool) SimpleAppleList {
 //
 // The original list is not modified.
 func (list SimpleAppleList) Partition(p func(Apple) bool) (SimpleAppleList, SimpleAppleList) {
-	matching := MakeSimpleAppleList(0, len(list)/2)
-	others := MakeSimpleAppleList(0, len(list)/2)
+	matching := MakeSimpleAppleList(0, len(list))
+	others := MakeSimpleAppleList(0, len(list))
 
 	for _, v := range list {
 		if p(v) {
@@ -400,11 +448,11 @@ func (list SimpleAppleList) Partition(p func(Apple) bool) (SimpleAppleList, Simp
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list SimpleAppleList) Map(fn func(Apple) Apple) SimpleAppleList {
+func (list SimpleAppleList) Map(f func(Apple) Apple) SimpleAppleList {
 	result := MakeSimpleAppleList(0, len(list))
 
 	for _, v := range list {
-		result = append(result, fn(v))
+		result = append(result, f(v))
 	}
 
 	return result
@@ -426,10 +474,10 @@ func (list SimpleAppleList) FlatMap(fn func(Apple) []Apple) SimpleAppleList {
 	return result
 }
 
-// CountBy gives the number elements of SimpleAppleList that return true for the passed predicate.
-func (list SimpleAppleList) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of SimpleAppleList that return true for the predicate p.
+func (list SimpleAppleList) CountBy(p func(Apple) bool) (result int) {
 	for _, v := range list {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -474,7 +522,7 @@ func (list SimpleAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	return list[m]
 }
 
-// DistinctBy returns a new SimpleAppleList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new SimpleAppleList whose elements are unique, where equality is defined by the equal function.
 func (list SimpleAppleList) DistinctBy(equal func(Apple, Apple) bool) SimpleAppleList {
 	result := MakeSimpleAppleList(0, len(list))
 Outer:
@@ -489,12 +537,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list SimpleAppleList) IndexWhere(p func(Apple) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list SimpleAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 	for i, v := range list {
@@ -505,13 +553,13 @@ func (list SimpleAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list SimpleAppleList) LastIndexWhere(p func(Apple) bool) int {
 	return list.LastIndexWhere2(p, len(list))
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list SimpleAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 	if before < 0 {

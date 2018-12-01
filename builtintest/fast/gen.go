@@ -5,43 +5,43 @@ package fast
 //-------------------------------------------------------------------------------------------------
 // Code generation with non-pointer values
 
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=string Stringer:true Comparable:true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=int    Stringer:true Comparable:true Ordered:true Numeric:true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=Apple  Stringer:false
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=string  ToSet:true Stringer:true Comparable:true
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=int     ToSet:true Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=Apple   ToSet:true Stringer:false
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=Pear
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X2 Type=big.Int Import:"math/big"
 
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=string Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true GobEncode:true JsonEncode:true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=Apple  Stringer:false Comparable:true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X2 Type=big.Int Import:"math/big"
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=string  ToSet:true  Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=int     ToSet:true  Stringer:true  Comparable:true Ordered:true  Numeric:true GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=Apple   ToSet:true  Stringer:false Comparable:true
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X2 Type=big.Int ToSet:false Import:"math/big"
 
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=string Stringer:true  Ordered:false Numeric:false
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=int    Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=Apple  Stringer:false
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=url.URL Stringer:true  Comparable:true Import:"net/url"
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=string  ToList:true  Stringer:true  Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=int     ToList:true  Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=Apple   ToList:true  Stringer:false
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=url.URL ToList:false Stringer:true  Comparable:true Import:"net/url"
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/rickb777/runtemplate/builtintest/testtypes"
 
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=int    Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true JsonEncode:true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string Type=string  Comparable:true Stringer:true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string Type=Apple                   Stringer:true KeySlice:sort.StringSlice
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Email  Type=string                  Stringer:true KeySlice:EmailSlice
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Apple  Type=string
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Apple  Type=Pear                    Stringer:true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX2 Key=Apple  Type=big.Int  Import:"math/big"
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=int     Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string  Type=string  Comparable:true Stringer:true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string  Type=Apple                   Stringer:true KeySlice:sort.StringSlice
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Email   Type=string                  Stringer:true KeySlice:EmailSlice
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Apple   Type=string
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=Apple   Type=Pear                    Stringer:true
+//go:generate runtemplate -tpl fast/map.tpl        Prefix=TX2 Key=Apple   Type=big.Int  Import:"math/big"
 
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=string  ToList:true Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=int     ToList:true Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=Apple   ToList:true Stringer:false Comparable:true
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X2 Type=big.Int ToList:true Import:"math/big"
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=string  ToList:true ToSet:true  Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=int     ToList:true ToSet:true  Stringer:true  Comparable:true Ordered:true  Numeric:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=Apple   ToList:true ToSet:true  Stringer:false Comparable:true
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=X2 Type=big.Int ToList:true ToSet:false Import:"math/big"
 
 //go:generate runtemplate -tpl types/stringy.tpl   Prefix=X1 Type=Email SortableSlice:true
 
 //go:generate runtemplate -tpl ../collection_test.tpl  Type=int Mutable:true Numeric:true Comparable:true
-//go:generate runtemplate -tpl ../list_test.tpl        Type=int Mutable:true Numeric:true Comparable:true M:.m GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../list_test.tpl        Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
 //go:generate runtemplate -tpl ../queue_test.tpl       Type=int Mutable:true Numeric:true                 M:
-//go:generate runtemplate -tpl ../set_test.tpl         Type=int Mutable:true Numeric:true Comparable:true M:.m GobEncode:true JsonEncode:true Append:true
-//go:generate runtemplate -tpl ../map_test.tpl Key=int Type=int Mutable:true Numeric:true Comparable:true M:.m GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl ../set_test.tpl         Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../map_test.tpl Key=int Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
 //-------------------------------------------------------------------------------------------------
 // Code generation with pointer values

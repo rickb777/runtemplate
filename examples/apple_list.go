@@ -2,7 +2,8 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
+// GobEncode:true Mutable:always ToList:always ToSet:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -38,35 +39,35 @@ func MakeAppleList(length, capacity int) *AppleList {
 
 // NewAppleList constructs a new list containing the supplied values, if any.
 func NewAppleList(values ...Apple) *AppleList {
-	result := MakeAppleList(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := MakeAppleList(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // ConvertAppleList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertAppleList(values ...interface{}) (*AppleList, bool) {
-	result := MakeAppleList(0, len(values))
+	list := MakeAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if ok {
-			result.m = append(result.m, v)
+			list.m = append(list.m, v)
 		}
 	}
 
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // BuildAppleListFromChan constructs a new AppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildAppleListFromChan(source <-chan Apple) *AppleList {
-	result := MakeAppleList(0, 0)
+	list := MakeAppleList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -75,6 +76,11 @@ func (list *AppleList) slice() []Apple {
 		return nil
 	}
 	return list.m
+}
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *AppleList) ToList() *AppleList {
+	return list
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -237,11 +243,13 @@ func (list *AppleList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
+// This is one of the three methods in the standard sort.Interface.
 func (list *AppleList) Len() int {
 	return list.Size()
 }
 
-// Swap exchanges two elements.
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
 func (list *AppleList) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -310,9 +318,9 @@ func (list *AppleList) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Foreach iterates over AppleList and executes function fn against each element.
+// Foreach iterates over AppleList and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *AppleList) Foreach(fn func(Apple)) {
+func (list *AppleList) Foreach(f func(Apple)) {
 	if list == nil {
 		return
 	}
@@ -321,7 +329,7 @@ func (list *AppleList) Foreach(fn func(Apple)) {
 	defer list.s.Unlock()
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -357,9 +365,9 @@ func (list *AppleList) Reverse() *AppleList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	numItems := len(list.m)
-	result := MakeAppleList(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := MakeAppleList(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -416,9 +424,9 @@ func (list *AppleList) DoShuffle() *AppleList {
 }
 
 func (list *AppleList) doShuffle() *AppleList {
-	numItems := len(list.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(list.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
@@ -747,7 +755,7 @@ func (list *AppleList) Filter(p func(Apple) bool) *AppleList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := MakeAppleList(0, len(list.m)/2)
+	result := MakeAppleList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -772,8 +780,8 @@ func (list *AppleList) Partition(p func(Apple) bool) (*AppleList, *AppleList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := MakeAppleList(0, len(list.m)/2)
-	others := MakeAppleList(0, len(list.m)/2)
+	matching := MakeAppleList(0, len(list.m))
+	others := MakeAppleList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -792,7 +800,7 @@ func (list *AppleList) Partition(p func(Apple) bool) (*AppleList, *AppleList) {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *AppleList) Map(fn func(Apple) Apple) *AppleList {
+func (list *AppleList) Map(f func(Apple) Apple) *AppleList {
 	if list == nil {
 		return nil
 	}
@@ -802,7 +810,7 @@ func (list *AppleList) Map(fn func(Apple) Apple) *AppleList {
 	defer list.s.RUnlock()
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
@@ -830,13 +838,13 @@ func (list *AppleList) FlatMap(fn func(Apple) []Apple) *AppleList {
 	return result
 }
 
-// CountBy gives the number elements of AppleList that return true for the passed predicate.
-func (list *AppleList) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of AppleList that return true for the predicate p.
+func (list *AppleList) CountBy(p func(Apple) bool) (result int) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -885,7 +893,7 @@ func (list *AppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	return list.m[m]
 }
 
-// DistinctBy returns a new AppleList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new AppleList whose elements are unique, where equality is defined by the equal function.
 func (list *AppleList) DistinctBy(equal func(Apple, Apple) bool) *AppleList {
 	if list == nil {
 		return nil
@@ -907,12 +915,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *AppleList) IndexWhere(p func(Apple) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *AppleList) IndexWhere2(p func(Apple) bool, from int) int {
 	list.s.RLock()
@@ -926,13 +934,13 @@ func (list *AppleList) IndexWhere2(p func(Apple) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *AppleList) LastIndexWhere(p func(Apple) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *AppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 	list.s.RLock()
@@ -954,7 +962,7 @@ func (list *AppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 // These methods are included when Apple is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
 func (list *AppleList) Equals(other *AppleList) bool {

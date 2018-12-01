@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/set.tpl with Type=int
-// options: Comparable:always Numeric:true Ordered:true Stringer:true
+// options: Comparable:always Numeric:true Ordered:true Stringer:true ToList:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -78,6 +78,11 @@ func BuildIntSetFromChan(source <-chan int) *IntSet {
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
+	return set
+}
+
+// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+func (set *IntSet) ToSet() *IntSet {
 	return set
 }
 

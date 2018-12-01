@@ -2,7 +2,8 @@
 // Not thread-safe.
 //
 // Generated from fast/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
+// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
+// GobEncode:true Mutable:always ToList:always ToSet:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -35,35 +36,35 @@ func MakeFastAppleList(length, capacity int) *FastAppleList {
 
 // NewFastAppleList constructs a new list containing the supplied values, if any.
 func NewFastAppleList(values ...Apple) *FastAppleList {
-	result := MakeFastAppleList(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := MakeFastAppleList(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // ConvertFastAppleList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertFastAppleList(values ...interface{}) (*FastAppleList, bool) {
-	result := MakeFastAppleList(0, len(values))
+	list := MakeFastAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if ok {
-			result.m = append(result.m, v)
+			list.m = append(list.m, v)
 		}
 	}
 
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // BuildFastAppleListFromChan constructs a new FastAppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildFastAppleListFromChan(source <-chan Apple) *FastAppleList {
-	result := MakeFastAppleList(0, 0)
+	list := MakeFastAppleList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -72,6 +73,11 @@ func (list *FastAppleList) slice() []Apple {
 		return nil
 	}
 	return list.m
+}
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *FastAppleList) ToList() *FastAppleList {
+	return list
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -206,11 +212,13 @@ func (list *FastAppleList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
+// This is one of the three methods in the standard sort.Interface.
 func (list *FastAppleList) Len() int {
 	return list.Size()
 }
 
-// Swap exchanges two elements.
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
 func (list *FastAppleList) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
@@ -268,15 +276,15 @@ func (list *FastAppleList) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Foreach iterates over FastAppleList and executes function fn against each element.
+// Foreach iterates over FastAppleList and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *FastAppleList) Foreach(fn func(Apple)) {
+func (list *FastAppleList) Foreach(f func(Apple)) {
 	if list == nil {
 		return
 	}
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -307,9 +315,9 @@ func (list *FastAppleList) Reverse() *FastAppleList {
 		return nil
 	}
 
-	numItems := len(list.m)
-	result := MakeFastAppleList(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := MakeFastAppleList(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -361,9 +369,9 @@ func (list *FastAppleList) DoShuffle() *FastAppleList {
 }
 
 func (list *FastAppleList) doShuffle() *FastAppleList {
-	numItems := len(list.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(list.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
@@ -656,7 +664,7 @@ func (list *FastAppleList) Filter(p func(Apple) bool) *FastAppleList {
 		return nil
 	}
 
-	result := MakeFastAppleList(0, len(list.m)/2)
+	result := MakeFastAppleList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -678,8 +686,8 @@ func (list *FastAppleList) Partition(p func(Apple) bool) (*FastAppleList, *FastA
 		return nil, nil
 	}
 
-	matching := MakeFastAppleList(0, len(list.m)/2)
-	others := MakeFastAppleList(0, len(list.m)/2)
+	matching := MakeFastAppleList(0, len(list.m))
+	others := MakeFastAppleList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -698,7 +706,7 @@ func (list *FastAppleList) Partition(p func(Apple) bool) (*FastAppleList, *FastA
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *FastAppleList) Map(fn func(Apple) Apple) *FastAppleList {
+func (list *FastAppleList) Map(f func(Apple) Apple) *FastAppleList {
 	if list == nil {
 		return nil
 	}
@@ -706,7 +714,7 @@ func (list *FastAppleList) Map(fn func(Apple) Apple) *FastAppleList {
 	result := MakeFastAppleList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
@@ -732,11 +740,11 @@ func (list *FastAppleList) FlatMap(fn func(Apple) []Apple) *FastAppleList {
 	return result
 }
 
-// CountBy gives the number elements of FastAppleList that return true for the passed predicate.
-func (list *FastAppleList) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of FastAppleList that return true for the predicate p.
+func (list *FastAppleList) CountBy(p func(Apple) bool) (result int) {
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -781,7 +789,7 @@ func (list *FastAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	return list.m[m]
 }
 
-// DistinctBy returns a new FastAppleList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new FastAppleList whose elements are unique, where equality is defined by the equal function.
 func (list *FastAppleList) DistinctBy(equal func(Apple, Apple) bool) *FastAppleList {
 	if list == nil {
 		return nil
@@ -800,12 +808,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *FastAppleList) IndexWhere(p func(Apple) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *FastAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 
@@ -817,13 +825,13 @@ func (list *FastAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *FastAppleList) LastIndexWhere(p func(Apple) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *FastAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 
@@ -843,7 +851,7 @@ func (list *FastAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 // These methods are included when Apple is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
 func (list *FastAppleList) Equals(other *FastAppleList) bool {

@@ -2,7 +2,8 @@
 // Not thread-safe.
 //
 // Generated from fast/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
+// options: Comparable:true Numeric:true Ordered:true Stringer:true
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -36,57 +37,57 @@ func MakeFastIntList(length, capacity int) *FastIntList {
 
 // NewFastIntList constructs a new list containing the supplied values, if any.
 func NewFastIntList(values ...int) *FastIntList {
-	result := MakeFastIntList(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := MakeFastIntList(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // ConvertFastIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertFastIntList(values ...interface{}) (*FastIntList, bool) {
-	result := MakeFastIntList(0, len(values))
+	list := MakeFastIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			result.m = append(result.m, int(i.(int)))
+			list.m = append(list.m, int(i.(int)))
 		case int8:
-			result.m = append(result.m, int(i.(int8)))
+			list.m = append(list.m, int(i.(int8)))
 		case int16:
-			result.m = append(result.m, int(i.(int16)))
+			list.m = append(list.m, int(i.(int16)))
 		case int32:
-			result.m = append(result.m, int(i.(int32)))
+			list.m = append(list.m, int(i.(int32)))
 		case int64:
-			result.m = append(result.m, int(i.(int64)))
+			list.m = append(list.m, int(i.(int64)))
 		case uint:
-			result.m = append(result.m, int(i.(uint)))
+			list.m = append(list.m, int(i.(uint)))
 		case uint8:
-			result.m = append(result.m, int(i.(uint8)))
+			list.m = append(list.m, int(i.(uint8)))
 		case uint16:
-			result.m = append(result.m, int(i.(uint16)))
+			list.m = append(list.m, int(i.(uint16)))
 		case uint32:
-			result.m = append(result.m, int(i.(uint32)))
+			list.m = append(list.m, int(i.(uint32)))
 		case uint64:
-			result.m = append(result.m, int(i.(uint64)))
+			list.m = append(list.m, int(i.(uint64)))
 		case float32:
-			result.m = append(result.m, int(i.(float32)))
+			list.m = append(list.m, int(i.(float32)))
 		case float64:
-			result.m = append(result.m, int(i.(float64)))
+			list.m = append(list.m, int(i.(float64)))
 		}
 	}
 
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // BuildFastIntListFromChan constructs a new FastIntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildFastIntListFromChan(source <-chan int) *FastIntList {
-	result := MakeFastIntList(0, 0)
+	list := MakeFastIntList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -95,6 +96,11 @@ func (list *FastIntList) slice() []int {
 		return nil
 	}
 	return list.m
+}
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *FastIntList) ToList() *FastIntList {
+	return list
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -229,11 +235,13 @@ func (list *FastIntList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
+// This is one of the three methods in the standard sort.Interface.
 func (list *FastIntList) Len() int {
 	return list.Size()
 }
 
-// Swap exchanges two elements.
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
 func (list *FastIntList) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
@@ -291,15 +299,15 @@ func (list *FastIntList) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Foreach iterates over FastIntList and executes function fn against each element.
+// Foreach iterates over FastIntList and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *FastIntList) Foreach(fn func(int)) {
+func (list *FastIntList) Foreach(f func(int)) {
 	if list == nil {
 		return
 	}
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -330,9 +338,9 @@ func (list *FastIntList) Reverse() *FastIntList {
 		return nil
 	}
 
-	numItems := len(list.m)
-	result := MakeFastIntList(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := MakeFastIntList(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -384,9 +392,9 @@ func (list *FastIntList) DoShuffle() *FastIntList {
 }
 
 func (list *FastIntList) doShuffle() *FastIntList {
-	numItems := len(list.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(list.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
@@ -679,7 +687,7 @@ func (list *FastIntList) Filter(p func(int) bool) *FastIntList {
 		return nil
 	}
 
-	result := MakeFastIntList(0, len(list.m)/2)
+	result := MakeFastIntList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -701,8 +709,8 @@ func (list *FastIntList) Partition(p func(int) bool) (*FastIntList, *FastIntList
 		return nil, nil
 	}
 
-	matching := MakeFastIntList(0, len(list.m)/2)
-	others := MakeFastIntList(0, len(list.m)/2)
+	matching := MakeFastIntList(0, len(list.m))
+	others := MakeFastIntList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -721,7 +729,7 @@ func (list *FastIntList) Partition(p func(int) bool) (*FastIntList, *FastIntList
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *FastIntList) Map(fn func(int) int) *FastIntList {
+func (list *FastIntList) Map(f func(int) int) *FastIntList {
 	if list == nil {
 		return nil
 	}
@@ -729,7 +737,7 @@ func (list *FastIntList) Map(fn func(int) int) *FastIntList {
 	result := MakeFastIntList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
@@ -755,11 +763,11 @@ func (list *FastIntList) FlatMap(fn func(int) []int) *FastIntList {
 	return result
 }
 
-// CountBy gives the number elements of FastIntList that return true for the passed predicate.
-func (list *FastIntList) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of FastIntList that return true for the predicate p.
+func (list *FastIntList) CountBy(p func(int) bool) (result int) {
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -804,7 +812,7 @@ func (list *FastIntList) MaxBy(less func(int, int) bool) int {
 	return list.m[m]
 }
 
-// DistinctBy returns a new FastIntList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new FastIntList whose elements are unique, where equality is defined by the equal function.
 func (list *FastIntList) DistinctBy(equal func(int, int) bool) *FastIntList {
 	if list == nil {
 		return nil
@@ -823,12 +831,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *FastIntList) IndexWhere(p func(int) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *FastIntList) IndexWhere2(p func(int) bool, from int) int {
 
@@ -840,13 +848,13 @@ func (list *FastIntList) IndexWhere2(p func(int) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *FastIntList) LastIndexWhere(p func(int) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *FastIntList) LastIndexWhere2(p func(int) bool, before int) int {
 
@@ -879,7 +887,7 @@ func (list *FastIntList) Sum() int {
 // These methods are included when int is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
 func (list *FastIntList) Equals(other *FastIntList) bool {

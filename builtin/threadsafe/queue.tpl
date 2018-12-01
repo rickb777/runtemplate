@@ -9,7 +9,8 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Sorted:{{.Sorted}} Stringer:{{.Stringer}} ToList:{{.ToList}}
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Sorted:{{.Sorted}} Stringer:{{.Stringer}}
+// ToList:{{.ToList}} ToSet:{{.ToSet}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -201,6 +202,21 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
 	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
 	queue.toSlice(list.m)
 	return list
+}
+{{- end}}
+{{- if .ToSet}}
+
+// ToList returns the elements of the queue as a list. The returned list is a shallow
+// copy; the queue is not altered.
+func (queue *{{.UPrefix}}{{.UType}}Queue) ToSet() *{{.UPrefix}}{{.UType}}Set {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	return New{{.UPrefix}}{{.UType}}Set(queue.ToSlice()...)
 }
 {{- end}}
 

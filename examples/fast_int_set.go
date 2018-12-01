@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=int
-// options: Comparable:always Numeric:true Ordered:true Stringer:true
+// options: Comparable:always Numeric:true Ordered:true Stringer:true ToList:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -75,6 +75,11 @@ func BuildFastIntSetFromChan(source <-chan int) *FastIntSet {
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
+	return set
+}
+
+// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+func (set *FastIntSet) ToSet() *FastIntSet {
 	return set
 }
 

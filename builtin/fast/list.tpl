@@ -2,7 +2,8 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:always
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
+// GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -46,64 +47,64 @@ func Make{{.UPrefix}}{{.UType}}List(length, capacity int) *{{.UPrefix}}{{.UType}
 
 // New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
-	result := Make{{.UPrefix}}{{.UType}}List(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := Make{{.UPrefix}}{{.UType}}List(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // Convert{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.UType}}List, bool) {
-	result := Make{{.UPrefix}}{{.UType}}List(0, len(values))
+	list := Make{{.UPrefix}}{{.UType}}List(0, len(values))
 {{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			result.m = append(result.m, {{.PType}}(i.(int)))
+			list.m = append(list.m, {{.PType}}(i.(int)))
 		case int8:
-			result.m = append(result.m, {{.PType}}(i.(int8)))
+			list.m = append(list.m, {{.PType}}(i.(int8)))
 		case int16:
-			result.m = append(result.m, {{.PType}}(i.(int16)))
+			list.m = append(list.m, {{.PType}}(i.(int16)))
 		case int32:
-			result.m = append(result.m, {{.PType}}(i.(int32)))
+			list.m = append(list.m, {{.PType}}(i.(int32)))
 		case int64:
-			result.m = append(result.m, {{.PType}}(i.(int64)))
+			list.m = append(list.m, {{.PType}}(i.(int64)))
 		case uint:
-			result.m = append(result.m, {{.PType}}(i.(uint)))
+			list.m = append(list.m, {{.PType}}(i.(uint)))
 		case uint8:
-			result.m = append(result.m, {{.PType}}(i.(uint8)))
+			list.m = append(list.m, {{.PType}}(i.(uint8)))
 		case uint16:
-			result.m = append(result.m, {{.PType}}(i.(uint16)))
+			list.m = append(list.m, {{.PType}}(i.(uint16)))
 		case uint32:
-			result.m = append(result.m, {{.PType}}(i.(uint32)))
+			list.m = append(list.m, {{.PType}}(i.(uint32)))
 		case uint64:
-			result.m = append(result.m, {{.PType}}(i.(uint64)))
+			list.m = append(list.m, {{.PType}}(i.(uint64)))
 		case float32:
-			result.m = append(result.m, {{.PType}}(i.(float32)))
+			list.m = append(list.m, {{.PType}}(i.(float32)))
 		case float64:
-			result.m = append(result.m, {{.PType}}(i.(float64)))
+			list.m = append(list.m, {{.PType}}(i.(float64)))
 		}
 	}
 {{else}}
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if ok {
-			result.m = append(result.m, v)
+			list.m = append(list.m, v)
 		}
 	}
 {{end}}
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}List {
-	result := Make{{.UPrefix}}{{.UType}}List(0, 0)
+	list := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -113,6 +114,23 @@ func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
 	}
 	return list.m
 }
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *{{.UPrefix}}{{.UType}}List) ToList() *{{.UPrefix}}{{.UType}}List {
+    return list
+}
+{{- if .ToSet}}
+
+// ToList returns the elements of the queue as a list. The returned list is a shallow
+// copy; the queue is not altered.
+func (list *{{.UPrefix}}{{.UType}}List) ToSet() *{{.UPrefix}}{{.UType}}Set {
+	if list == nil {
+		return nil
+	}
+
+	return New{{.UPrefix}}{{.UType}}Set(list.m...)
+}
+{{- end}}
 
 // ToSlice returns the elements of the current list as a slice.
 func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
@@ -246,11 +264,13 @@ func (list *{{.UPrefix}}{{.UType}}List) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
+// This is one of the three methods in the standard sort.Interface.
 func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 	return list.Size()
 }
 
-// Swap exchanges two elements.
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
 func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
@@ -310,15 +330,15 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.PType}}) bool) bool {
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
+// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.PType}})) {
+func (list *{{.UPrefix}}{{.UType}}List) Foreach(f func({{.PType}})) {
 	if list == nil {
 		return
 	}
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -349,9 +369,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 		return nil
 	}
 
-	numItems := len(list.m)
-	result := Make{{.UPrefix}}{{.UType}}List(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := Make{{.UPrefix}}{{.UType}}List(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -403,9 +423,9 @@ func (list *{{.UPrefix}}{{.UType}}List) DoShuffle() *{{.UPrefix}}{{.UType}}List 
 }
 
 func (list *{{.UPrefix}}{{.UType}}List) doShuffle() *{{.UPrefix}}{{.UType}}List {
-	numItems := len(list.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(list.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
@@ -703,7 +723,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Filter(p func({{.PType}}) bool) *{{.UPre
 		return nil
 	}
 
-	result := Make{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
+	result := Make{{.UPrefix}}{{.UType}}List(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -725,8 +745,8 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 		return nil, nil
 	}
 
-	matching := Make{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
-	others := Make{{.UPrefix}}{{.UType}}List(0, len(list.m)/2)
+	matching := Make{{.UPrefix}}{{.UType}}List(0, len(list.m))
+	others := Make{{.UPrefix}}{{.UType}}List(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -745,7 +765,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) Map(f func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
 	}
@@ -753,7 +773,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.
 	result := Make{{.UPrefix}}{{.UType}}List(len(list.m), len(list.m))
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
@@ -779,11 +799,11 @@ func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}
 	return result
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
-func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) (result int) {
+// CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) CountBy(p func({{.PType}}) bool) (result int) {
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -828,7 +848,7 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 	return list.m[m]
 }
 
-// DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by the equal function.
 func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
@@ -847,12 +867,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) IndexWhere(p func({{.PType}}) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from int) int {
 
@@ -864,13 +884,13 @@ func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, fro
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
 
@@ -906,7 +926,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // These methods are included when {{.Type}} is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
@@ -1036,12 +1056,16 @@ func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 
 // StringList gets a list of strings that depicts all the elements.
 func (list {{.UPrefix}}{{.UType}}List) StringList() []string {
+{{- if eq .PType "string"}}
+    return list.ToSlice()
+{{- else}}
 
 	strings := make([]string, len(list.m))
 	for i, v := range list.m {
 		strings[i] = fmt.Sprintf("%v", v)
 	}
 	return strings
+{{- end}}
 }
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.

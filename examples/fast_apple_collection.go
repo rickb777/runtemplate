@@ -33,25 +33,25 @@ type FastAppleCollection interface {
 	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
 	ToInterfaceSlice() []interface{}
 
-	// Exists verifies that one or more elements of FastAppleCollection return true for the passed func.
-	Exists(fn func(Apple) bool) bool
+	// Exists verifies that one or more elements of FastAppleCollection return true for the predicate p.
+	Exists(p func(Apple) bool) bool
 
-	// Forall verifies that all elements of FastAppleCollection return true for the passed func.
-	Forall(fn func(Apple) bool) bool
+	// Forall verifies that all elements of FastAppleCollection return true for the predicate p.
+	Forall(p func(Apple) bool) bool
 
-	// Foreach iterates over FastAppleCollection and executes the passed func against each element.
-	Foreach(fn func(Apple))
+	// Foreach iterates over FastAppleCollection and executes the function f against each element.
+	Foreach(f func(Apple))
 
-	// Find returns the first Apple that returns true for some function.
+	// Find returns the first Apple that returns true for the predicate p.
 	// False is returned if none match.
-	Find(fn func(Apple) bool) (Apple, bool)
+	Find(p func(Apple) bool) (Apple, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan Apple
 
-	// CountBy gives the number elements of FastAppleCollection that return true for the passed predicate.
-	CountBy(predicate func(Apple) bool) int
+	// CountBy gives the number elements of FastAppleCollection that return true for the predicate p.
+	CountBy(p func(Apple) bool) int
 
 	// Add adds items to the current collection.
 	Add(more ...Apple)

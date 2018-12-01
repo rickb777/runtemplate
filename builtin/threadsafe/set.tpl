@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
+// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} ToList:{{.ToList}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -95,6 +95,29 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefi
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
+	return set
+}
+{{- if .ToList}}
+
+// ToList returns the elements of the set as a list. The returned list is a shallow
+// copy; the set is not altered.
+func (set *{{.UPrefix}}{{.UType}}Set) ToList() *{{.UPrefix}}{{.UType}}List {
+	if set == nil {
+		return nil
+	}
+
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	return &{{.UPrefix}}{{.UType}}List{
+		s: &sync.RWMutex{},
+		m: set.slice(),
+	}
+}
+{{- end}}
+
+// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+func (set *{{.UPrefix}}{{.UType}}Set) ToSet() *{{.UPrefix}}{{.UType}}Set {
 	return set
 }
 

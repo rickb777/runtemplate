@@ -2,7 +2,8 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
+// options: Comparable:true Numeric:true Ordered:true Stringer:true
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
 // by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -39,57 +40,57 @@ func MakeIntList(length, capacity int) *IntList {
 
 // NewIntList constructs a new list containing the supplied values, if any.
 func NewIntList(values ...int) *IntList {
-	result := MakeIntList(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := MakeIntList(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // ConvertIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertIntList(values ...interface{}) (*IntList, bool) {
-	result := MakeIntList(0, len(values))
+	list := MakeIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			result.m = append(result.m, int(i.(int)))
+			list.m = append(list.m, int(i.(int)))
 		case int8:
-			result.m = append(result.m, int(i.(int8)))
+			list.m = append(list.m, int(i.(int8)))
 		case int16:
-			result.m = append(result.m, int(i.(int16)))
+			list.m = append(list.m, int(i.(int16)))
 		case int32:
-			result.m = append(result.m, int(i.(int32)))
+			list.m = append(list.m, int(i.(int32)))
 		case int64:
-			result.m = append(result.m, int(i.(int64)))
+			list.m = append(list.m, int(i.(int64)))
 		case uint:
-			result.m = append(result.m, int(i.(uint)))
+			list.m = append(list.m, int(i.(uint)))
 		case uint8:
-			result.m = append(result.m, int(i.(uint8)))
+			list.m = append(list.m, int(i.(uint8)))
 		case uint16:
-			result.m = append(result.m, int(i.(uint16)))
+			list.m = append(list.m, int(i.(uint16)))
 		case uint32:
-			result.m = append(result.m, int(i.(uint32)))
+			list.m = append(list.m, int(i.(uint32)))
 		case uint64:
-			result.m = append(result.m, int(i.(uint64)))
+			list.m = append(list.m, int(i.(uint64)))
 		case float32:
-			result.m = append(result.m, int(i.(float32)))
+			list.m = append(list.m, int(i.(float32)))
 		case float64:
-			result.m = append(result.m, int(i.(float64)))
+			list.m = append(list.m, int(i.(float64)))
 		}
 	}
 
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // BuildIntListFromChan constructs a new IntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildIntListFromChan(source <-chan int) *IntList {
-	result := MakeIntList(0, 0)
+	list := MakeIntList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -98,6 +99,11 @@ func (list *IntList) slice() []int {
 		return nil
 	}
 	return list.m
+}
+
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *IntList) ToList() *IntList {
+	return list
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -260,11 +266,13 @@ func (list *IntList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
+// This is one of the three methods in the standard sort.Interface.
 func (list *IntList) Len() int {
 	return list.Size()
 }
 
-// Swap exchanges two elements.
+// Swap exchanges two elements, which is necessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
 func (list *IntList) Swap(i, j int) {
 	list.s.Lock()
 	defer list.s.Unlock()
@@ -333,9 +341,9 @@ func (list *IntList) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Foreach iterates over IntList and executes function fn against each element.
+// Foreach iterates over IntList and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *IntList) Foreach(fn func(int)) {
+func (list *IntList) Foreach(f func(int)) {
 	if list == nil {
 		return
 	}
@@ -344,7 +352,7 @@ func (list *IntList) Foreach(fn func(int)) {
 	defer list.s.Unlock()
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -380,9 +388,9 @@ func (list *IntList) Reverse() *IntList {
 	list.s.Lock()
 	defer list.s.Unlock()
 
-	numItems := len(list.m)
-	result := MakeIntList(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := MakeIntList(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -439,9 +447,9 @@ func (list *IntList) DoShuffle() *IntList {
 }
 
 func (list *IntList) doShuffle() *IntList {
-	numItems := len(list.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(list.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		list.m[i], list.m[r] = list.m[r], list.m[i]
 	}
 	return list
@@ -770,7 +778,7 @@ func (list *IntList) Filter(p func(int) bool) *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	result := MakeIntList(0, len(list.m)/2)
+	result := MakeIntList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -795,8 +803,8 @@ func (list *IntList) Partition(p func(int) bool) (*IntList, *IntList) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	matching := MakeIntList(0, len(list.m)/2)
-	others := MakeIntList(0, len(list.m)/2)
+	matching := MakeIntList(0, len(list.m))
+	others := MakeIntList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -815,7 +823,7 @@ func (list *IntList) Partition(p func(int) bool) (*IntList, *IntList) {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *IntList) Map(fn func(int) int) *IntList {
+func (list *IntList) Map(f func(int) int) *IntList {
 	if list == nil {
 		return nil
 	}
@@ -825,7 +833,7 @@ func (list *IntList) Map(fn func(int) int) *IntList {
 	defer list.s.RUnlock()
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
@@ -853,13 +861,13 @@ func (list *IntList) FlatMap(fn func(int) []int) *IntList {
 	return result
 }
 
-// CountBy gives the number elements of IntList that return true for the passed predicate.
-func (list *IntList) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of IntList that return true for the predicate p.
+func (list *IntList) CountBy(p func(int) bool) (result int) {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -908,7 +916,7 @@ func (list *IntList) MaxBy(less func(int, int) bool) int {
 	return list.m[m]
 }
 
-// DistinctBy returns a new IntList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new IntList whose elements are unique, where equality is defined by the equal function.
 func (list *IntList) DistinctBy(equal func(int, int) bool) *IntList {
 	if list == nil {
 		return nil
@@ -930,12 +938,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *IntList) IndexWhere(p func(int) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *IntList) IndexWhere2(p func(int) bool, from int) int {
 	list.s.RLock()
@@ -949,13 +957,13 @@ func (list *IntList) IndexWhere2(p func(int) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *IntList) LastIndexWhere(p func(int) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *IntList) LastIndexWhere2(p func(int) bool, before int) int {
 	list.s.RLock()
@@ -992,7 +1000,7 @@ func (list *IntList) Sum() int {
 // These methods are included when int is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
 func (list *IntList) Equals(other *IntList) bool {
