@@ -228,7 +228,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Remove(k {{.PKey}}) {
 	}
 }
 
-// Pop removes a single item from the map, returning the value present until removal.
+// Pop removes a single item from the map, returning the value present prior to removal.
 // The boolean result is true only if the key had been present.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Pop(k {{.PKey}}) ({{.PType}}, bool) {
 	if mm == nil {
@@ -282,26 +282,26 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) DropWhere(fn func({{.PKey}}, {{.PT
 	return removed
 }
 
-// Foreach applies a function to every element in the map.
+// Foreach applies the function f to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(fn func({{.PKey}}, {{.PType}})) {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(f func({{.PKey}}, {{.PType}})) {
 	if mm != nil {
 		mm.s.Lock()
 		defer mm.s.Unlock()
 
 		for k, v := range mm.m {
-			fn(k, v)
+			f(k, v)
 		}
 	}
 }
 
-// Forall applies a predicate function to every element in the map. If the function returns false,
+// Forall applies the predicate p to every element in the map. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(p func({{.PKey}}, {{.PType}}) bool) bool {
 	if mm == nil {
 		return true
 	}
@@ -310,7 +310,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
-		if !fn(k, v) {
+		if !p(k, v) {
 			return false
 		}
 	}
@@ -318,10 +318,10 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(fn func({{.PKey}}, {{.PType
 	return true
 }
 
-// Exists applies a predicate function to every element in the map. If the function returns true,
+// Exists applies the predicate p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(p func({{.PKey}}, {{.PType}}) bool) bool {
 	if mm == nil {
 		return false
 	}
@@ -330,7 +330,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			return true
 		}
 	}
@@ -338,15 +338,15 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(fn func({{.PKey}}, {{.PType
 	return false
 }
 
-// Find returns the first {{.Type}} that returns true for some function.
+// Find returns the first {{.Type}} that returns true for the predicate p.
 // False is returned if none match.
 // The original map is not modified.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(p func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v}, true
 		}
 	}
@@ -354,10 +354,10 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(fn func({{.PKey}}, {{.PType}}
 	return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
 }
 
-// Filter applies a predicate function to every element in the map and returns a copied map containing
+// Filter applies the predicate p to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 // The original map is not modified.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType}}) bool) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(p func({{.PKey}}, {{.PType}}) bool) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	if mm == nil {
 		return nil
 	}
@@ -367,7 +367,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			result.m[k] = v
 		}
 	}
@@ -375,11 +375,11 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(fn func({{.PKey}}, {{.PType
 	return result
 }
 
-// Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
+// Partition applies the predicate p to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
 // The original map is not modified.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PType}}) bool) (matching *{{.UPrefix}}{{.UKey}}{{.UType}}Map, others *{{.UPrefix}}{{.UKey}}{{.UType}}Map) {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(p func({{.PKey}}, {{.PType}}) bool) (matching *{{.UPrefix}}{{.UKey}}{{.UType}}Map, others *{{.UPrefix}}{{.UKey}}{{.UType}}Map) {
 	if mm == nil {
 		return nil, nil
 	}
@@ -390,7 +390,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PT
 	defer mm.s.RUnlock()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			matching.m[k] = v
 		} else {
 			others.m[k] = v
@@ -399,12 +399,12 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(fn func({{.PKey}}, {{.PT
 	return
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with the function f.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(f func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	if mm == nil {
 		return nil
 	}
@@ -414,20 +414,20 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(fn func({{.PKey}}, {{.PType}})
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-		k2, v2 := fn(k1, v1)
+		k2, v2 := f(k1, v1)
 		result.m[k2] = v2
 	}
 
 	return result
 }
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with a function fn that
+// FlatMap returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with the function f that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PType}}) []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(f func({{.PKey}}, {{.PType}}) []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	if mm == nil {
 		return nil
 	}
@@ -437,7 +437,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(fn func({{.PKey}}, {{.PTyp
 	defer mm.s.RUnlock()
 
 	for k1, v1 := range mm.m {
-		ts := fn(k1, v1)
+		ts := f(k1, v1)
 		for _, t := range ts {
 			result.m[t.Key] = t.Val
 		}

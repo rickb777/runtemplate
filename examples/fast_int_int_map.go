@@ -191,7 +191,7 @@ func (mm *FastIntIntMap) Remove(k int) {
 	}
 }
 
-// Pop removes a single item from the map, returning the value present until removal.
+// Pop removes a single item from the map, returning the value present prior to removal.
 // The boolean result is true only if the key had been present.
 func (mm *FastIntIntMap) Pop(k int) (int, bool) {
 	if mm == nil {
@@ -237,30 +237,30 @@ func (mm *FastIntIntMap) DropWhere(fn func(int, int) bool) FastIntIntTuples {
 	return removed
 }
 
-// Foreach applies a function to every element in the map.
+// Foreach applies the function f to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm *FastIntIntMap) Foreach(fn func(int, int)) {
+func (mm *FastIntIntMap) Foreach(f func(int, int)) {
 	if mm != nil {
 
 		for k, v := range mm.m {
-			fn(k, v)
+			f(k, v)
 		}
 	}
 }
 
-// Forall applies a predicate function to every element in the map. If the function returns false,
+// Forall applies the predicate p to every element in the map. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *FastIntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm *FastIntIntMap) Forall(p func(int, int) bool) bool {
 	if mm == nil {
 		return true
 	}
 
 	for k, v := range mm.m {
-		if !fn(k, v) {
+		if !p(k, v) {
 			return false
 		}
 	}
@@ -268,16 +268,16 @@ func (mm *FastIntIntMap) Forall(fn func(int, int) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function to every element in the map. If the function returns true,
+// Exists applies the predicate p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *FastIntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm *FastIntIntMap) Exists(p func(int, int) bool) bool {
 	if mm == nil {
 		return false
 	}
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			return true
 		}
 	}
@@ -285,13 +285,13 @@ func (mm *FastIntIntMap) Exists(fn func(int, int) bool) bool {
 	return false
 }
 
-// Find returns the first int that returns true for some function.
+// Find returns the first int that returns true for the predicate p.
 // False is returned if none match.
 // The original map is not modified.
-func (mm *FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
+func (mm *FastIntIntMap) Find(p func(int, int) bool) (FastIntIntTuple, bool) {
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			return FastIntIntTuple{k, v}, true
 		}
 	}
@@ -299,10 +299,10 @@ func (mm *FastIntIntMap) Find(fn func(int, int) bool) (FastIntIntTuple, bool) {
 	return FastIntIntTuple{}, false
 }
 
-// Filter applies a predicate function to every element in the map and returns a copied map containing
+// Filter applies the predicate p to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 // The original map is not modified.
-func (mm *FastIntIntMap) Filter(fn func(int, int) bool) *FastIntIntMap {
+func (mm *FastIntIntMap) Filter(p func(int, int) bool) *FastIntIntMap {
 	if mm == nil {
 		return nil
 	}
@@ -310,7 +310,7 @@ func (mm *FastIntIntMap) Filter(fn func(int, int) bool) *FastIntIntMap {
 	result := NewFastIntIntMap()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			result.m[k] = v
 		}
 	}
@@ -318,11 +318,11 @@ func (mm *FastIntIntMap) Filter(fn func(int, int) bool) *FastIntIntMap {
 	return result
 }
 
-// Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
+// Partition applies the predicate p to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
 // The original map is not modified.
-func (mm *FastIntIntMap) Partition(fn func(int, int) bool) (matching *FastIntIntMap, others *FastIntIntMap) {
+func (mm *FastIntIntMap) Partition(p func(int, int) bool) (matching *FastIntIntMap, others *FastIntIntMap) {
 	if mm == nil {
 		return nil, nil
 	}
@@ -331,7 +331,7 @@ func (mm *FastIntIntMap) Partition(fn func(int, int) bool) (matching *FastIntInt
 	others = NewFastIntIntMap()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			matching.m[k] = v
 		} else {
 			others.m[k] = v
@@ -340,12 +340,12 @@ func (mm *FastIntIntMap) Partition(fn func(int, int) bool) (matching *FastIntInt
 	return
 }
 
-// Map returns a new FastIntMap by transforming every element with a function fn.
+// Map returns a new FastIntMap by transforming every element with the function f.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *FastIntIntMap) Map(fn func(int, int) (int, int)) *FastIntIntMap {
+func (mm *FastIntIntMap) Map(f func(int, int) (int, int)) *FastIntIntMap {
 	if mm == nil {
 		return nil
 	}
@@ -353,20 +353,20 @@ func (mm *FastIntIntMap) Map(fn func(int, int) (int, int)) *FastIntIntMap {
 	result := NewFastIntIntMap()
 
 	for k1, v1 := range mm.m {
-		k2, v2 := fn(k1, v1)
+		k2, v2 := f(k1, v1)
 		result.m[k2] = v2
 	}
 
 	return result
 }
 
-// FlatMap returns a new FastIntMap by transforming every element with a function fn that
+// FlatMap returns a new FastIntMap by transforming every element with the function f that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *FastIntIntMap) FlatMap(fn func(int, int) []FastIntIntTuple) *FastIntIntMap {
+func (mm *FastIntIntMap) FlatMap(f func(int, int) []FastIntIntTuple) *FastIntIntMap {
 	if mm == nil {
 		return nil
 	}
@@ -374,7 +374,7 @@ func (mm *FastIntIntMap) FlatMap(fn func(int, int) []FastIntIntTuple) *FastIntIn
 	result := NewFastIntIntMap()
 
 	for k1, v1 := range mm.m {
-		ts := fn(k1, v1)
+		ts := f(k1, v1)
 		for _, t := range ts {
 			result.m[t.Key] = t.Val
 		}

@@ -147,7 +147,7 @@ func (mm SimpleIntIntMap) Remove(k int) {
 	delete(mm, k)
 }
 
-// Pop removes a single item from the map, returning the value present until removal.
+// Pop removes a single item from the map, returning the value present prior to removal.
 func (mm SimpleIntIntMap) Pop(k int) (int, bool) {
 	v, found := mm[k]
 	delete(mm, k)
@@ -183,23 +183,23 @@ func (mm SimpleIntIntMap) DropWhere(fn func(int, int) bool) SimpleIntIntTuples {
 	return removed
 }
 
-// Foreach applies a function to every element in the map.
+// Foreach applies the function f to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm SimpleIntIntMap) Foreach(fn func(int, int)) {
+func (mm SimpleIntIntMap) Foreach(f func(int, int)) {
 	for k, v := range mm {
-		fn(k, v)
+		f(k, v)
 	}
 }
 
-// Forall applies a predicate function to every element in the map. If the function returns false,
+// Forall applies the predicate p to every element in the map. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm SimpleIntIntMap) Forall(fn func(int, int) bool) bool {
+func (mm SimpleIntIntMap) Forall(p func(int, int) bool) bool {
 	for k, v := range mm {
-		if !fn(k, v) {
+		if !p(k, v) {
 			return false
 		}
 	}
@@ -207,12 +207,12 @@ func (mm SimpleIntIntMap) Forall(fn func(int, int) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function to every element in the map. If the function returns true,
+// Exists applies the predicate p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm SimpleIntIntMap) Exists(fn func(int, int) bool) bool {
+func (mm SimpleIntIntMap) Exists(p func(int, int) bool) bool {
 	for k, v := range mm {
-		if fn(k, v) {
+		if p(k, v) {
 			return true
 		}
 	}
@@ -220,12 +220,12 @@ func (mm SimpleIntIntMap) Exists(fn func(int, int) bool) bool {
 	return false
 }
 
-// Find returns the first int that returns true for some function.
+// Find returns the first int that returns true for the predicate p.
 // False is returned if none match.
 // The original map is not modified.
-func (mm SimpleIntIntMap) Find(fn func(int, int) bool) (SimpleIntIntTuple, bool) {
+func (mm SimpleIntIntMap) Find(p func(int, int) bool) (SimpleIntIntTuple, bool) {
 	for k, v := range mm {
-		if fn(k, v) {
+		if p(k, v) {
 			return SimpleIntIntTuple{k, v}, true
 		}
 	}
@@ -233,13 +233,13 @@ func (mm SimpleIntIntMap) Find(fn func(int, int) bool) (SimpleIntIntTuple, bool)
 	return SimpleIntIntTuple{}, false
 }
 
-// Filter applies a predicate function to every element in the map and returns a copied map containing
+// Filter applies the predicate p to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
 // The original map is not modified.
-func (mm SimpleIntIntMap) Filter(fn func(int, int) bool) SimpleIntIntMap {
+func (mm SimpleIntIntMap) Filter(p func(int, int) bool) SimpleIntIntMap {
 	result := NewSimpleIntIntMap()
 	for k, v := range mm {
-		if fn(k, v) {
+		if p(k, v) {
 			result[k] = v
 		}
 	}
@@ -247,15 +247,15 @@ func (mm SimpleIntIntMap) Filter(fn func(int, int) bool) SimpleIntIntMap {
 	return result
 }
 
-// Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
+// Partition applies the predicate p to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
 // The original map is not modified.
-func (mm SimpleIntIntMap) Partition(fn func(int, int) bool) (matching SimpleIntIntMap, others SimpleIntIntMap) {
+func (mm SimpleIntIntMap) Partition(p func(int, int) bool) (matching SimpleIntIntMap, others SimpleIntIntMap) {
 	matching = NewSimpleIntIntMap()
 	others = NewSimpleIntIntMap()
 	for k, v := range mm {
-		if fn(k, v) {
+		if p(k, v) {
 			matching[k] = v
 		} else {
 			others[k] = v
@@ -264,33 +264,33 @@ func (mm SimpleIntIntMap) Partition(fn func(int, int) bool) (matching SimpleIntI
 	return
 }
 
-// Map returns a new SimpleIntMap by transforming every element with a function fn.
+// Map returns a new SimpleIntMap by transforming every element with the function f.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SimpleIntIntMap) Map(fn func(int, int) (int, int)) SimpleIntIntMap {
+func (mm SimpleIntIntMap) Map(f func(int, int) (int, int)) SimpleIntIntMap {
 	result := NewSimpleIntIntMap()
 
 	for k1, v1 := range mm {
-		k2, v2 := fn(k1, v1)
+		k2, v2 := f(k1, v1)
 		result[k2] = v2
 	}
 
 	return result
 }
 
-// FlatMap returns a new SimpleIntMap by transforming every element with a function fn that
+// FlatMap returns a new SimpleIntMap by transforming every element with the function f that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 // The original map is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm SimpleIntIntMap) FlatMap(fn func(int, int) []SimpleIntIntTuple) SimpleIntIntMap {
+func (mm SimpleIntIntMap) FlatMap(f func(int, int) []SimpleIntIntTuple) SimpleIntIntMap {
 	result := NewSimpleIntIntMap()
 
 	for k1, v1 := range mm {
-		ts := fn(k1, v1)
+		ts := f(k1, v1)
 		for _, t := range ts {
 			result[t.Key] = t.Val
 		}

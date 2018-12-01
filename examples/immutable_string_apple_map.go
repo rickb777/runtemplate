@@ -182,12 +182,12 @@ func (mm *ImmutableStringAppleMap) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
-// Foreach applies a function to every element in the map.
+// Foreach applies the function f to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm *ImmutableStringAppleMap) Foreach(fn func(string, Apple)) {
+func (mm *ImmutableStringAppleMap) Foreach(f func(string, Apple)) {
 	if mm != nil {
 		for k, v := range mm.m {
-			fn(k, v)
+			f(k, v)
 		}
 	}
 }
@@ -198,13 +198,13 @@ func (mm *ImmutableStringAppleMap) Foreach(fn func(string, Apple)) {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *ImmutableStringAppleMap) Forall(fn func(string, Apple) bool) bool {
+func (mm *ImmutableStringAppleMap) Forall(f func(string, Apple) bool) bool {
 	if mm == nil {
 		return true
 	}
 
 	for k, v := range mm.m {
-		if !fn(k, v) {
+		if !f(k, v) {
 			return false
 		}
 	}
@@ -212,16 +212,16 @@ func (mm *ImmutableStringAppleMap) Forall(fn func(string, Apple) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function to every element in the map. If the function returns true,
+// Exists applies the predicate function p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *ImmutableStringAppleMap) Exists(fn func(string, Apple) bool) bool {
+func (mm *ImmutableStringAppleMap) Exists(p func(string, Apple) bool) bool {
 	if mm == nil {
 		return false
 	}
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			return true
 		}
 	}
@@ -229,12 +229,12 @@ func (mm *ImmutableStringAppleMap) Exists(fn func(string, Apple) bool) bool {
 	return false
 }
 
-// Find returns the first Apple that returns true for some function.
+// Find returns the first Apple that returns true for the predicate p.
 // False is returned if none match.
-func (mm *ImmutableStringAppleMap) Find(fn func(string, Apple) bool) (ImmutableStringAppleTuple, bool) {
+func (mm *ImmutableStringAppleMap) Find(p func(string, Apple) bool) (ImmutableStringAppleTuple, bool) {
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			return ImmutableStringAppleTuple{k, v}, true
 		}
 	}
@@ -242,9 +242,9 @@ func (mm *ImmutableStringAppleMap) Find(fn func(string, Apple) bool) (ImmutableS
 	return ImmutableStringAppleTuple{}, false
 }
 
-// Filter applies a predicate function to every element in the map and returns a copied map containing
+// Filter applies the predicate p to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *ImmutableStringAppleMap) Filter(fn func(string, Apple) bool) *ImmutableStringAppleMap {
+func (mm *ImmutableStringAppleMap) Filter(p func(string, Apple) bool) *ImmutableStringAppleMap {
 	if mm == nil {
 		return nil
 	}
@@ -252,7 +252,7 @@ func (mm *ImmutableStringAppleMap) Filter(fn func(string, Apple) bool) *Immutabl
 	result := NewImmutableStringAppleMap()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			result.m[k] = v
 		}
 	}
@@ -260,10 +260,10 @@ func (mm *ImmutableStringAppleMap) Filter(fn func(string, Apple) bool) *Immutabl
 	return result
 }
 
-// Partition applies a predicate function to every element in the map. It divides the map into two copied maps,
+// Partition applies the predicate p to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *ImmutableStringAppleMap) Partition(fn func(string, Apple) bool) (matching *ImmutableStringAppleMap, others *ImmutableStringAppleMap) {
+func (mm *ImmutableStringAppleMap) Partition(p func(string, Apple) bool) (matching *ImmutableStringAppleMap, others *ImmutableStringAppleMap) {
 	if mm == nil {
 		return nil, nil
 	}
@@ -272,7 +272,7 @@ func (mm *ImmutableStringAppleMap) Partition(fn func(string, Apple) bool) (match
 	others = NewImmutableStringAppleMap()
 
 	for k, v := range mm.m {
-		if fn(k, v) {
+		if p(k, v) {
 			matching.m[k] = v
 		} else {
 			others.m[k] = v
@@ -281,11 +281,11 @@ func (mm *ImmutableStringAppleMap) Partition(fn func(string, Apple) bool) (match
 	return
 }
 
-// Map returns a new ImmutableAppleMap by transforming every element with a function fn.
+// Map returns a new ImmutableAppleMap by transforming every element with the function f.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *ImmutableStringAppleMap) Map(fn func(string, Apple) (string, Apple)) *ImmutableStringAppleMap {
+func (mm *ImmutableStringAppleMap) Map(f func(string, Apple) (string, Apple)) *ImmutableStringAppleMap {
 	if mm == nil {
 		return nil
 	}
@@ -293,19 +293,19 @@ func (mm *ImmutableStringAppleMap) Map(fn func(string, Apple) (string, Apple)) *
 	result := NewImmutableStringAppleMap()
 
 	for k1, v1 := range mm.m {
-		k2, v2 := fn(k1, v1)
+		k2, v2 := f(k1, v1)
 		result.m[k2] = v2
 	}
 
 	return result
 }
 
-// FlatMap returns a new ImmutableAppleMap by transforming every element with a function fn that
+// FlatMap returns a new ImmutableAppleMap by transforming every element with the function f that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *ImmutableStringAppleMap) FlatMap(fn func(string, Apple) []ImmutableStringAppleTuple) *ImmutableStringAppleMap {
+func (mm *ImmutableStringAppleMap) FlatMap(f func(string, Apple) []ImmutableStringAppleTuple) *ImmutableStringAppleMap {
 	if mm == nil {
 		return nil
 	}
@@ -313,7 +313,7 @@ func (mm *ImmutableStringAppleMap) FlatMap(fn func(string, Apple) []ImmutableStr
 	result := NewImmutableStringAppleMap()
 
 	for k1, v1 := range mm.m {
-		ts := fn(k1, v1)
+		ts := f(k1, v1)
 		for _, t := range ts {
 			result.m[t.Key] = t.Val
 		}
