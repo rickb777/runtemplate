@@ -3,7 +3,7 @@
 //
 // Generated from simple/set.tpl with Type=int
 // options: Numeric:true Stringer:true Mutable:always
-// by runtemplate v2.2.7
+// by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -315,8 +315,7 @@ func (set SimpleIntSet) Filter(fn func(int) bool) SimpleIntSet {
 
 // Partition returns two new intSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
-// all elements that don't. The relative order of the elements in the results is the same as in the
-// original list.
+// all elements that don't.
 //
 // The original set is not modified
 func (set SimpleIntSet) Partition(p func(int) bool) (SimpleIntSet, SimpleIntSet) {
@@ -380,16 +379,16 @@ func (set SimpleIntSet) CountBy(predicate func(int) bool) (result int) {
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list SimpleIntSet) Min() int {
-	return list.MinBy(func(a int, b int) bool {
+func (set SimpleIntSet) Min() int {
+	return set.MinBy(func(a int, b int) bool {
 		return a < b
 	})
 }
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list SimpleIntSet) Max() (result int) {
-	return list.MaxBy(func(a int, b int) bool {
+func (set SimpleIntSet) Max() (result int) {
+	return set.MaxBy(func(a int, b int) bool {
 		return a < b
 	})
 }

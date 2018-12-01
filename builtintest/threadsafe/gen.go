@@ -87,9 +87,9 @@ var _ X1StringCollection = NewX1StringList()
 var _ X1IntCollection = NewX1IntList()
 var _ X1AppleCollection = NewX1AppleList()
 
-var _ X1StringSizer = NewX1StringQueue(1, false)
-var _ X1IntSizer = NewX1IntQueue(1, false)
-var _ X1AppleSizer = NewX1AppleQueue(1, false)
+var _ X1StringSizer = NewX1StringQueue(1, false, nil)
+var _ X1IntSizer = NewX1IntQueue(1, false, nil)
+var _ X1AppleSizer = NewX1AppleQueue(1, false, nil)
 
 var _ X1StringCollection = NewX1StringSet()
 var _ X1IntCollection = NewX1IntSet()

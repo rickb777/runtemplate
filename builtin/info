@@ -1,0 +1,20 @@
+#!/bin/bash -e
+cd $(dirname $0)
+
+rm -f *.txt
+
+for d in simple immutable threadsafe; do
+  for tpl in list queue map set; do
+    if [ -f $d/$tpl.tpl ]; then
+      grep '^func ' $d/$tpl.tpl | \
+        sed 's# {$##' | \
+        grep -v 'List) [a-z]' | \
+        grep -v 'Map) [a-z]' | \
+        grep -v 'Queue) [a-z]' | \
+        grep -v 'Set) [a-z]' | \
+        grep -v 'func [a-z]' >info.tpl
+      runtemplate -tpl info.tpl -o $d-$tpl-api.txt Type=Type Key=Key
+      rm info.tpl
+    fi
+  done
+done

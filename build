@@ -27,6 +27,8 @@ go install .
 
 type runtemplate
 
+builtin/info
+
 echo
 echo Generating tests...
 go generate -v ./builtintest/...

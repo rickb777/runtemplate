@@ -3,7 +3,7 @@
 //
 // Generated from fast/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:always
-// by runtemplate v2.2.7
+// by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -117,7 +117,7 @@ func (list *FastAppleList) Get(i int) Apple {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastAppleList) Head() Apple {
 
 	return list.m[0]
@@ -137,7 +137,7 @@ func (list *FastAppleList) HeadOption() Apple {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastAppleList) Last() Apple {
 
 	return list.m[len(list.m)-1]
@@ -157,7 +157,7 @@ func (list *FastAppleList) LastOption() Apple {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastAppleList) Tail() *FastAppleList {
 
 	result := MakeFastAppleList(0, 0)
@@ -166,7 +166,7 @@ func (list *FastAppleList) Tail() *FastAppleList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastAppleList) Init() *FastAppleList {
 
 	result := MakeFastAppleList(0, 0)

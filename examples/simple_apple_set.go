@@ -3,7 +3,7 @@
 //
 // Generated from simple/set.tpl with Type=Apple
 // options: Numeric:<no value> Stringer:false Mutable:always
-// by runtemplate v2.2.7
+// by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -287,8 +287,7 @@ func (set SimpleAppleSet) Filter(fn func(Apple) bool) SimpleAppleSet {
 
 // Partition returns two new AppleSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
-// all elements that don't. The relative order of the elements in the results is the same as in the
-// original list.
+// all elements that don't.
 //
 // The original set is not modified
 func (set SimpleAppleSet) Partition(p func(Apple) bool) (SimpleAppleSet, SimpleAppleSet) {

@@ -3,7 +3,7 @@
 //
 // Generated from threadsafe/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
-// by runtemplate v2.2.7
+// by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -154,7 +154,7 @@ func (list *IntList) Get(i int) int {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *IntList) Head() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -179,7 +179,7 @@ func (list *IntList) HeadOption() int {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *IntList) Last() int {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -204,7 +204,7 @@ func (list *IntList) LastOption() int {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *IntList) Tail() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -215,7 +215,7 @@ func (list *IntList) Tail() *IntList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *IntList) Init() *IntList {
 	list.s.RLock()
 	defer list.s.RUnlock()

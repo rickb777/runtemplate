@@ -3,7 +3,7 @@
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:always
-// by runtemplate v2.2.7
+// by runtemplate v2.3.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -140,7 +140,7 @@ func (list *FastIntList) Get(i int) int {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastIntList) Head() int {
 
 	return list.m[0]
@@ -160,7 +160,7 @@ func (list *FastIntList) HeadOption() int {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastIntList) Last() int {
 
 	return list.m[len(list.m)-1]
@@ -180,7 +180,7 @@ func (list *FastIntList) LastOption() int {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastIntList) Tail() *FastIntList {
 
 	result := MakeFastIntList(0, 0)
@@ -189,7 +189,7 @@ func (list *FastIntList) Tail() *FastIntList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *FastIntList) Init() *FastIntList {
 
 	result := MakeFastIntList(0, 0)

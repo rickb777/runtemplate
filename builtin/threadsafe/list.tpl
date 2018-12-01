@@ -171,7 +171,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -196,7 +196,7 @@ func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -221,7 +221,7 @@ func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
 	defer list.s.RUnlock()
@@ -232,7 +232,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Init() *{{.UPrefix}}{{.UType}}List {
 	list.s.RLock()
 	defer list.s.RUnlock()

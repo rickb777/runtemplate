@@ -329,8 +329,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}
 
 // Partition returns two new {{.Type}}Sets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
-// all elements that don't. The relative order of the elements in the results is the same as in the
-// original list.
+// all elements that don't.
 //
 // The original set is not modified
 func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPrefix}}{{.UType}}Set, {{.UPrefix}}{{.UType}}Set) {
@@ -395,16 +394,16 @@ func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (re
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}Set) Min() {{.PType}} {
-	return list.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
+func (set {{.UPrefix}}{{.UType}}Set) Min() {{.PType}} {
+	return set.MinBy(func(a {{.PType}}, b {{.PType}}) bool {
 		return a < b
 	})
 }
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
-	return list.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
+func (set {{.UPrefix}}{{.UType}}Set) Max() (result {{.PType}}) {
+	return set.MaxBy(func(a {{.PType}}, b {{.PType}}) bool {
 		return a < b
 	})
 }

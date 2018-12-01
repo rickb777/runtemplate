@@ -1,3 +1,4 @@
+builtin/*.txt
 builtintest/*/[px]_*.go
 builtintest/*/int_*.go
 builtintest/*/[px][12]_*.go
