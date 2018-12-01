@@ -57,7 +57,7 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
-	// IsSet returns false for list and queues.
+	// IsSet returns false for lists and queues.
 	IsSet() bool
 {{- if .ToList}}
 

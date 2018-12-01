@@ -47,64 +47,64 @@ func new{{.UPrefix}}{{.UType}}List(length, capacity int) *{{.UPrefix}}{{.UType}}
 
 // New{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 func New{{.UPrefix}}{{.UType}}List(values ...{{.PType}}) *{{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := new{{.UPrefix}}{{.UType}}List(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // Convert{{.UPrefix}}{{.UType}}List constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.UType}}List, bool) {
-	result := new{{.UPrefix}}{{.UType}}List(0, len(values))
+	list := new{{.UPrefix}}{{.UType}}List(0, len(values))
 {{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			result.m = append(result.m, {{.PType}}(i.(int)))
+			list.m = append(list.m, {{.PType}}(i.(int)))
 		case int8:
-			result.m = append(result.m, {{.PType}}(i.(int8)))
+			list.m = append(list.m, {{.PType}}(i.(int8)))
 		case int16:
-			result.m = append(result.m, {{.PType}}(i.(int16)))
+			list.m = append(list.m, {{.PType}}(i.(int16)))
 		case int32:
-			result.m = append(result.m, {{.PType}}(i.(int32)))
+			list.m = append(list.m, {{.PType}}(i.(int32)))
 		case int64:
-			result.m = append(result.m, {{.PType}}(i.(int64)))
+			list.m = append(list.m, {{.PType}}(i.(int64)))
 		case uint:
-			result.m = append(result.m, {{.PType}}(i.(uint)))
+			list.m = append(list.m, {{.PType}}(i.(uint)))
 		case uint8:
-			result.m = append(result.m, {{.PType}}(i.(uint8)))
+			list.m = append(list.m, {{.PType}}(i.(uint8)))
 		case uint16:
-			result.m = append(result.m, {{.PType}}(i.(uint16)))
+			list.m = append(list.m, {{.PType}}(i.(uint16)))
 		case uint32:
-			result.m = append(result.m, {{.PType}}(i.(uint32)))
+			list.m = append(list.m, {{.PType}}(i.(uint32)))
 		case uint64:
-			result.m = append(result.m, {{.PType}}(i.(uint64)))
+			list.m = append(list.m, {{.PType}}(i.(uint64)))
 		case float32:
-			result.m = append(result.m, {{.PType}}(i.(float32)))
+			list.m = append(list.m, {{.PType}}(i.(float32)))
 		case float64:
-			result.m = append(result.m, {{.PType}}(i.(float64)))
+			list.m = append(list.m, {{.PType}}(i.(float64)))
 		}
 	}
 {{else}}
 	for _, i := range values {
 		v, ok := i.({{.PType}})
 		if ok {
-			result.m = append(result.m, v)
+			list.m = append(list.m, v)
 		}
 	}
 {{end}}
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}List {
-	result := new{{.UPrefix}}{{.UType}}List(0, 0)
+	list := new{{.UPrefix}}{{.UType}}List(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -164,7 +164,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Get(i int) {{.PType}} {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Head() {{.PType}} {
 	return list.m[0]
 }
@@ -179,7 +179,7 @@ func (list *{{.UPrefix}}{{.UType}}List) HeadOption() {{.PType}} {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Last() {{.PType}} {
 	return list.m[len(list.m)-1]
 }
@@ -194,7 +194,7 @@ func (list *{{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[1:]
@@ -202,7 +202,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Tail() *{{.UPrefix}}{{.UType}}List {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *{{.UPrefix}}{{.UType}}List) Init() *{{.UPrefix}}{{.UType}}List {
 	result := new{{.UPrefix}}{{.UType}}List(0, 0)
 	result.m = list.m[:len(list.m)-1]
@@ -219,12 +219,12 @@ func (list *{{.UPrefix}}{{.UType}}List) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for lists and queues.
 func (list *{{.UPrefix}}{{.UType}}List) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
 	return false
 }
@@ -259,7 +259,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	for _, v := range i {
@@ -299,15 +299,15 @@ func (list *{{.UPrefix}}{{.UType}}List) Forall(p func({{.Type}}) bool) bool {
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function fn against each element.
+// Foreach iterates over {{.UPrefix}}{{.UType}}List and executes function f against each element.
 // The function receives copies that do not alter the list elements when they are changed.
-func (list *{{.UPrefix}}{{.UType}}List) Foreach(fn func({{.Type}})) {
+func (list *{{.UPrefix}}{{.UType}}List) Foreach(f func({{.Type}})) {
 	if list == nil {
 		return
 	}
 
 	for _, v := range list.m {
-		fn({{.TypeStar}}v)
+		f({{.TypeStar}}v)
 	}
 }
 
@@ -335,9 +335,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Reverse() *{{.UPrefix}}{{.UType}}List {
 		return nil
 	}
 
-	numItems := len(list.m)
-	result := new{{.UPrefix}}{{.UType}}List(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := new{{.UPrefix}}{{.UType}}List(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -353,9 +353,9 @@ func (list *{{.UPrefix}}{{.UType}}List) Shuffle() *{{.UPrefix}}{{.UType}}List {
 	}
 
 	result := New{{.UPrefix}}{{.UType}}List(list.m...)
-	numItems := len(result.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(result.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
@@ -586,11 +586,11 @@ func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}
 	return result
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the passed predicate.
-func (list *{{.UPrefix}}{{.UType}}List) CountBy(predicate func({{.PType}}) bool) (result int) {
+// CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the predicate p.
+func (list *{{.UPrefix}}{{.UType}}List) CountBy(p func({{.PType}}) bool) (result int) {
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -633,7 +633,7 @@ func (list *{{.UPrefix}}{{.UType}}List) MaxBy(less func({{.PType}}, {{.PType}}) 
 	return list.m[m]
 }
 
-// DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new {{.UPrefix}}{{.UType}}List whose elements are unique, where equality is defined by the equal function.
 func (list *{{.UPrefix}}{{.UType}}List) DistinctBy(equal func({{.PType}}, {{.PType}}) bool) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
@@ -652,12 +652,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) IndexWhere(p func({{.PType}}) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, from int) int {
 
@@ -669,13 +669,13 @@ func (list *{{.UPrefix}}{{.UType}}List) IndexWhere2(p func({{.PType}}) bool, fro
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere(p func({{.PType}}) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool, before int) int {
 
@@ -711,7 +711,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // These methods are included when {{.Type}} is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
 	if list == nil {
@@ -911,5 +911,4 @@ func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	err := gob.NewEncoder(buf).Encode(list.m)
 	return buf.Bytes(), err
 }
-
 {{- end}}

@@ -273,7 +273,7 @@ func (list *{{.UPrefix}}{{.UType}}List) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (list *{{.UPrefix}}{{.UType}}List) IsSequence() bool {
 	return true
 }

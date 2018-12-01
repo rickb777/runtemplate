@@ -37,57 +37,57 @@ func newImmutableIntList(length, capacity int) *ImmutableIntList {
 
 // NewImmutableIntList constructs a new list containing the supplied values, if any.
 func NewImmutableIntList(values ...int) *ImmutableIntList {
-	result := newImmutableIntList(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := newImmutableIntList(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // ConvertImmutableIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertImmutableIntList(values ...interface{}) (*ImmutableIntList, bool) {
-	result := newImmutableIntList(0, len(values))
+	list := newImmutableIntList(0, len(values))
 
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			result.m = append(result.m, int(i.(int)))
+			list.m = append(list.m, int(i.(int)))
 		case int8:
-			result.m = append(result.m, int(i.(int8)))
+			list.m = append(list.m, int(i.(int8)))
 		case int16:
-			result.m = append(result.m, int(i.(int16)))
+			list.m = append(list.m, int(i.(int16)))
 		case int32:
-			result.m = append(result.m, int(i.(int32)))
+			list.m = append(list.m, int(i.(int32)))
 		case int64:
-			result.m = append(result.m, int(i.(int64)))
+			list.m = append(list.m, int(i.(int64)))
 		case uint:
-			result.m = append(result.m, int(i.(uint)))
+			list.m = append(list.m, int(i.(uint)))
 		case uint8:
-			result.m = append(result.m, int(i.(uint8)))
+			list.m = append(list.m, int(i.(uint8)))
 		case uint16:
-			result.m = append(result.m, int(i.(uint16)))
+			list.m = append(list.m, int(i.(uint16)))
 		case uint32:
-			result.m = append(result.m, int(i.(uint32)))
+			list.m = append(list.m, int(i.(uint32)))
 		case uint64:
-			result.m = append(result.m, int(i.(uint64)))
+			list.m = append(list.m, int(i.(uint64)))
 		case float32:
-			result.m = append(result.m, int(i.(float32)))
+			list.m = append(list.m, int(i.(float32)))
 		case float64:
-			result.m = append(result.m, int(i.(float64)))
+			list.m = append(list.m, int(i.(float64)))
 		}
 	}
 
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // BuildImmutableIntListFromChan constructs a new ImmutableIntList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildImmutableIntListFromChan(source <-chan int) *ImmutableIntList {
-	result := newImmutableIntList(0, 0)
+	list := newImmutableIntList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -135,7 +135,7 @@ func (list *ImmutableIntList) Get(i int) int {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableIntList) Head() int {
 	return list.m[0]
 }
@@ -150,7 +150,7 @@ func (list *ImmutableIntList) HeadOption() int {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableIntList) Last() int {
 	return list.m[len(list.m)-1]
 }
@@ -165,7 +165,7 @@ func (list *ImmutableIntList) LastOption() int {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableIntList) Tail() *ImmutableIntList {
 	result := newImmutableIntList(0, 0)
 	result.m = list.m[1:]
@@ -173,7 +173,7 @@ func (list *ImmutableIntList) Tail() *ImmutableIntList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableIntList) Init() *ImmutableIntList {
 	result := newImmutableIntList(0, 0)
 	result.m = list.m[:len(list.m)-1]
@@ -190,12 +190,12 @@ func (list *ImmutableIntList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for lists and queues.
 func (list *ImmutableIntList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *ImmutableIntList) IsSet() bool {
 	return false
 }
@@ -229,7 +229,7 @@ func (list *ImmutableIntList) Contains(v int) bool {
 // This is potentially a slow method and should only be used rarely.
 func (list *ImmutableIntList) ContainsAll(i ...int) bool {
 	if list == nil {
-		return len(i) > 0
+		return len(i) == 0
 	}
 
 	for _, v := range i {
@@ -268,15 +268,15 @@ func (list *ImmutableIntList) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Foreach iterates over ImmutableIntList and executes function fn against each element.
+// Foreach iterates over ImmutableIntList and executes function f against each element.
 // The function receives copies that do not alter the list elements when they are changed.
-func (list *ImmutableIntList) Foreach(fn func(int)) {
+func (list *ImmutableIntList) Foreach(f func(int)) {
 	if list == nil {
 		return
 	}
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -304,9 +304,9 @@ func (list *ImmutableIntList) Reverse() *ImmutableIntList {
 		return nil
 	}
 
-	numItems := len(list.m)
-	result := newImmutableIntList(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := newImmutableIntList(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -322,9 +322,9 @@ func (list *ImmutableIntList) Shuffle() *ImmutableIntList {
 	}
 
 	result := NewImmutableIntList(list.m...)
-	numItems := len(result.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(result.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
@@ -550,11 +550,11 @@ func (list *ImmutableIntList) FlatMap(fn func(int) []int) *ImmutableIntList {
 	return result
 }
 
-// CountBy gives the number elements of ImmutableIntList that return true for the passed predicate.
-func (list *ImmutableIntList) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of ImmutableIntList that return true for the predicate p.
+func (list *ImmutableIntList) CountBy(p func(int) bool) (result int) {
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -597,7 +597,7 @@ func (list *ImmutableIntList) MaxBy(less func(int, int) bool) int {
 	return list.m[m]
 }
 
-// DistinctBy returns a new ImmutableIntList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new ImmutableIntList whose elements are unique, where equality is defined by the equal function.
 func (list *ImmutableIntList) DistinctBy(equal func(int, int) bool) *ImmutableIntList {
 	if list == nil {
 		return nil
@@ -616,12 +616,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *ImmutableIntList) IndexWhere(p func(int) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *ImmutableIntList) IndexWhere2(p func(int) bool, from int) int {
 
@@ -633,13 +633,13 @@ func (list *ImmutableIntList) IndexWhere2(p func(int) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *ImmutableIntList) LastIndexWhere(p func(int) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *ImmutableIntList) LastIndexWhere2(p func(int) bool, before int) int {
 
@@ -672,7 +672,7 @@ func (list *ImmutableIntList) Sum() int {
 // These methods are included when int is comparable.
 
 // Equals determines if two lists are equal to each other.
-// If they both are the same size and have the same items they are considered equal.
+// If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list *ImmutableIntList) Equals(other *ImmutableIntList) bool {
 	if list == nil {

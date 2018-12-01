@@ -218,7 +218,7 @@ func (list *AppleList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (list *AppleList) IsSequence() bool {
 	return true
 }

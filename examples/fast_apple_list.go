@@ -190,7 +190,7 @@ func (list *FastAppleList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (list *FastAppleList) IsSequence() bool {
 	return true
 }

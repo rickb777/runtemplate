@@ -36,35 +36,35 @@ func newImmutableAppleList(length, capacity int) *ImmutableAppleList {
 
 // NewImmutableAppleList constructs a new list containing the supplied values, if any.
 func NewImmutableAppleList(values ...Apple) *ImmutableAppleList {
-	result := newImmutableAppleList(len(values), len(values))
-	copy(result.m, values)
-	return result
+	list := newImmutableAppleList(len(values), len(values))
+	copy(list.m, values)
+	return list
 }
 
 // ConvertImmutableAppleList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
 func ConvertImmutableAppleList(values ...interface{}) (*ImmutableAppleList, bool) {
-	result := newImmutableAppleList(0, len(values))
+	list := newImmutableAppleList(0, len(values))
 
 	for _, i := range values {
 		v, ok := i.(Apple)
 		if ok {
-			result.m = append(result.m, v)
+			list.m = append(list.m, v)
 		}
 	}
 
-	return result, len(result.m) == len(values)
+	return list, len(list.m) == len(values)
 }
 
 // BuildImmutableAppleListFromChan constructs a new ImmutableAppleList from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
 func BuildImmutableAppleListFromChan(source <-chan Apple) *ImmutableAppleList {
-	result := newImmutableAppleList(0, 0)
+	list := newImmutableAppleList(0, 0)
 	for v := range source {
-		result.m = append(result.m, v)
+		list.m = append(list.m, v)
 	}
-	return result
+	return list
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -112,7 +112,7 @@ func (list *ImmutableAppleList) Get(i int) Apple {
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableAppleList) Head() Apple {
 	return list.m[0]
 }
@@ -127,7 +127,7 @@ func (list *ImmutableAppleList) HeadOption() Apple {
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableAppleList) Last() Apple {
 	return list.m[len(list.m)-1]
 }
@@ -142,7 +142,7 @@ func (list *ImmutableAppleList) LastOption() Apple {
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableAppleList) Tail() *ImmutableAppleList {
 	result := newImmutableAppleList(0, 0)
 	result.m = list.m[1:]
@@ -150,7 +150,7 @@ func (list *ImmutableAppleList) Tail() *ImmutableAppleList {
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// Panics if list is empty.
+// Panics if list is empty or nil.
 func (list *ImmutableAppleList) Init() *ImmutableAppleList {
 	result := newImmutableAppleList(0, 0)
 	result.m = list.m[:len(list.m)-1]
@@ -167,12 +167,12 @@ func (list *ImmutableAppleList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for lists and queues.
 func (list *ImmutableAppleList) IsSequence() bool {
 	return true
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (list *ImmutableAppleList) IsSet() bool {
 	return false
 }
@@ -223,15 +223,15 @@ func (list *ImmutableAppleList) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Foreach iterates over ImmutableAppleList and executes function fn against each element.
+// Foreach iterates over ImmutableAppleList and executes function f against each element.
 // The function receives copies that do not alter the list elements when they are changed.
-func (list *ImmutableAppleList) Foreach(fn func(Apple)) {
+func (list *ImmutableAppleList) Foreach(f func(Apple)) {
 	if list == nil {
 		return
 	}
 
 	for _, v := range list.m {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -259,9 +259,9 @@ func (list *ImmutableAppleList) Reverse() *ImmutableAppleList {
 		return nil
 	}
 
-	numItems := len(list.m)
-	result := newImmutableAppleList(numItems, numItems)
-	last := numItems - 1
+	n := len(list.m)
+	result := newImmutableAppleList(n, n)
+	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
 	}
@@ -277,9 +277,9 @@ func (list *ImmutableAppleList) Shuffle() *ImmutableAppleList {
 	}
 
 	result := NewImmutableAppleList(list.m...)
-	numItems := len(result.m)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
+	n := len(result.m)
+	for i := 0; i < n; i++ {
+		r := i + rand.Intn(n-i)
 		result.m[i], result.m[r] = result.m[r], result.m[i]
 	}
 	return result
@@ -505,11 +505,11 @@ func (list *ImmutableAppleList) FlatMap(fn func(Apple) []Apple) *ImmutableAppleL
 	return result
 }
 
-// CountBy gives the number elements of ImmutableAppleList that return true for the passed predicate.
-func (list *ImmutableAppleList) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of ImmutableAppleList that return true for the predicate p.
+func (list *ImmutableAppleList) CountBy(p func(Apple) bool) (result int) {
 
 	for _, v := range list.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -552,7 +552,7 @@ func (list *ImmutableAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	return list.m[m]
 }
 
-// DistinctBy returns a new ImmutableAppleList whose elements are unique, where equality is defined by a passed func.
+// DistinctBy returns a new ImmutableAppleList whose elements are unique, where equality is defined by the equal function.
 func (list *ImmutableAppleList) DistinctBy(equal func(Apple, Apple) bool) *ImmutableAppleList {
 	if list == nil {
 		return nil
@@ -571,12 +571,12 @@ Outer:
 	return result
 }
 
-// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+// IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
 func (list *ImmutableAppleList) IndexWhere(p func(Apple) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
+// IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
 func (list *ImmutableAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 
@@ -588,13 +588,13 @@ func (list *ImmutableAppleList) IndexWhere2(p func(Apple) bool, from int) int {
 	return -1
 }
 
-// LastIndexWhere finds the index of the last element satisfying some predicate.
+// LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
 func (list *ImmutableAppleList) LastIndexWhere(p func(Apple) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
-// LastIndexWhere2 finds the index of the last element satisfying some predicate at or before some start index.
+// LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
 func (list *ImmutableAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 
