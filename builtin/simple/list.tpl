@@ -654,7 +654,15 @@ func (list {{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (list {{.UPrefix}}{{.UType}}List) Equals(other {{.UPrefix}}{{.UType}}List) bool {
-	if list.Size() != other.Size() {
+	if list == nil {
+		return len(other) == 0
+	}
+
+	if other == nil {
+		return len(list) == 0
+	}
+
+	if len(list) != len(other) {
 		return false
 	}
 

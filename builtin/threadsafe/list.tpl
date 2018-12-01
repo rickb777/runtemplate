@@ -1047,7 +1047,18 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 // Nil lists are considered to be empty.
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
 	if list == nil {
-		return other == nil || len(other.m) == 0
+		if other == nil {
+    		return true
+		}
+    	other.s.RLock()
+	    defer other.s.RUnlock()
+		return len(other.m) == 0
+	}
+
+	if other == nil {
+    	list.s.RLock()
+	    defer list.s.RUnlock()
+		return len(list.m) == 0
 	}
 
 	list.s.RLock()

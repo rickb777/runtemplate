@@ -22,15 +22,24 @@ func {{.LType}}RangeOf(from, to int) []int {
 	return a
 }
 
-func TestNew{{.UType}}List(t *testing.T) {
+func TestNew{{.UType}}List_withEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewX1{{.UType}}List(1, 2, 3)
+	b := NewX1{{.UType}}List(1, 3, 2)
 
 	g.Expect(a.Size()).To(Equal(3))
+	g.Expect(a.Len()).To(Equal(3))
 	g.Expect(a.Get(1)).To(Equal(2))
 	g.Expect(a.IsSet()).To(BeFalse())
 	g.Expect(a.IsSequence()).To(BeTrue())
+	g.Expect(a.Equals(a)).To(BeTrue())
+	g.Expect(a.Equals(b)).To(BeFalse())
+	g.Expect(a.Equals(nil)).To(BeFalse())
+	g.Expect(a.Equals(NewX1{{.UType}}List(1, 2))).To(BeFalse())
+
+	a = nil
+	g.Expect(a.Equals(b)).To(BeFalse())
 }
 
 func TestConvert{{.UType}}List(t *testing.T) {

@@ -424,7 +424,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) *{{.UPrefix}
 
 	overflow := queue.doPush(items...)
 	if len(overflow) > 0 {
-	    panic(len(overflow))
+		panic(len(overflow))
 	}
 	return queue
 }
@@ -788,7 +788,14 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Map(fn func({{.PType}}) {{.PType}}) *{
 // Nil queues are considered to be empty.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Equals(other *{{.UPrefix}}{{.UType}}Queue) bool {
 	if queue == nil {
-		return other == nil || other.length == 0
+		if other == nil {
+			return true
+		}
+		return other.length == 0
+	}
+
+	if other == nil {
+		return queue.length == 0
 	}
 
 	if queue.length != other.length {

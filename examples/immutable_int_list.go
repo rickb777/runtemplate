@@ -674,9 +674,14 @@ func (list *ImmutableIntList) Sum() int {
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
+// Nil lists are considered to be empty.
 func (list *ImmutableIntList) Equals(other *ImmutableIntList) bool {
 	if list == nil {
 		return other == nil || len(other.m) == 0
+	}
+
+	if other == nil {
+		return len(list.m) == 0
 	}
 
 	if len(list.m) != len(other.m) {

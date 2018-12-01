@@ -856,7 +856,14 @@ func (list *FastAppleList) LastIndexWhere2(p func(Apple) bool, before int) int {
 // Nil lists are considered to be empty.
 func (list *FastAppleList) Equals(other *FastAppleList) bool {
 	if list == nil {
-		return other == nil || len(other.m) == 0
+		if other == nil {
+			return true
+		}
+		return len(other.m) == 0
+	}
+
+	if other == nil {
+		return len(list.m) == 0
 	}
 
 	if len(list.m) != len(other.m) {

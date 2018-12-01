@@ -892,7 +892,14 @@ func (list *FastIntList) Sum() int {
 // Nil lists are considered to be empty.
 func (list *FastIntList) Equals(other *FastIntList) bool {
 	if list == nil {
-		return other == nil || len(other.m) == 0
+		if other == nil {
+			return true
+		}
+		return len(other.m) == 0
+	}
+
+	if other == nil {
+		return len(list.m) == 0
 	}
 
 	if len(list.m) != len(other.m) {

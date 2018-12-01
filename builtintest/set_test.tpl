@@ -14,15 +14,24 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestNew{{.UType}}Set(t *testing.T) {
+func TestNew{{.UType}}Set_withEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewX1{{.UType}}Set(1, 2, 3)
+	b := NewX1{{.UType}}Set(2, 3, 1)
 
 	g.Expect(a.Size()).To(Equal(3))
 
 	g.Expect(a.IsSet()).To(BeTrue())
 	g.Expect(a.IsSequence()).To(BeFalse())
+	g.Expect(a.Equals(b)).To(BeTrue())
+	g.Expect(a.Equals(nil)).To(BeFalse())
+	g.Expect(a.Equals(NewX1{{.UType}}Set(2))).To(BeFalse())
+	g.Expect(a.Equals(NewX1{{.UType}}Set(1, 2, 4))).To(BeFalse())
+
+	a = nil
+	g.Expect(a.Equals(b)).To(BeFalse())
+	g.Expect(a.Equals(nil)).To(BeTrue())
 }
 
 func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
