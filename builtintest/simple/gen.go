@@ -6,6 +6,12 @@ package simple
 //-------------------------------------------------------------------------------------------------
 // Code generation with non-pointer values
 
+//go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=string  ToSet:true Stringer:true Comparable:true
+//go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=int     ToSet:true Stringer:true Comparable:true Ordered:true Numeric:true
+//go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=Apple   ToSet:true Stringer:false
+//go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=Pear
+//go:generate runtemplate -tpl simple/collection.tpl Prefix=X2 Type=big.Int Import:"math/big"
+
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=string  ToSet:true   Stringer:true  Comparable:true Ordered:false Numeric:false
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=int     ToSet:true   Stringer:true  Comparable:true Ordered:true  Numeric:true
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=Apple   ToSet:true   Stringer:false Comparable:true
@@ -49,3 +55,11 @@ package simple
 
 type Apple struct{}
 type Pear struct{}
+
+var _ X1StringCollection = NewX1StringList()
+var _ X1IntCollection = NewX1IntList()
+var _ X1AppleCollection = NewX1AppleList()
+
+var _ X1StringCollection = NewX1StringSet()
+var _ X1IntCollection = NewX1IntSet()
+var _ X1AppleCollection = NewX1AppleSet()

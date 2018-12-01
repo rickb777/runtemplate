@@ -115,6 +115,23 @@ func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
 	return list.m
 }
 
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *{{.UPrefix}}{{.UType}}List) ToList() *{{.UPrefix}}{{.UType}}List {
+    return list
+}
+{{- if .ToSet}}
+
+// ToList returns the elements of the queue as a list. The returned list is a shallow
+// copy; the queue is not altered.
+func (list *{{.UPrefix}}{{.UType}}List) ToSet() *{{.UPrefix}}{{.UType}}Set {
+	if list == nil {
+		return nil
+	}
+
+	return New{{.UPrefix}}{{.UType}}Set(list.m...)
+}
+{{- end}}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 

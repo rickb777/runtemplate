@@ -13,7 +13,7 @@ import (
 	"encoding/gob"
 )
 
-// ImmutableAppleSet is the primary type that represents a set
+// ImmutableAppleSet is the primary type that represents a set.
 type ImmutableAppleSet struct {
 	m map[Apple]struct{}
 }
@@ -55,6 +55,11 @@ func BuildImmutableAppleSetFromChan(source <-chan Apple) *ImmutableAppleSet {
 	return set
 }
 
+// ToSet returns the set; this is an identity operation in this case.
+func (set *ImmutableAppleSet) ToSet() *ImmutableAppleSet {
+	return set
+}
+
 // ToSlice returns the elements of the current set as a slice.
 func (set *ImmutableAppleSet) ToSlice() []Apple {
 	if set == nil {
@@ -62,7 +67,7 @@ func (set *ImmutableAppleSet) ToSlice() []Apple {
 	}
 
 	var s []Apple
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -72,7 +77,7 @@ func (set *ImmutableAppleSet) ToSlice() []Apple {
 func (set *ImmutableAppleSet) ToInterfaceSlice() []interface{} {
 
 	var s []interface{}
-	for v, _ := range set.m {
+	for v := range set.m {
 		s = append(s, v)
 	}
 	return s
@@ -95,12 +100,12 @@ func (set *ImmutableAppleSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for lists.
+// IsSequence returns true for lists and queues.
 func (set *ImmutableAppleSet) IsSequence() bool {
 	return false
 }
 
-// IsSet returns false for lists.
+// IsSet returns false for lists or queues.
 func (set *ImmutableAppleSet) IsSet() bool {
 	return true
 }
@@ -141,7 +146,7 @@ func (set *ImmutableAppleSet) doAdd(i Apple) {
 	set.m[i] = struct{}{}
 }
 
-// Contains determines if a given item is already in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *ImmutableAppleSet) Contains(i Apple) bool {
 	if set == nil {
 		return false
@@ -151,7 +156,7 @@ func (set *ImmutableAppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// ContainsAll determines if the given items are all in the set.
+// Contains determines whether a given item is already in the set, returning true if so.
 func (set *ImmutableAppleSet) ContainsAll(i ...Apple) bool {
 	if set == nil {
 		return false
@@ -167,7 +172,7 @@ func (set *ImmutableAppleSet) ContainsAll(i ...Apple) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSubset determines if every item in the other set is in this set.
+// IsSubset determines whether every item in the other set is in this set, returning true if so.
 func (set *ImmutableAppleSet) IsSubset(other *ImmutableAppleSet) bool {
 	if set.IsEmpty() {
 		return !other.IsEmpty()
@@ -177,7 +182,7 @@ func (set *ImmutableAppleSet) IsSubset(other *ImmutableAppleSet) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}
@@ -185,7 +190,7 @@ func (set *ImmutableAppleSet) IsSubset(other *ImmutableAppleSet) bool {
 	return true
 }
 
-// IsSuperset determines if every item of this set is in the other set.
+// IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *ImmutableAppleSet) IsSuperset(other *ImmutableAppleSet) bool {
 	if set.IsEmpty() {
 		return other.IsEmpty()
@@ -210,11 +215,11 @@ func (set *ImmutableAppleSet) Union(other *ImmutableAppleSet) *ImmutableAppleSet
 
 	unionedSet := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		unionedSet.doAdd(v)
 	}
 
-	for v, _ := range other.m {
+	for v := range other.m {
 		unionedSet.doAdd(v)
 	}
 
@@ -231,13 +236,13 @@ func (set *ImmutableAppleSet) Intersect(other *ImmutableAppleSet) *ImmutableAppl
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
-		for v, _ := range set.m {
+		for v := range set.m {
 			if other.Contains(v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
-		for v, _ := range other.m {
+		for v := range other.m {
 			if set.Contains(v) {
 				intersection.doAdd(v)
 			}
@@ -259,7 +264,7 @@ func (set *ImmutableAppleSet) Difference(other *ImmutableAppleSet) *ImmutableApp
 
 	differencedSet := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			differencedSet.doAdd(v)
 		}
@@ -300,7 +305,7 @@ func (set *ImmutableAppleSet) Send() <-chan Apple {
 	ch := make(chan Apple)
 	go func() {
 		if set != nil {
-			for v, _ := range set.m {
+			for v := range set.m {
 				ch <- v
 			}
 		}
@@ -312,60 +317,60 @@ func (set *ImmutableAppleSet) Send() <-chan Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *ImmutableAppleSet) Forall(fn func(Apple) bool) bool {
+func (set *ImmutableAppleSet) Forall(p func(Apple) bool) bool {
 	if set == nil {
 		return true
 	}
 
-	for v, _ := range set.m {
-		if !fn(v) {
+	for v := range set.m {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate function p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *ImmutableAppleSet) Exists(fn func(Apple) bool) bool {
+func (set *ImmutableAppleSet) Exists(p func(Apple) bool) bool {
 	if set == nil {
 		return false
 	}
 
-	for v, _ := range set.m {
-		if fn(v) {
+	for v := range set.m {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the passed func against each element.
-func (set *ImmutableAppleSet) Foreach(fn func(Apple)) {
+// Foreach iterates over AppleSet and executes the function f against each element.
+func (set *ImmutableAppleSet) Foreach(f func(Apple)) {
 	if set == nil {
 		return
 	}
 
-	for v, _ := range set.m {
-		fn(v)
+	for v := range set.m {
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function.
-// False is returned if none match.
-func (set *ImmutableAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
+// Find returns the first Apple that returns true for the predicate p. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
+func (set *ImmutableAppleSet) Find(p func(Apple) bool) (Apple, bool) {
 
-	for v, _ := range set.m {
-		if fn(v) {
+	for v := range set.m {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -375,23 +380,23 @@ func (set *ImmutableAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 
 }
 
-// Filter returns a new ImmutableAppleSet whose elements return true for func.
-func (set *ImmutableAppleSet) Filter(fn func(Apple) bool) *ImmutableAppleSet {
+// Filter returns a new ImmutableAppleSet whose elements return true for the predicate p.
+func (set *ImmutableAppleSet) Filter(p func(Apple) bool) *ImmutableAppleSet {
 	if set == nil {
 		return nil
 	}
 
 	result := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
-		if fn(v) {
+	for v := range set.m {
+		if p(v) {
 			result.doAdd(v)
 		}
 	}
 	return result
 }
 
-// Partition returns two new AppleLists whose elements return true or false for the predicate, p.
+// Partition returns two new AppleSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -403,7 +408,7 @@ func (set *ImmutableAppleSet) Partition(p func(Apple) bool) (*ImmutableAppleSet,
 	matching := NewImmutableAppleSet()
 	others := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if p(v) {
 			matching.doAdd(v)
 		} else {
@@ -413,38 +418,38 @@ func (set *ImmutableAppleSet) Partition(p func(Apple) bool) (*ImmutableAppleSet,
 	return matching, others
 }
 
-// Map returns a new ImmutableAppleSet by transforming every element with a function fn.
+// Map returns a new ImmutableAppleSet by transforming every element with a function f.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *ImmutableAppleSet) Map(fn func(Apple) Apple) *ImmutableAppleSet {
+func (set *ImmutableAppleSet) Map(f func(Apple) Apple) *ImmutableAppleSet {
 	if set == nil {
 		return nil
 	}
 
 	result := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
-		result.m[fn(v)] = struct{}{}
+	for v := range set.m {
+		result.m[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new ImmutableAppleSet by transforming every element with a function fn that
+// FlatMap returns a new ImmutableAppleSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *ImmutableAppleSet) FlatMap(fn func(Apple) []Apple) *ImmutableAppleSet {
+func (set *ImmutableAppleSet) FlatMap(f func(Apple) []Apple) *ImmutableAppleSet {
 	if set == nil {
 		return nil
 	}
 
 	result := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
-		for _, x := range fn(v) {
+	for v := range set.m {
+		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
 	}
@@ -452,11 +457,11 @@ func (set *ImmutableAppleSet) FlatMap(fn func(Apple) []Apple) *ImmutableAppleSet
 	return result
 }
 
-// CountBy gives the number elements of ImmutableAppleSet that return true for the passed predicate.
-func (set *ImmutableAppleSet) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of ImmutableAppleSet that return true for the predicate p.
+func (set *ImmutableAppleSet) CountBy(p func(Apple) bool) (result int) {
 
-	for v, _ := range set.m {
-		if predicate(v) {
+	for v := range set.m {
+		if p(v) {
 			result++
 		}
 	}
@@ -473,7 +478,7 @@ func (set *ImmutableAppleSet) MinBy(less func(Apple, Apple) bool) Apple {
 
 	var m Apple
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -494,7 +499,7 @@ func (set *ImmutableAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 
 	var m Apple
 	first := true
-	for v, _ := range set.m {
+	for v := range set.m {
 		if first {
 			m = v
 			first = false
@@ -507,7 +512,7 @@ func (set *ImmutableAppleSet) MaxBy(less func(Apple, Apple) bool) Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Equals determines if two sets are equal to each other.
+// Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 func (set *ImmutableAppleSet) Equals(other *ImmutableAppleSet) bool {
@@ -523,7 +528,7 @@ func (set *ImmutableAppleSet) Equals(other *ImmutableAppleSet) bool {
 		return false
 	}
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if !other.Contains(v) {
 			return false
 		}

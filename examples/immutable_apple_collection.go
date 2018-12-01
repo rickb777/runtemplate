@@ -21,10 +21,10 @@ type ImmutableAppleSizer interface {
 type ImmutableAppleCollection interface {
 	ImmutableAppleSizer
 
-	// IsSequence returns true for lists.
+	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
-	// IsSet returns false for lists.
+	// IsSet returns false for lists and queues.
 	IsSet() bool
 
 	// ToSlice returns a shallow copy as a plain slice.
@@ -33,25 +33,25 @@ type ImmutableAppleCollection interface {
 	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
 	ToInterfaceSlice() []interface{}
 
-	// Exists verifies that one or more elements of ImmutableAppleCollection return true for the passed func.
-	Exists(fn func(Apple) bool) bool
+	// Exists verifies that one or more elements of ImmutableAppleCollection return true for the predicate p.
+	Exists(p func(Apple) bool) bool
 
-	// Forall verifies that all elements of ImmutableAppleCollection return true for the passed func.
-	Forall(fn func(Apple) bool) bool
+	// Forall verifies that all elements of ImmutableAppleCollection return true for the predicate p.
+	Forall(p func(Apple) bool) bool
 
-	// Foreach iterates over ImmutableAppleCollection and executes the passed func against each element.
-	Foreach(fn func(Apple))
+	// Foreach iterates over ImmutableAppleCollection and executes the function f against each element.
+	Foreach(f func(Apple))
 
-	// Find returns the first Apple that returns true for some function.
+	// Find returns the first Apple that returns true for the predicate p.
 	// False is returned if none match.
-	Find(fn func(Apple) bool) (Apple, bool)
+	Find(p func(Apple) bool) (Apple, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan Apple
 
-	// CountBy gives the number elements of ImmutableAppleCollection that return true for the passed predicate.
-	CountBy(predicate func(Apple) bool) int
+	// CountBy gives the number elements of ImmutableAppleCollection that return true for the predicate p.
+	CountBy(p func(Apple) bool) int
 
 	// MinBy returns an element of ImmutableAppleCollection containing the minimum value, when compared to other elements
 	// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such

@@ -98,6 +98,11 @@ func (list *ImmutableIntList) slice() []int {
 	return list.m
 }
 
+// ToList returns the elements of the list as a list, which is an identity operation in this case.
+func (list *ImmutableIntList) ToList() *ImmutableIntList {
+	return list
+}
+
 // ToSlice returns the elements of the current list as a slice.
 func (list *ImmutableIntList) ToSlice() []int {
 

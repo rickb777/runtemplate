@@ -37,10 +37,10 @@ type {{.UPrefix}}{{.UType}}MkStringer interface {
 	MkString3(before, between, after string) string
 
 	// implements json.Marshaler interface {
-	MarshalJSON() ([]byte, error)
+	//MarshalJSON() ([]byte, error)
 
 	// implements json.Unmarshaler interface {
-	UnmarshalJSON(b []byte) error
+	//UnmarshalJSON(b []byte) error
 
 	// StringList gets a list of strings that depicts all the elements.
 	StringList() []string
@@ -62,12 +62,12 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 {{- if .ToList}}
 
     // ToList returns a shallow copy as a list.
-    ToList() *{{.UPrefix}}{{.UType}}List
+    ToList() {{.UPrefix}}{{.UType}}List
 {{- end}}
 {{- if .ToSet}}
 
     // ToSet returns a shallow copy as a set.
-    ToSet() *{{.UPrefix}}{{.UType}}Set
+    ToSet() {{.UPrefix}}{{.UType}}Set
 {{- end}}
 
 	// ToSlice returns a shallow copy as a plain slice.
@@ -105,7 +105,7 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 {{- end}}
 
 	// Add adds items to the current collection.
-	Add(more ...{{.Type}})
+	//Add(more ...{{.Type}})
 {{- if .Ordered}}
 
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.

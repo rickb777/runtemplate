@@ -121,7 +121,7 @@ func (list {{.UPrefix}}{{.UType}}List) ToSet() {{.UPrefix}}{{.UType}}Set {
 
 // ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
 // because the simple list is merely a dressed-up slice.
-func (list {{.UPrefix}}{{.UType}}List) ToSlice() {{.UPrefix}}{{.UType}}List {
+func (list {{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
     return list
 }
 

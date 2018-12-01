@@ -41,10 +41,10 @@ type ImmutableIntCollection interface {
 	ImmutableIntSizer
 	ImmutableIntMkStringer
 
-	// IsSequence returns true for lists.
+	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
-	// IsSet returns false for lists.
+	// IsSet returns false for lists and queues.
 	IsSet() bool
 
 	// ToSlice returns a shallow copy as a plain slice.
@@ -53,25 +53,25 @@ type ImmutableIntCollection interface {
 	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
 	ToInterfaceSlice() []interface{}
 
-	// Exists verifies that one or more elements of ImmutableIntCollection return true for the passed func.
-	Exists(fn func(int) bool) bool
+	// Exists verifies that one or more elements of ImmutableIntCollection return true for the predicate p.
+	Exists(p func(int) bool) bool
 
-	// Forall verifies that all elements of ImmutableIntCollection return true for the passed func.
-	Forall(fn func(int) bool) bool
+	// Forall verifies that all elements of ImmutableIntCollection return true for the predicate p.
+	Forall(p func(int) bool) bool
 
-	// Foreach iterates over ImmutableIntCollection and executes the passed func against each element.
-	Foreach(fn func(int))
+	// Foreach iterates over ImmutableIntCollection and executes the function f against each element.
+	Foreach(f func(int))
 
-	// Find returns the first int that returns true for some function.
+	// Find returns the first int that returns true for the predicate p.
 	// False is returned if none match.
-	Find(fn func(int) bool) (int, bool)
+	Find(p func(int) bool) (int, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan int
 
-	// CountBy gives the number elements of ImmutableIntCollection that return true for the passed predicate.
-	CountBy(predicate func(int) bool) int
+	// CountBy gives the number elements of ImmutableIntCollection that return true for the predicate p.
+	CountBy(p func(int) bool) int
 
 	// Contains determines if a given item is already in the collection.
 	Contains(v int) bool

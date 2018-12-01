@@ -92,7 +92,7 @@ func (list SimpleIntList) ToList() SimpleIntList {
 
 // ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
 // because the simple list is merely a dressed-up slice.
-func (list SimpleIntList) ToSlice() SimpleIntList {
+func (list SimpleIntList) ToSlice() []int {
 	return list
 }
 

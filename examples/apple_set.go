@@ -58,7 +58,7 @@ func BuildAppleSetFromChan(source <-chan Apple) *AppleSet {
 	return set
 }
 
-// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+// ToSet returns the set; this is an identity operation in this case.
 func (set *AppleSet) ToSet() *AppleSet {
 	return set
 }
@@ -125,7 +125,7 @@ func (set *AppleSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set *AppleSet) IsSequence() bool {
 	return false
 }
@@ -225,14 +225,6 @@ func (set *AppleSet) IsSubset(other *AppleSet) bool {
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *AppleSet) IsSuperset(other *AppleSet) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -363,13 +355,13 @@ func (set *AppleSet) Send() <-chan Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *AppleSet) Forall(fn func(Apple) bool) bool {
+func (set *AppleSet) Forall(p func(Apple) bool) bool {
 	if set == nil {
 		return true
 	}
@@ -378,17 +370,17 @@ func (set *AppleSet) Forall(fn func(Apple) bool) bool {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate function p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *AppleSet) Exists(fn func(Apple) bool) bool {
+func (set *AppleSet) Exists(p func(Apple) bool) bool {
 	if set == nil {
 		return false
 	}
@@ -397,16 +389,16 @@ func (set *AppleSet) Exists(fn func(Apple) bool) bool {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the passed func against each element.
+// Foreach iterates over AppleSet and executes the function f against each element.
 // The function can safely alter the values via side-effects.
-func (set *AppleSet) Foreach(fn func(Apple)) {
+func (set *AppleSet) Foreach(f func(Apple)) {
 	if set == nil {
 		return
 	}
@@ -415,20 +407,20 @@ func (set *AppleSet) Foreach(fn func(Apple)) {
 	defer set.s.Unlock()
 
 	for v := range set.m {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function. If there are many matches
+// Find returns the first Apple that returns true for the predicate p. If there are many matches
 // one is arbtrarily chosen. False is returned if none match.
-func (set *AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
+func (set *AppleSet) Find(p func(Apple) bool) (Apple, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -438,10 +430,10 @@ func (set *AppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 
 }
 
-// Filter returns a new AppleSet whose elements return true for func.
+// Filter returns a new AppleSet whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set *AppleSet) Filter(fn func(Apple) bool) *AppleSet {
+func (set *AppleSet) Filter(p func(Apple) bool) *AppleSet {
 	if set == nil {
 		return nil
 	}
@@ -451,7 +443,7 @@ func (set *AppleSet) Filter(fn func(Apple) bool) *AppleSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			result.doAdd(v)
 		}
 	}
@@ -484,12 +476,12 @@ func (set *AppleSet) Partition(p func(Apple) bool) (*AppleSet, *AppleSet) {
 	return matching, others
 }
 
-// Map returns a new AppleSet by transforming every element with a function fn.
+// Map returns a new AppleSet by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *AppleSet) Map(fn func(Apple) Apple) *AppleSet {
+func (set *AppleSet) Map(f func(Apple) Apple) *AppleSet {
 	if set == nil {
 		return nil
 	}
@@ -499,19 +491,19 @@ func (set *AppleSet) Map(fn func(Apple) Apple) *AppleSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		result.m[fn(v)] = struct{}{}
+		result.m[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new AppleSet by transforming every element with a function fn that
+// FlatMap returns a new AppleSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *AppleSet) FlatMap(fn func(Apple) []Apple) *AppleSet {
+func (set *AppleSet) FlatMap(f func(Apple) []Apple) *AppleSet {
 	if set == nil {
 		return nil
 	}
@@ -521,7 +513,7 @@ func (set *AppleSet) FlatMap(fn func(Apple) []Apple) *AppleSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		for _, x := range fn(v) {
+		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
 	}
@@ -529,13 +521,13 @@ func (set *AppleSet) FlatMap(fn func(Apple) []Apple) *AppleSet {
 	return result
 }
 
-// CountBy gives the number elements of AppleSet that return true for the passed predicate.
-func (set *AppleSet) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of AppleSet that return true for the predicate p.
+func (set *AppleSet) CountBy(p func(Apple) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}

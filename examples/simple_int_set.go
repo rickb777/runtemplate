@@ -73,6 +73,11 @@ func BuildSimpleIntSetFromChan(source <-chan int) SimpleIntSet {
 	return set
 }
 
+// ToSet returns the set; this is an identity operation in this case.
+func (set SimpleIntSet) ToSet() SimpleIntSet {
+	return set
+}
+
 // ToSlice returns the elements of the current set as a slice.
 func (set SimpleIntSet) ToSlice() []int {
 	var s []int
@@ -135,8 +140,8 @@ func (set SimpleIntSet) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set, returning the modified set.
-func (set SimpleIntSet) Add(i ...int) SimpleIntSet {
-	for _, v := range i {
+func (set SimpleIntSet) Add(more ...int) SimpleIntSet {
+	for _, v := range more {
 		set.doAdd(v)
 	}
 	return set
@@ -195,6 +200,7 @@ func (set SimpleIntSet) Union(other SimpleIntSet) SimpleIntSet {
 	for v := range other {
 		unionedSet.doAdd(v)
 	}
+
 	return unionedSet
 }
 
@@ -215,6 +221,7 @@ func (set SimpleIntSet) Intersect(other SimpleIntSet) SimpleIntSet {
 			}
 		}
 	}
+
 	return intersection
 }
 
@@ -226,6 +233,7 @@ func (set SimpleIntSet) Difference(other SimpleIntSet) SimpleIntSet {
 			differencedSet.doAdd(v)
 		}
 	}
+
 	return differencedSet
 }
 
@@ -299,6 +307,21 @@ func (set SimpleIntSet) Foreach(fn func(int)) {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+// Find returns the first int that returns true for predicate p.
+// False is returned if none match.
+func (set SimpleIntSet) Find(p func(int) bool) (int, bool) {
+
+	for v := range set {
+		if p(v) {
+			return v, true
+		}
+	}
+
+	var empty int
+	return empty, false
+
+}
 
 // Filter returns a new SimpleIntSet whose elements return true for func.
 //
@@ -454,11 +477,13 @@ func (set SimpleIntSet) Equals(other SimpleIntSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }
 

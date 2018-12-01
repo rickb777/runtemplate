@@ -55,7 +55,7 @@ func BuildFastAppleSetFromChan(source <-chan Apple) *FastAppleSet {
 	return set
 }
 
-// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+// ToSet returns the set; this is an identity operation in this case.
 func (set *FastAppleSet) ToSet() *FastAppleSet {
 	return set
 }
@@ -115,7 +115,7 @@ func (set *FastAppleSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set *FastAppleSet) IsSequence() bool {
 	return false
 }
@@ -199,14 +199,6 @@ func (set *FastAppleSet) IsSubset(other *FastAppleSet) bool {
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *FastAppleSet) IsSuperset(other *FastAppleSet) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -318,61 +310,61 @@ func (set *FastAppleSet) Send() <-chan Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *FastAppleSet) Forall(fn func(Apple) bool) bool {
+func (set *FastAppleSet) Forall(p func(Apple) bool) bool {
 	if set == nil {
 		return true
 	}
 
 	for v := range set.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate function p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *FastAppleSet) Exists(fn func(Apple) bool) bool {
+func (set *FastAppleSet) Exists(p func(Apple) bool) bool {
 	if set == nil {
 		return false
 	}
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the passed func against each element.
+// Foreach iterates over AppleSet and executes the function f against each element.
 // The function can safely alter the values via side-effects.
-func (set *FastAppleSet) Foreach(fn func(Apple)) {
+func (set *FastAppleSet) Foreach(f func(Apple)) {
 	if set == nil {
 		return
 	}
 
 	for v := range set.m {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for some function. If there are many matches
+// Find returns the first Apple that returns true for the predicate p. If there are many matches
 // one is arbtrarily chosen. False is returned if none match.
-func (set *FastAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
+func (set *FastAppleSet) Find(p func(Apple) bool) (Apple, bool) {
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -382,10 +374,10 @@ func (set *FastAppleSet) Find(fn func(Apple) bool) (Apple, bool) {
 
 }
 
-// Filter returns a new FastAppleSet whose elements return true for func.
+// Filter returns a new FastAppleSet whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set *FastAppleSet) Filter(fn func(Apple) bool) *FastAppleSet {
+func (set *FastAppleSet) Filter(p func(Apple) bool) *FastAppleSet {
 	if set == nil {
 		return nil
 	}
@@ -393,7 +385,7 @@ func (set *FastAppleSet) Filter(fn func(Apple) bool) *FastAppleSet {
 	result := NewFastAppleSet()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			result.doAdd(v)
 		}
 	}
@@ -424,12 +416,12 @@ func (set *FastAppleSet) Partition(p func(Apple) bool) (*FastAppleSet, *FastAppl
 	return matching, others
 }
 
-// Map returns a new FastAppleSet by transforming every element with a function fn.
+// Map returns a new FastAppleSet by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *FastAppleSet) Map(fn func(Apple) Apple) *FastAppleSet {
+func (set *FastAppleSet) Map(f func(Apple) Apple) *FastAppleSet {
 	if set == nil {
 		return nil
 	}
@@ -437,19 +429,19 @@ func (set *FastAppleSet) Map(fn func(Apple) Apple) *FastAppleSet {
 	result := NewFastAppleSet()
 
 	for v := range set.m {
-		result.m[fn(v)] = struct{}{}
+		result.m[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new FastAppleSet by transforming every element with a function fn that
+// FlatMap returns a new FastAppleSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *FastAppleSet) FlatMap(fn func(Apple) []Apple) *FastAppleSet {
+func (set *FastAppleSet) FlatMap(f func(Apple) []Apple) *FastAppleSet {
 	if set == nil {
 		return nil
 	}
@@ -457,7 +449,7 @@ func (set *FastAppleSet) FlatMap(fn func(Apple) []Apple) *FastAppleSet {
 	result := NewFastAppleSet()
 
 	for v := range set.m {
-		for _, x := range fn(v) {
+		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
 	}
@@ -465,11 +457,11 @@ func (set *FastAppleSet) FlatMap(fn func(Apple) []Apple) *FastAppleSet {
 	return result
 }
 
-// CountBy gives the number elements of FastAppleSet that return true for the passed predicate.
-func (set *FastAppleSet) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of FastAppleSet that return true for the predicate p.
+func (set *FastAppleSet) CountBy(p func(Apple) bool) (result int) {
 
 	for v := range set.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}

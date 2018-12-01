@@ -81,7 +81,7 @@ func BuildIntSetFromChan(source <-chan int) *IntSet {
 	return set
 }
 
-// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+// ToSet returns the set; this is an identity operation in this case.
 func (set *IntSet) ToSet() *IntSet {
 	return set
 }
@@ -148,7 +148,7 @@ func (set *IntSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set *IntSet) IsSequence() bool {
 	return false
 }
@@ -248,14 +248,6 @@ func (set *IntSet) IsSubset(other *IntSet) bool {
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *IntSet) IsSuperset(other *IntSet) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -386,13 +378,13 @@ func (set *IntSet) Send() <-chan int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *IntSet) Forall(fn func(int) bool) bool {
+func (set *IntSet) Forall(p func(int) bool) bool {
 	if set == nil {
 		return true
 	}
@@ -401,17 +393,17 @@ func (set *IntSet) Forall(fn func(int) bool) bool {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate function p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *IntSet) Exists(fn func(int) bool) bool {
+func (set *IntSet) Exists(p func(int) bool) bool {
 	if set == nil {
 		return false
 	}
@@ -420,16 +412,16 @@ func (set *IntSet) Exists(fn func(int) bool) bool {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over intSet and executes the passed func against each element.
+// Foreach iterates over intSet and executes the function f against each element.
 // The function can safely alter the values via side-effects.
-func (set *IntSet) Foreach(fn func(int)) {
+func (set *IntSet) Foreach(f func(int)) {
 	if set == nil {
 		return
 	}
@@ -438,20 +430,20 @@ func (set *IntSet) Foreach(fn func(int)) {
 	defer set.s.Unlock()
 
 	for v := range set.m {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function. If there are many matches
+// Find returns the first int that returns true for the predicate p. If there are many matches
 // one is arbtrarily chosen. False is returned if none match.
-func (set *IntSet) Find(fn func(int) bool) (int, bool) {
+func (set *IntSet) Find(p func(int) bool) (int, bool) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -461,10 +453,10 @@ func (set *IntSet) Find(fn func(int) bool) (int, bool) {
 
 }
 
-// Filter returns a new IntSet whose elements return true for func.
+// Filter returns a new IntSet whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set *IntSet) Filter(fn func(int) bool) *IntSet {
+func (set *IntSet) Filter(p func(int) bool) *IntSet {
 	if set == nil {
 		return nil
 	}
@@ -474,7 +466,7 @@ func (set *IntSet) Filter(fn func(int) bool) *IntSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			result.doAdd(v)
 		}
 	}
@@ -507,12 +499,12 @@ func (set *IntSet) Partition(p func(int) bool) (*IntSet, *IntSet) {
 	return matching, others
 }
 
-// Map returns a new IntSet by transforming every element with a function fn.
+// Map returns a new IntSet by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *IntSet) Map(fn func(int) int) *IntSet {
+func (set *IntSet) Map(f func(int) int) *IntSet {
 	if set == nil {
 		return nil
 	}
@@ -522,19 +514,19 @@ func (set *IntSet) Map(fn func(int) int) *IntSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		result.m[fn(v)] = struct{}{}
+		result.m[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new IntSet by transforming every element with a function fn that
+// FlatMap returns a new IntSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *IntSet) FlatMap(fn func(int) []int) *IntSet {
+func (set *IntSet) FlatMap(f func(int) []int) *IntSet {
 	if set == nil {
 		return nil
 	}
@@ -544,7 +536,7 @@ func (set *IntSet) FlatMap(fn func(int) []int) *IntSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		for _, x := range fn(v) {
+		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
 	}
@@ -552,13 +544,13 @@ func (set *IntSet) FlatMap(fn func(int) []int) *IntSet {
 	return result
 }
 
-// CountBy gives the number elements of IntSet that return true for the passed predicate.
-func (set *IntSet) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of IntSet that return true for the predicate p.
+func (set *IntSet) CountBy(p func(int) bool) (result int) {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}

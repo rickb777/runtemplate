@@ -45,6 +45,11 @@ func BuildSimpleAppleSetFromChan(source <-chan Apple) SimpleAppleSet {
 	return set
 }
 
+// ToSet returns the set; this is an identity operation in this case.
+func (set SimpleAppleSet) ToSet() SimpleAppleSet {
+	return set
+}
+
 // ToSlice returns the elements of the current set as a slice.
 func (set SimpleAppleSet) ToSlice() []Apple {
 	var s []Apple
@@ -107,8 +112,8 @@ func (set SimpleAppleSet) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set, returning the modified set.
-func (set SimpleAppleSet) Add(i ...Apple) SimpleAppleSet {
-	for _, v := range i {
+func (set SimpleAppleSet) Add(more ...Apple) SimpleAppleSet {
+	for _, v := range more {
 		set.doAdd(v)
 	}
 	return set
@@ -167,6 +172,7 @@ func (set SimpleAppleSet) Union(other SimpleAppleSet) SimpleAppleSet {
 	for v := range other {
 		unionedSet.doAdd(v)
 	}
+
 	return unionedSet
 }
 
@@ -187,6 +193,7 @@ func (set SimpleAppleSet) Intersect(other SimpleAppleSet) SimpleAppleSet {
 			}
 		}
 	}
+
 	return intersection
 }
 
@@ -198,6 +205,7 @@ func (set SimpleAppleSet) Difference(other SimpleAppleSet) SimpleAppleSet {
 			differencedSet.doAdd(v)
 		}
 	}
+
 	return differencedSet
 }
 
@@ -271,6 +279,21 @@ func (set SimpleAppleSet) Foreach(fn func(Apple)) {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+// Find returns the first Apple that returns true for predicate p.
+// False is returned if none match.
+func (set SimpleAppleSet) Find(p func(Apple) bool) (Apple, bool) {
+
+	for v := range set {
+		if p(v) {
+			return v, true
+		}
+	}
+
+	var empty Apple
+	return empty, false
+
+}
 
 // Filter returns a new SimpleAppleSet whose elements return true for func.
 //
@@ -395,10 +418,12 @@ func (set SimpleAppleSet) Equals(other SimpleAppleSet) bool {
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }

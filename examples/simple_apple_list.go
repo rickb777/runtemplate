@@ -68,7 +68,7 @@ func (list SimpleAppleList) ToList() SimpleAppleList {
 
 // ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
 // because the simple list is merely a dressed-up slice.
-func (list SimpleAppleList) ToSlice() SimpleAppleList {
+func (list SimpleAppleList) ToSlice() []Apple {
 	return list
 }
 

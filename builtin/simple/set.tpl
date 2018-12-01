@@ -86,6 +86,23 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) {{.UPrefix
 	}
 	return set
 }
+{{- if .ToList}}
+
+// ToList returns the elements of the set as a list. The returned list is a shallow
+// copy; the set is not altered.
+func (set {{.UPrefix}}{{.UType}}Set) ToList() {{.UPrefix}}{{.UType}}List {
+	if set == nil {
+		return nil
+	}
+
+	return {{.UPrefix}}{{.UType}}List(set.ToSlice())
+}
+{{- end}}
+
+// ToSet returns the set; this is an identity operation in this case.
+func (set {{.UPrefix}}{{.UType}}Set) ToSet() {{.UPrefix}}{{.UType}}Set {
+	return set
+}
 
 // ToSlice returns the elements of the current set as a slice.
 func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
@@ -149,8 +166,8 @@ func (set {{.UPrefix}}{{.UType}}Set) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set, returning the modified set.
-func (set {{.UPrefix}}{{.UType}}Set) Add(i ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
-	for _, v := range i {
+func (set {{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) {{.UPrefix}}{{.UType}}Set {
+	for _, v := range more {
 		set.doAdd(v)
 	}
 	return set
@@ -209,6 +226,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Union(other {{.UPrefix}}{{.UType}}Set) {{.U
 	for v := range other {
 		unionedSet.doAdd(v)
 	}
+
 	return unionedSet
 }
 
@@ -229,6 +247,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Intersect(other {{.UPrefix}}{{.UType}}Set) 
 			}
 		}
 	}
+
 	return intersection
 }
 
@@ -240,6 +259,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Difference(other {{.UPrefix}}{{.UType}}Set)
 			differencedSet.doAdd(v)
 		}
 	}
+
 	return differencedSet
 }
 
@@ -313,6 +333,24 @@ func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+// Find returns the first {{.Type}} that returns true for predicate p.
+// False is returned if none match.
+func (set {{.UPrefix}}{{.UType}}Set) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
+
+	for v := range set {
+		if p(v) {
+			return v, true
+		}
+	}
+
+{{if eq .TypeStar "*"}}
+	return nil, false
+{{else}}
+	var empty {{.Type}}
+	return empty, false
+{{end}}
+}
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
 //
@@ -472,11 +510,13 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 	if set.Size() != other.Size() {
 		return false
 	}
+
 	for v := range set {
 		if !other.Contains(v) {
 			return false
 		}
 	}
+
 	return true
 }
 {{- if .Stringer}}

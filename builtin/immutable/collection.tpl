@@ -51,11 +51,21 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	{{.UPrefix}}{{.UType}}MkStringer
 {{- end}}
 
-	// IsSequence returns true for lists.
+	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
-	// IsSet returns false for lists.
+	// IsSet returns false for lists and queues.
 	IsSet() bool
+{{- if .ToList}}
+
+    // ToList returns a shallow copy as a list.
+    ToList() *{{.UPrefix}}{{.UType}}List
+{{- end}}
+{{- if .ToSet}}
+
+    // ToSet returns a shallow copy as a set.
+    ToSet() *{{.UPrefix}}{{.UType}}Set
+{{- end}}
 
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []{{.PType}}
@@ -63,25 +73,25 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// ToInterfaceSlice returns a shallow copy as a slice of arbitrary type.
 	ToInterfaceSlice() []interface{}
 
-	// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}Collection return true for the passed func.
-	Exists(fn func({{.PType}}) bool) bool
+	// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}Collection return true for the predicate p.
+	Exists(p func({{.PType}}) bool) bool
 
-	// Forall verifies that all elements of {{.UPrefix}}{{.UType}}Collection return true for the passed func.
-	Forall(fn func({{.PType}}) bool) bool
+	// Forall verifies that all elements of {{.UPrefix}}{{.UType}}Collection return true for the predicate p.
+	Forall(p func({{.PType}}) bool) bool
 
-	// Foreach iterates over {{.UPrefix}}{{.UType}}Collection and executes the passed func against each element.
-	Foreach(fn func({{.PType}}))
+	// Foreach iterates over {{.UPrefix}}{{.UType}}Collection and executes the function f against each element.
+	Foreach(f func({{.PType}}))
 
-	// Find returns the first {{.Type}} that returns true for some function.
+	// Find returns the first {{.Type}} that returns true for the predicate p.
 	// False is returned if none match.
-	Find(fn func({{.PType}}) bool) ({{.PType}}, bool)
+	Find(p func({{.PType}}) bool) ({{.PType}}, bool)
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
 	Send() <-chan {{.PType}}
 
-	// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the passed predicate.
-	CountBy(predicate func({{.PType}}) bool) int
+	// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Collection that return true for the predicate p.
+	CountBy(p func({{.PType}}) bool) int
 {{- if .Comparable}}
 
 	// Contains determines if a given item is already in the collection.
@@ -90,14 +100,6 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// ContainsAll determines if the given items are all in the collection.
 	ContainsAll(v ...{{.Type}}) bool
 {{- end}}
-{{- if .Mutable}}
-
-	// Add adds items to the current collection.
-	Add(more ...{{.Type}})
-
-	// Remove removes a single item from the collection.
-	Remove({{.Type}})
-{{end}}
 {{- if .Ordered}}
 
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.

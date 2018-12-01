@@ -47,7 +47,7 @@ type IntCollection interface {
 	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
-	// IsSet returns false for lists.
+	// IsSet returns false for list and queues.
 	IsSet() bool
 
 	// ToSlice returns a shallow copy as a plain slice.

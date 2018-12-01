@@ -78,7 +78,7 @@ func BuildFastIntSetFromChan(source <-chan int) *FastIntSet {
 	return set
 }
 
-// ToSet returns the elements of the set as a set, which is an identity operation in this case.
+// ToSet returns the set; this is an identity operation in this case.
 func (set *FastIntSet) ToSet() *FastIntSet {
 	return set
 }
@@ -138,7 +138,7 @@ func (set *FastIntSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set *FastIntSet) IsSequence() bool {
 	return false
 }
@@ -222,14 +222,6 @@ func (set *FastIntSet) IsSubset(other *FastIntSet) bool {
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *FastIntSet) IsSuperset(other *FastIntSet) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -341,61 +333,61 @@ func (set *FastIntSet) Send() <-chan int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *FastIntSet) Forall(fn func(int) bool) bool {
+func (set *FastIntSet) Forall(p func(int) bool) bool {
 	if set == nil {
 		return true
 	}
 
 	for v := range set.m {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate function p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *FastIntSet) Exists(fn func(int) bool) bool {
+func (set *FastIntSet) Exists(p func(int) bool) bool {
 	if set == nil {
 		return false
 	}
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over intSet and executes the passed func against each element.
+// Foreach iterates over intSet and executes the function f against each element.
 // The function can safely alter the values via side-effects.
-func (set *FastIntSet) Foreach(fn func(int)) {
+func (set *FastIntSet) Foreach(f func(int)) {
 	if set == nil {
 		return
 	}
 
 	for v := range set.m {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for some function. If there are many matches
+// Find returns the first int that returns true for the predicate p. If there are many matches
 // one is arbtrarily chosen. False is returned if none match.
-func (set *FastIntSet) Find(fn func(int) bool) (int, bool) {
+func (set *FastIntSet) Find(p func(int) bool) (int, bool) {
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			return v, true
 		}
 	}
@@ -405,10 +397,10 @@ func (set *FastIntSet) Find(fn func(int) bool) (int, bool) {
 
 }
 
-// Filter returns a new FastIntSet whose elements return true for func.
+// Filter returns a new FastIntSet whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set *FastIntSet) Filter(fn func(int) bool) *FastIntSet {
+func (set *FastIntSet) Filter(p func(int) bool) *FastIntSet {
 	if set == nil {
 		return nil
 	}
@@ -416,7 +408,7 @@ func (set *FastIntSet) Filter(fn func(int) bool) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v := range set.m {
-		if fn(v) {
+		if p(v) {
 			result.doAdd(v)
 		}
 	}
@@ -447,12 +439,12 @@ func (set *FastIntSet) Partition(p func(int) bool) (*FastIntSet, *FastIntSet) {
 	return matching, others
 }
 
-// Map returns a new FastIntSet by transforming every element with a function fn.
+// Map returns a new FastIntSet by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *FastIntSet) Map(fn func(int) int) *FastIntSet {
+func (set *FastIntSet) Map(f func(int) int) *FastIntSet {
 	if set == nil {
 		return nil
 	}
@@ -460,19 +452,19 @@ func (set *FastIntSet) Map(fn func(int) int) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v := range set.m {
-		result.m[fn(v)] = struct{}{}
+		result.m[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new FastIntSet by transforming every element with a function fn that
+// FlatMap returns a new FastIntSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *FastIntSet) FlatMap(fn func(int) []int) *FastIntSet {
+func (set *FastIntSet) FlatMap(f func(int) []int) *FastIntSet {
 	if set == nil {
 		return nil
 	}
@@ -480,7 +472,7 @@ func (set *FastIntSet) FlatMap(fn func(int) []int) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v := range set.m {
-		for _, x := range fn(v) {
+		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
 	}
@@ -488,11 +480,11 @@ func (set *FastIntSet) FlatMap(fn func(int) []int) *FastIntSet {
 	return result
 }
 
-// CountBy gives the number elements of FastIntSet that return true for the passed predicate.
-func (set *FastIntSet) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of FastIntSet that return true for the predicate p.
+func (set *FastIntSet) CountBy(p func(int) bool) (result int) {
 
 	for v := range set.m {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
