@@ -6,6 +6,7 @@ package {{.Package}}
 import (
 	"testing"
 	"sort"
+	. "github.com/onsi/gomega"
 )
 
 type Sizer interface {
@@ -20,15 +21,11 @@ func TestNewX{{.UType}}Collection(t *testing.T) {
 }
 
 func testEmpty{{.UType}}Collection(t *testing.T, a Sizer, kind string) {
-	if a.Size() != 0 {
-		t.Errorf("%s: Expected 0 but got %d", kind, a.Size())
-	}
-	if !a.IsEmpty() {
-		t.Errorf("%s: Expected empty", kind)
-	}
-	if a.NonEmpty() {
-		t.Errorf("%s: Expected empty", kind)
-	}
+	g := NewGomegaWithT(t)
+
+	g.Expect(a.Size()).To(Equal(0))
+	g.Expect(a.IsEmpty()).To(BeTrue())
+	g.Expect(a.NonEmpty()).To(BeFalse())
 }
 
 func Test{{.UType}}ToSlice(t *testing.T) {
@@ -37,15 +34,12 @@ func Test{{.UType}}ToSlice(t *testing.T) {
 }
 
 func test{{.UType}}ToSlice(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
 	s := a.ToSlice()
 
-	if a.Size() != 3 {
-		t.Errorf("%s: Expected 3 but got %d", kind, a.Size())
-	}
-
-	if len(s) != 3 {
-		t.Errorf("%s: Expected 3 but got %d", kind, len(s))
-	}
+	g.Expect(a.Size()).To(Equal(3))
+	g.Expect(len(s)).To(Equal(3))
 }
 
 func Test{{.UType}}Exists(t *testing.T) {
@@ -54,21 +48,19 @@ func Test{{.UType}}Exists(t *testing.T) {
 }
 
 func test{{.UType}}Exists1(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
 	has2 := a.Exists(func(v int) bool {
 		return v > 2
 	})
 
-	if !has2 {
-		t.Errorf("%s: Expected exists for %+v", kind, a)
-	}
+	g.Expect(has2).To(BeTrue())
 
 	has5 := a.Exists(func(v int) bool {
 		return v > 5
 	})
 
-	if has5 {
-		t.Errorf("%s: Expected not exists for %+v", kind, a)
-	}
+	g.Expect(has5).To(BeFalse())
 }
 
 func Test{{.UType}}Forall(t *testing.T) {
@@ -77,21 +69,19 @@ func Test{{.UType}}Forall(t *testing.T) {
 }
 
 func test{{.UType}}Forall(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
 	has1 := a.Forall(func(v int) bool {
 		return v >= 1
 	})
 
-	if !has1 {
-		t.Errorf("%s: Expected forall for %+v", kind, a)
-	}
+	g.Expect(has1).To(BeTrue())
 
 	has2 := a.Forall(func(v int) bool {
 		return v >= 2
 	})
 
-	if has2 {
-		t.Errorf("%s: Expected not forall for %+v", kind, a)
-	}
+	g.Expect(has2).To(BeFalse())
 }
 
 func Test{{.UType}}Find(t *testing.T) {
@@ -100,25 +90,20 @@ func Test{{.UType}}Find(t *testing.T) {
 }
 
 func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
 	b, e := a.Find(func(v int) bool {
 		return v > 2
 	})
 
-	if !e {
-		t.Errorf("%s: Expected '3' but got '%+v'", kind, b)
-	}
+	g.Expect(e).To(BeTrue())
+	g.Expect(b).To(Equal(3))
 
-	if b != 3 {
-		t.Errorf("%s: Expected '3' but got '%+v'", kind, b)
-	}
-
-	c, e := a.Find(func(v int) bool {
+	_, e = a.Find(func(v int) bool {
 		return v > 20
 	})
 
-	if e {
-		t.Errorf("%s: Expected false but got '%+v'", kind, c)
-	}
+	g.Expect(e).To(BeFalse())
 }
 
 func Test{{.UType}}CountBy(t *testing.T) {
@@ -127,13 +112,13 @@ func Test{{.UType}}CountBy(t *testing.T) {
 }
 
 func test{{.UType}}CountBy(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
 	n := a.CountBy(func(v int) bool {
 		return v >= 2
 	})
 
-	if n != 2 {
-		t.Errorf("%s: Expected 2 but got %d", kind, n)
-	}
+	g.Expect(n).To(Equal(2))
 }
 
 func Test{{.UType}}Foreach(t *testing.T) {
@@ -142,14 +127,14 @@ func Test{{.UType}}Foreach(t *testing.T) {
 }
 
 func test{{.UType}}Foreach(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
 	sum1 := int(0)
 	a.Foreach(func(v int) {
 		sum1 += v
 	})
 
-	if sum1 != 6 {
-		t.Errorf("%s: Expected 6 but got %d", kind, sum1)
-	}
+	g.Expect(sum1).To(Equal(6))
 }
 
 func Test{{.UType}}Contains(t *testing.T) {
@@ -158,25 +143,13 @@ func Test{{.UType}}Contains(t *testing.T) {
 }
 
 func test{{.UType}}Contains(t *testing.T, a X1{{.UType}}Collection, kind string) {
-	if !a.Contains(71) {
-		t.Errorf("%s: should contain 71", kind)
-	}
+	g := NewGomegaWithT(t)
 
-	if a.Contains(72) {
-		t.Errorf("%s: should not contain 72", kind)
-	}
-
-	if !(a.Contains(13) && a.Contains(7) && a.Contains(1)) {
-		t.Errorf("%s: should contain 13, 7, 1", kind)
-	}
-
-	if !a.ContainsAll(1, 7, 13) {
-		t.Errorf("%s: should contain all 1, 7, 13", kind)
-	}
-
-	if a.ContainsAll(1, 3, 5, 7, 9, 11, 13) {
-		t.Errorf("%s: should not contain all 1, 3, 5, 7, 9, 11, 13", kind)
-	}
+	g.Expect(a.Contains(71)).To(BeTrue())
+	g.Expect(a.Contains(72)).To(BeFalse())
+	g.Expect((a.Contains(13) && a.Contains(7) && a.Contains(1))).To(BeTrue())
+	g.Expect(a.ContainsAll(1, 7, 13)).To(BeTrue())
+	g.Expect(a.ContainsAll(1, 3, 5, 7, 9, 11, 13)).To(BeFalse())
 }
 
 func Test{{.UType}}MinMaxSum(t *testing.T) {
@@ -185,15 +158,19 @@ func Test{{.UType}}MinMaxSum(t *testing.T) {
 }
 
 func test{{.UType}}MinMaxSum(t *testing.T, a X1{{.UType}}Collection, kind string) {
-	if a.Min() != 3 {
-		t.Errorf("%s: Expected 3 but got %d", kind, a.Min())
-	}
-	if a.Max() != 71 {
-		t.Errorf("%s: Expected 71 but got %d", kind, a.Max())
-	}
-	if a.Sum() != 104 {
-		t.Errorf("%s: Expected 104 but got %d", kind, a.Sum())
-	}
+	g := NewGomegaWithT(t)
+
+	g.Expect(a.Min()).To(Equal(3))
+	g.Expect(a.Max()).To(Equal(71))
+	g.Expect(a.Sum()).To(Equal(104))
+	c := a.MinBy(func(v1, v2 int) bool {
+		return v1 < v2
+	})
+	g.Expect(c).To(Equal(3))
+	c = a.MaxBy(func(v1, v2 int) bool {
+		return v1 < v2
+	})
+	g.Expect(c).To(Equal(71))
 }
 
 func Test{{.UType}}Stringer(t *testing.T) {

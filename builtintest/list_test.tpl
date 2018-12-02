@@ -902,30 +902,6 @@ func Test{{.UType}}ListLastIndexWhere(t *testing.T) {
 	g.Expect(d).To(Equal(59))
 }
 
-func Test{{.UType}}ListMinBy(t *testing.T) {
-	g := NewGomegaWithT(t)
-
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
-
-	c := a.MinBy(func(v1, v2 int) bool {
-		return v1 > v2
-	})
-
-	g.Expect(c).To(Equal(13))
-}
-
-func Test{{.UType}}ListMaxBy(t *testing.T) {
-	g := NewGomegaWithT(t)
-
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
-
-	c := a.MaxBy(func(v1, v2 int) bool {
-		return v1 > v2
-	})
-
-	g.Expect(c).To(Equal(-2))
-}
-
 func Test{{.UType}}ListMkString(t *testing.T) {
 	g := NewGomegaWithT(t)
 
