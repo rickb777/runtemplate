@@ -18,6 +18,20 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+func TestIm{{.UKey}}{{.UType}}MapGet(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
+	v, found := a.Get(1)
+
+	g.Expect(found).To(BeTrue())
+	g.Expect(v).To(Equal(2))
+
+	_, found = a.Get(7)
+
+	g.Expect(found).To(BeFalse())
+}
+
 func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
 	g := NewGomegaWithT(t)
 
@@ -239,6 +253,12 @@ func Test{{.UType}}MapFind(t *testing.T) {
 	exp := TX1{{.UKey}}{{.UType}}Tuple{2, 3}
 	g.Expect(found).To(BeTrue())
 	g.Expect(b).To(Equal(exp))
+
+	_, found = a.Find(func(k, v int) bool {
+		return v > 100
+	})
+
+	g.Expect(found).To(BeFalse())
 
     // check correct nil handling
     a = nil

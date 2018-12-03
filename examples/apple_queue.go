@@ -38,8 +38,15 @@ type AppleQueue struct {
 // NewAppleQueue returns a new queue of Apple. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
+func NewAppleQueue(capacity int, overwrite bool) *AppleQueue {
+	return NewAppleSortedQueue(capacity, overwrite, nil)
+}
+
+// NewAppleSortedQueue returns a new queue of Apple. The behaviour when adding
+// to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
+// the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
-func NewAppleQueue(capacity int, overwrite bool, less func(i, j Apple) bool) *AppleQueue {
+func NewAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple) bool) *AppleQueue {
 	if capacity < 1 {
 		panic("capacity must be at least 1")
 	}
@@ -122,9 +129,6 @@ func (queue *AppleQueue) Size() int {
 
 // Len gets the current length of this queue. This is an alias for Size.
 func (queue *AppleQueue) Len() int {
-	if queue == nil {
-		return 0
-	}
 	return queue.Size()
 }
 
@@ -159,7 +163,7 @@ func (queue *AppleQueue) Sort() {
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
-// The result is stable so that repeated calls will not arbtrarily swap equal items.
+// The result is stable so that repeated calls will not arbitrarily swap equal items.
 func (queue *AppleQueue) StableSort() {
 	sort.Stable(queue)
 }
@@ -238,6 +242,7 @@ func (queue *AppleQueue) Clone() *AppleQueue {
 		length:    queue.length,
 		capacity:  queue.capacity,
 		overwrite: queue.overwrite,
+		less:      queue.less,
 		s:         &sync.RWMutex{},
 	}
 }
@@ -336,7 +341,10 @@ func (queue *AppleQueue) Reallocate(capacity int, overwrite bool) *AppleQueue {
 
 	queue.s.Lock()
 	defer queue.s.Unlock()
+	return queue.doReallocate(capacity, overwrite)
+}
 
+func (queue *AppleQueue) doReallocate(capacity int, overwrite bool) *AppleQueue {
 	queue.overwrite = overwrite
 
 	if capacity < queue.length {
@@ -420,16 +428,40 @@ func (queue *AppleQueue) Reallocate(capacity int, overwrite bool) *AppleQueue {
 //	}
 //}
 
-// Push appends items to the end of the queue.
-// This panics if the queue does not have enough space.
+// Push appends items to the end of the queue. If the queue does not have enough space,
+// more will be allocated: how this happens depends on the overwriting mode.
+//
+// When overwriting, the oldest items are overwritten with the new data; it expands the queue
+// only if there is still not enough space.
+//
+// Otherwise, the queue might be reallocated if necessary, ensuring that all the data is pushed
+// without any older items being affected.
+//
+// The modified queue is returned.
 func (queue *AppleQueue) Push(items ...Apple) *AppleQueue {
 	queue.s.Lock()
 	defer queue.s.Unlock()
 
+	n := queue.capacity
+	if queue.overwrite && len(items) > queue.capacity {
+		n = len(items)
+		// no rounding in this case because the old items are expected to be overwritten
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
+		n = len(items) + queue.length
+		// rounded up to multiple of 128
+		n = ((n + 127) / 128) * 128
+	}
+
+	if n > queue.capacity {
+		queue = queue.doReallocate(n, queue.overwrite)
+	}
+
 	overflow := queue.doPush(items...)
+
 	if len(overflow) > 0 {
 		panic(len(overflow))
 	}
+
 	return queue
 }
 
@@ -439,6 +471,7 @@ func (queue *AppleQueue) Push(items ...Apple) *AppleQueue {
 // filled to capacity and any unwritten items are returned.
 //
 // If the capacity is too small for the number of items, the excess items are returned.
+// The queue capacity is never altered.
 func (queue *AppleQueue) Offer(items ...Apple) []Apple {
 	queue.s.Lock()
 	defer queue.s.Unlock()
@@ -644,7 +677,7 @@ func (queue *AppleQueue) Filter(p func(Apple) bool) *AppleQueue {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-	result := NewAppleQueue(queue.length, queue.overwrite, queue.less)
+	result := NewAppleSortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -680,8 +713,8 @@ func (queue *AppleQueue) Partition(p func(Apple) bool) (*AppleQueue, *AppleQueue
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-	matching := NewAppleQueue(queue.length, queue.overwrite, queue.less)
-	others := NewAppleQueue(queue.length, queue.overwrite, queue.less)
+	matching := NewAppleSortedQueue(queue.length, queue.overwrite, queue.less)
+	others := NewAppleSortedQueue(queue.length, queue.overwrite, queue.less)
 	m, o := 0, 0
 
 	front, back := queue.frontAndBack()
@@ -725,7 +758,7 @@ func (queue *AppleQueue) Map(fn func(Apple) Apple) *AppleQueue {
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-	result := NewAppleQueue(queue.length, queue.overwrite, queue.less)
+	result := NewAppleSortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()

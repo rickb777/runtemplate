@@ -48,8 +48,15 @@ type {{.UPrefix}}{{.UType}}Queue struct {
 // New{{.UPrefix}}{{.UType}}Queue returns a new queue of {{.PType}}. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
+func New{{.UPrefix}}{{.UType}}Queue(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+	return New{{.UPrefix}}{{.UType}}SortedQueue(capacity, overwrite, nil)
+}
+
+// New{{.UPrefix}}{{.UType}}SortedQueue returns a new queue of {{.PType}}. The behaviour when adding
+// to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
+// the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
-func New{{.UPrefix}}{{.UType}}Queue(capacity int, overwrite bool, less func(i, j {{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
+func New{{.UPrefix}}{{.UType}}SortedQueue(capacity int, overwrite bool, less func(i, j {{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
 	if capacity < 1 {
 		panic("capacity must be at least 1")
 	}
@@ -121,9 +128,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Size() int {
 
 // Len gets the current length of this queue. This is an alias for Size.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Len() int {
-	if queue == nil {
-		return 0
-	}
 	return queue.Size()
 }
 
@@ -158,7 +162,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Sort() {
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
-// The result is stable so that repeated calls will not arbtrarily swap equal items.
+// The result is stable so that repeated calls will not arbitrarily swap equal items.
 func (queue *{{.UPrefix}}{{.UType}}Queue) StableSort() {
 	sort.Stable(queue)
 }
@@ -248,12 +252,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
 	buffer := queue.toSlice(make([]{{.PType}}, queue.capacity))
 
 	return &{{.UPrefix}}{{.UType}}Queue{
-		m:    buffer,
+		m:         buffer,
 		read:      0,
 		write:     queue.length,
 		length:    queue.length,
 		capacity:  queue.capacity,
 		overwrite: queue.overwrite,
+		less:      queue.less,
 	}
 }
 
@@ -337,6 +342,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Reallocate(capacity int, overwrite boo
 		panic("capacity must be at least 1")
 	}
 
+	return queue.doReallocate(capacity, overwrite)
+}
+
+func (queue *{{.UPrefix}}{{.UType}}Queue) doReallocate(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
 	queue.overwrite = overwrite
 
 	if capacity < queue.length {
@@ -418,14 +427,38 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Reallocate(capacity int, overwrite boo
 //	}
 //}
 
-// Push appends items to the end of the queue.
-// This panics if the queue does not have enough space.
+// Push appends items to the end of the queue. If the queue does not have enough space,
+// more will be allocated: how this happens depends on the overwriting mode.
+//
+// When overwriting, the oldest items are overwritten with the new data; it expands the queue
+// only if there is still not enough space.
+//
+// Otherwise, the queue might be reallocated if necessary, ensuring that all the data is pushed
+// without any older items being affected.
+//
+// The modified queue is returned.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
 
+    n := queue.capacity
+    if queue.overwrite && len(items) > queue.capacity {
+        n = len(items)
+        // no rounding in this case because the old items are expected to be overwritten
+    } else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+        n = len(items) + queue.length
+        // rounded up to multiple of 128
+        n = ((n + 127) / 128) * 128
+    }
+
+    if n > queue.capacity {
+        queue = queue.doReallocate(n, queue.overwrite)
+    }
+
 	overflow := queue.doPush(items...)
+
 	if len(overflow) > 0 {
 		panic(len(overflow))
 	}
+
 	return queue
 }
 
@@ -435,6 +468,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) *{{.UPrefix}
 // filled to capacity and any unwritten items are returned.
 //
 // If the capacity is too small for the number of items, the excess items are returned.
+// The queue capacity is never altered.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Offer(items ...{{.PType}}) []{{.PType}} {
 	return queue.doPush(items...)
 }
@@ -648,7 +682,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Filter(p func({{.PType}}) bool) *{{.UP
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UType}}Queue(queue.length, queue.overwrite, queue.less)
+	result := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -681,8 +715,8 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Partition(p func({{.PType}}) bool) (*{
 		return nil, nil
 	}
 
-	matching := New{{.UPrefix}}{{.UType}}Queue(queue.length, queue.overwrite, queue.less)
-	others := New{{.UPrefix}}{{.UType}}Queue(queue.length, queue.overwrite, queue.less)
+	matching := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
+	others := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
 	m, o := 0, 0
 
 	front, back := queue.frontAndBack()
@@ -723,7 +757,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Map(fn func({{.PType}}) {{.PType}}) *{
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UType}}Queue(queue.length, queue.overwrite, queue.less)
+	result := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()

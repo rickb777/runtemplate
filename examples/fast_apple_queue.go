@@ -36,8 +36,15 @@ type FastAppleQueue struct {
 // NewFastAppleQueue returns a new queue of Apple. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
+func NewFastAppleQueue(capacity int, overwrite bool) *FastAppleQueue {
+	return NewFastAppleSortedQueue(capacity, overwrite, nil)
+}
+
+// NewFastAppleSortedQueue returns a new queue of Apple. The behaviour when adding
+// to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
+// the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
-func NewFastAppleQueue(capacity int, overwrite bool, less func(i, j Apple) bool) *FastAppleQueue {
+func NewFastAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple) bool) *FastAppleQueue {
 	if capacity < 1 {
 		panic("capacity must be at least 1")
 	}
@@ -109,9 +116,6 @@ func (queue *FastAppleQueue) Size() int {
 
 // Len gets the current length of this queue. This is an alias for Size.
 func (queue *FastAppleQueue) Len() int {
-	if queue == nil {
-		return 0
-	}
 	return queue.Size()
 }
 
@@ -146,7 +150,7 @@ func (queue *FastAppleQueue) Sort() {
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
-// The result is stable so that repeated calls will not arbtrarily swap equal items.
+// The result is stable so that repeated calls will not arbitrarily swap equal items.
 func (queue *FastAppleQueue) StableSort() {
 	sort.Stable(queue)
 }
@@ -216,6 +220,7 @@ func (queue *FastAppleQueue) Clone() *FastAppleQueue {
 		length:    queue.length,
 		capacity:  queue.capacity,
 		overwrite: queue.overwrite,
+		less:      queue.less,
 	}
 }
 
@@ -299,6 +304,10 @@ func (queue *FastAppleQueue) Reallocate(capacity int, overwrite bool) *FastApple
 		panic("capacity must be at least 1")
 	}
 
+	return queue.doReallocate(capacity, overwrite)
+}
+
+func (queue *FastAppleQueue) doReallocate(capacity int, overwrite bool) *FastAppleQueue {
 	queue.overwrite = overwrite
 
 	if capacity < queue.length {
@@ -380,14 +389,38 @@ func (queue *FastAppleQueue) Reallocate(capacity int, overwrite bool) *FastApple
 //	}
 //}
 
-// Push appends items to the end of the queue.
-// This panics if the queue does not have enough space.
+// Push appends items to the end of the queue. If the queue does not have enough space,
+// more will be allocated: how this happens depends on the overwriting mode.
+//
+// When overwriting, the oldest items are overwritten with the new data; it expands the queue
+// only if there is still not enough space.
+//
+// Otherwise, the queue might be reallocated if necessary, ensuring that all the data is pushed
+// without any older items being affected.
+//
+// The modified queue is returned.
 func (queue *FastAppleQueue) Push(items ...Apple) *FastAppleQueue {
 
+	n := queue.capacity
+	if queue.overwrite && len(items) > queue.capacity {
+		n = len(items)
+		// no rounding in this case because the old items are expected to be overwritten
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
+		n = len(items) + queue.length
+		// rounded up to multiple of 128
+		n = ((n + 127) / 128) * 128
+	}
+
+	if n > queue.capacity {
+		queue = queue.doReallocate(n, queue.overwrite)
+	}
+
 	overflow := queue.doPush(items...)
+
 	if len(overflow) > 0 {
 		panic(len(overflow))
 	}
+
 	return queue
 }
 
@@ -397,6 +430,7 @@ func (queue *FastAppleQueue) Push(items ...Apple) *FastAppleQueue {
 // filled to capacity and any unwritten items are returned.
 //
 // If the capacity is too small for the number of items, the excess items are returned.
+// The queue capacity is never altered.
 func (queue *FastAppleQueue) Offer(items ...Apple) []Apple {
 	return queue.doPush(items...)
 }
@@ -581,7 +615,7 @@ func (queue *FastAppleQueue) Filter(p func(Apple) bool) *FastAppleQueue {
 		return nil
 	}
 
-	result := NewFastAppleQueue(queue.length, queue.overwrite, queue.less)
+	result := NewFastAppleSortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -614,8 +648,8 @@ func (queue *FastAppleQueue) Partition(p func(Apple) bool) (*FastAppleQueue, *Fa
 		return nil, nil
 	}
 
-	matching := NewFastAppleQueue(queue.length, queue.overwrite, queue.less)
-	others := NewFastAppleQueue(queue.length, queue.overwrite, queue.less)
+	matching := NewFastAppleSortedQueue(queue.length, queue.overwrite, queue.less)
+	others := NewFastAppleSortedQueue(queue.length, queue.overwrite, queue.less)
 	m, o := 0, 0
 
 	front, back := queue.frontAndBack()
@@ -656,7 +690,7 @@ func (queue *FastAppleQueue) Map(fn func(Apple) Apple) *FastAppleQueue {
 		return nil
 	}
 
-	result := NewFastAppleQueue(queue.length, queue.overwrite, queue.less)
+	result := NewFastAppleSortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
