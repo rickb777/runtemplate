@@ -765,6 +765,9 @@ func (list *FastIntList) FlatMap(fn func(int) []int) *FastIntList {
 
 // CountBy gives the number elements of FastIntList that return true for the predicate p.
 func (list *FastIntList) CountBy(p func(int) bool) (result int) {
+	if list == nil {
+		return 0
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -1019,7 +1022,10 @@ func (list *FastIntList) Max() (result int) {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list FastIntList) StringList() []string {
+func (list *FastIntList) StringList() []string {
+	if list == nil {
+		return nil
+	}
 
 	strings := make([]string, len(list.m))
 	for i, v := range list.m {

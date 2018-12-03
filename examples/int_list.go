@@ -863,6 +863,10 @@ func (list *IntList) FlatMap(fn func(int) []int) *IntList {
 
 // CountBy gives the number elements of IntList that return true for the predicate p.
 func (list *IntList) CountBy(p func(int) bool) (result int) {
+	if list == nil {
+		return 0
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -1151,7 +1155,11 @@ func (list *IntList) Max() (result int) {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list IntList) StringList() []string {
+func (list *IntList) StringList() []string {
+	if list == nil {
+		return nil
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 

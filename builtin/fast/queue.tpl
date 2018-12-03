@@ -24,7 +24,7 @@ import (
 //	"encoding/gob"
 //{{- end}}
 {{- if .Stringer}}
-//	"encoding/json"
+	"encoding/json"
 	"fmt"
 {{- end}}
 	"sort"
@@ -157,12 +157,16 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Swap(i, j int) {
 }
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
+// This function will panic if the collection was created with a nil 'less' function
+// (see New{{.UPrefix}}{{.UType}}SortedQueue).
 func (queue *{{.UPrefix}}{{.UType}}Queue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
+// This function will panic if the collection was created with a nil 'less' function
+// (see New{{.UPrefix}}{{.UType}}SortedQueue).
 func (queue *{{.UPrefix}}{{.UType}}Queue) StableSort() {
 	sort.Stable(queue)
 }
@@ -177,6 +181,18 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) frontAndBack() ([]{{.PType}}, []{{.PTy
 		return queue.m[queue.read:queue.write], nil
 	}
 	return queue.m[queue.read:], queue.m[:queue.write]
+}
+
+// indexes gets the indexes for the front and back portions of the queue. The front
+// portion starts from the read index. The back portion ends at the write index.
+func (queue *{{.UPrefix}}{{.UType}}Queue) indexes() []int {
+	if queue == nil || queue.length == 0 {
+		return nil
+	}
+	if queue.write > queue.read {
+		return []int{queue.read, queue.write}
+	}
+	return []int{queue.read, queue.capacity, 0, queue.write}
 }
 {{- if .ToList}}
 
@@ -429,6 +445,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doReallocate(capacity int, overwrite b
 //	}
 //}
 
+// Add adds items to the queue. This is a synonym for Push.
+func (queue *{{.UPrefix}}{{.UType}}Queue) Add(more ...{{.PType}}) {
+	queue.Push(more...)
+}
+
 // Push appends items to the end of the queue. If the queue does not have enough space,
 // more will be allocated: how this happens depends on the overwriting mode.
 //
@@ -647,6 +668,27 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Foreach(fn func({{.PType}})) {
 	}
 }
 
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
+func (queue *{{.UPrefix}}{{.UType}}Queue) Send() <-chan {{.PType}} {
+	ch := make(chan {{.PType}})
+	go func() {
+		if queue != nil {
+
+        	front, back := queue.frontAndBack()
+	        for _, v := range front {
+				ch <- v
+			}
+	        for _, v := range back {
+				ch <- v
+			}
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Find returns the first {{.Type}} that returns true for predicate p.
@@ -778,22 +820,69 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Map(fn func({{.PType}}) {{.PType}}) *{
 	return result
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Queue that return true for the passed predicate.
-//func (queue *{{.UPrefix}}{{.UType}}Queue) CountBy(predicate func({{.PType}}) bool) (result int) {
-//
-//	front, back := queue.frontAndBack()
-//	for _, v := range front {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	for _, v := range back {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	return
-//}
+// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Queue that return true for the predicate p.
+func (queue *{{.UPrefix}}{{.UType}}Queue) CountBy(p func({{.PType}}) bool) (result int) {
+	if queue == nil {
+		return 0
+	}
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if p(v) {
+			result++
+		}
+	}
+	for _, v := range back {
+		if p(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of {{.UPrefix}}{{.UType}}Queue containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *{{.UPrefix}}{{.UType}}Queue) MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+
+	if queue.length == 0 {
+		panic("Cannot determine the minimum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+    m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m+1; i < indexes[1]; i++ {
+			if less(queue.m[i], queue.m[m]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}
+
+// MaxBy returns an element of {{.UPrefix}}{{.UType}}Queue containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *{{.UPrefix}}{{.UType}}Queue) MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+
+	if queue.length == 0 {
+		panic("Cannot determine the maximum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+    m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m+1; i < indexes[1]; i++ {
+			if less(queue.m[m], queue.m[i]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}
 
 {{- if .Numeric}}
 
@@ -801,18 +890,18 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Map(fn func({{.PType}}) {{.PType}}) *{
 // These methods are included when {{.Type}} is numeric.
 
 // Sum returns the sum of all the elements in the queue.
-//func (queue *{{.UPrefix}}{{.UType}}Queue) Sum() {{.Type}} {
-//
-//	sum := {{.Type}}(0)
-//	front, back := queue.frontAndBack()
-//	for _, v := range front {
-//		sum = sum + {{.TypeStar}}v
-//	}
-//	for _, v := range back {
-//		sum = sum + {{.TypeStar}}v
-//	}
-//	return sum
-//}
+func (queue *{{.UPrefix}}{{.UType}}Queue) Sum() {{.Type}} {
+
+	sum := {{.Type}}(0)
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		sum = sum + {{.TypeStar}}v
+	}
+	for _, v := range back {
+		sum = sum + {{.TypeStar}}v
+	}
+	return sum
+}
 {{- end}}
 {{- if .Comparable}}
 
@@ -850,26 +939,86 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Equals(other *{{.UPrefix}}{{.UType}}Qu
 	return true
 }
 {{- end}}
+{{- if .Ordered}}
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is ordered.
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (queue *{{.UPrefix}}{{.UType}}Queue) Min() {{.Type}} {
+
+	if queue.length == 0 {
+		panic("Cannot determine the minimum of an empty queue.")
+	}
+
+	z := queue.m[queue.read]
+	m := {{.TypeStar}}z
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if {{.TypeStar}}v < m {
+			m = {{.TypeStar}}v
+		}
+	}
+	for _, v := range back {
+		if {{.TypeStar}}v < m {
+			m = {{.TypeStar}}v
+		}
+	}
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (queue *{{.UPrefix}}{{.UType}}Queue) Max() (result {{.Type}}) {
+
+	if queue.length == 0 {
+		panic("Cannot determine the maximum of an empty queue.")
+	}
+
+	z := queue.m[queue.read]
+	m := {{.TypeStar}}z
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if {{.TypeStar}}v > m {
+			m = {{.TypeStar}}v
+		}
+	}
+	for _, v := range back {
+		if {{.TypeStar}}v > m {
+			m = {{.TypeStar}}v
+		}
+	}
+	return m
+}
+{{- end}}
 {{- if .Stringer}}
 
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-//func (queue {{.UPrefix}}{{.UType}}Queue) StringList() []string {
-//
-//	strings := make([]string, queue.length)
-//	i := 0
-//	front, back := queue.frontAndBack()
-//	for _, v := range front {
-//		strings[i] = fmt.Sprintf("%v", v)
-//		i++
-//	}
-//	for _, v := range back {
-//		strings[i] = fmt.Sprintf("%v", v)
-//		i++
-//	}
-//	return strings
-//}
+func (queue *{{.UPrefix}}{{.UType}}Queue) StringList() []string {
+{{- if eq .PType "string"}}
+	return queue.ToSlice()
+{{- else}}
+	if queue == nil {
+		return nil
+	}
+
+	strings := make([]string, queue.length)
+	i := 0
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		strings[i] = fmt.Sprintf("%v", v)
+		i++
+	}
+	for _, v := range back {
+		strings[i] = fmt.Sprintf("%v", v)
+		i++
+	}
+	return strings
+{{- end}}
+}
 
 // String implements the Stringer interface to render the queue as a comma-separated string enclosed in square brackets.
 func (queue *{{.UPrefix}}{{.UType}}Queue) String() string {
@@ -912,23 +1061,23 @@ func (queue {{.UPrefix}}{{.UType}}Queue) mkString3Bytes(before, between, after s
 
 //-------------------------------------------------------------------------------------------------
 
-//// UnmarshalJSON implements JSON decoding for this queue type.
-//func (queue *{{.UPrefix}}{{.UType}}Queue) UnmarshalJSON(b []byte) error {
-//
-//	return json.Unmarshal(b, &queue.m)
-//}
-//
-//// MarshalJSON implements JSON encoding for this queue type.
-//func (queue {{.UPrefix}}{{.UType}}Queue) MarshalJSON() ([]byte, error) {
-//
-//	buf, err := json.Marshal(queue.m)
-//	return buf, err
-//}
-//{{- end}}
-//{{- if .GobEncode}}
-//
-////-------------------------------------------------------------------------------------------------
-//
+// UnmarshalJSON implements JSON decoding for this queue type.
+func (queue *{{.UPrefix}}{{.UType}}Queue) UnmarshalJSON(b []byte) error {
+
+	return json.Unmarshal(b, &queue.m)
+}
+
+// MarshalJSON implements JSON encoding for this queue type.
+func (queue {{.UPrefix}}{{.UType}}Queue) MarshalJSON() ([]byte, error) {
+
+	buf, err := json.Marshal(queue.m)
+	return buf, err
+}
+{{- end}}
+{{- if .GobEncode}}
+
+//-------------------------------------------------------------------------------------------------
+
 //// GobDecode implements 'gob' decoding for this queue type.
 //// You must register {{.Type}} with the 'gob' package before this method is used.
 //func (queue *{{.UPrefix}}{{.UType}}Queue) GobDecode(b []byte) error {

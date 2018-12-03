@@ -158,12 +158,16 @@ func (queue *IntQueue) Swap(i, j int) {
 }
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewIntSortedQueue).
 func (queue *IntQueue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewIntSortedQueue).
 func (queue *IntQueue) StableSort() {
 	sort.Stable(queue)
 }
@@ -178,6 +182,18 @@ func (queue *IntQueue) frontAndBack() ([]int, []int) {
 		return queue.m[queue.read:queue.write], nil
 	}
 	return queue.m[queue.read:], queue.m[:queue.write]
+}
+
+// indexes gets the indexes for the front and back portions of the queue. The front
+// portion starts from the read index. The back portion ends at the write index.
+func (queue *IntQueue) indexes() []int {
+	if queue == nil || queue.length == 0 {
+		return nil
+	}
+	if queue.write > queue.read {
+		return []int{queue.read, queue.write}
+	}
+	return []int{queue.read, queue.capacity, 0, queue.write}
 }
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
@@ -430,6 +446,11 @@ func (queue *IntQueue) doReallocate(capacity int, overwrite bool) *IntQueue {
 //	}
 //}
 
+// Add adds items to the queue. This is a synonym for Push.
+func (queue *IntQueue) Add(more ...int) {
+	queue.Push(more...)
+}
+
 // Push appends items to the end of the queue. If the queue does not have enough space,
 // more will be allocated: how this happens depends on the overwriting mode.
 //
@@ -641,6 +662,29 @@ func (queue *IntQueue) Foreach(fn func(int)) {
 	}
 }
 
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
+func (queue *IntQueue) Send() <-chan int {
+	ch := make(chan int)
+	go func() {
+		if queue != nil {
+			queue.s.RLock()
+			defer queue.s.RUnlock()
+
+			front, back := queue.frontAndBack()
+			for _, v := range front {
+				ch <- v
+			}
+			for _, v := range back {
+				ch <- v
+			}
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Find returns the first int that returns true for predicate p.
@@ -779,22 +823,73 @@ func (queue *IntQueue) Map(fn func(int) int) *IntQueue {
 	return result
 }
 
-// CountBy gives the number elements of IntQueue that return true for the passed predicate.
-//func (queue *IntQueue) CountBy(predicate func(int) bool) (result int) {
-//	queue.s.RLock()
-//	defer queue.s.RUnlock()
-//
-//	front, back := queue.frontAndBack()
-//	for _, v := range front {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	for _, v := range back {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	return
-//}
-//
+// CountBy gives the number elements of IntQueue that return true for the predicate p.
+func (queue *IntQueue) CountBy(p func(int) bool) (result int) {
+	if queue == nil {
+		return 0
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if p(v) {
+			result++
+		}
+	}
+	for _, v := range back {
+		if p(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of IntQueue containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *IntQueue) MinBy(less func(int, int) bool) int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	if queue.length == 0 {
+		panic("Cannot determine the minimum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m + 1; i < indexes[1]; i++ {
+			if less(queue.m[i], queue.m[m]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}
+
+// MaxBy returns an element of IntQueue containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *IntQueue) MaxBy(less func(int, int) bool) int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	if queue.length == 0 {
+		panic("Cannot determine the maximum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m + 1; i < indexes[1]; i++ {
+			if less(queue.m[m], queue.m[i]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}

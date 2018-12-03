@@ -742,6 +742,9 @@ func (list *FastAppleList) FlatMap(fn func(Apple) []Apple) *FastAppleList {
 
 // CountBy gives the number elements of FastAppleList that return true for the predicate p.
 func (list *FastAppleList) CountBy(p func(Apple) bool) (result int) {
+	if list == nil {
+		return 0
+	}
 
 	for _, v := range list.m {
 		if p(v) {

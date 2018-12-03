@@ -158,12 +158,16 @@ func (queue *AppleQueue) Swap(i, j int) {
 }
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewAppleSortedQueue).
 func (queue *AppleQueue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewAppleSortedQueue).
 func (queue *AppleQueue) StableSort() {
 	sort.Stable(queue)
 }
@@ -178,6 +182,18 @@ func (queue *AppleQueue) frontAndBack() ([]Apple, []Apple) {
 		return queue.m[queue.read:queue.write], nil
 	}
 	return queue.m[queue.read:], queue.m[:queue.write]
+}
+
+// indexes gets the indexes for the front and back portions of the queue. The front
+// portion starts from the read index. The back portion ends at the write index.
+func (queue *AppleQueue) indexes() []int {
+	if queue == nil || queue.length == 0 {
+		return nil
+	}
+	if queue.write > queue.read {
+		return []int{queue.read, queue.write}
+	}
+	return []int{queue.read, queue.capacity, 0, queue.write}
 }
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
@@ -430,6 +446,11 @@ func (queue *AppleQueue) doReallocate(capacity int, overwrite bool) *AppleQueue 
 //	}
 //}
 
+// Add adds items to the queue. This is a synonym for Push.
+func (queue *AppleQueue) Add(more ...Apple) {
+	queue.Push(more...)
+}
+
 // Push appends items to the end of the queue. If the queue does not have enough space,
 // more will be allocated: how this happens depends on the overwriting mode.
 //
@@ -641,6 +662,29 @@ func (queue *AppleQueue) Foreach(fn func(Apple)) {
 	}
 }
 
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
+func (queue *AppleQueue) Send() <-chan Apple {
+	ch := make(chan Apple)
+	go func() {
+		if queue != nil {
+			queue.s.RLock()
+			defer queue.s.RUnlock()
+
+			front, back := queue.frontAndBack()
+			for _, v := range front {
+				ch <- v
+			}
+			for _, v := range back {
+				ch <- v
+			}
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Find returns the first Apple that returns true for predicate p.
@@ -779,22 +823,73 @@ func (queue *AppleQueue) Map(fn func(Apple) Apple) *AppleQueue {
 	return result
 }
 
-// CountBy gives the number elements of AppleQueue that return true for the passed predicate.
-//func (queue *AppleQueue) CountBy(predicate func(Apple) bool) (result int) {
-//	queue.s.RLock()
-//	defer queue.s.RUnlock()
-//
-//	front, back := queue.frontAndBack()
-//	for _, v := range front {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	for _, v := range back {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	return
-//}
-//
+// CountBy gives the number elements of AppleQueue that return true for the predicate p.
+func (queue *AppleQueue) CountBy(p func(Apple) bool) (result int) {
+	if queue == nil {
+		return 0
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if p(v) {
+			result++
+		}
+	}
+	for _, v := range back {
+		if p(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of AppleQueue containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *AppleQueue) MinBy(less func(Apple, Apple) bool) Apple {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	if queue.length == 0 {
+		panic("Cannot determine the minimum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m + 1; i < indexes[1]; i++ {
+			if less(queue.m[i], queue.m[m]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}
+
+// MaxBy returns an element of AppleQueue containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *AppleQueue) MaxBy(less func(Apple, Apple) bool) Apple {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	if queue.length == 0 {
+		panic("Cannot determine the maximum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m + 1; i < indexes[1]; i++ {
+			if less(queue.m[m], queue.m[i]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}

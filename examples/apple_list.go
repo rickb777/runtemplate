@@ -840,6 +840,10 @@ func (list *AppleList) FlatMap(fn func(Apple) []Apple) *AppleList {
 
 // CountBy gives the number elements of AppleList that return true for the predicate p.
 func (list *AppleList) CountBy(p func(Apple) bool) (result int) {
+	if list == nil {
+		return 0
+	}
+
 	list.s.RLock()
 	defer list.s.RUnlock()
 

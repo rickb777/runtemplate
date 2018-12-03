@@ -3,6 +3,8 @@
 # This script creates the builtin/fast templates automatically.
 # Then manually verify that the immutable and simple templates are consistent.
 
+sed 's#threadsafe#fast#' < builtintest/threadsafe/gen.go > builtintest/fast/gen.go
+
 cd builtin
 
 cat threadsafe/collection.tpl > fast/collection.tpl

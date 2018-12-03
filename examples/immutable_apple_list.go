@@ -507,6 +507,9 @@ func (list *ImmutableAppleList) FlatMap(fn func(Apple) []Apple) *ImmutableAppleL
 
 // CountBy gives the number elements of ImmutableAppleList that return true for the predicate p.
 func (list *ImmutableAppleList) CountBy(p func(Apple) bool) (result int) {
+	if list == nil {
+		return 0
+	}
 
 	for _, v := range list.m {
 		if p(v) {

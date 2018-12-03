@@ -1,4 +1,4 @@
-// This package contains example collection types using the non-thread-safe templates.
+// This package contains example collection types using the fast templates.
 // Encapsulation of the underlying data is a feature.
 package fast
 
@@ -35,13 +35,15 @@ package fast
 //go:generate runtemplate -tpl fast/queue.tpl      Prefix=X1 Type=Apple   ToList:true ToSet:true  Stringer:false Comparable:true
 //go:generate runtemplate -tpl fast/queue.tpl      Prefix=X2 Type=big.Int ToList:true ToSet:false Import:"math/big"
 
-//go:generate runtemplate -tpl types/stringy.tpl   Prefix=X1 Type=Email SortableSlice:true
+//go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email SortableSlice:true
+//go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=X1 Type=Apple
+//go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
 
-//go:generate runtemplate -tpl ../collection_test.tpl  Type=int Mutable:true Numeric:true Comparable:true
-//go:generate runtemplate -tpl ../list_test.tpl        Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
-//go:generate runtemplate -tpl ../queue_test.tpl       Type=int Mutable:true Numeric:true                 M:
-//go:generate runtemplate -tpl ../set_test.tpl         Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
-//go:generate runtemplate -tpl ../map_test.tpl Key=int Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
+//go:generate runtemplate -tpl ../collection_test.tpl    Type=int Mutable:true Numeric:true Comparable:true
+//go:generate runtemplate -tpl ../list_test.tpl          Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../queue_test.tpl         Type=int Mutable:true Numeric:true                 M:
+//go:generate runtemplate -tpl ../set_test.tpl           Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true Append:true
+//go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
 //-------------------------------------------------------------------------------------------------
 // Code generation with pointer values
@@ -68,6 +70,9 @@ package fast
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*string
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*Pear
 
+//go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=P1 Type=*Apple
+//go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=P1 Type=*Apple ToPrefix=P1 ToType=*Pear
+
 //-------------------------------------------------------------------------------------------------
 
 type Apple struct {
@@ -83,7 +88,7 @@ var _ X1IntCollection = NewX1IntList()
 var _ X1AppleCollection = NewX1AppleList()
 
 var _ X1StringSizer = NewX1StringQueue(1, false)
-var _ X1IntSizer = NewX1IntQueue(1, false)
+var _ X1IntCollection = NewX1IntQueue(1, false)
 var _ X1AppleSizer = NewX1AppleQueue(1, false)
 
 var _ X1StringCollection = NewX1StringSet()

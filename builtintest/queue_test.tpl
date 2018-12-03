@@ -285,7 +285,6 @@ func Test{{.UType}}QueueToList(t *testing.T) {
 	b := a.ToList()
 
 	g.Expect(b.ToSlice()).To(Equal([]int{1, 2, 3, 4}))
-
 {{- if .Mutable}}
 
 	a = nil
@@ -307,7 +306,6 @@ func Test{{.UType}}QueueToSet(t *testing.T) {
 	g.Expect(b.Contains(2)).To(BeTrue())
 	g.Expect(b.Contains(3)).To(BeTrue())
 	g.Expect(b.Contains(4)).To(BeTrue())
-
 {{- if .Mutable}}
 
 	a = nil

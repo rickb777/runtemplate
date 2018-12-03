@@ -18,6 +18,9 @@ type Sizer interface {
 func TestNewX{{.UType}}Collection(t *testing.T) {
 	testEmpty{{.UType}}Collection(t, NewX1{{.UType}}Set(), "Set")
 	testEmpty{{.UType}}Collection(t, NewX1{{.UType}}List(), "List")
+{{- if .Mutable}}
+	testEmpty{{.UType}}Collection(t, NewX1{{.UType}}Queue(5, false), "Queue")
+{{- end}}
 }
 
 func testEmpty{{.UType}}Collection(t *testing.T, a Sizer, kind string) {
@@ -31,6 +34,9 @@ func testEmpty{{.UType}}Collection(t *testing.T, a Sizer, kind string) {
 func Test{{.UType}}ToSlice(t *testing.T) {
 	test{{.UType}}ToSlice(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}ToSlice(t, NewX1{{.UType}}List(1, 2, 3), "List")
+{{- if .Mutable}}
+	test{{.UType}}ToSlice(t, NewX1{{.UType}}Queue(5, false).Push(1, 2, 3), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}ToSlice(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -45,6 +51,9 @@ func test{{.UType}}ToSlice(t *testing.T, a X1{{.UType}}Collection, kind string) 
 func Test{{.UType}}Exists(t *testing.T) {
 	test{{.UType}}Exists1(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Exists1(t, NewX1{{.UType}}List(1, 2, 3), "List")
+{{- if .Mutable}}
+	test{{.UType}}Exists1(t, NewX1{{.UType}}Queue(5, false).Push(1, 2, 3), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}Exists1(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -66,6 +75,9 @@ func test{{.UType}}Exists1(t *testing.T, a X1{{.UType}}Collection, kind string) 
 func Test{{.UType}}Forall(t *testing.T) {
 	test{{.UType}}Forall(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Forall(t, NewX1{{.UType}}List(1, 2, 3), "List")
+{{- if .Mutable}}
+	test{{.UType}}Forall(t, NewX1{{.UType}}Queue(5, false).Push(1, 2, 3), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}Forall(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -87,6 +99,9 @@ func test{{.UType}}Forall(t *testing.T, a X1{{.UType}}Collection, kind string) {
 func Test{{.UType}}Find(t *testing.T) {
 	test{{.UType}}Find(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Find(t, NewX1{{.UType}}List(1, 2, 3, 4), "List")
+{{- if .Mutable}}
+	test{{.UType}}Find(t, NewX1{{.UType}}Queue(5, false).Push(1, 2, 3), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -109,6 +124,9 @@ func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection, kind string) {
 func Test{{.UType}}CountBy(t *testing.T) {
 	test{{.UType}}CountBy(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}CountBy(t, NewX1{{.UType}}List(1, 2, 3), "List")
+{{- if .Mutable}}
+	test{{.UType}}CountBy(t, NewX1{{.UType}}Queue(5, false).Push(1, 2, 3), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}CountBy(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -124,6 +142,9 @@ func test{{.UType}}CountBy(t *testing.T, a X1{{.UType}}Collection, kind string) 
 func Test{{.UType}}Foreach(t *testing.T) {
 	test{{.UType}}Foreach(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Foreach(t, NewX1{{.UType}}List(1, 2, 3), "List")
+{{- if .Mutable}}
+	test{{.UType}}Foreach(t, NewX1{{.UType}}Queue(5, false).Push(1, 2, 3), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}Foreach(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -140,6 +161,9 @@ func test{{.UType}}Foreach(t *testing.T, a X1{{.UType}}Collection, kind string) 
 func Test{{.UType}}Contains(t *testing.T) {
 	test{{.UType}}Contains(t, NewX1{{.UType}}Set(71, 1, 7, 13), "Set")
 	test{{.UType}}Contains(t, NewX1{{.UType}}List(71, 1, 7, 13), "List")
+{{- if .Mutable}}
+	test{{.UType}}Contains(t, NewX1{{.UType}}Queue(5, false).Push(71, 1, 7, 13), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}Contains(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -155,6 +179,9 @@ func test{{.UType}}Contains(t *testing.T, a X1{{.UType}}Collection, kind string)
 func Test{{.UType}}MinMaxSum(t *testing.T) {
 	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), "Set")
 	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), "List")
+{{- if .Mutable}}
+	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}Queue(5, false).Push(10, 71, 3, 7, 13), "Queue")
+{{- end}}
 }
 
 func test{{.UType}}MinMaxSum(t *testing.T, a X1{{.UType}}Collection, kind string) {
@@ -176,6 +203,9 @@ func test{{.UType}}MinMaxSum(t *testing.T, a X1{{.UType}}Collection, kind string
 func Test{{.UType}}Stringer(t *testing.T) {
 	test{{.UType}}Stringer(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), false, "Set")
 	test{{.UType}}Stringer(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), true, "List")
+{{- if .Mutable}}
+	test{{.UType}}Stringer(t, NewX1{{.UType}}Queue(5, false).Push(10, 71, 3, 7, 13), true, "Queue")
+{{- end}}
 }
 
 func test{{.UType}}Stringer(t *testing.T, a X1{{.UType}}Collection, ordered bool, kind string) {

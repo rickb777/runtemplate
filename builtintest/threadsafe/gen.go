@@ -1,4 +1,4 @@
-// This package contains example collection types using the thread-safe templates.
+// This package contains example collection types using the threadsafe templates.
 // Encapsulation of the underlying data is a feature.
 package threadsafe
 
@@ -88,7 +88,7 @@ var _ X1IntCollection = NewX1IntList()
 var _ X1AppleCollection = NewX1AppleList()
 
 var _ X1StringSizer = NewX1StringQueue(1, false)
-var _ X1IntSizer = NewX1IntQueue(1, false)
+var _ X1IntCollection = NewX1IntQueue(1, false)
 var _ X1AppleSizer = NewX1AppleQueue(1, false)
 
 var _ X1StringCollection = NewX1StringSet()

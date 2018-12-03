@@ -801,6 +801,9 @@ func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the predicate p.
 func (list *{{.UPrefix}}{{.UType}}List) CountBy(p func({{.PType}}) bool) (result int) {
+	if list == nil {
+		return 0
+	}
 
 	for _, v := range list.m {
 		if p(v) {
@@ -1062,10 +1065,13 @@ func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list {{.UPrefix}}{{.UType}}List) StringList() []string {
+func (list *{{.UPrefix}}{{.UType}}List) StringList() []string {
 {{- if eq .PType "string"}}
 	return list.ToSlice()
 {{- else}}
+	if list == nil {
+		return nil
+	}
 
 	strings := make([]string, len(list.m))
 	for i, v := range list.m {

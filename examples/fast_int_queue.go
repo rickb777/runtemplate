@@ -145,12 +145,16 @@ func (queue *FastIntQueue) Swap(i, j int) {
 }
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewFastIntSortedQueue).
 func (queue *FastIntQueue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewFastIntSortedQueue).
 func (queue *FastIntQueue) StableSort() {
 	sort.Stable(queue)
 }
@@ -165,6 +169,18 @@ func (queue *FastIntQueue) frontAndBack() ([]int, []int) {
 		return queue.m[queue.read:queue.write], nil
 	}
 	return queue.m[queue.read:], queue.m[:queue.write]
+}
+
+// indexes gets the indexes for the front and back portions of the queue. The front
+// portion starts from the read index. The back portion ends at the write index.
+func (queue *FastIntQueue) indexes() []int {
+	if queue == nil || queue.length == 0 {
+		return nil
+	}
+	if queue.write > queue.read {
+		return []int{queue.read, queue.write}
+	}
+	return []int{queue.read, queue.capacity, 0, queue.write}
 }
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
@@ -391,6 +407,11 @@ func (queue *FastIntQueue) doReallocate(capacity int, overwrite bool) *FastIntQu
 //	}
 //}
 
+// Add adds items to the queue. This is a synonym for Push.
+func (queue *FastIntQueue) Add(more ...int) {
+	queue.Push(more...)
+}
+
 // Push appends items to the end of the queue. If the queue does not have enough space,
 // more will be allocated: how this happens depends on the overwriting mode.
 //
@@ -585,6 +606,27 @@ func (queue *FastIntQueue) Foreach(fn func(int)) {
 	}
 }
 
+// Send returns a channel that will send all the elements in order.
+// A goroutine is created to send the elements; this only terminates when all the elements
+// have been consumed. The channel will be closed when all the elements have been sent.
+func (queue *FastIntQueue) Send() <-chan int {
+	ch := make(chan int)
+	go func() {
+		if queue != nil {
+
+			front, back := queue.frontAndBack()
+			for _, v := range front {
+				ch <- v
+			}
+			for _, v := range back {
+				ch <- v
+			}
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 //-------------------------------------------------------------------------------------------------
 
 // Find returns the first int that returns true for predicate p.
@@ -711,20 +753,66 @@ func (queue *FastIntQueue) Map(fn func(int) int) *FastIntQueue {
 	return result
 }
 
-// CountBy gives the number elements of FastIntQueue that return true for the passed predicate.
-//func (queue *FastIntQueue) CountBy(predicate func(int) bool) (result int) {
-//
-//	front, back := queue.frontAndBack()
-//	for _, v := range front {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	for _, v := range back {
-//		if predicate(v) {
-//			result++
-//		}
-//	}
-//	return
-//}
-//
+// CountBy gives the number elements of FastIntQueue that return true for the predicate p.
+func (queue *FastIntQueue) CountBy(p func(int) bool) (result int) {
+	if queue == nil {
+		return 0
+	}
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if p(v) {
+			result++
+		}
+	}
+	for _, v := range back {
+		if p(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of FastIntQueue containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *FastIntQueue) MinBy(less func(int, int) bool) int {
+
+	if queue.length == 0 {
+		panic("Cannot determine the minimum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m + 1; i < indexes[1]; i++ {
+			if less(queue.m[i], queue.m[m]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}
+
+// MaxBy returns an element of FastIntQueue containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *FastIntQueue) MaxBy(less func(int, int) bool) int {
+
+	if queue.length == 0 {
+		panic("Cannot determine the maximum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		for i := m + 1; i < indexes[1]; i++ {
+			if less(queue.m[m], queue.m[i]) {
+				m = i
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}

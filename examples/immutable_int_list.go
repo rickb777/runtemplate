@@ -552,6 +552,9 @@ func (list *ImmutableIntList) FlatMap(fn func(int) []int) *ImmutableIntList {
 
 // CountBy gives the number elements of ImmutableIntList that return true for the predicate p.
 func (list *ImmutableIntList) CountBy(p func(int) bool) (result int) {
+	if list == nil {
+		return 0
+	}
 
 	for _, v := range list.m {
 		if p(v) {

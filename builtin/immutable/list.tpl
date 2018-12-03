@@ -588,6 +588,9 @@ func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the predicate p.
 func (list *{{.UPrefix}}{{.UType}}List) CountBy(p func({{.PType}}) bool) (result int) {
+	if list == nil {
+		return 0
+	}
 
 	for _, v := range list.m {
 		if p(v) {
