@@ -3,7 +3,7 @@
 //
 // Generated from immutable/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
-// by runtemplate v2.3.0
+// by runtemplate v2.4.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -377,7 +377,6 @@ func (set *ImmutableAppleSet) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
-
 }
 
 // Filter returns a new ImmutableAppleSet whose elements return true for the predicate p.

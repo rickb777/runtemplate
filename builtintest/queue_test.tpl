@@ -346,12 +346,19 @@ func Test{{.UType}}QueueResize(t *testing.T) {
 	g.Expect(a.ToSlice()).To(Equal([]int{3, 4, 5, 6, 7, 8}))
 
 	a.Pop1()
-	a.Reallocate(3, true)
+	a.Reallocate(5, false)
+
+	g.Expect(a.IsOverwriting()).To(BeFalse())
+	g.Expect(a.Cap()).To(Equal(5))
+	g.Expect(a.Size()).To(Equal(5))
+	g.Expect(a.ToSlice()).To(Equal([]int{4, 5, 6, 7, 8}))
+
+	a.Reallocate(4, true)
 
 	g.Expect(a.IsOverwriting()).To(BeTrue())
-	g.Expect(a.Cap()).To(Equal(3))
-	g.Expect(a.Size()).To(Equal(3))
-	g.Expect(a.ToSlice()).To(Equal([]int{6, 7, 8}))
+	g.Expect(a.Cap()).To(Equal(4))
+	g.Expect(a.Size()).To(Equal(4))
+	g.Expect(a.ToSlice()).To(Equal([]int{5, 6, 7, 8}))
 }
 
 func Test{{.UType}}QueueContains(t *testing.T) {

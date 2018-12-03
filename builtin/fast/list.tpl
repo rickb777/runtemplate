@@ -117,7 +117,7 @@ func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
 func (list *{{.UPrefix}}{{.UType}}List) ToList() *{{.UPrefix}}{{.UType}}List {
-    return list
+	return list
 }
 {{- if .ToSet}}
 
@@ -705,14 +705,14 @@ func (list *{{.UPrefix}}{{.UType}}List) Find(p func({{.PType}}) bool) ({{.PType}
 			return v, true
 		}
 	}
-{{if eq .TypeStar "*"}}
+{{- if eq .TypeStar "*"}}
 
 	return nil, false
-{{else}}
+{{- else}}
 
 	var empty {{.Type}}
 	return empty, false
-{{end -}}
+{{- end}}
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}List whose elements return true for predicate p.
@@ -932,7 +932,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
 func (list *{{.UPrefix}}{{.UType}}List) Equals(other *{{.UPrefix}}{{.UType}}List) bool {
 	if list == nil {
 		if other == nil {
-    		return true
+			return true
 		}
 		return len(other.m) == 0
 	}
@@ -1064,7 +1064,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 // StringList gets a list of strings that depicts all the elements.
 func (list {{.UPrefix}}{{.UType}}List) StringList() []string {
 {{- if eq .PType "string"}}
-    return list.ToSlice()
+	return list.ToSlice()
 {{- else}}
 
 	strings := make([]string, len(list.m))

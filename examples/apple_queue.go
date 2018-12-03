@@ -11,7 +11,7 @@
 // Generated from threadsafe/queue.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:<no value> ToSet:<no value>
-// by runtemplate v2.3.0
+// by runtemplate v2.4.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -212,7 +212,7 @@ func (queue *AppleQueue) ToInterfaceSlice() []interface{} {
 	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
-	var s []interface{}
+	s := make([]interface{}, 0, queue.length)
 	for _, v := range front {
 		s = append(s, v)
 	}
@@ -325,10 +325,12 @@ func (queue *AppleQueue) LastOption() Apple {
 //-------------------------------------------------------------------------------------------------
 
 // Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
-// If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
-// that the remaining data can fit in the space available.
 //
-// If the new queue capacity is the same as the old capacity, the queue is not altered except for adopting
+// If the new queue capacity is different to the current capacity, the queue is re-allocated to the new
+// capacity. If this is less than the current number of elements, the oldest items in the queue are
+// discarded so that the remaining data can fit in the new space available.
+//
+// If the new queue capacity is the same as the current capacity, the queue is not altered except for adopting
 // the new overwrite flag's value. Therefore this is the means to change the overwriting behaviour.
 //
 // Reallocate adjusts the storage space but does not clone the underlying elements.
@@ -446,9 +448,10 @@ func (queue *AppleQueue) Push(items ...Apple) *AppleQueue {
 	if queue.overwrite && len(items) > queue.capacity {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
+
 	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
-		// rounded up to multiple of 128
+		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
 	}
 

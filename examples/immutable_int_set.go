@@ -3,7 +3,7 @@
 //
 // Generated from immutable/set.tpl with Type=int
 // options: Comparable:always Numeric:true Ordered:true Stringer:true Mutable:disabled
-// by runtemplate v2.3.0
+// by runtemplate v2.4.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -400,7 +400,6 @@ func (set *ImmutableIntSet) Find(p func(int) bool) (int, bool) {
 
 	var empty int
 	return empty, false
-
 }
 
 // Filter returns a new ImmutableIntSet whose elements return true for the predicate p.

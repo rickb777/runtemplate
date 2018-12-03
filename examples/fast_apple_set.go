@@ -3,7 +3,7 @@
 //
 // Generated from fast/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false ToList:<no value>
-// by runtemplate v2.3.0
+// by runtemplate v2.4.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -371,7 +371,6 @@ func (set *FastAppleSet) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
-
 }
 
 // Filter returns a new FastAppleSet whose elements return true for the predicate p.

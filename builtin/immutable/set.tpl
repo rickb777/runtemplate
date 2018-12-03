@@ -430,13 +430,14 @@ func (set *{{.UPrefix}}{{.UType}}Set) Find(p func({{.PType}}) bool) ({{.PType}},
 			return v, true
 		}
 	}
+{{- if eq .TypeStar "*"}}
 
-{{if eq .TypeStar "*"}}
 	return nil, false
-{{else}}
+{{- else}}
+
 	var empty {{.Type}}
 	return empty, false
-{{end}}
+{{- end}}
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for the predicate p.

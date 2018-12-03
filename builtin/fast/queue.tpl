@@ -231,7 +231,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
 	}
 
 	front, back := queue.frontAndBack()
-	var s []interface{}
+	s := make([]interface{}, 0, queue.length)
 	for _, v := range front {
 		s = append(s, v)
 	}
@@ -328,10 +328,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) LastOption() {{.PType}} {
 //-------------------------------------------------------------------------------------------------
 
 // Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
-// If the new queue capacity is less than the old capacity, the oldest items in the queue are discarded so
-// that the remaining data can fit in the space available.
 //
-// If the new queue capacity is the same as the old capacity, the queue is not altered except for adopting
+// If the new queue capacity is different to the current capacity, the queue is re-allocated to the new
+// capacity. If this is less than the current number of elements, the oldest items in the queue are
+// discarded so that the remaining data can fit in the new space available.
+//
+// If the new queue capacity is the same as the current capacity, the queue is not altered except for adopting
 // the new overwrite flag's value. Therefore this is the means to change the overwriting behaviour.
 //
 // Reallocate adjusts the storage space but does not clone the underlying elements.
@@ -439,19 +441,20 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doReallocate(capacity int, overwrite b
 // The modified queue is returned.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
 
-    n := queue.capacity
-    if queue.overwrite && len(items) > queue.capacity {
-        n = len(items)
-        // no rounding in this case because the old items are expected to be overwritten
-    } else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
-        n = len(items) + queue.length
-        // rounded up to multiple of 128
-        n = ((n + 127) / 128) * 128
-    }
+	n := queue.capacity
+	if queue.overwrite && len(items) > queue.capacity {
+		n = len(items)
+		// no rounding in this case because the old items are expected to be overwritten
 
-    if n > queue.capacity {
-        queue = queue.doReallocate(n, queue.overwrite)
-    }
+	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+		n = len(items) + queue.length
+		// rounded up to multiple of 128 to reduce repeated reallocation
+		n = ((n + 127) / 128) * 128
+	}
+
+	if n > queue.capacity {
+		queue = queue.doReallocate(n, queue.overwrite)
+	}
 
 	overflow := queue.doPush(items...)
 
@@ -664,14 +667,14 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Find(p func({{.PType}}) bool) ({{.PTyp
 			return v, true
 		}
 	}
-{{if eq .TypeStar "*"}}
+{{- if eq .TypeStar "*"}}
 
 	return nil, false
-{{else}}
+{{- else}}
 
 	var empty {{.Type}}
 	return empty, false
-{{end -}}
+{{- end}}
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Queue whose elements return true for predicate p.

@@ -1,6 +1,9 @@
 // A derived string-based type compatible with marshalling and database APIs.
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
+// options: SortableSlice:{{.SortableSlice}}
+// by runtemplate {{.AppVersion}}
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 

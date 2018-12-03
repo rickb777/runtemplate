@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v2.3.0
+// by runtemplate v2.4.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -403,7 +403,6 @@ func (list SimpleAppleList) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
-
 }
 
 // Filter returns a new SimpleAppleList whose elements return true for predicate p.

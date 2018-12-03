@@ -1,6 +1,9 @@
 // A derived string-based type compatible with marshalling and database APIs.
 //
 // Generated from types/stringy.tpl with Type=Email
+// options: SortableSlice:true
+// by runtemplate v2.4.1
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
