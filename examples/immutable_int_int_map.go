@@ -231,6 +231,9 @@ func (mm *ImmutableIntIntMap) Exists(p func(int, int) bool) bool {
 // Find returns the first int that returns true for the predicate p.
 // False is returned if none match.
 func (mm *ImmutableIntIntMap) Find(p func(int, int) bool) (ImmutableIntIntTuple, bool) {
+	if mm == nil {
+		return ImmutableIntIntTuple{}, false
+	}
 
 	for k, v := range mm.m {
 		if p(k, v) {

@@ -331,6 +331,10 @@ func (mm *IntIntMap) Exists(p func(int, int) bool) bool {
 // False is returned if none match.
 // The original map is not modified.
 func (mm *IntIntMap) Find(p func(int, int) bool) (IntIntTuple, bool) {
+	if mm == nil {
+		return IntIntTuple{}, false
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 

@@ -15,19 +15,17 @@ import (
 	"reflect"
 	"sort"
 	"testing"
+	. "github.com/onsi/gomega"
 )
 
 func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
 	s := a.ToSlice()
 
-	if a.Size() != 1 {
-		t.Errorf("Expected 1 but got %d", a.Size())
-	}
-
-	if len(s) != 1 {
-		t.Errorf("Expected 1 but got %d", len(s))
-	}
+	g.Expect(a.Size()).To(Equal(1))
+	g.Expect(len(s)).To(Equal(1))
 
     // check correct nil handling
     a = nil
@@ -35,16 +33,13 @@ func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
 }
 
 func TestIm{{.UKey}}{{.UType}}MapSize(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a1 := NewTX1{{.UKey}}{{.UType}}Map()
 	a2 := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
 
-	if a1.Size() != 0 {
-		t.Errorf("Expected 0 but got %d", a1.Size())
-	}
-
-	if a2.Size() != 1 {
-		t.Errorf("Expected 1 but got %d", a2.Size())
-	}
+	g.Expect(a1.Size()).To(Equal(0))
+	g.Expect(a2.Size()).To(Equal(1))
 
     // check correct nil handling
     a1 = nil
@@ -96,39 +91,21 @@ func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
 }
 
 func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a1 := NewTX1{{.UKey}}{{.UType}}Map()
 	b1 := NewTX1{{.UKey}}{{.UType}}Map()
 	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append2(10, 4, 8, 19)...)
 	a3 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(10, 4, 3, 1, 8, 19)...)
 	b3 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(8, 19, 10, 4, 3, 1)...)
 
-	if !a1.Equals(b1) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a1, b1)
-	}
-
-	if !b1.Equals(a1) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a1, b1)
-	}
-
-	if a2.Equals(b1) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a2, b1)
-	}
-
-	if a2.Equals(b3) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a2, b3)
-	}
-
-	if a3.Equals(a2) {
-		t.Errorf("Expected '%+v' not to equal '%+v'", a2, b3)
-	}
-
-	if !a3.Equals(b3) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a3, b3)
-	}
-
-	if !b3.Equals(a3) {
-		t.Errorf("Expected '%+v' to equal '%+v'", a3, b3)
-	}
+	g.Expect(a1.Equals(b1)).To(BeTrue())
+	g.Expect(b1.Equals(a1)).To(BeTrue())
+	g.Expect(a2.Equals(b1)).To(BeFalse())
+	g.Expect(a2.Equals(b3)).To(BeFalse())
+	g.Expect(a3.Equals(a2)).To(BeFalse())
+	g.Expect(a3.Equals(b3)).To(BeTrue())
+	g.Expect(b3.Equals(a3)).To(BeTrue())
 
     // check correct nil handling
     a1 = nil
@@ -250,7 +227,29 @@ func Test{{.UType}}MapForeach(t *testing.T) {
 	})
 }
 
+func Test{{.UType}}MapFind(t *testing.T) {
+    g := NewGomegaWithT(t)
+
+	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+
+	b, found := a.Find(func(k, v int) bool {
+		return v > 2
+	})
+
+	exp := TX1{{.UKey}}{{.UType}}Tuple{2, 3}
+	g.Expect(found).To(BeTrue())
+	g.Expect(b).To(Equal(exp))
+
+    // check correct nil handling
+    a = nil
+	a.Find(func(k, v int) bool {
+		return v > 2
+	})
+}
+
 func Test{{.UType}}MapFilter(t *testing.T) {
+    g := NewGomegaWithT(t)
+
 	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	b := a.Filter(func(k, v int) bool {
@@ -258,9 +257,7 @@ func Test{{.UType}}MapFilter(t *testing.T) {
 	})
 
 	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{2, 3})
-	if !b.Equals(exp) {
-		t.Errorf("Expected '%+v' but got '%+v'", exp, b)
-	}
+	g.Expect(b.Equals(exp)).To(BeTrue())
 
     // check correct nil handling
     a = nil

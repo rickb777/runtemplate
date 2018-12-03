@@ -332,6 +332,10 @@ func (mm *StringAppleMap) Exists(p func(string, Apple) bool) bool {
 // False is returned if none match.
 // The original map is not modified.
 func (mm *StringAppleMap) Find(p func(string, Apple) bool) (StringAppleTuple, bool) {
+	if mm == nil {
+		return StringAppleTuple{}, false
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 

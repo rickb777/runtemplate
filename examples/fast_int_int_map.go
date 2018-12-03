@@ -289,6 +289,9 @@ func (mm *FastIntIntMap) Exists(p func(int, int) bool) bool {
 // False is returned if none match.
 // The original map is not modified.
 func (mm *FastIntIntMap) Find(p func(int, int) bool) (FastIntIntTuple, bool) {
+	if mm == nil {
+		return FastIntIntTuple{}, false
+	}
 
 	for k, v := range mm.m {
 		if p(k, v) {

@@ -342,6 +342,10 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(p func({{.PKey}}, {{.PType}
 // False is returned if none match.
 // The original map is not modified.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(p func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
+	if mm == nil {
+		return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
+	}
+
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 

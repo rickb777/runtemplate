@@ -232,6 +232,9 @@ func (mm *ImmutableStringAppleMap) Exists(p func(string, Apple) bool) bool {
 // Find returns the first Apple that returns true for the predicate p.
 // False is returned if none match.
 func (mm *ImmutableStringAppleMap) Find(p func(string, Apple) bool) (ImmutableStringAppleTuple, bool) {
+	if mm == nil {
+		return ImmutableStringAppleTuple{}, false
+	}
 
 	for k, v := range mm.m {
 		if p(k, v) {

@@ -290,6 +290,9 @@ func (mm *FastStringAppleMap) Exists(p func(string, Apple) bool) bool {
 // False is returned if none match.
 // The original map is not modified.
 func (mm *FastStringAppleMap) Find(p func(string, Apple) bool) (FastStringAppleTuple, bool) {
+	if mm == nil {
+		return FastStringAppleTuple{}, false
+	}
 
 	for k, v := range mm.m {
 		if p(k, v) {

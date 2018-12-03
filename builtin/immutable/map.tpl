@@ -242,6 +242,9 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(p func({{.PKey}}, {{.PType}
 // Find returns the first {{.Type}} that returns true for the predicate p.
 // False is returned if none match.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(p func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
+	if mm == nil {
+		return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
+	}
 
 	for k, v := range mm.m {
 		if p(k, v) {
