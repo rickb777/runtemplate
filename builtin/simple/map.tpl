@@ -30,14 +30,17 @@ type {{.UPrefix}}{{.UKey}}{{.UType}}Tuple struct {
 // {{.UPrefix}}{{.UKey}}{{.UType}}Tuples can be used as a builder for unmodifiable maps.
 type {{.UPrefix}}{{.UKey}}{{.UType}}Tuples []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
 
+// Append1 adds one item.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}, k3 {{.PKey}}, v3 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k3, v3})
 }
@@ -70,7 +73,7 @@ func new{{.UPrefix}}{{.UKey}}{{.UType}}Map() {{.UPrefix}}{{.UKey}}{{.UType}}Map 
 	return {{.UPrefix}}{{.UKey}}{{.UType}}Map(make(map[{{.PKey}}]{{.PType}}))
 }
 
-// New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map containing one item.
+// New{{.UPrefix}}{{.UKey}}{{.UType}}Map1 creates and returns a reference to a map containing one item.
 func New{{.UPrefix}}{{.UKey}}{{.UType}}Map1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	mm := new{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm[k] = v
@@ -88,8 +91,8 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 
 // Keys returns the keys of the current map as a slice.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}} {
-	var s {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}
-	for k, _ := range mm {
+	s := make({{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}, 0, len(mm))
+	for k := range mm {
 		s = append(s, k)
 	}
 	return s
@@ -97,7 +100,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}{
 
 // Values returns the values of the current map as a slice.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}} {
-	var s {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}
+	s := make({{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
 	}
@@ -106,7 +109,7 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.ValueL
 
 // ToSlice returns the key/value pairs as a slice
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
-	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
+	s := make([]{{.UPrefix}}{{.UKey}}{{.UType}}Tuple, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 	}

@@ -25,14 +25,17 @@ type SimpleIntIntTuple struct {
 // SimpleIntIntTuples can be used as a builder for unmodifiable maps.
 type SimpleIntIntTuples []SimpleIntIntTuple
 
+// Append1 adds one item.
 func (ts SimpleIntIntTuples) Append1(k int, v int) SimpleIntIntTuples {
 	return append(ts, SimpleIntIntTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts SimpleIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) SimpleIntIntTuples {
 	return append(ts, SimpleIntIntTuple{k1, v1}, SimpleIntIntTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts SimpleIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) SimpleIntIntTuples {
 	return append(ts, SimpleIntIntTuple{k1, v1}, SimpleIntIntTuple{k2, v2}, SimpleIntIntTuple{k3, v3})
 }
@@ -65,7 +68,7 @@ func newSimpleIntIntMap() SimpleIntIntMap {
 	return SimpleIntIntMap(make(map[int]int))
 }
 
-// NewSimpleIntIntMap creates and returns a reference to a map containing one item.
+// NewSimpleIntIntMap1 creates and returns a reference to a map containing one item.
 func NewSimpleIntIntMap1(k int, v int) SimpleIntIntMap {
 	mm := newSimpleIntIntMap()
 	mm[k] = v
@@ -83,8 +86,8 @@ func NewSimpleIntIntMap(kv ...SimpleIntIntTuple) SimpleIntIntMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm SimpleIntIntMap) Keys() []int {
-	var s []int
-	for k, _ := range mm {
+	s := make([]int, 0, len(mm))
+	for k := range mm {
 		s = append(s, k)
 	}
 	return s
@@ -92,7 +95,7 @@ func (mm SimpleIntIntMap) Keys() []int {
 
 // Values returns the values of the current map as a slice.
 func (mm SimpleIntIntMap) Values() []int {
-	var s []int
+	s := make([]int, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
 	}
@@ -101,7 +104,7 @@ func (mm SimpleIntIntMap) Values() []int {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm SimpleIntIntMap) ToSlice() []SimpleIntIntTuple {
-	var s []SimpleIntIntTuple
+	s := make([]SimpleIntIntTuple, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, SimpleIntIntTuple{k, v})
 	}

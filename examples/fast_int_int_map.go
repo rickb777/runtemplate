@@ -27,14 +27,17 @@ type FastIntIntTuple struct {
 // FastIntIntTuples can be used as a builder for unmodifiable maps.
 type FastIntIntTuples []FastIntIntTuple
 
+// Append1 adds one item.
 func (ts FastIntIntTuples) Append1(k int, v int) FastIntIntTuples {
 	return append(ts, FastIntIntTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts FastIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) FastIntIntTuples {
 	return append(ts, FastIntIntTuple{k1, v1}, FastIntIntTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts FastIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) FastIntIntTuples {
 	return append(ts, FastIntIntTuple{k1, v1}, FastIntIntTuple{k2, v2}, FastIntIntTuple{k3, v3})
 }
@@ -69,7 +72,7 @@ func newFastIntIntMap() *FastIntIntMap {
 	}
 }
 
-// NewFastIntIntMap creates and returns a reference to a map containing one item.
+// NewFastIntIntMap1 creates and returns a reference to a map containing one item.
 func NewFastIntIntMap1(k int, v int) *FastIntIntMap {
 	mm := newFastIntIntMap()
 	mm.m[k] = v
@@ -91,8 +94,8 @@ func (mm *FastIntIntMap) Keys() []int {
 		return nil
 	}
 
-	var s []int
-	for k, _ := range mm.m {
+	s := make([]int, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -105,7 +108,7 @@ func (mm *FastIntIntMap) Values() []int {
 		return nil
 	}
 
-	var s []int
+	s := make([]int, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -119,7 +122,7 @@ func (mm *FastIntIntMap) slice() []FastIntIntTuple {
 		return nil
 	}
 
-	var s []FastIntIntTuple
+	s := make([]FastIntIntTuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, FastIntIntTuple{k, v})
 	}

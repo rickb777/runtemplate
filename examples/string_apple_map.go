@@ -30,14 +30,17 @@ type StringAppleTuple struct {
 // StringAppleTuples can be used as a builder for unmodifiable maps.
 type StringAppleTuples []StringAppleTuple
 
+// Append1 adds one item.
 func (ts StringAppleTuples) Append1(k string, v Apple) StringAppleTuples {
 	return append(ts, StringAppleTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts StringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) StringAppleTuples {
 	return append(ts, StringAppleTuple{k1, v1}, StringAppleTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts StringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) StringAppleTuples {
 	return append(ts, StringAppleTuple{k1, v1}, StringAppleTuple{k2, v2}, StringAppleTuple{k3, v3})
 }
@@ -73,7 +76,7 @@ func newStringAppleMap() *StringAppleMap {
 	}
 }
 
-// NewStringAppleMap creates and returns a reference to a map containing one item.
+// NewStringAppleMap1 creates and returns a reference to a map containing one item.
 func NewStringAppleMap1(k string, v Apple) *StringAppleMap {
 	mm := newStringAppleMap()
 	mm.m[k] = v
@@ -98,8 +101,8 @@ func (mm *StringAppleMap) Keys() []string {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []string
-	for k, _ := range mm.m {
+	s := make([]string, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -115,7 +118,7 @@ func (mm *StringAppleMap) Values() []Apple {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []Apple
+	s := make([]Apple, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -129,7 +132,7 @@ func (mm *StringAppleMap) slice() []StringAppleTuple {
 		return nil
 	}
 
-	var s []StringAppleTuple
+	s := make([]StringAppleTuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, StringAppleTuple{k, v})
 	}

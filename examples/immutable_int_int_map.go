@@ -27,14 +27,17 @@ type ImmutableIntIntTuple struct {
 // ImmutableIntIntTuples can be used as a builder for unmodifiable maps.
 type ImmutableIntIntTuples []ImmutableIntIntTuple
 
+// Append1 adds one item.
 func (ts ImmutableIntIntTuples) Append1(k int, v int) ImmutableIntIntTuples {
 	return append(ts, ImmutableIntIntTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts ImmutableIntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) ImmutableIntIntTuples {
 	return append(ts, ImmutableIntIntTuple{k1, v1}, ImmutableIntIntTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts ImmutableIntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) ImmutableIntIntTuples {
 	return append(ts, ImmutableIntIntTuple{k1, v1}, ImmutableIntIntTuple{k2, v2}, ImmutableIntIntTuple{k3, v3})
 }
@@ -69,7 +72,7 @@ func newImmutableIntIntMap() *ImmutableIntIntMap {
 	}
 }
 
-// NewImmutableIntIntMap creates and returns a reference to a map containing one item.
+// NewImmutableIntIntMap1 creates and returns a reference to a map containing one item.
 func NewImmutableIntIntMap1(k int, v int) *ImmutableIntIntMap {
 	mm := newImmutableIntIntMap()
 	mm.m[k] = v
@@ -91,8 +94,8 @@ func (mm *ImmutableIntIntMap) Keys() []int {
 		return nil
 	}
 
-	var s []int
-	for k, _ := range mm.m {
+	s := make([]int, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -113,13 +116,13 @@ func (mm *ImmutableIntIntMap) Values() []int {
 	return s
 }
 
-// slice returns the internal elements of the current list. This is a seam for testing etc.
+// slice returns the internal elements of the map. This is a seam for testing etc.
 func (mm *ImmutableIntIntMap) slice() []ImmutableIntIntTuple {
 	if mm == nil {
 		return nil
 	}
 
-	var s []ImmutableIntIntTuple
+	s := make([]ImmutableIntIntTuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, ImmutableIntIntTuple{k, v})
 	}
@@ -191,7 +194,7 @@ func (mm *ImmutableIntIntMap) Foreach(f func(int, int)) {
 	}
 }
 
-// Forall applies a predicate function to every element in the map. If the function returns false,
+// Forall applies the predicate p to every element in the map. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
@@ -211,7 +214,7 @@ func (mm *ImmutableIntIntMap) Forall(f func(int, int) bool) bool {
 	return true
 }
 
-// Exists applies the predicate function p to every element in the map. If the function returns true,
+// Exists applies the predicate p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm *ImmutableIntIntMap) Exists(p func(int, int) bool) bool {

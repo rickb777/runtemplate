@@ -28,14 +28,17 @@ type ImmutableStringAppleTuple struct {
 // ImmutableStringAppleTuples can be used as a builder for unmodifiable maps.
 type ImmutableStringAppleTuples []ImmutableStringAppleTuple
 
+// Append1 adds one item.
 func (ts ImmutableStringAppleTuples) Append1(k string, v Apple) ImmutableStringAppleTuples {
 	return append(ts, ImmutableStringAppleTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts ImmutableStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) ImmutableStringAppleTuples {
 	return append(ts, ImmutableStringAppleTuple{k1, v1}, ImmutableStringAppleTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts ImmutableStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) ImmutableStringAppleTuples {
 	return append(ts, ImmutableStringAppleTuple{k1, v1}, ImmutableStringAppleTuple{k2, v2}, ImmutableStringAppleTuple{k3, v3})
 }
@@ -70,7 +73,7 @@ func newImmutableStringAppleMap() *ImmutableStringAppleMap {
 	}
 }
 
-// NewImmutableStringAppleMap creates and returns a reference to a map containing one item.
+// NewImmutableStringAppleMap1 creates and returns a reference to a map containing one item.
 func NewImmutableStringAppleMap1(k string, v Apple) *ImmutableStringAppleMap {
 	mm := newImmutableStringAppleMap()
 	mm.m[k] = v
@@ -92,8 +95,8 @@ func (mm *ImmutableStringAppleMap) Keys() []string {
 		return nil
 	}
 
-	var s []string
-	for k, _ := range mm.m {
+	s := make([]string, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -114,13 +117,13 @@ func (mm *ImmutableStringAppleMap) Values() []Apple {
 	return s
 }
 
-// slice returns the internal elements of the current list. This is a seam for testing etc.
+// slice returns the internal elements of the map. This is a seam for testing etc.
 func (mm *ImmutableStringAppleMap) slice() []ImmutableStringAppleTuple {
 	if mm == nil {
 		return nil
 	}
 
-	var s []ImmutableStringAppleTuple
+	s := make([]ImmutableStringAppleTuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, ImmutableStringAppleTuple{k, v})
 	}
@@ -192,7 +195,7 @@ func (mm *ImmutableStringAppleMap) Foreach(f func(string, Apple)) {
 	}
 }
 
-// Forall applies a predicate function to every element in the map. If the function returns false,
+// Forall applies the predicate p to every element in the map. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
@@ -212,7 +215,7 @@ func (mm *ImmutableStringAppleMap) Forall(f func(string, Apple) bool) bool {
 	return true
 }
 
-// Exists applies the predicate function p to every element in the map. If the function returns true,
+// Exists applies the predicate p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (mm *ImmutableStringAppleMap) Exists(p func(string, Apple) bool) bool {

@@ -29,14 +29,17 @@ type IntIntTuple struct {
 // IntIntTuples can be used as a builder for unmodifiable maps.
 type IntIntTuples []IntIntTuple
 
+// Append1 adds one item.
 func (ts IntIntTuples) Append1(k int, v int) IntIntTuples {
 	return append(ts, IntIntTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts IntIntTuples) Append2(k1 int, v1 int, k2 int, v2 int) IntIntTuples {
 	return append(ts, IntIntTuple{k1, v1}, IntIntTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts IntIntTuples) Append3(k1 int, v1 int, k2 int, v2 int, k3 int, v3 int) IntIntTuples {
 	return append(ts, IntIntTuple{k1, v1}, IntIntTuple{k2, v2}, IntIntTuple{k3, v3})
 }
@@ -72,7 +75,7 @@ func newIntIntMap() *IntIntMap {
 	}
 }
 
-// NewIntIntMap creates and returns a reference to a map containing one item.
+// NewIntIntMap1 creates and returns a reference to a map containing one item.
 func NewIntIntMap1(k int, v int) *IntIntMap {
 	mm := newIntIntMap()
 	mm.m[k] = v
@@ -97,8 +100,8 @@ func (mm *IntIntMap) Keys() []int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []int
-	for k, _ := range mm.m {
+	s := make([]int, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -114,7 +117,7 @@ func (mm *IntIntMap) Values() []int {
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s []int
+	s := make([]int, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -128,7 +131,7 @@ func (mm *IntIntMap) slice() []IntIntTuple {
 		return nil
 	}
 
-	var s []IntIntTuple
+	s := make([]IntIntTuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, IntIntTuple{k, v})
 	}

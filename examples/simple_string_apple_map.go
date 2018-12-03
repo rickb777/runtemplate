@@ -25,14 +25,17 @@ type SimpleStringAppleTuple struct {
 // SimpleStringAppleTuples can be used as a builder for unmodifiable maps.
 type SimpleStringAppleTuples []SimpleStringAppleTuple
 
+// Append1 adds one item.
 func (ts SimpleStringAppleTuples) Append1(k string, v Apple) SimpleStringAppleTuples {
 	return append(ts, SimpleStringAppleTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts SimpleStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) SimpleStringAppleTuples {
 	return append(ts, SimpleStringAppleTuple{k1, v1}, SimpleStringAppleTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts SimpleStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) SimpleStringAppleTuples {
 	return append(ts, SimpleStringAppleTuple{k1, v1}, SimpleStringAppleTuple{k2, v2}, SimpleStringAppleTuple{k3, v3})
 }
@@ -65,7 +68,7 @@ func newSimpleStringAppleMap() SimpleStringAppleMap {
 	return SimpleStringAppleMap(make(map[string]Apple))
 }
 
-// NewSimpleStringAppleMap creates and returns a reference to a map containing one item.
+// NewSimpleStringAppleMap1 creates and returns a reference to a map containing one item.
 func NewSimpleStringAppleMap1(k string, v Apple) SimpleStringAppleMap {
 	mm := newSimpleStringAppleMap()
 	mm[k] = v
@@ -83,8 +86,8 @@ func NewSimpleStringAppleMap(kv ...SimpleStringAppleTuple) SimpleStringAppleMap 
 
 // Keys returns the keys of the current map as a slice.
 func (mm SimpleStringAppleMap) Keys() []string {
-	var s []string
-	for k, _ := range mm {
+	s := make([]string, 0, len(mm))
+	for k := range mm {
 		s = append(s, k)
 	}
 	return s
@@ -92,7 +95,7 @@ func (mm SimpleStringAppleMap) Keys() []string {
 
 // Values returns the values of the current map as a slice.
 func (mm SimpleStringAppleMap) Values() []Apple {
-	var s []Apple
+	s := make([]Apple, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
 	}
@@ -101,7 +104,7 @@ func (mm SimpleStringAppleMap) Values() []Apple {
 
 // ToSlice returns the key/value pairs as a slice
 func (mm SimpleStringAppleMap) ToSlice() []SimpleStringAppleTuple {
-	var s []SimpleStringAppleTuple
+	s := make([]SimpleStringAppleTuple, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, SimpleStringAppleTuple{k, v})
 	}

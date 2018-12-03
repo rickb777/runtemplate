@@ -28,14 +28,17 @@ type FastStringAppleTuple struct {
 // FastStringAppleTuples can be used as a builder for unmodifiable maps.
 type FastStringAppleTuples []FastStringAppleTuple
 
+// Append1 adds one item.
 func (ts FastStringAppleTuples) Append1(k string, v Apple) FastStringAppleTuples {
 	return append(ts, FastStringAppleTuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts FastStringAppleTuples) Append2(k1 string, v1 Apple, k2 string, v2 Apple) FastStringAppleTuples {
 	return append(ts, FastStringAppleTuple{k1, v1}, FastStringAppleTuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts FastStringAppleTuples) Append3(k1 string, v1 Apple, k2 string, v2 Apple, k3 string, v3 Apple) FastStringAppleTuples {
 	return append(ts, FastStringAppleTuple{k1, v1}, FastStringAppleTuple{k2, v2}, FastStringAppleTuple{k3, v3})
 }
@@ -70,7 +73,7 @@ func newFastStringAppleMap() *FastStringAppleMap {
 	}
 }
 
-// NewFastStringAppleMap creates and returns a reference to a map containing one item.
+// NewFastStringAppleMap1 creates and returns a reference to a map containing one item.
 func NewFastStringAppleMap1(k string, v Apple) *FastStringAppleMap {
 	mm := newFastStringAppleMap()
 	mm.m[k] = v
@@ -92,8 +95,8 @@ func (mm *FastStringAppleMap) Keys() []string {
 		return nil
 	}
 
-	var s []string
-	for k, _ := range mm.m {
+	s := make([]string, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -106,7 +109,7 @@ func (mm *FastStringAppleMap) Values() []Apple {
 		return nil
 	}
 
-	var s []Apple
+	s := make([]Apple, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -120,7 +123,7 @@ func (mm *FastStringAppleMap) slice() []FastStringAppleTuple {
 		return nil
 	}
 
-	var s []FastStringAppleTuple
+	s := make([]FastStringAppleTuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, FastStringAppleTuple{k, v})
 	}

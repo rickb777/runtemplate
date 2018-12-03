@@ -40,14 +40,17 @@ type {{.UPrefix}}{{.UKey}}{{.UType}}Tuple struct {
 // {{.UPrefix}}{{.UKey}}{{.UType}}Tuples can be used as a builder for unmodifiable maps.
 type {{.UPrefix}}{{.UKey}}{{.UType}}Tuples []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
 
+// Append1 adds one item.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 }
 
+// Append2 adds two items.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2})
 }
 
+// Append3 adds three items.
 func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}, k3 {{.PKey}}, v3 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
 	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k3, v3})
 }
@@ -83,7 +86,7 @@ func new{{.UPrefix}}{{.UKey}}{{.UType}}Map() *{{.UPrefix}}{{.UKey}}{{.UType}}Map
 	}
 }
 
-// New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map containing one item.
+// New{{.UPrefix}}{{.UKey}}{{.UType}}Map1 creates and returns a reference to a map containing one item.
 func New{{.UPrefix}}{{.UKey}}{{.UType}}Map1(k {{.PKey}}, v {{.PType}}) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
 	mm := new{{.UPrefix}}{{.UKey}}{{.UType}}Map()
 	mm.m[k] = v
@@ -108,8 +111,8 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}
-	for k, _ := range mm.m {
+	s := make({{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}, 0, len(mm.m))
+	for k := range mm.m {
 		s = append(s, k)
 	}
 
@@ -125,7 +128,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.Value
 	mm.s.RLock()
 	defer mm.s.RUnlock()
 
-	var s {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}
+	s := make({{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -139,7 +142,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) slice() []{{.UPrefix}}{{.UKey}}{{.
 		return nil
 	}
 
-	var s []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
+	s := make([]{{.UPrefix}}{{.UKey}}{{.UType}}Tuple, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
 	}
