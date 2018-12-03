@@ -937,9 +937,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MinBy(less func({{.PType}}, {{.PType}}
 	indexes := queue.indexes()
     m := indexes[0]
 	for len(indexes) > 1 {
-		for i := m+1; i < indexes[1]; i++ {
-			if less(queue.m[i], queue.m[m]) {
-				m = i
+		f := indexes[0]
+		for i := f; i < indexes[1]; i++ {
+		    if i != m {
+    			if less(queue.m[i], queue.m[m]) {
+	    			m = i
+		    	}
 			}
 		}
 		indexes = indexes[2:]
@@ -961,9 +964,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MaxBy(less func({{.PType}}, {{.PType}}
 	indexes := queue.indexes()
     m := indexes[0]
 	for len(indexes) > 1 {
-		for i := m+1; i < indexes[1]; i++ {
-			if less(queue.m[m], queue.m[i]) {
-				m = i
+		f := indexes[0]
+		for i := f; i < indexes[1]; i++ {
+		    if i != m {
+    			if less(queue.m[m], queue.m[i]) {
+	    			m = i
+		    	}
 			}
 		}
 		indexes = indexes[2:]

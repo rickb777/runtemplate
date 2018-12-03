@@ -226,7 +226,7 @@ func Test{{.UType}}QueuePop(t *testing.T) {
 func Test{{.UType}}QueueHeadLast(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false)
+	a := NewX1{{.UType}}Queue(8, false)
 
 	g.Expect(a.HeadOption()).To(Equal(0))
 	g.Expect(a.LastOption()).To(Equal(0))
@@ -245,6 +245,20 @@ func Test{{.UType}}QueueHeadLast(t *testing.T) {
 	g.Expect(a.HeadOption()).To(Equal(3))
 	g.Expect(a.Last()).To(Equal(6))
 	g.Expect(a.LastOption()).To(Equal(6))
+
+	a.Offer(7, 8, 9, 10)
+	a.Pop(4)
+
+	g.Expect(a.Head()).To(Equal(7))
+	g.Expect(a.HeadOption()).To(Equal(7))
+	g.Expect(a.Last()).To(Equal(10))
+	g.Expect(a.LastOption()).To(Equal(10))
+
+	// check correct nil handling
+	a = nil
+
+	g.Expect(a.HeadOption()).To(Equal(0))
+	g.Expect(a.LastOption()).To(Equal(0))
 }
 
 func Test{{.UType}}QueueClone(t *testing.T) {
@@ -453,9 +467,17 @@ func Test{{.UType}}QueueExists(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+    a.Pop(2)
+    a.Push(5, 6)
 
 	found := a.Exists(func(v int) bool {
-		return v > 2
+		return v > 3
+	})
+
+	g.Expect(found).To(BeTrue())
+
+	found = a.Exists(func(v int) bool {
+		return v > 5
 	})
 
 	g.Expect(found).To(BeTrue())
