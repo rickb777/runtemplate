@@ -117,12 +117,12 @@ func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
 func (list *{{.UPrefix}}{{.UType}}List) ToList() *{{.UPrefix}}{{.UType}}List {
-    return list
+	return list
 }
 {{- if .ToSet}}
 
-// ToList returns the elements of the queue as a list. The returned list is a shallow
-// copy; the queue is not altered.
+// ToSet returns the elements of the list as a set. The returned set is a shallow
+// copy; the list is not altered.
 func (list *{{.UPrefix}}{{.UType}}List) ToSet() *{{.UPrefix}}{{.UType}}Set {
 	if list == nil {
 		return nil
@@ -143,7 +143,7 @@ func (list *{{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -248,14 +248,14 @@ func (list *{{.UPrefix}}{{.UType}}List) Len() int {
 //-------------------------------------------------------------------------------------------------
 {{- if .Comparable}}
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 	return list.Exists(func(x {{.PType}}) bool {
 		return {{.TypeStar}}x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	if list == nil {
@@ -909,7 +909,7 @@ func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&list.m)
 }
 
-// GobDecode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}

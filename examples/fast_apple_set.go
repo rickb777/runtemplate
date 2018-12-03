@@ -66,7 +66,7 @@ func (set *FastAppleSet) slice() []Apple {
 		return nil
 	}
 
-	var s []Apple
+	s := make([]Apple, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -82,7 +82,7 @@ func (set *FastAppleSet) ToSlice() []Apple {
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set *FastAppleSet) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -163,7 +163,7 @@ func (set *FastAppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether the given items are all in the set, returning true if so.
 func (set *FastAppleSet) ContainsAll(i ...Apple) bool {
 	if set == nil {
 		return false
@@ -329,7 +329,7 @@ func (set *FastAppleSet) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function p to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *FastAppleSet) Exists(p func(Apple) bool) bool {
@@ -546,7 +546,7 @@ func (set *FastAppleSet) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&set.m)
 }
 
-// GobDecode implements 'gob' encoding for this set type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (set FastAppleSet) GobEncode() ([]byte, error) {
 

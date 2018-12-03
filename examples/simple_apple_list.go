@@ -74,7 +74,7 @@ func (list SimpleAppleList) ToSlice() []Apple {
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list SimpleAppleList) ToInterfaceSlice() []interface{} {
-	var s []interface{}
+	s := make([]interface{}, 0, len(list))
 	for _, v := range list {
 		s = append(s, v)
 	}
@@ -128,13 +128,13 @@ func (list SimpleAppleList) LastOption() Apple {
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty or nil.
 func (list SimpleAppleList) Tail() SimpleAppleList {
-	return SimpleAppleList(list[1:])
+	return list[1:]
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty or nil.
 func (list SimpleAppleList) Init() SimpleAppleList {
-	return SimpleAppleList(list[:len(list)-1])
+	return list[:len(list)-1]
 }
 
 // IsEmpty tests whether SimpleAppleList is empty.
@@ -178,14 +178,14 @@ func (list SimpleAppleList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list SimpleAppleList) Contains(v Apple) bool {
 	return list.Exists(func(x Apple) bool {
 		return x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list SimpleAppleList) ContainsAll(i ...Apple) bool {
 	for _, v := range i {
@@ -348,9 +348,8 @@ func (list SimpleAppleList) DropLast(n int) SimpleAppleList {
 	l := len(list)
 	if n > l {
 		return list[l:]
-	} else {
-		return list[0 : l-n]
 	}
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new SimpleAppleList containing the leading elements of the source list. Whilst the

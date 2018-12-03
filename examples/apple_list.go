@@ -106,7 +106,7 @@ func (list *AppleList) ToInterfaceSlice() []interface{} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -259,14 +259,14 @@ func (list *AppleList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list *AppleList) Contains(v Apple) bool {
 	return list.Exists(func(x Apple) bool {
 		return x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list *AppleList) ContainsAll(i ...Apple) bool {
 	if list == nil {
@@ -1059,7 +1059,7 @@ func (list *AppleList) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&list.m)
 }
 
-// GobDecode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (list AppleList) GobEncode() ([]byte, error) {
 	list.s.RLock()

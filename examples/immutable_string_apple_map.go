@@ -109,7 +109,7 @@ func (mm *ImmutableStringAppleMap) Values() []Apple {
 		return nil
 	}
 
-	var s []Apple
+	s := make([]Apple, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -342,7 +342,7 @@ func (mm *ImmutableStringAppleMap) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobDecode implements 'gob' encoding for this map type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (mm *ImmutableStringAppleMap) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}

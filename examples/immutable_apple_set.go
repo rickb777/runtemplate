@@ -66,7 +66,7 @@ func (set *ImmutableAppleSet) ToSlice() []Apple {
 		return nil
 	}
 
-	var s []Apple
+	s := make([]Apple, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -76,7 +76,7 @@ func (set *ImmutableAppleSet) ToSlice() []Apple {
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set *ImmutableAppleSet) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -131,7 +131,7 @@ func (set *ImmutableAppleSet) Cardinality() int {
 func (set *ImmutableAppleSet) Add(more ...Apple) *ImmutableAppleSet {
 	newSet := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		newSet.doAdd(v)
 	}
 
@@ -156,7 +156,7 @@ func (set *ImmutableAppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether a given item is already in the set, returning true if so.
 func (set *ImmutableAppleSet) ContainsAll(i ...Apple) bool {
 	if set == nil {
 		return false
@@ -192,14 +192,6 @@ func (set *ImmutableAppleSet) IsSubset(other *ImmutableAppleSet) bool {
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *ImmutableAppleSet) IsSuperset(other *ImmutableAppleSet) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -288,7 +280,7 @@ func (set *ImmutableAppleSet) Remove(i Apple) *ImmutableAppleSet {
 
 	clonedSet := NewImmutableAppleSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if i != v {
 			clonedSet.doAdd(v)
 		}
@@ -336,7 +328,7 @@ func (set *ImmutableAppleSet) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function p to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *ImmutableAppleSet) Exists(p func(Apple) bool) bool {
@@ -545,7 +537,7 @@ func (set *ImmutableAppleSet) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&set.m)
 }
 
-// GobDecode implements 'gob' encoding for this set type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (set ImmutableAppleSet) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}

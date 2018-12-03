@@ -122,7 +122,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 		return nil
 	}
 
-	var s []{{.Type}}
+	s := make([]{{.Type}}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -132,7 +132,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -187,7 +187,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Cardinality() int {
 func (set *{{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) *{{.UPrefix}}{{.UType}}Set {
 	newSet := New{{.UPrefix}}{{.UType}}Set()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		newSet.doAdd(v)
 	}
 
@@ -212,7 +212,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether a given item is already in the set, returning true if so.
 func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	if set == nil {
 		return false
@@ -248,14 +248,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *{{.UPrefix}}{{.UType}}Set) IsSuperset(other *{{.UPrefix}}{{.UType}}Set) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -344,7 +336,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) *{{.UPrefix}}{{.UType}
 
 	clonedSet := New{{.UPrefix}}{{.UType}}Set()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if i != v {
 			clonedSet.doAdd(v)
 		}
@@ -392,7 +384,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Forall(p func({{.Type}}) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function p to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *{{.UPrefix}}{{.UType}}Set) Exists(p func({{.Type}}) bool) bool {
@@ -746,7 +738,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&set.m)
 }
 
-// GobDecode implements 'gob' encoding for this set type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (set {{.UPrefix}}{{.UType}}Set) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}

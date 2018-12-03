@@ -89,7 +89,7 @@ func (set *ImmutableIntSet) ToSlice() []int {
 		return nil
 	}
 
-	var s []int
+	s := make([]int, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -99,7 +99,7 @@ func (set *ImmutableIntSet) ToSlice() []int {
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set *ImmutableIntSet) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -154,7 +154,7 @@ func (set *ImmutableIntSet) Cardinality() int {
 func (set *ImmutableIntSet) Add(more ...int) *ImmutableIntSet {
 	newSet := NewImmutableIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		newSet.doAdd(v)
 	}
 
@@ -179,7 +179,7 @@ func (set *ImmutableIntSet) Contains(i int) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether a given item is already in the set, returning true if so.
 func (set *ImmutableIntSet) ContainsAll(i ...int) bool {
 	if set == nil {
 		return false
@@ -215,14 +215,6 @@ func (set *ImmutableIntSet) IsSubset(other *ImmutableIntSet) bool {
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
 func (set *ImmutableIntSet) IsSuperset(other *ImmutableIntSet) bool {
-	if set.IsEmpty() {
-		return other.IsEmpty()
-	}
-
-	if other.IsEmpty() {
-		return true
-	}
-
 	return other.IsSubset(set)
 }
 
@@ -311,7 +303,7 @@ func (set *ImmutableIntSet) Remove(i int) *ImmutableIntSet {
 
 	clonedSet := NewImmutableIntSet()
 
-	for v, _ := range set.m {
+	for v := range set.m {
 		if i != v {
 			clonedSet.doAdd(v)
 		}
@@ -359,7 +351,7 @@ func (set *ImmutableIntSet) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function p to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *ImmutableIntSet) Exists(p func(int) bool) bool {

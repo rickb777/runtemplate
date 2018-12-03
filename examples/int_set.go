@@ -92,7 +92,7 @@ func (set *IntSet) slice() []int {
 		return nil
 	}
 
-	var s []int
+	s := make([]int, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -112,7 +112,7 @@ func (set *IntSet) ToInterfaceSlice() []interface{} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -204,7 +204,7 @@ func (set *IntSet) Contains(i int) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether the given items are all in the set, returning true if so.
 func (set *IntSet) ContainsAll(i ...int) bool {
 	if set == nil {
 		return false
@@ -400,7 +400,7 @@ func (set *IntSet) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function p to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *IntSet) Exists(p func(int) bool) bool {

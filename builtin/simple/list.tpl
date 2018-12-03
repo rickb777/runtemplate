@@ -108,8 +108,8 @@ func (list {{.UPrefix}}{{.UType}}List) ToList() {{.UPrefix}}{{.UType}}List {
 }
 {{- if .ToSet}}
 
-// ToList returns the elements of the queue as a list. The returned list is a shallow
-// copy; the queue is not altered.
+// ToSet returns the elements of the list as a set. The returned set is a shallow
+// copy; the list is not altered.
 func (list {{.UPrefix}}{{.UType}}List) ToSet() {{.UPrefix}}{{.UType}}Set {
 	if list == nil {
 		return nil
@@ -127,7 +127,7 @@ func (list {{.UPrefix}}{{.UType}}List) ToSlice() []{{.PType}} {
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list {{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
-	var s []interface{}
+	s := make([]interface{}, 0, len(list))
 	for _, v := range list {
 		s = append(s, v)
 	}
@@ -181,13 +181,13 @@ func (list {{.UPrefix}}{{.UType}}List) LastOption() {{.PType}} {
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty or nil.
 func (list {{.UPrefix}}{{.UType}}List) Tail() {{.UPrefix}}{{.UType}}List {
-	return {{.UPrefix}}{{.UType}}List(list[1:])
+	return list[1:]
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty or nil.
 func (list {{.UPrefix}}{{.UType}}List) Init() {{.UPrefix}}{{.UType}}List {
-	return {{.UPrefix}}{{.UType}}List(list[:len(list)-1])
+	return list[:len(list)-1]
 }
 
 // IsEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
@@ -232,14 +232,14 @@ func (list {{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 //-------------------------------------------------------------------------------------------------
 {{- if .Comparable}}
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list {{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 	return list.Exists(func (x {{.PType}}) bool {
 		return {{.TypeStar}}x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list {{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	for _, v := range i {
@@ -403,9 +403,8 @@ func (list {{.UPrefix}}{{.UType}}List) DropLast(n int) {{.UPrefix}}{{.UType}}Lis
 	l := len(list)
 	if n > l {
 		return list[l:]
-	} else {
-		return list[0 : l-n]
 	}
+    return list[0 : l-n]
 }
 
 // TakeWhile returns a new {{.UPrefix}}{{.UType}}List containing the leading elements of the source list. Whilst the
@@ -813,7 +812,7 @@ func (list {{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&list)
 }
 
-// GobDecode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}

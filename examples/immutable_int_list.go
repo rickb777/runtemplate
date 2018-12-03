@@ -114,7 +114,7 @@ func (list *ImmutableIntList) ToSlice() []int {
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *ImmutableIntList) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -218,14 +218,14 @@ func (list *ImmutableIntList) Len() int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list *ImmutableIntList) Contains(v int) bool {
 	return list.Exists(func(x int) bool {
 		return x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list *ImmutableIntList) ContainsAll(i ...int) bool {
 	if list == nil {

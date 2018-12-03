@@ -80,7 +80,7 @@ func (set SimpleIntSet) ToSet() SimpleIntSet {
 
 // ToSlice returns the elements of the current set as a slice.
 func (set SimpleIntSet) ToSlice() []int {
-	var s []int
+	s := make([]int, 0, len(set))
 	for v := range set {
 		s = append(s, v)
 	}
@@ -89,8 +89,8 @@ func (set SimpleIntSet) ToSlice() []int {
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set SimpleIntSet) ToInterfaceSlice() []interface{} {
-	var s []interface{}
-	for v, _ := range set {
+	s := make([]interface{}, 0, len(set))
+	for v := range set {
 		s = append(s, v)
 	}
 	return s
@@ -117,7 +117,7 @@ func (set SimpleIntSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set SimpleIntSet) IsSequence() bool {
 	return false
 }
@@ -157,7 +157,7 @@ func (set SimpleIntSet) Contains(i int) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether a given item is already in the set, returning true if so.
 func (set SimpleIntSet) ContainsAll(i ...int) bool {
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -272,44 +272,44 @@ func (set SimpleIntSet) Send() <-chan int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set SimpleIntSet) Forall(fn func(int) bool) bool {
+func (set SimpleIntSet) Forall(p func(int) bool) bool {
 	for v := range set {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set SimpleIntSet) Exists(fn func(int) bool) bool {
+func (set SimpleIntSet) Exists(p func(int) bool) bool {
 	for v := range set {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over intSet and executes the passed func against each element.
-func (set SimpleIntSet) Foreach(fn func(int)) {
+// Foreach iterates over intSet and executes the function f against each element.
+func (set SimpleIntSet) Foreach(f func(int)) {
 	for v := range set {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for predicate p.
-// False is returned if none match.
+// Find returns the first int that returns true for the predicate p. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set SimpleIntSet) Find(p func(int) bool) (int, bool) {
 
 	for v := range set {
@@ -320,16 +320,15 @@ func (set SimpleIntSet) Find(p func(int) bool) (int, bool) {
 
 	var empty int
 	return empty, false
-
 }
 
-// Filter returns a new SimpleIntSet whose elements return true for func.
+// Filter returns a new SimpleIntSet whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set SimpleIntSet) Filter(fn func(int) bool) SimpleIntSet {
+func (set SimpleIntSet) Filter(p func(int) bool) SimpleIntSet {
 	result := NewSimpleIntSet()
 	for v := range set {
-		if fn(v) {
+		if p(v) {
 			result[v] = struct{}{}
 		}
 	}
@@ -354,32 +353,32 @@ func (set SimpleIntSet) Partition(p func(int) bool) (SimpleIntSet, SimpleIntSet)
 	return matching, others
 }
 
-// Map returns a new SimpleIntSet by transforming every element with a function fn.
+// Map returns a new SimpleIntSet by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SimpleIntSet) Map(fn func(int) int) SimpleIntSet {
+func (set SimpleIntSet) Map(f func(int) int) SimpleIntSet {
 	result := NewSimpleIntSet()
 
 	for v := range set {
-		result[fn(v)] = struct{}{}
+		result[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new SimpleIntSet by transforming every element with a function fn that
+// FlatMap returns a new SimpleIntSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SimpleIntSet) FlatMap(fn func(int) []int) SimpleIntSet {
+func (set SimpleIntSet) FlatMap(f func(int) []int) SimpleIntSet {
 	result := NewSimpleIntSet()
 
-	for v, _ := range set {
-		for _, x := range fn(v) {
+	for v := range set {
+		for _, x := range f(v) {
 			result[x] = struct{}{}
 		}
 	}
@@ -387,10 +386,10 @@ func (set SimpleIntSet) FlatMap(fn func(int) []int) SimpleIntSet {
 	return result
 }
 
-// CountBy gives the number elements of SimpleIntSet that return true for the passed predicate.
-func (set SimpleIntSet) CountBy(predicate func(int) bool) (result int) {
+// CountBy gives the number elements of SimpleIntSet that return true for the predicate p.
+func (set SimpleIntSet) CountBy(p func(int) bool) (result int) {
 	for v := range set {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -462,7 +461,7 @@ func (set SimpleIntSet) MaxBy(less func(int, int) bool) int {
 // Sum returns the sum of all the elements in the set.
 func (set SimpleIntSet) Sum() int {
 	sum := int(0)
-	for v, _ := range set {
+	for v := range set {
 		sum = sum + v
 	}
 	return sum
@@ -489,6 +488,7 @@ func (set SimpleIntSet) Equals(other SimpleIntSet) bool {
 
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
 func (set SimpleIntSet) StringList() []string {
 	strings := make([]string, len(set))
 	i := 0
@@ -499,8 +499,9 @@ func (set SimpleIntSet) StringList() []string {
 	return strings
 }
 
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (set SimpleIntSet) String() string {
-	return set.mkString3Bytes("", ", ", "").String()
+	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -551,7 +552,7 @@ func (set SimpleIntSet) MarshalJSON() ([]byte, error) {
 // resulting map.
 func (set SimpleIntSet) StringMap() map[string]bool {
 	strings := make(map[string]bool)
-	for v, _ := range set {
+	for v := range set {
 		strings[fmt.Sprintf("%v", v)] = true
 	}
 	return strings

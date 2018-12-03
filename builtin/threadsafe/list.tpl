@@ -124,8 +124,8 @@ func (list *{{.UPrefix}}{{.UType}}List) ToList() *{{.UPrefix}}{{.UType}}List {
 }
 {{- if .ToSet}}
 
-// ToList returns the elements of the queue as a list. The returned list is a shallow
-// copy; the queue is not altered.
+// ToSet returns the elements of the list as a set. The returned set is a shallow
+// copy; the list is not altered.
 func (list *{{.UPrefix}}{{.UType}}List) ToSet() *{{.UPrefix}}{{.UType}}Set {
 	if list == nil {
 		return nil
@@ -161,7 +161,7 @@ func (list *{{.UPrefix}}{{.UType}}List) ToInterfaceSlice() []interface{} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -315,14 +315,14 @@ func (list *{{.UPrefix}}{{.UType}}List) Swap(i, j int) {
 //-------------------------------------------------------------------------------------------------
 {{- if .Comparable}}
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list *{{.UPrefix}}{{.UType}}List) Contains(v {{.Type}}) bool {
 	return list.Exists(func(x {{.PType}}) bool {
 		return {{.TypeStar}}x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list *{{.UPrefix}}{{.UType}}List) ContainsAll(i ...{{.Type}}) bool {
 	if list == nil {
@@ -1281,7 +1281,7 @@ func (list *{{.UPrefix}}{{.UType}}List) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&list.m)
 }
 
-// GobDecode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (list {{.UPrefix}}{{.UType}}List) GobEncode() ([]byte, error) {
 	list.s.RLock()

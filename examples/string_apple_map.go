@@ -471,7 +471,7 @@ func (mm *StringAppleMap) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobDecode implements 'gob' encoding for this map type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (mm *StringAppleMap) GobEncode() ([]byte, error) {
 	mm.s.RLock()

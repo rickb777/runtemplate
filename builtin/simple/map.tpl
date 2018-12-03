@@ -337,8 +337,9 @@ func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() {{.UPrefix}}{{.UKey}}{{.UTy
 
 //-------------------------------------------------------------------------------------------------
 
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (mm {{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
-	return mm.MkString3("map[", ", ", "]")
+	return mm.MkString3("[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {

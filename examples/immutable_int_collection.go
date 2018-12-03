@@ -73,10 +73,10 @@ type ImmutableIntCollection interface {
 	// CountBy gives the number elements of ImmutableIntCollection that return true for the predicate p.
 	CountBy(p func(int) bool) int
 
-	// Contains determines if a given item is already in the collection.
+	// Contains determines whether a given item is already in the collection, returning true if so.
 	Contains(v int) bool
 
-	// ContainsAll determines if the given items are all in the collection.
+	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...int) bool
 
 	// Min returns the minimum value of all the items in the collection. Panics if there are no elements.

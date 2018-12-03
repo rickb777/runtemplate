@@ -440,7 +440,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() *{{.UPrefix}}{{.UKey}}{{.U
 //-------------------------------------------------------------------------------------------------
 
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
-	return mm.MkString3("map[", ", ", "]")
+	return mm.MkString3("[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
@@ -520,7 +520,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobDecode implements 'gob' encoding for this map type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
 func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobEncode() ([]byte, error) {
 

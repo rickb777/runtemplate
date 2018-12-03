@@ -129,7 +129,7 @@ func (list *IntList) ToInterfaceSlice() []interface{} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -282,14 +282,14 @@ func (list *IntList) Swap(i, j int) {
 
 //-------------------------------------------------------------------------------------------------
 
-// Contains determines if a given item is already in the list.
+// Contains determines whether a given item is already in the list, returning true if so.
 func (list *IntList) Contains(v int) bool {
 	return list.Exists(func(x int) bool {
 		return x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the list.
+// ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (list *IntList) ContainsAll(i ...int) bool {
 	if list == nil {

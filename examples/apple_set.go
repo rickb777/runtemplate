@@ -69,7 +69,7 @@ func (set *AppleSet) slice() []Apple {
 		return nil
 	}
 
-	var s []Apple
+	s := make([]Apple, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -89,7 +89,7 @@ func (set *AppleSet) ToInterfaceSlice() []interface{} {
 	set.s.RLock()
 	defer set.s.RUnlock()
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -181,7 +181,7 @@ func (set *AppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether the given items are all in the set, returning true if so.
 func (set *AppleSet) ContainsAll(i ...Apple) bool {
 	if set == nil {
 		return false
@@ -377,7 +377,7 @@ func (set *AppleSet) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Exists applies a predicate function p to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
 func (set *AppleSet) Exists(p func(Apple) bool) bool {
@@ -625,7 +625,7 @@ func (set *AppleSet) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&set.m)
 }
 
-// GobDecode implements 'gob' encoding for this set type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (set AppleSet) GobEncode() ([]byte, error) {
 	set.s.RLock()

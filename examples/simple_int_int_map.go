@@ -329,8 +329,9 @@ func (mm SimpleIntIntMap) Clone() SimpleIntIntMap {
 
 //-------------------------------------------------------------------------------------------------
 
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (mm SimpleIntIntMap) String() string {
-	return mm.MkString3("map[", ", ", "]")
+	return mm.MkString3("[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {

@@ -108,7 +108,7 @@ func (mm *ImmutableIntIntMap) Values() []int {
 		return nil
 	}
 
-	var s []int
+	s := make([]int, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -355,7 +355,7 @@ func (mm *ImmutableIntIntMap) Clone() *ImmutableIntIntMap {
 //-------------------------------------------------------------------------------------------------
 
 func (mm *ImmutableIntIntMap) String() string {
-	return mm.MkString3("map[", ", ", "]")
+	return mm.MkString3("[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {

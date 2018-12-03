@@ -426,7 +426,7 @@ func (mm *FastIntIntMap) Clone() *FastIntIntMap {
 //-------------------------------------------------------------------------------------------------
 
 func (mm *FastIntIntMap) String() string {
-	return mm.MkString3("map[", ", ", "]")
+	return mm.MkString3("[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {

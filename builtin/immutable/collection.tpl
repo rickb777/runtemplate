@@ -94,10 +94,10 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	CountBy(p func({{.PType}}) bool) int
 {{- if .Comparable}}
 
-	// Contains determines if a given item is already in the collection.
+	// Contains determines whether a given item is already in the collection, returning true if so.
 	Contains(v {{.Type}}) bool
 
-	// ContainsAll determines if the given items are all in the collection.
+	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...{{.Type}}) bool
 {{- end}}
 {{- if .Ordered}}

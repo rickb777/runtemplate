@@ -52,7 +52,7 @@ func (set SimpleAppleSet) ToSet() SimpleAppleSet {
 
 // ToSlice returns the elements of the current set as a slice.
 func (set SimpleAppleSet) ToSlice() []Apple {
-	var s []Apple
+	s := make([]Apple, 0, len(set))
 	for v := range set {
 		s = append(s, v)
 	}
@@ -61,8 +61,8 @@ func (set SimpleAppleSet) ToSlice() []Apple {
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set SimpleAppleSet) ToInterfaceSlice() []interface{} {
-	var s []interface{}
-	for v, _ := range set {
+	s := make([]interface{}, 0, len(set))
+	for v := range set {
 		s = append(s, v)
 	}
 	return s
@@ -89,7 +89,7 @@ func (set SimpleAppleSet) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set SimpleAppleSet) IsSequence() bool {
 	return false
 }
@@ -129,7 +129,7 @@ func (set SimpleAppleSet) Contains(i Apple) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether a given item is already in the set, returning true if so.
 func (set SimpleAppleSet) ContainsAll(i ...Apple) bool {
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -244,44 +244,44 @@ func (set SimpleAppleSet) Send() <-chan Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set SimpleAppleSet) Forall(fn func(Apple) bool) bool {
+func (set SimpleAppleSet) Forall(p func(Apple) bool) bool {
 	for v := range set {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set SimpleAppleSet) Exists(fn func(Apple) bool) bool {
+func (set SimpleAppleSet) Exists(p func(Apple) bool) bool {
 	for v := range set {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the passed func against each element.
-func (set SimpleAppleSet) Foreach(fn func(Apple)) {
+// Foreach iterates over AppleSet and executes the function f against each element.
+func (set SimpleAppleSet) Foreach(f func(Apple)) {
 	for v := range set {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first Apple that returns true for predicate p.
-// False is returned if none match.
+// Find returns the first Apple that returns true for the predicate p. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set SimpleAppleSet) Find(p func(Apple) bool) (Apple, bool) {
 
 	for v := range set {
@@ -292,16 +292,15 @@ func (set SimpleAppleSet) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
-
 }
 
-// Filter returns a new SimpleAppleSet whose elements return true for func.
+// Filter returns a new SimpleAppleSet whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set SimpleAppleSet) Filter(fn func(Apple) bool) SimpleAppleSet {
+func (set SimpleAppleSet) Filter(p func(Apple) bool) SimpleAppleSet {
 	result := NewSimpleAppleSet()
 	for v := range set {
-		if fn(v) {
+		if p(v) {
 			result[v] = struct{}{}
 		}
 	}
@@ -326,32 +325,32 @@ func (set SimpleAppleSet) Partition(p func(Apple) bool) (SimpleAppleSet, SimpleA
 	return matching, others
 }
 
-// Map returns a new SimpleAppleSet by transforming every element with a function fn.
+// Map returns a new SimpleAppleSet by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SimpleAppleSet) Map(fn func(Apple) Apple) SimpleAppleSet {
+func (set SimpleAppleSet) Map(f func(Apple) Apple) SimpleAppleSet {
 	result := NewSimpleAppleSet()
 
 	for v := range set {
-		result[fn(v)] = struct{}{}
+		result[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new SimpleAppleSet by transforming every element with a function fn that
+// FlatMap returns a new SimpleAppleSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set SimpleAppleSet) FlatMap(fn func(Apple) []Apple) SimpleAppleSet {
+func (set SimpleAppleSet) FlatMap(f func(Apple) []Apple) SimpleAppleSet {
 	result := NewSimpleAppleSet()
 
-	for v, _ := range set {
-		for _, x := range fn(v) {
+	for v := range set {
+		for _, x := range f(v) {
 			result[x] = struct{}{}
 		}
 	}
@@ -359,10 +358,10 @@ func (set SimpleAppleSet) FlatMap(fn func(Apple) []Apple) SimpleAppleSet {
 	return result
 }
 
-// CountBy gives the number elements of SimpleAppleSet that return true for the passed predicate.
-func (set SimpleAppleSet) CountBy(predicate func(Apple) bool) (result int) {
+// CountBy gives the number elements of SimpleAppleSet that return true for the predicate p.
+func (set SimpleAppleSet) CountBy(p func(Apple) bool) (result int) {
 	for v := range set {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}

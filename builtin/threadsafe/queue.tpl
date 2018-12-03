@@ -210,7 +210,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
 {{- end}}
 {{- if .ToSet}}
 
-// ToList returns the elements of the queue as a list. The returned list is a shallow
+// ToSet returns the elements of the queue as a set. The returned set is a shallow
 // copy; the queue is not altered.
 func (queue *{{.UPrefix}}{{.UType}}Queue) ToSet() *{{.UPrefix}}{{.UType}}Set {
 	if queue == nil {
@@ -620,14 +620,14 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPop(n int) []{{.PType}} {
 //-------------------------------------------------------------------------------------------------
 {{- if .Comparable}}
 
-// Contains determines if a given item is already in the queue.
+// Contains determines whether a given item is already in the queue, returning true if so.
 func (queue *{{.UPrefix}}{{.UType}}Queue) Contains(v {{.Type}}) bool {
 	return queue.Exists(func(x {{.PType}}) bool {
 		return {{.TypeStar}}x == v
 	})
 }
 
-// ContainsAll determines if the given items are all in the queue.
+// ContainsAll determines whether the given items are all in the queue, returning true if so.
 // This is potentially a slow method and should only be used rarely.
 func (queue *{{.UPrefix}}{{.UType}}Queue) ContainsAll(i ...{{.Type}}) bool {
 	if queue == nil {
@@ -1039,8 +1039,8 @@ func (queue {{.UPrefix}}{{.UType}}Queue) mkString3Bytes(before, between, after s
 //	return gob.NewDecoder(buf).Decode(&queue.m)
 //}
 //
-//// GobDecode implements 'gob' encoding for this queue type.
-//// You must register {{.Type}} with the 'gob' package before this method is used.
+// GobEncode implements 'gob' encoding for this list type.
+// You must register {{.Type}} with the 'gob' package before this method is used.
 //func (queue {{.UPrefix}}{{.UType}}Queue) GobEncode() ([]byte, error) {
 //	queue.s.RLock()
 //	defer queue.s.RUnlock()

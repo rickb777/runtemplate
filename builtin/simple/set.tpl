@@ -106,7 +106,7 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSet() {{.UPrefix}}{{.UType}}Set {
 
 // ToSlice returns the elements of the current set as a slice.
 func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
-	var s []{{.Type}}
+	s := make([]{{.Type}}, 0, len(set))
 	for v := range set {
 		s = append(s, v)
 	}
@@ -115,8 +115,8 @@ func (set {{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
 func (set {{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
-	var s []interface{}
-	for v, _ := range set {
+	s := make([]interface{}, 0, len(set))
+	for v := range set {
 		s = append(s, v)
 	}
 	return s
@@ -143,7 +143,7 @@ func (set {{.UPrefix}}{{.UType}}Set) NonEmpty() bool {
 	return set.Size() > 0
 }
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (set {{.UPrefix}}{{.UType}}Set) IsSequence() bool {
 	return false
 }
@@ -183,7 +183,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 	return found
 }
 
-// Contains determines whether a given item is already in the set, returning true if so.
+// ContainsAll determines whether a given item is already in the set, returning true if so.
 func (set {{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 	for _, v := range i {
 		if !set.Contains(v) {
@@ -298,44 +298,44 @@ func (set {{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 
 //-------------------------------------------------------------------------------------------------
 
-// Forall applies a predicate function to every element in the set. If the function returns false,
+// Forall applies a predicate function p to every element in the set. If the function returns false,
 // the iteration terminates early. The returned value is true if all elements were visited,
 // or false if an early return occurred.
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set {{.UPrefix}}{{.UType}}Set) Forall(fn func({{.Type}}) bool) bool {
+func (set {{.UPrefix}}{{.UType}}Set) Forall(p func({{.Type}}) bool) bool {
 	for v := range set {
-		if !fn(v) {
+		if !p(v) {
 			return false
 		}
 	}
 	return true
 }
 
-// Exists applies a predicate function to every element in the set. If the function returns true,
+// Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set {{.UPrefix}}{{.UType}}Set) Exists(fn func({{.Type}}) bool) bool {
+func (set {{.UPrefix}}{{.UType}}Set) Exists(p func({{.Type}}) bool) bool {
 	for v := range set {
-		if fn(v) {
+		if p(v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over {{.Type}}Set and executes the passed func against each element.
-func (set {{.UPrefix}}{{.UType}}Set) Foreach(fn func({{.Type}})) {
+// Foreach iterates over {{.Type}}Set and executes the function f against each element.
+func (set {{.UPrefix}}{{.UType}}Set) Foreach(f func({{.Type}})) {
 	for v := range set {
-		fn(v)
+		f(v)
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for predicate p.
-// False is returned if none match.
+// Find returns the first {{.Type}} that returns true for the predicate p. If there are many matches
+// one is arbtrarily chosen. False is returned if none match.
 func (set {{.UPrefix}}{{.UType}}Set) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
 
 	for v := range set {
@@ -343,22 +343,23 @@ func (set {{.UPrefix}}{{.UType}}Set) Find(p func({{.PType}}) bool) ({{.PType}}, 
 			return v, true
 		}
 	}
+{{- if eq .TypeStar "*"}}
 
-{{if eq .TypeStar "*"}}
 	return nil, false
-{{else}}
+{{- else}}
+
 	var empty {{.Type}}
 	return empty, false
-{{end}}
+{{- end}}
 }
 
-// Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for func.
+// Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set {{.UPrefix}}{{.UType}}Set) Filter(fn func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
+func (set {{.UPrefix}}{{.UType}}Set) Filter(p func({{.Type}}) bool) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 	for v := range set {
-		if fn(v) {
+		if p(v) {
 			result[v] = struct{}{}
 		}
 	}
@@ -383,32 +384,32 @@ func (set {{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) ({{.UPref
 	return matching, others
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function f.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set {{.UPrefix}}{{.UType}}Set) Map(fn func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func (set {{.UPrefix}}{{.UType}}Set) Map(f func({{.PType}}) {{.PType}}) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 
 	for v := range set {
-		result[fn(v)] = struct{}{}
+		result[f(v)] = struct{}{}
 	}
 
 	return result
 }
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function fn that
+// FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}Set {
+func (set {{.UPrefix}}{{.UType}}Set) FlatMap(f func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}Set {
 	result := New{{.UPrefix}}{{.UType}}Set()
 
-	for v, _ := range set {
-		for _, x := range fn(v) {
+	for v := range set {
+		for _, x := range f(v) {
 			result[x] = struct{}{}
 		}
 	}
@@ -416,10 +417,10 @@ func (set {{.UPrefix}}{{.UType}}Set) FlatMap(fn func({{.PType}}) []{{.PType}}) {
 	return result
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the passed predicate.
-func (set {{.UPrefix}}{{.UType}}Set) CountBy(predicate func({{.Type}}) bool) (result int) {
+// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the predicate p.
+func (set {{.UPrefix}}{{.UType}}Set) CountBy(p func({{.Type}}) bool) (result int) {
 	for v := range set {
-		if predicate(v) {
+		if p(v) {
 			result++
 		}
 	}
@@ -494,7 +495,7 @@ func (set {{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool)
 // Sum returns the sum of all the elements in the set.
 func (set {{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 	sum := {{.Type}}(0)
-	for v, _ := range set {
+	for v := range set {
 		sum = sum + {{.TypeStar}}v
 	}
 	return sum
@@ -523,6 +524,7 @@ func (set {{.UPrefix}}{{.UType}}Set) Equals(other {{.UPrefix}}{{.UType}}Set) boo
 
 //-------------------------------------------------------------------------------------------------
 
+// StringList gets a list of strings that depicts all the elements.
 func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
 	strings := make([]string, len(set))
 	i := 0
@@ -533,8 +535,9 @@ func (set {{.UPrefix}}{{.UType}}Set) StringList() []string {
 	return strings
 }
 
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (set {{.UPrefix}}{{.UType}}Set) String() string {
-	return set.mkString3Bytes("", ", ", "").String()
+	return set.mkString3Bytes("[", ", ", "]").String()
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
@@ -585,7 +588,7 @@ func (set {{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
 // resulting map.
 func (set {{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 	strings := make(map[string]bool)
-	for v, _ := range set {
+	for v := range set {
 		strings[fmt.Sprintf("%v", v)] = true
 	}
 	return strings

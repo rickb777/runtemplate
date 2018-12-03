@@ -91,7 +91,7 @@ func (list *ImmutableAppleList) ToSlice() []Apple {
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
 func (list *ImmutableAppleList) ToInterfaceSlice() []interface{} {
 
-	var s []interface{}
+	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
 		s = append(s, v)
 	}
@@ -661,7 +661,7 @@ func (list *ImmutableAppleList) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&list.m)
 }
 
-// GobDecode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this list type.
 // You must register Apple with the 'gob' package before this method is used.
 func (list ImmutableAppleList) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}
