@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -59,6 +59,18 @@ func BuildSimpleAppleListFromChan(source <-chan Apple) SimpleAppleList {
 		list = append(list, v)
 	}
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for ordered lists and queues.
+func (list SimpleAppleList) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists or queues.
+func (list SimpleAppleList) IsSet() bool {
+	return false
 }
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
@@ -145,16 +157,6 @@ func (list SimpleAppleList) IsEmpty() bool {
 // NonEmpty tests whether SimpleAppleList is empty.
 func (list SimpleAppleList) NonEmpty() bool {
 	return list.Size() > 0
-}
-
-// IsSequence returns true for ordered lists and queues.
-func (list SimpleAppleList) IsSequence() bool {
-	return true
-}
-
-// IsSet returns false for lists or queues.
-func (list SimpleAppleList) IsSet() bool {
-	return false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -440,7 +442,7 @@ func (list SimpleAppleList) Partition(p func(Apple) bool) (SimpleAppleList, Simp
 	return matching, others
 }
 
-// Map returns a new SimpleAppleList by transforming every element with a function fn.
+// Map returns a new SimpleAppleList by transforming every element with function f.
 // The resulting list is the same size as the original list.
 // The original list is not modified.
 //
@@ -456,17 +458,17 @@ func (list SimpleAppleList) Map(f func(Apple) Apple) SimpleAppleList {
 	return result
 }
 
-// FlatMap returns a new SimpleAppleList by transforming every element with a function fn that
+// FlatMap returns a new SimpleAppleList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list SimpleAppleList) FlatMap(fn func(Apple) []Apple) SimpleAppleList {
+func (list SimpleAppleList) FlatMap(f func(Apple) []Apple) SimpleAppleList {
 	result := MakeSimpleAppleList(0, len(list))
 
 	for _, v := range list {
-		result = append(result, fn(v)...)
+		result = append(result, f(v)...)
 	}
 
 	return result

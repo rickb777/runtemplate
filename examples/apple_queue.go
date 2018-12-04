@@ -11,7 +11,7 @@
 // Generated from threadsafe/queue.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:<no value> ToSet:<no value>
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -62,6 +62,8 @@ func NewAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple) boo
 	}
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // IsSequence returns true for ordered lists and queues.
 func (queue *AppleQueue) IsSequence() bool {
 	return true
@@ -72,8 +74,82 @@ func (queue *AppleQueue) IsSet() bool {
 	return false
 }
 
+// ToSlice returns the elements of the queue as a slice. The queue is not altered.
+func (queue *AppleQueue) ToSlice() []Apple {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	return queue.toSlice(make([]Apple, queue.length))
+}
+
+func (queue *AppleQueue) toSlice(s []Apple) []Apple {
+	front, back := queue.frontAndBack()
+	copy(s, front)
+	if len(back) > 0 && len(s) >= len(front) {
+		copy(s[len(front):], back)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
+// The queue is not altered.
+func (queue *AppleQueue) ToInterfaceSlice() []interface{} {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	s := make([]interface{}, 0, queue.length)
+	for _, v := range front {
+		s = append(s, v)
+	}
+
+	for _, v := range back {
+		s = append(s, v)
+	}
+
+	return s
+}
+
+// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
+func (queue *AppleQueue) Clone() *AppleQueue {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	buffer := queue.toSlice(make([]Apple, queue.capacity))
+
+	return &AppleQueue{
+		m:         buffer,
+		read:      0,
+		write:     queue.length,
+		length:    queue.length,
+		capacity:  queue.capacity,
+		overwrite: queue.overwrite,
+		less:      queue.less,
+		s:         &sync.RWMutex{},
+	}
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue AppleQueue) IsOverwriting() bool {
+func (queue *AppleQueue) IsOverwriting() bool {
+	if queue == nil {
+		return false
+	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.overwrite
 }
 
@@ -194,73 +270,6 @@ func (queue *AppleQueue) indexes() []int {
 		return []int{queue.read, queue.write}
 	}
 	return []int{queue.read, queue.capacity, 0, queue.write}
-}
-
-// ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *AppleQueue) ToSlice() []Apple {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	return queue.toSlice(make([]Apple, queue.length))
-}
-
-func (queue *AppleQueue) toSlice(s []Apple) []Apple {
-	front, back := queue.frontAndBack()
-	copy(s, front)
-	if len(back) > 0 && len(s) >= len(front) {
-		copy(s[len(front):], back)
-	}
-	return s
-}
-
-// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
-// The queue is not altered.
-func (queue *AppleQueue) ToInterfaceSlice() []interface{} {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	front, back := queue.frontAndBack()
-	s := make([]interface{}, 0, queue.length)
-	for _, v := range front {
-		s = append(s, v)
-	}
-
-	for _, v := range back {
-		s = append(s, v)
-	}
-
-	return s
-}
-
-// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *AppleQueue) Clone() *AppleQueue {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	buffer := queue.toSlice(make([]Apple, queue.capacity))
-
-	return &AppleQueue{
-		m:         buffer,
-		read:      0,
-		write:     queue.length,
-		length:    queue.length,
-		capacity:  queue.capacity,
-		overwrite: queue.overwrite,
-		less:      queue.less,
-		s:         &sync.RWMutex{},
-	}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -711,6 +720,78 @@ func (queue *AppleQueue) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a AppleQueue by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the queue in place.
+//
+// The queue is modified and the modified queue is returned.
+func (queue *AppleQueue) DoKeepWhere(p func(Apple) bool) *AppleQueue {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
+	if queue.length == 0 {
+		return queue
+	}
+
+	return queue.doKeepWhere(p)
+}
+
+func (queue *AppleQueue) doKeepWhere(p func(Apple) bool) *AppleQueue {
+	last := queue.capacity
+
+	if queue.write > queue.read {
+		// only need to process the front of the queue
+		last = queue.write
+	}
+
+	r := queue.read
+	w := r
+	n := 0
+
+	// 1st loop: front of queue (from queue.read)
+	for r < last {
+		if p(queue.m[r]) {
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
+			w++
+			n++
+		}
+		r++
+	}
+
+	w = w % queue.capacity
+
+	if queue.write > queue.read {
+		// only needed to process the front of the queue
+		queue.write = w
+		queue.length = n
+		return queue
+	}
+
+	// 2nd loop: back of queue (from 0 to queue.write)
+	r = 0
+	for r < queue.write {
+		if p(queue.m[r]) {
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
+			w = (w + 1) % queue.capacity
+			n++
+		}
+		r++
+	}
+
+	queue.write = w
+	queue.length = n
+
+	return queue
 }
 
 // Filter returns a new AppleQueue whose elements return true for predicate p.

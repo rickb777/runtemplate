@@ -35,7 +35,8 @@ func Test{{.UType}}ToSlice(t *testing.T) {
 	test{{.UType}}ToSlice(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}ToSlice(t, NewX1{{.UType}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}ToSlice(t, interestingQueue(1, 2, 3), "Queue")
+	test{{.UType}}ToSlice(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.UType}}ToSlice(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
@@ -52,7 +53,8 @@ func Test{{.UType}}Exists(t *testing.T) {
 	test{{.UType}}Exists1(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Exists1(t, NewX1{{.UType}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}Exists1(t, interestingQueue(1, 2, 3), "Queue")
+	test{{.UType}}Exists1(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.UType}}Exists1(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
@@ -76,7 +78,8 @@ func Test{{.UType}}Forall(t *testing.T) {
 	test{{.UType}}Forall(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Forall(t, NewX1{{.UType}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}Forall(t, interestingQueue(1, 2, 3), "Queue")
+	test{{.UType}}Forall(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.UType}}Forall(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
@@ -100,7 +103,8 @@ func Test{{.UType}}Find(t *testing.T) {
 	test{{.UType}}Find(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Find(t, NewX1{{.UType}}List(1, 2, 3, 4), "List")
 {{- if .Mutable}}
-	test{{.UType}}Find(t, interestingQueue(1, 2, 3), "Queue")
+	test{{.UType}}Find(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.UType}}Find(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
@@ -125,7 +129,8 @@ func Test{{.UType}}CountBy(t *testing.T) {
 	test{{.UType}}CountBy(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}CountBy(t, NewX1{{.UType}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}CountBy(t, interestingQueue(1, 2, 3), "Queue")
+	test{{.UType}}CountBy(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.UType}}CountBy(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
@@ -143,7 +148,8 @@ func Test{{.UType}}Foreach(t *testing.T) {
 	test{{.UType}}Foreach(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
 	test{{.UType}}Foreach(t, NewX1{{.UType}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}Foreach(t, interestingQueue(1, 2, 3), "Queue")
+	test{{.UType}}Foreach(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.UType}}Foreach(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
@@ -162,7 +168,8 @@ func Test{{.UType}}Contains(t *testing.T) {
 	test{{.UType}}Contains(t, NewX1{{.UType}}Set(71, 1, 7, 13), "Set")
 	test{{.UType}}Contains(t, NewX1{{.UType}}List(71, 1, 7, 13), "List")
 {{- if .Mutable}}
-	test{{.UType}}Contains(t, interestingQueue(71, 1, 7, 13), "Queue")
+	test{{.UType}}Contains(t, interestingFullQueue(71, 1, 7, 13), "Queue")
+	test{{.UType}}Contains(t, interestingPartialQueue(71, 1, 7, 13), "Queue")
 {{- end}}
 }
 
@@ -180,7 +187,8 @@ func Test{{.UType}}MinMaxSum(t *testing.T) {
 	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), "Set")
 	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), "List")
 {{- if .Mutable}}
-	test{{.UType}}MinMaxSum(t, interestingQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.UType}}MinMaxSum(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.UType}}MinMaxSum(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
 {{- end}}
 }
 
@@ -204,7 +212,8 @@ func Test{{.UType}}Stringer(t *testing.T) {
 	test{{.UType}}Stringer(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), false, "Set")
 	test{{.UType}}Stringer(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), true, "List")
 {{- if .Mutable}}
-	test{{.UType}}Stringer(t, NewX1{{.UType}}Queue(5, false).Push(10, 71, 3, 7, 13), true, "Queue")
+	test{{.UType}}Stringer(t, interestingFullQueue(10, 71, 3, 7, 13), true, "Queue")
+	test{{.UType}}Stringer(t, interestingPartialQueue(10, 71, 3, 7, 13), true, "Queue")
 {{- end}}
 }
 
@@ -254,9 +263,17 @@ func test{{.UType}}Stringer(t *testing.T, a X1{{.UType}}Collection, ordered bool
 }
 {{- if .Mutable}}
 
-func interestingQueue(values ...{{.PType}}) X1{{.UType}}Collection {
+func interestingFullQueue(values ...{{.PType}}) *X1{{.UType}}Queue {
     // need to use Pop in order to wrap the read & write indexes of the queue
     q := NewX1{{.UType}}Queue(len(values), false).Push(0, 1, 2, values[0])
+    q.Pop(3)
+    q.Push(values[1:]...)
+	return q
+}
+
+func interestingPartialQueue(values ...{{.PType}}) *X1{{.UType}}Queue {
+    // need to use Pop in order to wrap the read & write indexes of the queue
+    q := NewX1{{.UType}}Queue(len(values)+2, false).Push(0, 1, 2, values[0])
     q.Pop(3)
     q.Push(values[1:]...)
 	return q

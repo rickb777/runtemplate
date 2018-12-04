@@ -107,6 +107,18 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPref
 	return list
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (list *{{.UPrefix}}{{.UType}}List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists or queues.
+func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
+	return false
+}
+
 // slice returns the internal elements of the current list. This is a seam for testing etc.
 func (list *{{.UPrefix}}{{.UType}}List) slice() []{{.PType}} {
 	if list == nil {
@@ -217,16 +229,6 @@ func (list *{{.UPrefix}}{{.UType}}List) IsEmpty() bool {
 // NonEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
 func (list *{{.UPrefix}}{{.UType}}List) NonEmpty() bool {
 	return list.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (list *{{.UPrefix}}{{.UType}}List) IsSequence() bool {
-	return true
-}
-
-// IsSet returns false for lists or queues.
-func (list *{{.UPrefix}}{{.UType}}List) IsSet() bool {
-	return false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -548,12 +550,12 @@ func (list *{{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) (*{{.
 	return matching, others
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}List by transforming every element with function f.
 // The resulting list is the same size as the original list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) Map(f func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
 	}
@@ -561,18 +563,18 @@ func (list *{{.UPrefix}}{{.UType}}List) Map(fn func({{.PType}}) {{.PType}}) *{{.
 	result := new{{.UPrefix}}{{.UType}}List(len(list.m), len(list.m))
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
 }
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn that
+// FlatMap returns a new {{.UPrefix}}{{.UType}}List by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}List {
+func (list *{{.UPrefix}}{{.UType}}List) FlatMap(f func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	if list == nil {
 		return nil
 	}
@@ -580,7 +582,7 @@ func (list *{{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}
 	result := new{{.UPrefix}}{{.UType}}List(0, len(list.m))
 
 	for _, v := range list.m {
-		result.m = append(result.m, fn(v)...)
+		result.m = append(result.m, f(v)...)
 	}
 
 	return result
@@ -845,7 +847,7 @@ func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list {{.UPrefix}}{{.UType}}List) StringList() []string {
+func (list *{{.UPrefix}}{{.UType}}List) StringList() []string {
 
 	strings := make([]string, len(list.m))
 	for i, v := range list.m {

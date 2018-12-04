@@ -74,6 +74,8 @@ func New{{.UPrefix}}{{.UType}}SortedQueue(capacity int, overwrite bool, less fun
 	}
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // IsSequence returns true for ordered lists and queues.
 func (queue *{{.UPrefix}}{{.UType}}Queue) IsSequence() bool {
 	return true
@@ -84,8 +86,116 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) IsSet() bool {
 	return false
 }
 
+{{- if .ToList}}
+
+// ToList returns the elements of the queue as a list. The returned list is a shallow
+// copy; the queue is not altered.
+func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
+	queue.toSlice(list.m)
+	return list
+}
+{{- end}}
+{{- if .ToSet}}
+
+// ToSet returns the elements of the queue as a set. The returned set is a shallow
+// copy; the queue is not altered.
+func (queue *{{.UPrefix}}{{.UType}}Queue) ToSet() *{{.UPrefix}}{{.UType}}Set {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	slice := queue.toSlice(make([]{{.PType}}, queue.length))
+	return New{{.UPrefix}}{{.UType}}Set(slice...)
+}
+{{- end}}
+
+// ToSlice returns the elements of the queue as a slice. The queue is not altered.
+func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	return queue.toSlice(make([]{{.PType}}, queue.length))
+}
+
+func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
+	front, back := queue.frontAndBack()
+	copy(s, front)
+	if len(back) > 0 && len(s) >= len(front) {
+		copy(s[len(front):], back)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
+// The queue is not altered.
+func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	s := make([]interface{}, 0, queue.length)
+	for _, v := range front {
+		s = append(s, v)
+	}
+
+	for _, v := range back {
+		s = append(s, v)
+	}
+
+	return s
+}
+
+// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
+func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	buffer := queue.toSlice(make([]{{.PType}}, queue.capacity))
+
+	return &{{.UPrefix}}{{.UType}}Queue{
+		m:         buffer,
+		read:      0,
+		write:     queue.length,
+		length:    queue.length,
+		capacity:  queue.capacity,
+		overwrite: queue.overwrite,
+		less:      queue.less,
+		s:         &sync.RWMutex{},
+	}
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue {{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
+func (queue *{{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
+	if queue == nil {
+		return false
+	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.overwrite
 }
 
@@ -206,105 +316,6 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) indexes() []int {
 		return []int{queue.read, queue.write}
 	}
 	return []int{queue.read, queue.capacity, 0, queue.write}
-}
-{{- if .ToList}}
-
-// ToList returns the elements of the queue as a list. The returned list is a shallow
-// copy; the queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
-	queue.toSlice(list.m)
-	return list
-}
-{{- end}}
-{{- if .ToSet}}
-
-// ToSet returns the elements of the queue as a set. The returned set is a shallow
-// copy; the queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToSet() *{{.UPrefix}}{{.UType}}Set {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	return New{{.UPrefix}}{{.UType}}Set(queue.ToSlice()...)
-}
-{{- end}}
-
-// ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	return queue.toSlice(make([]{{.PType}}, queue.length))
-}
-
-func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
-	front, back := queue.frontAndBack()
-	copy(s, front)
-	if len(back) > 0 && len(s) >= len(front) {
-		copy(s[len(front):], back)
-	}
-	return s
-}
-
-// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
-// The queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	front, back := queue.frontAndBack()
-	s := make([]interface{}, 0, queue.length)
-	for _, v := range front {
-		s = append(s, v)
-	}
-
-	for _, v := range back {
-		s = append(s, v)
-	}
-
-	return s
-}
-
-// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
-	if queue == nil {
-		return nil
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	buffer := queue.toSlice(make([]{{.PType}}, queue.capacity))
-
-	return &{{.UPrefix}}{{.UType}}Queue{
-		m:         buffer,
-		read:      0,
-		write:     queue.length,
-		length:    queue.length,
-		capacity:  queue.capacity,
-		overwrite: queue.overwrite,
-		less:      queue.less,
-		s:         &sync.RWMutex{},
-	}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -744,11 +755,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Send() <-chan {{.PType}} {
 			queue.s.RLock()
 			defer queue.s.RUnlock()
 
-        	front, back := queue.frontAndBack()
-	        for _, v := range front {
+			front, back := queue.frontAndBack()
+			for _, v := range front {
 				ch <- v
 			}
-	        for _, v := range back {
+			for _, v := range back {
 				ch <- v
 			}
 		}
@@ -788,6 +799,78 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Find(p func({{.PType}}) bool) ({{.PTyp
 	var empty {{.Type}}
 	return empty, false
 {{- end}}
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a {{.UPrefix}}{{.UType}}Queue by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the queue in place.
+//
+// The queue is modified and the modified queue is returned.
+func (queue *{{.UPrefix}}{{.UType}}Queue) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
+	if queue.length == 0 {
+		return queue
+	}
+
+	return queue.doKeepWhere(p)
+}
+
+func (queue *{{.UPrefix}}{{.UType}}Queue) doKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
+	last := queue.capacity
+
+	if queue.write > queue.read {
+	    // only need to process the front of the queue
+		last = queue.write
+	}
+
+	r := queue.read
+	w := r
+	n := 0
+
+	// 1st loop: front of queue (from queue.read)
+	for r < last {
+		if p(queue.m[r]) {
+    		if w != r {
+		    	queue.m[w] = queue.m[r]
+	    	}
+			w++
+			n++
+		}
+		r++
+	}
+
+	w = w % queue.capacity
+
+	if queue.write > queue.read {
+	    // only needed to process the front of the queue
+    	queue.write = w
+		queue.length = n
+		return queue
+	}
+
+	// 2nd loop: back of queue (from 0 to queue.write)
+	r = 0
+	for r < queue.write {
+		if p(queue.m[r]) {
+    		if w != r {
+		    	queue.m[w] = queue.m[r]
+	    	}
+			w = (w + 1) % queue.capacity
+			n++
+		}
+		r++
+	}
+
+	queue.write = w
+	queue.length = n
+
+	return queue
 }
 
 // Filter returns a new {{.UPrefix}}{{.UType}}Queue whose elements return true for predicate p.
@@ -935,14 +1018,14 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MinBy(less func({{.PType}}, {{.PType}}
 	}
 
 	indexes := queue.indexes()
-    m := indexes[0]
+	m := indexes[0]
 	for len(indexes) > 1 {
 		f := indexes[0]
 		for i := f; i < indexes[1]; i++ {
-		    if i != m {
-    			if less(queue.m[i], queue.m[m]) {
-	    			m = i
-		    	}
+			if i != m {
+				if less(queue.m[i], queue.m[m]) {
+					m = i
+				}
 			}
 		}
 		indexes = indexes[2:]
@@ -962,14 +1045,14 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MaxBy(less func({{.PType}}, {{.PType}}
 	}
 
 	indexes := queue.indexes()
-    m := indexes[0]
+	m := indexes[0]
 	for len(indexes) > 1 {
 		f := indexes[0]
 		for i := f; i < indexes[1]; i++ {
-		    if i != m {
-    			if less(queue.m[m], queue.m[i]) {
-	    			m = i
-		    	}
+			if i != m {
+				if less(queue.m[m], queue.m[i]) {
+					m = i
+				}
 			}
 		}
 		indexes = indexes[2:]

@@ -3,7 +3,7 @@
 //
 // Generated from immutable/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:disabled
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -88,6 +88,18 @@ func BuildImmutableIntListFromChan(source <-chan int) *ImmutableIntList {
 		list.m = append(list.m, v)
 	}
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (list *ImmutableIntList) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists or queues.
+func (list *ImmutableIntList) IsSet() bool {
+	return false
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -188,16 +200,6 @@ func (list *ImmutableIntList) IsEmpty() bool {
 // NonEmpty tests whether ImmutableIntList is empty.
 func (list *ImmutableIntList) NonEmpty() bool {
 	return list.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (list *ImmutableIntList) IsSequence() bool {
-	return true
-}
-
-// IsSet returns false for lists or queues.
-func (list *ImmutableIntList) IsSet() bool {
-	return false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -512,12 +514,12 @@ func (list *ImmutableIntList) Partition(p func(int) bool) (*ImmutableIntList, *I
 	return matching, others
 }
 
-// Map returns a new ImmutableIntList by transforming every element with a function fn.
+// Map returns a new ImmutableIntList by transforming every element with function f.
 // The resulting list is the same size as the original list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *ImmutableIntList) Map(fn func(int) int) *ImmutableIntList {
+func (list *ImmutableIntList) Map(f func(int) int) *ImmutableIntList {
 	if list == nil {
 		return nil
 	}
@@ -525,18 +527,18 @@ func (list *ImmutableIntList) Map(fn func(int) int) *ImmutableIntList {
 	result := newImmutableIntList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 	}
 
 	return result
 }
 
-// FlatMap returns a new ImmutableIntList by transforming every element with a function fn that
+// FlatMap returns a new ImmutableIntList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *ImmutableIntList) FlatMap(fn func(int) []int) *ImmutableIntList {
+func (list *ImmutableIntList) FlatMap(f func(int) []int) *ImmutableIntList {
 	if list == nil {
 		return nil
 	}
@@ -544,7 +546,7 @@ func (list *ImmutableIntList) FlatMap(fn func(int) []int) *ImmutableIntList {
 	result := newImmutableIntList(0, len(list.m))
 
 	for _, v := range list.m {
-		result.m = append(result.m, fn(v)...)
+		result.m = append(result.m, f(v)...)
 	}
 
 	return result
@@ -802,7 +804,7 @@ func (list *ImmutableIntList) Max() (result int) {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list ImmutableIntList) StringList() []string {
+func (list *ImmutableIntList) StringList() []string {
 
 	strings := make([]string, len(list.m))
 	for i, v := range list.m {

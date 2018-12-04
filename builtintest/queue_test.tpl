@@ -260,6 +260,76 @@ func Test{{.UType}}QueueHeadLast(t *testing.T) {
 	g.Expect(a.HeadOption()).To(Equal(0))
 	g.Expect(a.LastOption()).To(Equal(0))
 }
+{{- if and .Mutable .Numeric}}
+
+func Test{{.UType}}QueueDoKeepWhere(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+    cases := []struct{
+        act, exp *X1{{.UType}}Queue
+        m int
+    }{
+        {
+            act: nil,
+            exp: nil,
+        },
+        {
+            act: NewX1{{.UType}}Queue(7, false).Push(1, 3, 5, 2, 4, 6),
+            exp: NewX1{{.UType}}Queue(7, false).Push(5, 4, 6),
+            m: 1,
+        },
+        {
+            act: NewX1{{.UType}}Queue(6, false).Push(1, 3, 5, 2, 4, 6),
+            exp: NewX1{{.UType}}Queue(6, false).Push(5, 4, 6),
+            m: 1,
+        },
+        {
+            act: NewX1{{.UType}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(7, false).Push(4, 6, 5, 7),
+            m: 1,
+        },
+        {
+            act: NewX1{{.UType}}Queue(6, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            m: 1,
+        },
+        {
+            act: NewX1{{.UType}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            m: 1,
+        },
+        {
+            act: NewX1{{.UType}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(6, false).Push(),
+            m: 0,
+        },
+        {
+            act: interestingFullQueue(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            m: 1,
+        },
+        {
+            act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            m: 1,
+        },
+        {
+            act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.UType}}Queue(6, false).Push(2, 4, 6, 3, 5, 7),
+            m: 3,
+        },
+    }
+
+    for i, c := range cases {
+        r := c.act.DoKeepWhere(func (v {{.PType}}) bool {
+            return (v * c.m) > 3
+        })
+
+        g.Expect(c.act.Equals(c.exp)).To(BeTrue(), "%d %v", i, c.act)
+        g.Expect(c.act.Equals(r)).To(BeTrue(), "%d %v", i, r)
+    }
+}
+{{- end}}
 
 func Test{{.UType}}QueueClone(t *testing.T) {
 	g := NewGomegaWithT(t)

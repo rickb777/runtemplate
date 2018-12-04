@@ -4,7 +4,7 @@
 // Generated from fast/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:true Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -65,6 +65,18 @@ func BuildFastAppleListFromChan(source <-chan Apple) *FastAppleList {
 		list.m = append(list.m, v)
 	}
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (list *FastAppleList) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists or queues.
+func (list *FastAppleList) IsSet() bool {
+	return false
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
@@ -188,16 +200,6 @@ func (list *FastAppleList) IsEmpty() bool {
 // NonEmpty tests whether FastAppleList is empty.
 func (list *FastAppleList) NonEmpty() bool {
 	return list.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (list *FastAppleList) IsSequence() bool {
-	return true
-}
-
-// IsSet returns false for lists or queues.
-func (list *FastAppleList) IsSet() bool {
-	return false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -700,7 +702,7 @@ func (list *FastAppleList) Partition(p func(Apple) bool) (*FastAppleList, *FastA
 	return matching, others
 }
 
-// Map returns a new FastAppleList by transforming every element with a function fn.
+// Map returns a new FastAppleList by transforming every element with function f.
 // The resulting list is the same size as the original list.
 // The original list is not modified.
 //
@@ -720,13 +722,13 @@ func (list *FastAppleList) Map(f func(Apple) Apple) *FastAppleList {
 	return result
 }
 
-// FlatMap returns a new FastAppleList by transforming every element with a function fn that
+// FlatMap returns a new FastAppleList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *FastAppleList) FlatMap(fn func(Apple) []Apple) *FastAppleList {
+func (list *FastAppleList) FlatMap(f func(Apple) []Apple) *FastAppleList {
 	if list == nil {
 		return nil
 	}
@@ -734,7 +736,7 @@ func (list *FastAppleList) FlatMap(fn func(Apple) []Apple) *FastAppleList {
 	result := MakeFastAppleList(0, len(list.m))
 
 	for _, v := range list.m {
-		result.m = append(result.m, fn(v)...)
+		result.m = append(result.m, f(v)...)
 	}
 
 	return result

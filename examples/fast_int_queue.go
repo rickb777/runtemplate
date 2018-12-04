@@ -11,7 +11,7 @@
 // Generated from fast/queue.tpl with Type=int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:<no value> ToSet:<no value>
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -59,6 +59,8 @@ func NewFastIntSortedQueue(capacity int, overwrite bool, less func(i, j int) boo
 	}
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // IsSequence returns true for ordered lists and queues.
 func (queue *FastIntQueue) IsSequence() bool {
 	return true
@@ -69,8 +71,70 @@ func (queue *FastIntQueue) IsSet() bool {
 	return false
 }
 
+// ToSlice returns the elements of the queue as a slice. The queue is not altered.
+func (queue *FastIntQueue) ToSlice() []int {
+	if queue == nil {
+		return nil
+	}
+
+	return queue.toSlice(make([]int, queue.length))
+}
+
+func (queue *FastIntQueue) toSlice(s []int) []int {
+	front, back := queue.frontAndBack()
+	copy(s, front)
+	if len(back) > 0 && len(s) >= len(front) {
+		copy(s[len(front):], back)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
+// The queue is not altered.
+func (queue *FastIntQueue) ToInterfaceSlice() []interface{} {
+	if queue == nil {
+		return nil
+	}
+
+	front, back := queue.frontAndBack()
+	s := make([]interface{}, 0, queue.length)
+	for _, v := range front {
+		s = append(s, v)
+	}
+
+	for _, v := range back {
+		s = append(s, v)
+	}
+
+	return s
+}
+
+// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
+func (queue *FastIntQueue) Clone() *FastIntQueue {
+	if queue == nil {
+		return nil
+	}
+
+	buffer := queue.toSlice(make([]int, queue.capacity))
+
+	return &FastIntQueue{
+		m:         buffer,
+		read:      0,
+		write:     queue.length,
+		length:    queue.length,
+		capacity:  queue.capacity,
+		overwrite: queue.overwrite,
+		less:      queue.less,
+	}
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue FastIntQueue) IsOverwriting() bool {
+func (queue *FastIntQueue) IsOverwriting() bool {
+	if queue == nil {
+		return false
+	}
 	return queue.overwrite
 }
 
@@ -181,63 +245,6 @@ func (queue *FastIntQueue) indexes() []int {
 		return []int{queue.read, queue.write}
 	}
 	return []int{queue.read, queue.capacity, 0, queue.write}
-}
-
-// ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *FastIntQueue) ToSlice() []int {
-	if queue == nil {
-		return nil
-	}
-
-	return queue.toSlice(make([]int, queue.length))
-}
-
-func (queue *FastIntQueue) toSlice(s []int) []int {
-	front, back := queue.frontAndBack()
-	copy(s, front)
-	if len(back) > 0 && len(s) >= len(front) {
-		copy(s[len(front):], back)
-	}
-	return s
-}
-
-// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
-// The queue is not altered.
-func (queue *FastIntQueue) ToInterfaceSlice() []interface{} {
-	if queue == nil {
-		return nil
-	}
-
-	front, back := queue.frontAndBack()
-	s := make([]interface{}, 0, queue.length)
-	for _, v := range front {
-		s = append(s, v)
-	}
-
-	for _, v := range back {
-		s = append(s, v)
-	}
-
-	return s
-}
-
-// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *FastIntQueue) Clone() *FastIntQueue {
-	if queue == nil {
-		return nil
-	}
-
-	buffer := queue.toSlice(make([]int, queue.capacity))
-
-	return &FastIntQueue{
-		m:         buffer,
-		read:      0,
-		write:     queue.length,
-		length:    queue.length,
-		capacity:  queue.capacity,
-		overwrite: queue.overwrite,
-		less:      queue.less,
-	}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -650,6 +657,76 @@ func (queue *FastIntQueue) Find(p func(int) bool) (int, bool) {
 
 	var empty int
 	return empty, false
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a FastIntQueue by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the queue in place.
+//
+// The queue is modified and the modified queue is returned.
+func (queue *FastIntQueue) DoKeepWhere(p func(int) bool) *FastIntQueue {
+	if queue == nil {
+		return nil
+	}
+
+	if queue.length == 0 {
+		return queue
+	}
+
+	return queue.doKeepWhere(p)
+}
+
+func (queue *FastIntQueue) doKeepWhere(p func(int) bool) *FastIntQueue {
+	last := queue.capacity
+
+	if queue.write > queue.read {
+		// only need to process the front of the queue
+		last = queue.write
+	}
+
+	r := queue.read
+	w := r
+	n := 0
+
+	// 1st loop: front of queue (from queue.read)
+	for r < last {
+		if p(queue.m[r]) {
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
+			w++
+			n++
+		}
+		r++
+	}
+
+	w = w % queue.capacity
+
+	if queue.write > queue.read {
+		// only needed to process the front of the queue
+		queue.write = w
+		queue.length = n
+		return queue
+	}
+
+	// 2nd loop: back of queue (from 0 to queue.write)
+	r = 0
+	for r < queue.write {
+		if p(queue.m[r]) {
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
+			w = (w + 1) % queue.capacity
+			n++
+		}
+		r++
+	}
+
+	queue.write = w
+	queue.length = n
+
+	return queue
 }
 
 // Filter returns a new FastIntQueue whose elements return true for predicate p.

@@ -102,6 +102,18 @@ func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) {{.UPrefi
 	return list
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for ordered lists and queues.
+func (list {{.UPrefix}}{{.UType}}List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists or queues.
+func (list {{.UPrefix}}{{.UType}}List) IsSet() bool {
+	return false
+}
+
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
 func (list {{.UPrefix}}{{.UType}}List) ToList() {{.UPrefix}}{{.UType}}List {
 	return list
@@ -198,16 +210,6 @@ func (list {{.UPrefix}}{{.UType}}List) IsEmpty() bool {
 // NonEmpty tests whether {{.UPrefix}}{{.UType}}List is empty.
 func (list {{.UPrefix}}{{.UType}}List) NonEmpty() bool {
 	return list.Size() > 0
-}
-
-// IsSequence returns true for ordered lists and queues.
-func (list {{.UPrefix}}{{.UType}}List) IsSequence() bool {
-	return true
-}
-
-// IsSet returns false for lists or queues.
-func (list {{.UPrefix}}{{.UType}}List) IsSet() bool {
-	return false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -500,7 +502,7 @@ func (list {{.UPrefix}}{{.UType}}List) Partition(p func({{.PType}}) bool) ({{.UP
 	return matching, others
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn.
+// Map returns a new {{.UPrefix}}{{.UType}}List by transforming every element with function f.
 // The resulting list is the same size as the original list.
 // The original list is not modified.
 //
@@ -516,17 +518,17 @@ func (list {{.UPrefix}}{{.UType}}List) Map(f func({{.PType}}) {{.PType}}) {{.UPr
 	return result
 }
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}List by transforming every element with a function fn that
+// FlatMap returns a new {{.UPrefix}}{{.UType}}List by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list {{.UPrefix}}{{.UType}}List) FlatMap(fn func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}List {
+func (list {{.UPrefix}}{{.UType}}List) FlatMap(f func({{.PType}}) []{{.PType}}) {{.UPrefix}}{{.UType}}List {
 	result := Make{{.UPrefix}}{{.UType}}List(0, len(list))
 
 	for _, v := range list {
-		result = append(result, fn(v)...)
+		result = append(result, f(v)...)
 	}
 
 	return result

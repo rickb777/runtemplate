@@ -11,7 +11,7 @@
 // Generated from fast/queue.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:<no value> ToSet:<no value>
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -59,6 +59,8 @@ func NewFastAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple)
 	}
 }
 
+//-------------------------------------------------------------------------------------------------
+
 // IsSequence returns true for ordered lists and queues.
 func (queue *FastAppleQueue) IsSequence() bool {
 	return true
@@ -69,8 +71,70 @@ func (queue *FastAppleQueue) IsSet() bool {
 	return false
 }
 
+// ToSlice returns the elements of the queue as a slice. The queue is not altered.
+func (queue *FastAppleQueue) ToSlice() []Apple {
+	if queue == nil {
+		return nil
+	}
+
+	return queue.toSlice(make([]Apple, queue.length))
+}
+
+func (queue *FastAppleQueue) toSlice(s []Apple) []Apple {
+	front, back := queue.frontAndBack()
+	copy(s, front)
+	if len(back) > 0 && len(s) >= len(front) {
+		copy(s[len(front):], back)
+	}
+	return s
+}
+
+// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
+// The queue is not altered.
+func (queue *FastAppleQueue) ToInterfaceSlice() []interface{} {
+	if queue == nil {
+		return nil
+	}
+
+	front, back := queue.frontAndBack()
+	s := make([]interface{}, 0, queue.length)
+	for _, v := range front {
+		s = append(s, v)
+	}
+
+	for _, v := range back {
+		s = append(s, v)
+	}
+
+	return s
+}
+
+// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
+func (queue *FastAppleQueue) Clone() *FastAppleQueue {
+	if queue == nil {
+		return nil
+	}
+
+	buffer := queue.toSlice(make([]Apple, queue.capacity))
+
+	return &FastAppleQueue{
+		m:         buffer,
+		read:      0,
+		write:     queue.length,
+		length:    queue.length,
+		capacity:  queue.capacity,
+		overwrite: queue.overwrite,
+		less:      queue.less,
+	}
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue FastAppleQueue) IsOverwriting() bool {
+func (queue *FastAppleQueue) IsOverwriting() bool {
+	if queue == nil {
+		return false
+	}
 	return queue.overwrite
 }
 
@@ -181,63 +245,6 @@ func (queue *FastAppleQueue) indexes() []int {
 		return []int{queue.read, queue.write}
 	}
 	return []int{queue.read, queue.capacity, 0, queue.write}
-}
-
-// ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *FastAppleQueue) ToSlice() []Apple {
-	if queue == nil {
-		return nil
-	}
-
-	return queue.toSlice(make([]Apple, queue.length))
-}
-
-func (queue *FastAppleQueue) toSlice(s []Apple) []Apple {
-	front, back := queue.frontAndBack()
-	copy(s, front)
-	if len(back) > 0 && len(s) >= len(front) {
-		copy(s[len(front):], back)
-	}
-	return s
-}
-
-// ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
-// The queue is not altered.
-func (queue *FastAppleQueue) ToInterfaceSlice() []interface{} {
-	if queue == nil {
-		return nil
-	}
-
-	front, back := queue.frontAndBack()
-	s := make([]interface{}, 0, queue.length)
-	for _, v := range front {
-		s = append(s, v)
-	}
-
-	for _, v := range back {
-		s = append(s, v)
-	}
-
-	return s
-}
-
-// Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *FastAppleQueue) Clone() *FastAppleQueue {
-	if queue == nil {
-		return nil
-	}
-
-	buffer := queue.toSlice(make([]Apple, queue.capacity))
-
-	return &FastAppleQueue{
-		m:         buffer,
-		read:      0,
-		write:     queue.length,
-		length:    queue.length,
-		capacity:  queue.capacity,
-		overwrite: queue.overwrite,
-		less:      queue.less,
-	}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -650,6 +657,76 @@ func (queue *FastAppleQueue) Find(p func(Apple) bool) (Apple, bool) {
 
 	var empty Apple
 	return empty, false
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// DoKeepWhere modifies a FastAppleQueue by retaining only those elements that match
+// the predicate p. This is very similar to Filter but alters the queue in place.
+//
+// The queue is modified and the modified queue is returned.
+func (queue *FastAppleQueue) DoKeepWhere(p func(Apple) bool) *FastAppleQueue {
+	if queue == nil {
+		return nil
+	}
+
+	if queue.length == 0 {
+		return queue
+	}
+
+	return queue.doKeepWhere(p)
+}
+
+func (queue *FastAppleQueue) doKeepWhere(p func(Apple) bool) *FastAppleQueue {
+	last := queue.capacity
+
+	if queue.write > queue.read {
+		// only need to process the front of the queue
+		last = queue.write
+	}
+
+	r := queue.read
+	w := r
+	n := 0
+
+	// 1st loop: front of queue (from queue.read)
+	for r < last {
+		if p(queue.m[r]) {
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
+			w++
+			n++
+		}
+		r++
+	}
+
+	w = w % queue.capacity
+
+	if queue.write > queue.read {
+		// only needed to process the front of the queue
+		queue.write = w
+		queue.length = n
+		return queue
+	}
+
+	// 2nd loop: back of queue (from 0 to queue.write)
+	r = 0
+	for r < queue.write {
+		if p(queue.m[r]) {
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
+			w = (w + 1) % queue.capacity
+			n++
+		}
+		r++
+	}
+
+	queue.write = w
+	queue.length = n
+
+	return queue
 }
 
 // Filter returns a new FastAppleQueue whose elements return true for predicate p.

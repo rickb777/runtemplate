@@ -1,6 +1,6 @@
 // Generated from plumbing/plumbing.tpl with Type=Apple
 // No other options are available.
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

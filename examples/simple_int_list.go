@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v2.4.1
+// by runtemplate v2.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
@@ -83,6 +83,18 @@ func BuildSimpleIntListFromChan(source <-chan int) SimpleIntList {
 		list = append(list, v)
 	}
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for ordered lists and queues.
+func (list SimpleIntList) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists or queues.
+func (list SimpleIntList) IsSet() bool {
+	return false
 }
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
@@ -169,16 +181,6 @@ func (list SimpleIntList) IsEmpty() bool {
 // NonEmpty tests whether SimpleIntList is empty.
 func (list SimpleIntList) NonEmpty() bool {
 	return list.Size() > 0
-}
-
-// IsSequence returns true for ordered lists and queues.
-func (list SimpleIntList) IsSequence() bool {
-	return true
-}
-
-// IsSet returns false for lists or queues.
-func (list SimpleIntList) IsSet() bool {
-	return false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -464,7 +466,7 @@ func (list SimpleIntList) Partition(p func(int) bool) (SimpleIntList, SimpleIntL
 	return matching, others
 }
 
-// Map returns a new SimpleIntList by transforming every element with a function fn.
+// Map returns a new SimpleIntList by transforming every element with function f.
 // The resulting list is the same size as the original list.
 // The original list is not modified.
 //
@@ -480,17 +482,17 @@ func (list SimpleIntList) Map(f func(int) int) SimpleIntList {
 	return result
 }
 
-// FlatMap returns a new SimpleIntList by transforming every element with a function fn that
+// FlatMap returns a new SimpleIntList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list SimpleIntList) FlatMap(fn func(int) []int) SimpleIntList {
+func (list SimpleIntList) FlatMap(f func(int) []int) SimpleIntList {
 	result := MakeSimpleIntList(0, len(list))
 
 	for _, v := range list {
-		result = append(result, fn(v)...)
+		result = append(result, f(v)...)
 	}
 
 	return result
