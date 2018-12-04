@@ -260,6 +260,26 @@ func Test{{.UType}}QueueHeadLast(t *testing.T) {
 	g.Expect(a.HeadOption()).To(Equal(0))
 	g.Expect(a.LastOption()).To(Equal(0))
 }
+
+func Test{{.UType}}QueueSend(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := interestingFullQueue(1, 2, 3, 4)
+	b := BuildX1{{.UType}}QueueFromChan(a.Send())
+	g.Expect(a.Equals(b)).To(BeTrue())
+
+	a = interestingPartialQueue(1, 2, 3, 4)
+	b = BuildX1{{.UType}}QueueFromChan(a.Send())
+	g.Expect(a.Equals(b)).To(BeTrue())
+{{- if .Mutable}}
+
+    // check correct nil handling
+	a = nil
+	b = BuildX1{{.UType}}QueueFromChan(a.Send())
+
+	g.Expect(b.IsEmpty()).To(BeTrue())
+{{- end}}
+}
 {{- if and .Mutable .Numeric}}
 
 func Test{{.UType}}QueueDoKeepWhere(t *testing.T) {

@@ -80,8 +80,8 @@ func ConvertFastIntList(values ...interface{}) (*FastIntList, bool) {
 	return list, len(list.m) == len(values)
 }
 
-// BuildFastIntListFromChan constructs a new FastIntList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildFastIntListFromChan constructs a new FastIntList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildFastIntListFromChan(source <-chan int) *FastIntList {
 	list := MakeFastIntList(0, 0)
 	for v := range source {

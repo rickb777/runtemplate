@@ -48,8 +48,8 @@ func ConvertAppleSet(values ...interface{}) (*AppleSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildAppleSetFromChan constructs a new AppleSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildAppleSetFromChan constructs a new AppleSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildAppleSetFromChan(source <-chan Apple) *AppleSet {
 	set := NewAppleSet()
 	for v := range source {

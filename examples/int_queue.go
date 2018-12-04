@@ -47,9 +47,6 @@ func NewIntQueue(capacity int, overwrite bool) *IntQueue {
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
 func NewIntSortedQueue(capacity int, overwrite bool, less func(i, j int) bool) *IntQueue {
-	if capacity < 1 {
-		panic("capacity must be at least 1")
-	}
 	return &IntQueue{
 		m:         make([]int, capacity),
 		read:      0,
@@ -60,6 +57,18 @@ func NewIntSortedQueue(capacity int, overwrite bool, less func(i, j int) bool) *
 		less:      less,
 		s:         &sync.RWMutex{},
 	}
+}
+
+// BuildIntQueueFromChan constructs a new IntQueue from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
+func BuildIntQueueFromChan(source <-chan int) *IntQueue {
+	queue := NewIntQueue(0, false)
+	for v := range source {
+		queue.m = append(queue.m, v)
+	}
+	queue.length = len(queue.m)
+	queue.capacity = cap(queue.m)
+	return queue
 }
 
 //-------------------------------------------------------------------------------------------------

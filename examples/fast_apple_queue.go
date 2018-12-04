@@ -45,9 +45,6 @@ func NewFastAppleQueue(capacity int, overwrite bool) *FastAppleQueue {
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
 func NewFastAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple) bool) *FastAppleQueue {
-	if capacity < 1 {
-		panic("capacity must be at least 1")
-	}
 	return &FastAppleQueue{
 		m:         make([]Apple, capacity),
 		read:      0,
@@ -57,6 +54,18 @@ func NewFastAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple)
 		overwrite: overwrite,
 		less:      less,
 	}
+}
+
+// BuildFastAppleQueueFromChan constructs a new FastAppleQueue from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
+func BuildFastAppleQueueFromChan(source <-chan Apple) *FastAppleQueue {
+	queue := NewFastAppleQueue(0, false)
+	for v := range source {
+		queue.m = append(queue.m, v)
+	}
+	queue.length = len(queue.m)
+	queue.capacity = cap(queue.m)
+	return queue
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -60,8 +60,8 @@ func ConvertAppleList(values ...interface{}) (*AppleList, bool) {
 	return list, len(list.m) == len(values)
 }
 
-// BuildAppleListFromChan constructs a new AppleList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildAppleListFromChan constructs a new AppleList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildAppleListFromChan(source <-chan Apple) *AppleList {
 	list := MakeAppleList(0, 0)
 	for v := range source {

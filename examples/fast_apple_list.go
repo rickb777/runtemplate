@@ -57,8 +57,8 @@ func ConvertFastAppleList(values ...interface{}) (*FastAppleList, bool) {
 	return list, len(list.m) == len(values)
 }
 
-// BuildFastAppleListFromChan constructs a new FastAppleList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildFastAppleListFromChan constructs a new FastAppleList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildFastAppleListFromChan(source <-chan Apple) *FastAppleList {
 	list := MakeFastAppleList(0, 0)
 	for v := range source {

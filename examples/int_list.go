@@ -83,8 +83,8 @@ func ConvertIntList(values ...interface{}) (*IntList, bool) {
 	return list, len(list.m) == len(values)
 }
 
-// BuildIntListFromChan constructs a new IntList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildIntListFromChan constructs a new IntList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildIntListFromChan(source <-chan int) *IntList {
 	list := MakeIntList(0, 0)
 	for v := range source {

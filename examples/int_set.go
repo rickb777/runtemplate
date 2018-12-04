@@ -71,8 +71,8 @@ func ConvertIntSet(values ...interface{}) (*IntSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildIntSetFromChan constructs a new IntSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildIntSetFromChan constructs a new IntSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildIntSetFromChan(source <-chan int) *IntSet {
 	set := NewIntSet()
 	for v := range source {

@@ -57,11 +57,8 @@ func New{{.UPrefix}}{{.UType}}Queue(capacity int, overwrite bool) *{{.UPrefix}}{
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
 func New{{.UPrefix}}{{.UType}}SortedQueue(capacity int, overwrite bool, less func(i, j {{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
-	if capacity < 1 {
-		panic("capacity must be at least 1")
-	}
 	return &{{.UPrefix}}{{.UType}}Queue{
-		m:    make([]{{.PType}}, capacity),
+		m:         make([]{{.PType}}, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
@@ -69,6 +66,18 @@ func New{{.UPrefix}}{{.UType}}SortedQueue(capacity int, overwrite bool, less fun
 		overwrite: overwrite,
 		less:      less,
 	}
+}
+
+// Build{{.UPrefix}}{{.UType}}QueueFromChan constructs a new {{.UPrefix}}{{.UType}}Queue from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
+func Build{{.UPrefix}}{{.UType}}QueueFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
+	queue := New{{.UPrefix}}{{.UType}}Queue(0, false)
+	for v := range source {
+		queue.m = append(queue.m, v)
+	}
+	queue.length = len(queue.m)
+	queue.capacity = cap(queue.m)
+	return queue
 }
 
 //-------------------------------------------------------------------------------------------------

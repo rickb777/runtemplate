@@ -88,8 +88,8 @@ func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) (*{{.UPrefix}}{{.UT
 	return set, len(set.m) == len(values)
 }
 
-// Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}Set {
 	set := New{{.UPrefix}}{{.UType}}Set()
 	for v := range source {

@@ -45,8 +45,8 @@ func ConvertFastAppleSet(values ...interface{}) (*FastAppleSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildFastAppleSetFromChan constructs a new FastAppleSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildFastAppleSetFromChan constructs a new FastAppleSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildFastAppleSetFromChan(source <-chan Apple) *FastAppleSet {
 	set := NewFastAppleSet()
 	for v := range source {

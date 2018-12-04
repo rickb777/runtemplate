@@ -45,9 +45,6 @@ func NewFastIntQueue(capacity int, overwrite bool) *FastIntQueue {
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
 func NewFastIntSortedQueue(capacity int, overwrite bool, less func(i, j int) bool) *FastIntQueue {
-	if capacity < 1 {
-		panic("capacity must be at least 1")
-	}
 	return &FastIntQueue{
 		m:         make([]int, capacity),
 		read:      0,
@@ -57,6 +54,18 @@ func NewFastIntSortedQueue(capacity int, overwrite bool, less func(i, j int) boo
 		overwrite: overwrite,
 		less:      less,
 	}
+}
+
+// BuildFastIntQueueFromChan constructs a new FastIntQueue from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
+func BuildFastIntQueueFromChan(source <-chan int) *FastIntQueue {
+	queue := NewFastIntQueue(0, false)
+	for v := range source {
+		queue.m = append(queue.m, v)
+	}
+	queue.length = len(queue.m)
+	queue.capacity = cap(queue.m)
+	return queue
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -47,9 +47,6 @@ func NewAppleQueue(capacity int, overwrite bool) *AppleQueue {
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
 func NewAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple) bool) *AppleQueue {
-	if capacity < 1 {
-		panic("capacity must be at least 1")
-	}
 	return &AppleQueue{
 		m:         make([]Apple, capacity),
 		read:      0,
@@ -60,6 +57,18 @@ func NewAppleSortedQueue(capacity int, overwrite bool, less func(i, j Apple) boo
 		less:      less,
 		s:         &sync.RWMutex{},
 	}
+}
+
+// BuildAppleQueueFromChan constructs a new AppleQueue from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
+func BuildAppleQueueFromChan(source <-chan Apple) *AppleQueue {
+	queue := NewAppleQueue(0, false)
+	for v := range source {
+		queue.m = append(queue.m, v)
+	}
+	queue.length = len(queue.m)
+	queue.capacity = cap(queue.m)
+	return queue
 }
 
 //-------------------------------------------------------------------------------------------------

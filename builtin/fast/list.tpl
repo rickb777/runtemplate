@@ -97,8 +97,8 @@ func Convert{{.UPrefix}}{{.UType}}List(values ...interface{}) (*{{.UPrefix}}{{.U
 	return list, len(list.m) == len(values)
 }
 
-// Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// Build{{.UPrefix}}{{.UType}}ListFromChan constructs a new {{.UPrefix}}{{.UType}}List from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func Build{{.UPrefix}}{{.UType}}ListFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}List {
 	list := Make{{.UPrefix}}{{.UType}}List(0, 0)
 	for v := range source {

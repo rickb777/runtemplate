@@ -68,8 +68,8 @@ func ConvertFastIntSet(values ...interface{}) (*FastIntSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildFastIntSetFromChan constructs a new FastIntSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildFastIntSetFromChan constructs a new FastIntSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildFastIntSetFromChan(source <-chan int) *FastIntSet {
 	set := NewFastIntSet()
 	for v := range source {

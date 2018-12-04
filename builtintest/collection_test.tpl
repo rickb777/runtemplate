@@ -208,6 +208,25 @@ func test{{.UType}}MinMaxSum(t *testing.T, a X1{{.UType}}Collection, kind string
 	g.Expect(c).To(Equal(71))
 }
 
+func Test{{.UType}}Send(t *testing.T) {
+	//test{{.UType}}Send(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), "Set")
+	test{{.UType}}Send(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), "List")
+{{- if .Mutable}}
+	test{{.UType}}Send(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.UType}}Send(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
+{{- end}}
+}
+
+func test{{.UType}}Send(t *testing.T, a X1{{.UType}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
+    s := make([]{{.PType}}, 0)
+    for v := range a.Send() {
+        s = append(s, v)
+    }
+	g.Expect(s).To(Equal([]{{.PType}}{10, 71, 3, 7, 13}))
+}
+
 func Test{{.UType}}Stringer(t *testing.T) {
 	test{{.UType}}Stringer(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), false, "Set")
 	test{{.UType}}Stringer(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), true, "List")
