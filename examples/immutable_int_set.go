@@ -78,6 +78,18 @@ func BuildImmutableIntSetFromChan(source <-chan int) *ImmutableIntSet {
 	return set
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (set *ImmutableIntSet) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for lists or queues.
+func (set *ImmutableIntSet) IsSet() bool {
+	return true
+}
+
 // ToSet returns the set; this is an identity operation in this case.
 func (set *ImmutableIntSet) ToSet() *ImmutableIntSet {
 	return set
@@ -121,16 +133,6 @@ func (set *ImmutableIntSet) IsEmpty() bool {
 // NonEmpty returns true if the set is not empty.
 func (set *ImmutableIntSet) NonEmpty() bool {
 	return set.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (set *ImmutableIntSet) IsSequence() bool {
-	return false
-}
-
-// IsSet returns false for lists or queues.
-func (set *ImmutableIntSet) IsSet() bool {
-	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.

@@ -661,19 +661,6 @@ func (list *ImmutableIntList) LastIndexWhere2(p func(int) bool, before int) int 
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int is numeric.
-
-// Sum returns the sum of all the elements in the list.
-func (list *ImmutableIntList) Sum() int {
-
-	sum := int(0)
-	for _, v := range list.m {
-		sum = sum + v
-	}
-	return sum
-}
-
-//-------------------------------------------------------------------------------------------------
 // These methods are included when int is comparable.
 
 // Equals determines if two lists are equal to each other.
@@ -799,6 +786,19 @@ func (list *ImmutableIntList) Max() (result int) {
 		}
 	}
 	return m
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when int is numeric.
+
+// Sum returns the sum of all the elements in the list.
+func (list *ImmutableIntList) Sum() int {
+
+	sum := int(0)
+	for _, v := range list.m {
+		sum = sum + v
+	}
+	return sum
 }
 
 //-------------------------------------------------------------------------------------------------

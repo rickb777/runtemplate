@@ -96,6 +96,18 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefi
 	}
 	return set
 }
+
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (set *{{.UPrefix}}{{.UType}}Set) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for lists or queues.
+func (set *{{.UPrefix}}{{.UType}}Set) IsSet() bool {
+	return true
+}
 {{- if .ToList}}
 
 // ToList returns the elements of the set as a list. The returned list is a shallow
@@ -154,16 +166,6 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsEmpty() bool {
 // NonEmpty returns true if the set is not empty.
 func (set *{{.UPrefix}}{{.UType}}Set) NonEmpty() bool {
 	return set.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (set *{{.UPrefix}}{{.UType}}Set) IsSequence() bool {
-	return false
-}
-
-// IsSet returns false for lists or queues.
-func (set *{{.UPrefix}}{{.UType}}Set) IsSet() bool {
-	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.

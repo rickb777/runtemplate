@@ -73,6 +73,73 @@ func BuildAppleQueueFromChan(source <-chan Apple) *AppleQueue {
 
 //-------------------------------------------------------------------------------------------------
 
+// Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
+//
+// If the new queue capacity is different to the current capacity, the queue is re-allocated to the new
+// capacity. If this is less than the current number of elements, the oldest items in the queue are
+// discarded so that the remaining data can fit in the new space available.
+//
+// If the new queue capacity is the same as the current capacity, the queue is not altered except for adopting
+// the new overwrite flag's value. Therefore this is the means to change the overwriting behaviour.
+//
+// Reallocate adjusts the storage space but does not clone the underlying elements.
+//
+// The queue must not be nil.
+func (queue *AppleQueue) Reallocate(capacity int, overwrite bool) *AppleQueue {
+	if capacity < 1 {
+		panic("capacity must be at least 1")
+	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
+	return queue.doReallocate(capacity, overwrite)
+}
+
+func (queue *AppleQueue) doReallocate(capacity int, overwrite bool) *AppleQueue {
+	queue.overwrite = overwrite
+
+	if capacity < queue.length {
+		// existing data is too big and has to be trimmed to fit
+		n := queue.length - capacity
+		queue.read = (queue.read + n) % queue.capacity
+		queue.length -= n
+	}
+
+	if capacity != queue.capacity {
+		oldLength := queue.length
+		queue.m = queue.toSlice(make([]Apple, capacity))
+		if oldLength > len(queue.m) {
+			oldLength = len(queue.m)
+		}
+		queue.read = 0
+		queue.write = oldLength
+		queue.length = oldLength
+		queue.capacity = capacity
+	}
+
+	return queue
+}
+
+// Space returns the space available in the queue.
+func (queue *AppleQueue) Space() int {
+	if queue == nil {
+		return 0
+	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+	return queue.capacity - queue.length
+}
+
+// Cap gets the capacity of this queue.
+func (queue *AppleQueue) Cap() int {
+	if queue == nil {
+		return 0
+	}
+	return queue.capacity
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // IsSequence returns true for ordered lists and queues.
 func (queue *AppleQueue) IsSequence() bool {
 	return true
@@ -152,137 +219,6 @@ func (queue *AppleQueue) Clone() *AppleQueue {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue *AppleQueue) IsOverwriting() bool {
-	if queue == nil {
-		return false
-	}
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-	return queue.overwrite
-}
-
-// IsEmpty returns true if the queue is empty.
-func (queue *AppleQueue) IsEmpty() bool {
-	if queue == nil {
-		return true
-	}
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-	return queue.length == 0
-}
-
-// NonEmpty returns true if the queue is not empty.
-func (queue *AppleQueue) NonEmpty() bool {
-	if queue == nil {
-		return false
-	}
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-	return queue.length > 0
-}
-
-// IsFull returns true if the queue is full.
-func (queue *AppleQueue) IsFull() bool {
-	if queue == nil {
-		return false
-	}
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-	return queue.length == queue.capacity
-}
-
-// Space returns the space available in the queue.
-func (queue *AppleQueue) Space() int {
-	if queue == nil {
-		return 0
-	}
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-	return queue.capacity - queue.length
-}
-
-// Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue *AppleQueue) Size() int {
-	if queue == nil {
-		return 0
-	}
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-	return queue.length
-}
-
-// Len gets the current length of this queue. This is an alias for Size.
-func (queue *AppleQueue) Len() int {
-	return queue.Size()
-}
-
-// Cap gets the capacity of this queue.
-func (queue *AppleQueue) Cap() int {
-	if queue == nil {
-		return 0
-	}
-	return queue.capacity
-}
-
-// Less reports whether the element with index i should sort before the element with index j.
-// The queue must have been created with a non-nil 'less' comparison function and it must not
-// be empty.
-func (queue *AppleQueue) Less(i, j int) bool {
-	ri := (queue.read + i) % queue.capacity
-	rj := (queue.read + j) % queue.capacity
-	return queue.less(queue.m[ri], queue.m[rj])
-}
-
-// Swap swaps the elements with indexes i and j.
-// The queue must not be empty.
-func (queue *AppleQueue) Swap(i, j int) {
-	ri := (queue.read + i) % queue.capacity
-	rj := (queue.read + j) % queue.capacity
-	queue.m[ri], queue.m[rj] = queue.m[rj], queue.m[ri]
-}
-
-// Sort sorts the queue using the 'less' comparison function, which must not be nil.
-// This function will panic if the collection was created with a nil 'less' function
-// (see NewAppleSortedQueue).
-func (queue *AppleQueue) Sort() {
-	sort.Sort(queue)
-}
-
-// StableSort sorts the queue using the 'less' comparison function, which must not be nil.
-// The result is stable so that repeated calls will not arbitrarily swap equal items.
-// This function will panic if the collection was created with a nil 'less' function
-// (see NewAppleSortedQueue).
-func (queue *AppleQueue) StableSort() {
-	sort.Stable(queue)
-}
-
-// frontAndBack gets the front and back portions of the queue. The front portion starts
-// from the read index. The back portion ends at the write index.
-func (queue *AppleQueue) frontAndBack() ([]Apple, []Apple) {
-	if queue == nil || queue.length == 0 {
-		return nil, nil
-	}
-	if queue.write > queue.read {
-		return queue.m[queue.read:queue.write], nil
-	}
-	return queue.m[queue.read:], queue.m[:queue.write]
-}
-
-// indexes gets the indexes for the front and back portions of the queue. The front
-// portion starts from the read index. The back portion ends at the write index.
-func (queue *AppleQueue) indexes() []int {
-	if queue == nil || queue.length == 0 {
-		return nil
-	}
-	if queue.write > queue.read {
-		return []int{queue.read, queue.write}
-	}
-	return []int{queue.read, queue.capacity, 0, queue.write}
-}
-
-//-------------------------------------------------------------------------------------------------
-
 // Get gets the specified element in the queue.
 // Panics if the index is out of range or the queue is nil.
 func (queue *AppleQueue) Get(i int) Apple {
@@ -358,111 +294,118 @@ func (queue *AppleQueue) LastOption() Apple {
 
 //-------------------------------------------------------------------------------------------------
 
-// Reallocate adjusts the allocated capacity of the queue and allows the overwriting behaviour to be changed.
-//
-// If the new queue capacity is different to the current capacity, the queue is re-allocated to the new
-// capacity. If this is less than the current number of elements, the oldest items in the queue are
-// discarded so that the remaining data can fit in the new space available.
-//
-// If the new queue capacity is the same as the current capacity, the queue is not altered except for adopting
-// the new overwrite flag's value. Therefore this is the means to change the overwriting behaviour.
-//
-// Reallocate adjusts the storage space but does not clone the underlying elements.
-//
-// The queue must not be nil.
-func (queue *AppleQueue) Reallocate(capacity int, overwrite bool) *AppleQueue {
-	if capacity < 1 {
-		panic("capacity must be at least 1")
+// IsOverwriting returns true if the queue is overwriting, false if refusing.
+func (queue *AppleQueue) IsOverwriting() bool {
+	if queue == nil {
+		return false
 	}
-
-	queue.s.Lock()
-	defer queue.s.Unlock()
-	return queue.doReallocate(capacity, overwrite)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+	return queue.overwrite
 }
 
-func (queue *AppleQueue) doReallocate(capacity int, overwrite bool) *AppleQueue {
-	queue.overwrite = overwrite
-
-	if capacity < queue.length {
-		// existing data is too big and has to be trimmed to fit
-		n := queue.length - capacity
-		queue.read = (queue.read + n) % queue.capacity
-		queue.length -= n
+// IsFull returns true if the queue is full.
+func (queue *AppleQueue) IsFull() bool {
+	if queue == nil {
+		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+	return queue.length == queue.capacity
+}
 
-	if capacity != queue.capacity {
-		oldLength := queue.length
-		queue.m = queue.toSlice(make([]Apple, capacity))
-		if oldLength > len(queue.m) {
-			oldLength = len(queue.m)
-		}
-		queue.read = 0
-		queue.write = oldLength
-		queue.length = oldLength
-		queue.capacity = capacity
+// IsEmpty returns true if the queue is empty.
+func (queue *AppleQueue) IsEmpty() bool {
+	if queue == nil {
+		return true
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+	return queue.length == 0
+}
 
-	return queue
+// NonEmpty returns true if the queue is not empty.
+func (queue *AppleQueue) NonEmpty() bool {
+	if queue == nil {
+		return false
+	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+	return queue.length > 0
+}
+
+// Size gets the number of elements currently in this queue. This is an alias for Len.
+func (queue *AppleQueue) Size() int {
+	if queue == nil {
+		return 0
+	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+	return queue.length
+}
+
+// Len gets the current length of this queue. This is an alias for Size.
+func (queue *AppleQueue) Len() int {
+	return queue.Size()
+}
+
+// Swap swaps the elements with indexes i and j.
+// The queue must not be empty.
+func (queue *AppleQueue) Swap(i, j int) {
+	ri := (queue.read + i) % queue.capacity
+	rj := (queue.read + j) % queue.capacity
+	queue.m[ri], queue.m[rj] = queue.m[rj], queue.m[ri]
+}
+
+// Less reports whether the element with index i should sort before the element with index j.
+// The queue must have been created with a non-nil 'less' comparison function and it must not
+// be empty.
+func (queue *AppleQueue) Less(i, j int) bool {
+	ri := (queue.read + i) % queue.capacity
+	rj := (queue.read + j) % queue.capacity
+	return queue.less(queue.m[ri], queue.m[rj])
+}
+
+// Sort sorts the queue using the 'less' comparison function, which must not be nil.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewAppleSortedQueue).
+func (queue *AppleQueue) Sort() {
+	sort.Sort(queue)
+}
+
+// StableSort sorts the queue using the 'less' comparison function, which must not be nil.
+// The result is stable so that repeated calls will not arbitrarily swap equal items.
+// This function will panic if the collection was created with a nil 'less' function
+// (see NewAppleSortedQueue).
+func (queue *AppleQueue) StableSort() {
+	sort.Stable(queue)
+}
+
+// frontAndBack gets the front and back portions of the queue. The front portion starts
+// from the read index. The back portion ends at the write index.
+func (queue *AppleQueue) frontAndBack() ([]Apple, []Apple) {
+	if queue == nil || queue.length == 0 {
+		return nil, nil
+	}
+	if queue.write > queue.read {
+		return queue.m[queue.read:queue.write], nil
+	}
+	return queue.m[queue.read:], queue.m[:queue.write]
+}
+
+// indexes gets the indexes for the front and back portions of the queue. The front
+// portion starts from the read index. The back portion ends at the write index.
+func (queue *AppleQueue) indexes() []int {
+	if queue == nil || queue.length == 0 {
+		return nil
+	}
+	if queue.write > queue.read {
+		return []int{queue.read, queue.write}
+	}
+	return []int{queue.read, queue.capacity, 0, queue.write}
 }
 
 //-------------------------------------------------------------------------------------------------
-
-// Insert adds items to the queue in sorted order.
-// If the queue is already full, what happens depends on whether the queue is configured
-// to overwrite. If it is, the oldest items will be overwritten. Otherwise, it will be
-// filled to capacity and any unwritten items are returned.
-//
-// If the capacity is too small for the number of items, the excess items are returned.
-//func (queue *AppleQueue) Insert(items ...Apple) []Apple {
-//	queue.s.Lock()
-//	defer queue.s.Unlock()
-//	return queue.doInsert(items...)
-//}
-//
-//func (queue *AppleQueue) doInsert(items ...Apple) []Apple {
-//	n := len(items)
-//
-//	space := queue.capacity - queue.length
-//	overwritten := n - space
-//
-//	if queue.overwrite {
-//		space = queue.capacity
-//	}
-//
-//	if space < n {
-//		// there is too little space; reject surplus elements
-//		surplus := items[space:]
-//		queue.doInsert(items[:space]...)
-//		return surplus
-//	}
-//
-//  for _, item := range items {
-//      queue.doInsertItem(item)
-//  }
-//	return nil
-//}
-//
-//func (queue *AppleQueue) doInsertOne(item Apple) {
-//	if queue.write < queue.capacity {
-//		// easy case: enough space at end for the item
-//		queue.m[queue.write] = item
-//		queue.write = (queue.write + n) % queue.capacity
-//		queue.length++
-//		return
-//	}
-//
-//	end := queue.capacity - queue.write
-//	queue.m[queue.write] = items
-//	//copy(queue.m, items[end:])
-//	queue.write = n - end
-//	queue.length++
-//	if queue.length > queue.capacity {
-//		queue.length = queue.capacity
-//	}
-//	if overwritten > 0 {
-//		queue.read = (queue.read + overwritten) % queue.capacity
-//	}
-//}
 
 // Add adds items to the queue. This is a synonym for Push.
 func (queue *AppleQueue) Add(more ...Apple) {
@@ -661,9 +604,9 @@ func (queue *AppleQueue) Forall(p func(Apple) bool) bool {
 	return true
 }
 
-// Foreach iterates over AppleQueue and executes function fn against each element.
+// Foreach iterates over AppleQueue and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (queue *AppleQueue) Foreach(fn func(Apple)) {
+func (queue *AppleQueue) Foreach(f func(Apple)) {
 	if queue == nil {
 		return
 	}
@@ -673,10 +616,10 @@ func (queue *AppleQueue) Foreach(fn func(Apple)) {
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		fn(v)
+		f(v)
 	}
 	for _, v := range back {
-		fn(v)
+		f(v)
 	}
 }
 
@@ -701,34 +644,6 @@ func (queue *AppleQueue) Send() <-chan Apple {
 		close(ch)
 	}()
 	return ch
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Find returns the first Apple that returns true for predicate p.
-// False is returned if none match.
-func (queue *AppleQueue) Find(p func(Apple) bool) (Apple, bool) {
-	if queue == nil {
-		return *(new(Apple)), false
-	}
-
-	queue.s.RLock()
-	defer queue.s.RUnlock()
-
-	front, back := queue.frontAndBack()
-	for _, v := range front {
-		if p(v) {
-			return v, true
-		}
-	}
-	for _, v := range back {
-		if p(v) {
-			return v, true
-		}
-	}
-
-	var empty Apple
-	return empty, false
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -801,6 +716,34 @@ func (queue *AppleQueue) doKeepWhere(p func(Apple) bool) *AppleQueue {
 	queue.length = n
 
 	return queue
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Find returns the first Apple that returns true for predicate p.
+// False is returned if none match.
+func (queue *AppleQueue) Find(p func(Apple) bool) (Apple, bool) {
+	if queue == nil {
+		return *(new(Apple)), false
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if p(v) {
+			return v, true
+		}
+	}
+	for _, v := range back {
+		if p(v) {
+			return v, true
+		}
+	}
+
+	var empty Apple
+	return empty, false
 }
 
 // Filter returns a new AppleQueue whose elements return true for predicate p.
@@ -881,13 +824,13 @@ func (queue *AppleQueue) Partition(p func(Apple) bool) (*AppleQueue, *AppleQueue
 	return matching, others
 }
 
-// Map returns a new AppleQueue by transforming every element with a function fn.
+// Map returns a new AppleQueue by transforming every element with function f.
 // The resulting queue is the same size as the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *AppleQueue) Map(fn func(Apple) Apple) *AppleQueue {
+func (queue *AppleQueue) Map(f func(Apple) Apple) *AppleQueue {
 	if queue == nil {
 		return nil
 	}
@@ -900,11 +843,11 @@ func (queue *AppleQueue) Map(fn func(Apple) Apple) *AppleQueue {
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 		i++
 	}
 	for _, v := range back {
-		result.m[i] = fn(v)
+		result.m[i] = f(v)
 		i++
 	}
 	result.length = i

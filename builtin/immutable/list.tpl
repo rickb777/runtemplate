@@ -695,21 +695,6 @@ func (list *{{.UPrefix}}{{.UType}}List) LastIndexWhere2(p func({{.PType}}) bool,
 	}
 	return -1
 }
-{{- if .Numeric}}
-
-//-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is numeric.
-
-// Sum returns the sum of all the elements in the list.
-func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
-
-	sum := {{.Type}}(0)
-	for _, v := range list.m {
-		sum = sum + {{.TypeStar}}v
-	}
-	return sum
-}
-{{- end}}
 {{- if .Comparable}}
 
 //-------------------------------------------------------------------------------------------------
@@ -840,6 +825,21 @@ func (list *{{.UPrefix}}{{.UType}}List) Max() (result {{.Type}}) {
 		}
 	}
 	return m
+}
+{{- end}}
+{{- if .Numeric}}
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when {{.Type}} is numeric.
+
+// Sum returns the sum of all the elements in the list.
+func (list *{{.UPrefix}}{{.UType}}List) Sum() {{.Type}} {
+
+	sum := {{.Type}}(0)
+	for _, v := range list.m {
+		sum = sum + {{.TypeStar}}v
+	}
+	return sum
 }
 {{- end}}
 {{- if .Stringer}}

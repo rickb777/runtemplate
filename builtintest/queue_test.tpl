@@ -223,7 +223,7 @@ func Test{{.UType}}QueuePop(t *testing.T) {
 	g.Expect(a.Space()).To(Equal(10))
 }
 
-func Test{{.UType}}QueueHeadLast(t *testing.T) {
+func Test{{.UType}}QueueGetHeadLast(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewX1{{.UType}}Queue(8, false)
@@ -233,6 +233,7 @@ func Test{{.UType}}QueueHeadLast(t *testing.T) {
 
 	a.Offer(1)
 
+	g.Expect(a.Get(0)).To(Equal(1))
 	g.Expect(a.Head()).To(Equal(1))
 	g.Expect(a.HeadOption()).To(Equal(1))
 	g.Expect(a.Last()).To(Equal(1))
@@ -241,6 +242,8 @@ func Test{{.UType}}QueueHeadLast(t *testing.T) {
 	a.Offer(2, 3, 4, 5, 6)
 	a.Pop(2)
 
+	g.Expect(a.Get(0)).To(Equal(3))
+	g.Expect(a.Get(3)).To(Equal(6))
 	g.Expect(a.Head()).To(Equal(3))
 	g.Expect(a.HeadOption()).To(Equal(3))
 	g.Expect(a.Last()).To(Equal(6))
@@ -249,6 +252,8 @@ func Test{{.UType}}QueueHeadLast(t *testing.T) {
 	a.Offer(7, 8, 9, 10)
 	a.Pop(4)
 
+	g.Expect(a.Get(0)).To(Equal(7))
+	g.Expect(a.Get(3)).To(Equal(10))
 	g.Expect(a.Head()).To(Equal(7))
 	g.Expect(a.HeadOption()).To(Equal(7))
 	g.Expect(a.Last()).To(Equal(10))

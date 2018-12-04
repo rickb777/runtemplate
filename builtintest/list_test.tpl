@@ -340,11 +340,13 @@ func Test{{.UType}}ListSend(t *testing.T) {
 {{- end}}
 }
 
-func Test{{.UType}}ListHeadTailLastInit(t *testing.T) {
+func Test{{.UType}}ListGetHeadTailLastInit(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := NewX1{{.UType}}List(1, 2, 3, 4)
 
+	g.Expect(a.Get(0)).To(Equal(1))
+	g.Expect(a.Get(3)).To(Equal(4))
 	g.Expect(a.Head()).To(Equal(1))
 	g.Expect(a.Last()).To(Equal(4))
 	g.Expect(a.HeadOption()).To(Equal(1))

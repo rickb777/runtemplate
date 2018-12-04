@@ -58,6 +58,18 @@ func BuildAppleSetFromChan(source <-chan Apple) *AppleSet {
 	return set
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (set *AppleSet) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for lists or queues.
+func (set *AppleSet) IsSet() bool {
+	return true
+}
+
 // ToSet returns the set; this is an identity operation in this case.
 func (set *AppleSet) ToSet() *AppleSet {
 	return set
@@ -123,16 +135,6 @@ func (set *AppleSet) IsEmpty() bool {
 // NonEmpty returns true if the set is not empty.
 func (set *AppleSet) NonEmpty() bool {
 	return set.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (set *AppleSet) IsSequence() bool {
-	return false
-}
-
-// IsSet returns false for lists or queues.
-func (set *AppleSet) IsSet() bool {
-	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.

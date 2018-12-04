@@ -78,6 +78,18 @@ func BuildFastIntSetFromChan(source <-chan int) *FastIntSet {
 	return set
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (set *FastIntSet) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for lists or queues.
+func (set *FastIntSet) IsSet() bool {
+	return true
+}
+
 // ToSet returns the set; this is an identity operation in this case.
 func (set *FastIntSet) ToSet() *FastIntSet {
 	return set
@@ -136,16 +148,6 @@ func (set *FastIntSet) IsEmpty() bool {
 // NonEmpty returns true if the set is not empty.
 func (set *FastIntSet) NonEmpty() bool {
 	return set.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (set *FastIntSet) IsSequence() bool {
-	return false
-}
-
-// IsSet returns false for lists or queues.
-func (set *FastIntSet) IsSet() bool {
-	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.

@@ -73,6 +73,18 @@ func BuildSimpleIntSetFromChan(source <-chan int) SimpleIntSet {
 	return set
 }
 
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns true for lists and queues.
+func (set SimpleIntSet) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for lists or queues.
+func (set SimpleIntSet) IsSet() bool {
+	return true
+}
+
 // ToSet returns the set; this is an identity operation in this case.
 func (set SimpleIntSet) ToSet() SimpleIntSet {
 	return set
@@ -115,16 +127,6 @@ func (set SimpleIntSet) IsEmpty() bool {
 // NonEmpty returns true if the set is not empty.
 func (set SimpleIntSet) NonEmpty() bool {
 	return set.Size() > 0
-}
-
-// IsSequence returns true for lists and queues.
-func (set SimpleIntSet) IsSequence() bool {
-	return false
-}
-
-// IsSet returns false for lists or queues.
-func (set SimpleIntSet) IsSet() bool {
-	return true
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
