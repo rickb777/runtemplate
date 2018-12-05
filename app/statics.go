@@ -16,7 +16,7 @@ func newStaticBuiltins(config *static.Config) (*static.Files, error) {
 		Name:    "builtin",
 		Size:    4096,
 		Mode:    os.FileMode(2147484096),
-		ModTime: 1543963727,
+		ModTime: 1544052044,
 		IsDir:   true,
 		Compressed: `
 `,
@@ -793,7 +793,7 @@ cq8InoJuKE9BP+4GtZi4xWS0rh7/HQAA//9QXRH4vIsAAA==
 					Name:    "set.tpl",
 					Size:    20051,
 					Mode:    os.FileMode(420),
-					ModTime: 1543996346,
+					ModTime: 1544052068,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Q8a4/cuJGfu38FPcDtqr1ttbMOdoO5nQC2s97zIfYaN947HAwjoKTSNDMSKZNUz/R2
@@ -879,7 +879,7 @@ Wk3+vwAAAP//R9SNUFNOAAA=
 						Name:    "queue.tpl",
 						Size:    31574,
 						Mode:    os.FileMode(420),
-						ModTime: 1543996346,
+						ModTime: 1544052068,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+R9/3IbN5Lw3+RTIKrahIwpUs7+ka8UK1WJd534+xzb39m5rTuX6grkYETYM8AYwIhi
@@ -1007,7 +1007,7 @@ Bddp8htVPs0qLR7zAphH3HMdEN8gQpg0BsYAT0gRvRQL0kWD6RBeepZc6Sm8IkhmMK3z4diDbYRtMlmF
 						Name:    "map.tpl",
 						Size:    15812,
 						Mode:    os.FileMode(420),
-						ModTime: 1543996346,
+						ModTime: 1544052068,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xbe4/bRpL/e/QpygLipRY0FY//CDCHOSDZjX2+xF7j7GRx6zWMllgc9YrsZrpbGssK
@@ -1078,7 +1078,7 @@ KpfW/XHw8XrfwtGA0I30gsbQ9QCPFxHgCfI8Ok0822Rt+YXG9Cj+fwEAAP//kf3TW8Q9AAA=
 						Name:    "collection.tpl",
 						Size:    4864,
 						Mode:    os.FileMode(420),
-						ModTime: 1543996346,
+						ModTime: 1544052068,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/8xYwW7bOBM+W08xR/mHIx96KNB/95AE7W4WTRrA6V6KHihpZHNDkQpJJXYFAX2M3dfr
@@ -1115,7 +1115,7 @@ ObrfJXctE2LjeTAxi3qwaYuVAxzSizrrM4/vbJMSm30rz+CxrfebziVb/ziR2fq/ITLx+MEik0zfIvLg
 						Name:    "list.tpl",
 						Size:    33358,
 						Mode:    os.FileMode(420),
-						ModTime: 1543996346,
+						ModTime: 1544052068,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+R9/W4cN5L435qnYPTDL+lZj0a2s0gWshXAiddZ38VOcHJusWcYB850zQzjbrJNsiXN
@@ -1527,7 +1527,7 @@ Hb87vvgJo0fqGTP2jBm1OLOmlmBoYzKwxfcQ2BK6k/H8vNePapp6szCi7jsuzv8EAAD//5PXKdHLZgAA
 				Name:    "threadsafe-queue-api.txt",
 				Size:    2715,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6SWT3PTPBDG7/0UOq7f8dsZhiuXNjQQyD9wGQ6ZHBR7XQtkSZXkJobhuzOyQ+x0YsmU
@@ -1549,7 +1549,7 @@ Gk3FrT8HFkzc1tD9NWgH17fxbuGCHv5JzoKxvaAH6N7FHx1JVYbsEquZeDhe15utaX4GaIhIgFt8P5IG
 				Name:    "threadsafe-map-api.txt",
 				Size:    1991,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yU3Y7aMBCF7/sUvpxUERLwBKtdQC0qXRXaSl3thRMmGyuObdmGbfr0lYOX/wnZvQKN
@@ -1569,7 +1569,7 @@ Lzv8DwAA//8Gii64xwcAAA==
 				Name:    "immutable-list-api.txt",
 				Size:    3264,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6yWQXPbLBCG79+v4Ii+cXNor70kTpy6Eyedyp0cMjkgeVXRoEUB5Njt9L93QHYkNwJh
@@ -1592,7 +1592,7 @@ yOUK4iyuZXaFDn9r8CcAAP//3Pr8J8AMAAA=
 				Name:    "immutable-set-api.txt",
 				Size:    2168,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yUMZPaPhDF+/+nUCn9h9CkTXNwkCETSCbmKoZC2OtYE3nlSDJ3TibfPSPbYF+QBFwH
@@ -1613,7 +1613,7 @@ QzwY5XgIAAA=
 				Name:    "immutable-map-api.txt",
 				Size:    1762,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yTwY7aMBCG732KOU6qCAl4gtWWoBaVVoL20NUenDAslh3bsg3b9OkrJ14WBE7SnkDj
@@ -1632,7 +1632,7 @@ O0neSVIBLnX5iSq9o5E9lrpcqJa/7fA3AAD//1j0o1niBgAA
 				Name:    "simple-set-api.txt",
 				Size:    2081,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yUzY7aMBDH730KH52Kcum1F6CLRFVo1bAnxMGESbHqjNPxhN206rtXToLCsnaAvSX2
@@ -1653,7 +1653,7 @@ IQgAAA==
 				Name:    "simple-map-api.txt",
 				Size:    1756,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yU32rbMBTG7/cUujweJpDkCUpXjxFayhI22NiFmh43QrIkpBN33tMPuWpqu1IcepVw
@@ -1672,7 +1672,7 @@ xoWzIj0j6pLxmtBNTf4HAAD//z/yOtncBgAA
 				Name:    "threadsafe-list-api.txt",
 				Size:    3772,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6yXwXKbPBDH799T6Ci+oTm0114SO07dxkmnuJNDJgcZlqBGXhFpcex2+u4dwDa4BiF7
@@ -1712,7 +1712,7 @@ ekN76wovsNPqY/+LuNPpMrivHS6TB/rjI2ORCdy4aLvaZWK5j0whec0Edf555z1UB2lUra50cvUx8Dgk
 				Name:    "threadsafe-set-api.txt",
 				Size:    2178,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yUwXLaMBCG730KHeUOzaXXXhICHTqFdmpyYjgIe100lVfuSiZxO333jmyDnUESkJu9
@@ -1843,7 +1843,7 @@ qgSq6uBocWK1gKSXOlpO3zHJrotN6z8BAAD//85oqYgoDAAA
 				Name:    "simple-list-api.txt",
 				Size:    3194,
 				Mode:    os.FileMode(420),
-				ModTime: 1543963727,
+				ModTime: 1544052044,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6SWwW7bPAzH730KHWXAXw/frrusadMFaLphDtBD0YPi0LVWhXIlOk027N0Hy0mcNJKt
@@ -1865,5 +1865,5 @@ awP48eDxQjHjJ9OGjpLv+PjMZc7nP1vRhmAx3ML3ziLgqez/3ZiKNe9elos14LVe9hrKyEh83v4+Pj5Z
 	})
 }
 
-// git: "v2.6.0"
+// git: "v2.6.0-1-g22c8c48"
 const appVersion = "v2.6.0"

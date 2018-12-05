@@ -746,3 +746,87 @@ func Test{{.UType}}QueueMkString3(t *testing.T) {
 //	g.Expect(a).To(Equal(b))
 //}
 //
+
+{{- if .Mutable}}
+
+func Benchmark{{.UType}}QueuePopPush(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}Queue(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    stuff := a.Pop(100)
+	    a.Push(stuff...)
+    }
+}
+
+func Benchmark{{.UType}}QueueCountBy(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}Queue(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.CountBy(func(v int) bool {
+		    return v > 100
+	    })
+    }
+}
+
+func Benchmark{{.UType}}QueueFilter(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}Queue(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.Filter(func(v int) bool {
+		    return v > 100
+	    })
+    }
+}
+
+func Benchmark{{.UType}}QueueDoKeepWhere(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}Queue(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.DoKeepWhere(func(v int) bool {
+		    return v > 100
+	    })
+    }
+}
+
+func Benchmark{{.UType}}QueueMap(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}Queue(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.Map(func(v int) int {
+		    return v
+	    })
+    }
+}
+
+func Benchmark{{.UType}}QueueSum(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}Queue(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.Sum()
+    }
+}
+
+func fibonacciX1{{.UType}}Queue(n int) *X1{{.UType}}Queue {
+    a := NewX1{{.UType}}Queue(n + 10, false)
+    i0 := 1
+    i1 := 1
+    for j := 0; j < n; j++ {
+        i2 := i0 + i1
+        a.Push(i2)
+        i1, i0 = i2, i1
+    }
+    return a
+}
+{{- end}}

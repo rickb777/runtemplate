@@ -968,3 +968,121 @@ func Test{{.UType}}ListJsonEncode(t *testing.T) {
 
 	g.Expect(a).To(Equal(b))
 }
+{{- if and .Append .Mutable}}
+
+func Benchmark{{.UType}}ListTakeDrop(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    stuff := a.Take(100)
+	    a.Drop(50).Append(stuff.ToSlice()...)
+    }
+}
+
+func Benchmark{{.UType}}ListTakeDropLast(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    stuff := a.TakeLast(100)
+	    a.DropLast(50).Append(stuff.ToSlice()...)
+    }
+}
+
+func Benchmark{{.UType}}ListDistinctBy(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.DistinctBy(func(v1, v2 int) bool {
+		    return v1 == v2
+	    })
+    }
+}
+
+func Benchmark{{.UType}}ListCountBy(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.CountBy(func(v int) bool {
+		    return v > 100
+	    })
+    }
+}
+
+func Benchmark{{.UType}}ListFilter(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.Filter(func(v int) bool {
+		    return v > 100
+	    })
+    }
+}
+
+func Benchmark{{.UType}}ListDoKeepWhere(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.DoKeepWhere(func(v int) bool {
+		    return v > 100
+	    })
+    }
+}
+
+func Benchmark{{.UType}}ListMap(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.Map(func(v int) int {
+		    return v
+	    })
+    }
+}
+
+func Benchmark{{.UType}}ListFlatMap(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.FlatMap(func(v int) []int {
+		    return []int{v}
+	    })
+    }
+}
+
+func Benchmark{{.UType}}ListSum(b *testing.B) {
+    b.StopTimer()
+    a := fibonacciX1{{.UType}}List(1000)
+    b.StartTimer()
+
+    for i := 0; i < b.N; i++ {
+	    a.Sum()
+    }
+}
+
+func fibonacciX1{{.UType}}List(n int) *X1{{.UType}}List {
+    a := NewX1{{.UType}}List()
+    i0 := 1
+    i1 := 1
+    for j := 0; j < n; j++ {
+        i2 := i0 + i1
+        a.Append(i2)
+        i1, i0 = i2, i1
+    }
+    return a
+}
+{{- end}}

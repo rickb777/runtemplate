@@ -145,12 +145,17 @@ Examples:
 
 ### fast/queue.tpl and threadsafe/queue.tpl
 
-This template generates a `<Type>Queue` for some specified type. The type can be a pointer to a type if preferred. A queue
-is very similar to a list, but optimised for FIFO insertion and removal.
+This template generates a `<Type>Queue` for some specified type. The type can be a pointer to a type if preferred.
+A queue is very similar to a list, but optimised for FIFO insertion and removal.
+Whereas a list has a size that grows dynamically, a queue can (optionally) be configured with a fixed size instead.
 
-Whereas a list has a size that can grow dynamically, a queue has a fixed size. Queues are constructed using the `New<Type>Queue`
-function, which expects the size and a flag controlling what happens if the queue is full. The fixed size of an existing queue 
-can, however, be altered programmatically.
+When used as a FIFO and when the rate of insertions and removals is approximately the same, there will not be any need 
+for the memory allocations that a list would need. Push and pop operations on a queue may be nearly an order of 
+magnitude faster than the eqivalent list operations.
+
+Queues are constructed using the `New<Type>Queue` function; this expects a capacity parameter and a flag controlling 
+what happens when the queue is full (overwriting or expanding). Queue capacity can be re-allocated programmatically
+when needed.
 
 Example use:
 ```
