@@ -3,7 +3,7 @@
 //
 // Generated from immutable/list.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:disabled
-// by runtemplate v2.6.0
+// by runtemplate v2.6.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
