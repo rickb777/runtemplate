@@ -16,7 +16,7 @@ func newStaticBuiltins(config *static.Config) (*static.Files, error) {
 		Name:    "builtin",
 		Size:    4096,
 		Mode:    os.FileMode(2147484096),
-		ModTime: 1543961584,
+		ModTime: 1543963727,
 		IsDir:   true,
 		Compressed: `
 `,
@@ -793,7 +793,7 @@ cq8InoJuKE9BP+4GtZi4xWS0rh7/HQAA//9QXRH4vIsAAA==
 					Name:    "set.tpl",
 					Size:    20051,
 					Mode:    os.FileMode(420),
-					ModTime: 1543961846,
+					ModTime: 1543996346,
 					IsDir:   false,
 					Compressed: `
 H4sIAAAAAAAA/+Q8a4/cuJGfu38FPcDtqr1ttbMOdoO5nQC2s97zIfYaN947HAwjoKTSNDMSKZNUz/R2
@@ -879,7 +879,7 @@ Wk3+vwAAAP//R9SNUFNOAAA=
 						Name:    "queue.tpl",
 						Size:    31574,
 						Mode:    os.FileMode(420),
-						ModTime: 1543961846,
+						ModTime: 1543996346,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+R9/3IbN5Lw3+RTIKrahIwpUs7+ka8UK1WJd534+xzb39m5rTuX6grkYETYM8AYwIhi
@@ -1007,7 +1007,7 @@ Bddp8htVPs0qLR7zAphH3HMdEN8gQpg0BsYAT0gRvRQL0kWD6RBeepZc6Sm8IkhmMK3z4diDbYRtMlmF
 						Name:    "map.tpl",
 						Size:    15812,
 						Mode:    os.FileMode(420),
-						ModTime: 1543961846,
+						ModTime: 1543996346,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/9xbe4/bRpL/e/QpygLipRY0FY//CDCHOSDZjX2+xF7j7GRx6zWMllgc9YrsZrpbGssK
@@ -1078,7 +1078,7 @@ KpfW/XHw8XrfwtGA0I30gsbQ9QCPFxHgCfI8Ok0822Rt+YXG9Cj+fwEAAP//kf3TW8Q9AAA=
 						Name:    "collection.tpl",
 						Size:    4864,
 						Mode:    os.FileMode(420),
-						ModTime: 1543961846,
+						ModTime: 1543996346,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/8xYwW7bOBM+W08xR/mHIx96KNB/95AE7W4WTRrA6V6KHihpZHNDkQpJJXYFAX2M3dfr
@@ -1115,7 +1115,7 @@ ObrfJXctE2LjeTAxi3qwaYuVAxzSizrrM4/vbJMSm30rz+CxrfebziVb/ziR2fq/ITLx+MEik0zfIvLg
 						Name:    "list.tpl",
 						Size:    33358,
 						Mode:    os.FileMode(420),
-						ModTime: 1543961846,
+						ModTime: 1543996346,
 						IsDir:   false,
 						Compressed: `
 H4sIAAAAAAAA/+R9/W4cN5L435qnYPTDL+lZj0a2s0gWshXAiddZ38VOcHJusWcYB850zQzjbrJNsiXN
@@ -1527,7 +1527,7 @@ Hb87vvgJo0fqGTP2jBm1OLOmlmBoYzKwxfcQ2BK6k/H8vNePapp6szCi7jsuzv8EAAD//5PXKdHLZgAA
 				Name:    "threadsafe-queue-api.txt",
 				Size:    2715,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6SWT3PTPBDG7/0UOq7f8dsZhiuXNjQQyD9wGQ6ZHBR7XQtkSZXkJobhuzOyQ+x0YsmU
@@ -1549,7 +1549,7 @@ Gk3FrT8HFkzc1tD9NWgH17fxbuGCHv5JzoKxvaAH6N7FHx1JVYbsEquZeDhe15utaX4GaIhIgFt8P5IG
 				Name:    "threadsafe-map-api.txt",
 				Size:    1991,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yU3Y7aMBCF7/sUvpxUERLwBKtdQC0qXRXaSl3thRMmGyuObdmGbfr0lYOX/wnZvQKN
@@ -1569,7 +1569,7 @@ Lzv8DwAA//8Gii64xwcAAA==
 				Name:    "immutable-list-api.txt",
 				Size:    3264,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6yWQXPbLBCG79+v4Ii+cXNor70kTpy6Eyedyp0cMjkgeVXRoEUB5Njt9L93QHYkNwJh
@@ -1592,19 +1592,19 @@ yOUK4iyuZXaFDn9r8CcAAP//3Pr8J8AMAAA=
 				Name:    "immutable-set-api.txt",
 				Size:    2168,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
-H4sIAAAAAAAA/5yVT3PaPBDG7++n0HH1Ds2l114CgQ6dQjt1cmI4CHtdNJVXrrQmcTv97h3/ATtFNpAb
-ln7Po0erlUgLisUanx/LHCNkOChToBd3d3fViBT/txP/1eDM0gEdn8OaGF2qYvz9Rwo4iiZiZ62RjXZa
-aJO0Ewtns9leEXhbuBjFh3fxXpEILQke+TQkxaP9rD1DS1W/B7Aq30WvyOgYQYrNthocgJbHvXV0b7tB
-0cxYwkvLL/08y7kEWVcpiKwtXWSWPsKfBVIdbZTiMSDSvyoDTeGwM+USTcroOswQdZ8kkFmHQ/3zr6kl
-Vpo86PboB9MdyXtjQHfug/wTaUtgeY+uNzp+HNWZeoz5NtmDTlN0dflv0kVlliE7Hb/V4Btm9oCn0o0v
-hpSA7F+zILawThkDuagmoSvxSKHnL9qzv0mysA5VvIe0p5FhUlMSsq4/Xj0uZ0LD6ELS0TJ9VY41V50T
-WrR71U6KoMtK5a/2ds0BLYziM13zKl28QwXxtAwmdugLw9VtHUiqCeRwO6zUC3QutfOQzbQEg953GSai
-n2RsibdKoyIbCx+x0/S9/bPYbH39OUKCFCPM6kdLecxb7ir+Pewwta5qVuRnRJoIlTK6azyeKFPO75X5
-FH1Zw05struSUQp0zrqBana8FNAIJo0gfHRNyqrzpMhUvmnibAfv7ke7e8DYJjiSpw/PqYbPw/wNAAD/
-/ydoCTB4CAAA
+H4sIAAAAAAAA/5yUMZPaPhDF+/+nUCn9h9CkTXNwkCETSCbmKoZC2OtYE3nlSDJ3TibfPSPbYF+QBFwH
+0u+9fV6tlNeYkg08b5sKErD0yGUNhkynU7fCyP/9xn8tOFd4BG0vYYEWdM5T+P2HEXoSTchBKck67awW
+Mus3llqV84IjNarWKZAP79KCI/GVpAbseYmRlUngZw2YAmWte5CyMWCrPgvjiHbJ/Q5gnU800lYlUrR5
+dnu3GIBWpxYN9KhrXtFcKoRr5VdmUVa2iX3tRuFVJhG/XCmB/ipzrjOBXIrWJUQ9ZBktlYbQ/PxrqtBy
+gYaK/uiD6U7kg5RUDO5B/gmFQqpsAXq0Gu+jOwwDqb1P9ijyHHQ7kHfpkqYswWqRvtXgG5TqCOfWxYsB
+ZpSNr5kXWyrNpaQVcZt0aHGk0YsXYay5S7JUGnha0HykYX5SYOazbv+8elwuhNKC9kmjbfrKtRXWTY6v
+6PCqnRVelzWvXn3bLQe0lNxe6Lrn5OodqtHOGm9iDaaW1t3WQFKBlIXHYc1f6ODSOodsZg2VYMyQYULG
+SWIl3ipN6jIWPrFa4Pf+ld/tTfs3QlJGIsz6R08ZqHruJv49PUCutBtWsM8AOCE8t6Bv8XjCkmtTcPkp
++bKhB7LbHxoLjIDWSge6OfCM0E4w6QT+o+tSusljpOTVrouzD97dj+rwCKnKIJJnDC+whS/D/A0AAP//
+QzwY5XgIAAA=
 `,
 				Files: []*static.DirFile{},
 			},
@@ -1613,7 +1613,7 @@ FH1Zw05struSUQp0zrqBana8FNAIJo0gfHRNyqrzpMhUvmnibAfv7ke7e8DYJjiSpw/PqYbPw/wNAAD/
 				Name:    "immutable-map-api.txt",
 				Size:    1762,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yTwY7aMBCG732KOU6qCAl4gtWWoBaVVoL20NUenDAslh3bsg3b9OkrJ14WBE7SnkDj
@@ -1632,19 +1632,19 @@ O0neSVIBLnX5iSq9o5E9lrpcqJa/7fA3AAD//1j0o1niBgAA
 				Name:    "simple-set-api.txt",
 				Size:    2081,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
-H4sIAAAAAAAA/5yVQY/aPBCG79+v8NH+RLn02gvQRaIqtGp2T4iDCZNi1Rmn4wm7adX/XjkJSpZ1AvRG
-7Oedee0ZD1mJqdjA82NVQAIsT9qW4MV0Og0rSrTr/9XcwuEJiN+yBhko0yn8/qOEbPcnYu+cVY10Xhp7
-aDeW5PLFUaP0rqQUxId36VGjiCSUHvi8osSj+2w8y4YJP+NQsHYlTmJNClKJ7S4sxpnV+Uwd3DtmTLOw
-DmE89co/5AVXUtV3EyM2Dq8hK5/AzxKwdjUG8ch+Yn4FucGoz4Wmg0FtTW1kAJodDjJ3BAPdchHRIWuD
-Xpq20EPGzuDMWmm60EP4rCgA7/DxhMahdHwE6lV7pGKh5h5SvkPz0WQZUF2g20VJlefAZNJ71P/3mg80
-SRWL/A1yd4LzxUdzhytU/YcYo5aOtLWyEGFPdmUZLs7Di/Hs71EsHYFOjzLrSaKWlwYPscD1x6vRc6mz
-DBRTjtTmqyY2HBpnKGM97858LMRaF68OdX3cLa3mN6pmYl15aSXyvIpaJfCl5fCg4yYNtvMrfoQX2cUY
-bKa1wXklLXjfGZiIy5seSPCPyqTMR4wnTAa/t38e252vP4dBqcQwsv7RQh6KFrsFfy/3kDkKnQn8DIAT
-oTMGuiHEE+aa/FHbT8mXjdyL7W5fMSgBRI7i19jhSsiGnzR8/PnXuUOvKZHrYtt42dVv9G8AAAD//+Yc
-fEghCAAA
+H4sIAAAAAAAA/5yUzY7aMBDH730KH52Kcum1F6CLRFVo1bAnxMGESbHqjNPxhN206rtXToLCsnaAvSX2
+7z8znq+8wkys4Gldl5ACy6MyFTgxHo/9SSK683cNN7N4BOLXrEYGylUGf/8lQnb3I7Gz1iStdFpps+8u
+5mSL2UGhdLaiDMSnD9lBoQg4lA74dJKIhUvhdwWYgUwa2zGIB+7X9qt2HvAn/jMMtUYGglnb1Ogmks3W
+H4aZxSkxPXyWq5BmZizCsOuFeyhKrgceubJ4DUn1H+9GY9DFTNFeozK6sRGBJvu9LCxBpFsuLFpkpdFJ
+3RU6FtgJnBgjdW86hk/KEvCOOB5RW5SWD0BnhRpIti+Xg4zv0HzWeQ7UNOrtorQuCmDS2T3q92d9A4pk
+ErL8Awp7hFPig759CpPzQQxRc0vKGFkKfyf7ssSL8/CsHbt7FHNLoLKDzM8kwZDnGvchw83Pi9VzqTMM
+FFIO1Oa7ItbsGyfmsdl3Jz5kYqnKF4+6vu7mRvErVbtsrkxahTytg6ESuMqwH+hwkBq71RN+wrPsbUSb
+aalxWksDzvUBjMRlpiMO3qhMq2Ig8JRJ489u72+2rvmNgzIRcWT5q4MclB12C/5R7iC35DsT+AkAR0Ll
+DHSDiUcsFLmDMl/Sbyu5E5vtrmZIBBBZCqexxxMhW37U8uHxb3z7XktEocpNG8u2mdH/AQAA///RARcI
+IQgAAA==
 `,
 				Files: []*static.DirFile{},
 			},
@@ -1653,7 +1653,7 @@ fEghCAAA
 				Name:    "simple-map-api.txt",
 				Size:    1756,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/5yU32rbMBTG7/cUujweJpDkCUpXjxFayhI22NiFmh43QrIkpBN33tMPuWpqu1IcepVw
@@ -1672,7 +1672,7 @@ xoWzIj0j6pLxmtBNTf4HAAD//z/yOtncBgAA
 				Name:    "threadsafe-list-api.txt",
 				Size:    3772,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6yXwXKbPBDH799T6Ci+oTm0114SO07dxkmnuJNDJgcZlqBGXhFpcex2+u4dwDa4BiF7
@@ -1712,19 +1712,19 @@ ekN76wovsNPqY/+LuNPpMrivHS6TB/rjI2ORCdy4aLvaZWK5j0whec0Edf555z1UB2lUra50cvUx8Dgk
 				Name:    "threadsafe-set-api.txt",
 				Size:    2178,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
-H4sIAAAAAAAA/5yVwXLaMBCG730KHVcdmkuvvSQkdOgU2qmTE8NB2OuiqbxypTWJ2+m7d2wMdgbJQG5Y
-+v7dX6vVkleUiiU+P9YlJsiwU6ZCL25ubpoVKd53G+9acGpph45PYU2MLlcp/v0nBRxEE7Gx1si99q7S
-Jus2Zs4W060i8LZyKYpPH9KtIhFKCR75uCTFo/2qPUNHNb8jWOPvbKzE6BRBitW6WYxA88PZenpw3KBo
-aizhufRz/1CUXINsqxRElpbOMnOf4O8KqbU2SvEYkOg/TQBNYbNT5TJNyujWTIy6zTIorMNj/4RjWWKl
-yYPubjxq6kDeGgO6b8oo/0TaEljeohusjt9Cc5UeU75Odq/zHF1b9at0SV0UyE6nbw0wNagchAv7Awu7
-w0NZw/mRMpDDBxfEZtYpY6AUzSb0VR+p/cOL9uyvksysQ5VuIR9owrZnmrJQ6Pbj1Zg5ERpGF5KOVvm7
-cqy5aaZQ0n6+HRXBKAtVvjrbJQNuZhSf6Pbz6Vxn2Ir4rg46dugrw827jTjVBDLeDgv1An2UeHctNN3V
-YND73sNEDJ2MpXirNKmKMfMJO00/u7+N1dq3nyMkSDHCLH51lMey4y7iP8IGc+uaZkV+RqSJUDmjuyTG
-ExXK+a0yX5JvS9iI1XpTM0qBzlkXqWbPSwF7wWQviAyGNn3TeVIUqlzt7ayjb/ez3dxjajMc8TOEH6iF
-T838DwAA//9nvnaBgggAAA==
+H4sIAAAAAAAA/5yUwXLaMBCG730KHeUOzaXXXhICHTqFdmpyYjgIe100lVfuSiZxO333jmyDnUESkJu9
++v7d3+vVFjVmbAXP66aCFCw/CFWDYXd3dy6SsPf9wbsWnGo8ANlzWKIFKkQGf/8ljB9FE7bTWiWd9qGW
+Ku8P5qTL6V4gN7qmDNinD9leIPOV5AbsKZSwhUnhdw2YAU/a7EHKxoC1/iqNI9qQew5gXZ6opbVOlWz9
+bLYuGIAWxxYN9KhrXtFUaYRL5RdmVla2iX3tSuNFJpV/XCmJ/ipTQblEoWSbJUTd5zkvNcFpfvy5NFoh
+0XDZ//GgqSN5rxSXw1AG+SeUGrm2e6BRNN4+9w8MZPY22aMsCqB2Dm/SpU1ZgiWZvTXBVIEg7m/sDyj1
+AY5t9dcHzHkyvnBebK5JKMUr5g750PVI72cv0lhzk2SuCUS258VI47c9l5j7Urcvr9bMmVBZIJ802uXv
+gqy0bph8RYf9dlJ4syxF9erbrllwcyXsma5bLJcmQ9doHxqvYwJTK+vubcCpRJ6Ex2EpXviQJTxdS4kP
+DVdgzOBhwsZOYiXeKk3rMmY+tSTxZ7/vN1vTvkZInrAIs/zVUwaqnruK/8h3UGhywwr2GQAnTBQW6Joc
+T1gKMnuhvqTfVnzHNttdYyFhQKQp0M2BTxjvBJNOEFgMbXk3eQkrRbXp7GyDd/ez3j1CpnOI+BnDM2zh
+czP/AwAA//9AFy4/gggAAA==
 `,
 				Files: []*static.DirFile{},
 			},
@@ -1843,7 +1843,7 @@ qgSq6uBocWK1gKSXOlpO3zHJrotN6z8BAAD//85oqYgoDAAA
 				Name:    "simple-list-api.txt",
 				Size:    3194,
 				Mode:    os.FileMode(420),
-				ModTime: 1543961584,
+				ModTime: 1543963727,
 				IsDir:   false,
 				Compressed: `
 H4sIAAAAAAAA/6SWwW7bPAzH730KHWXAXw/frrusadMFaLphDtBD0YPi0LVWhXIlOk027N0Hy0mcNJKt
@@ -1865,5 +1865,5 @@ awP48eDxQjHjJ9OGjpLv+PjMZc7nP1vRhmAx3ML3ziLgqez/3ZiKNe9elos14LVe9hrKyEh83v4+Pj5Z
 	})
 }
 
-// git: "v2.5.0-2-ga2a327f"
+// git: "v2.6.0"
 const appVersion = "v2.6.0"

@@ -535,7 +535,7 @@ func Test{{.UType}}QueueFind(t *testing.T) {
 func Test{{.UType}}QueueForall(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := interestingFullQueue(1, 2, 3, 4)
 
 	found := a.Forall(func(v int) bool {
 		return v > 0
@@ -561,7 +561,7 @@ func Test{{.UType}}QueueForall(t *testing.T) {
 func Test{{.UType}}QueueExists(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := interestingFullQueue(1, 2, 3, 4)
     a.Pop(2)
     a.Push(5, 6)
 
@@ -595,7 +595,7 @@ func Test{{.UType}}QueueExists(t *testing.T) {
 func Test{{.UType}}QueueForeach(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := interestingFullQueue(1, 2, 3, 4)
 
 	s := 0
 
@@ -617,7 +617,7 @@ func Test{{.UType}}QueueForeach(t *testing.T) {
 func Test{{.UType}}QueueFilter(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := interestingPartialQueue(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
 		return v > 2
@@ -642,7 +642,7 @@ func Test{{.UType}}QueueFilter(t *testing.T) {
 func Test{{.UType}}QueuePartition(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := interestingPartialQueue(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
@@ -663,7 +663,7 @@ func Test{{.UType}}QueuePartition(t *testing.T) {
 func Test{{.UType}}QueueTransform(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := interestingFullQueue(1, 2, 3, 4)
 
 	b := a.Map(func(v int) int {
 		return v * v
@@ -684,7 +684,7 @@ func Test{{.UType}}QueueTransform(t *testing.T) {
 func Test{{.UType}}QueueMkString(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false).Push(13, 4, 7, -2, 9)
+	a := interestingPartialQueue(13, 4, 7, -2, 9)
 
 	c := a.MkString("|")
 
@@ -698,7 +698,7 @@ func Test{{.UType}}QueueMkString(t *testing.T) {
 func Test{{.UType}}QueueMkString3(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false).Push(13, 4, 7, -2, 9)
+	a := interestingPartialQueue(13, 4, 7, -2, 9)
 
 	c := a.MkString3("<", ", ", ">")
 

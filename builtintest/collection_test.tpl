@@ -188,6 +188,7 @@ func Test{{.UType}}MinMaxSum(t *testing.T) {
 	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), "List")
 {{- if .Mutable}}
 	test{{.UType}}MinMaxSum(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.UType}}MinMaxSum(t, interestingPartialQueue(10, 13, 3, 7, 71), "Queue")
 	test{{.UType}}MinMaxSum(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
 {{- end}}
 }
