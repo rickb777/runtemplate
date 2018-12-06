@@ -881,7 +881,7 @@ func (queue *{{$.UPrefix}}{{$.UType}}Queue) MapTo{{firstUpper .}}(f func({{$.PTy
 
 	result := make([]{{.}}, 0, queue.length)
 
-    front, back = queue.frontAndBack()
+    front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}

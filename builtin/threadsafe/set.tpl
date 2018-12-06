@@ -616,7 +616,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(f func({{.PType}}) []{{.PType}}) *
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *{{$.UPrefix}}{{$.UType}}Set) FlatMapTo{{firstUpper .}}(f func({{$.PType}}) {{.}}) []{{.}} {
+func (set *{{$.UPrefix}}{{$.UType}}Set) FlatMapTo{{firstUpper .}}(f func({{$.PType}}) []{{.}}) []{{.}} {
 	if set == nil {
 		return nil
 	}

@@ -41,7 +41,7 @@ package examples
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=Fast Key=int    Type=int     Comparable:true Stringer:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=Fast Key=string Type=Apple   GobEncode:true
 //go:generate runtemplate -tpl fast/queue.tpl      Prefix=Fast Type=int    MapTo:string MapTo:int64
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=Fast Type=Apple  MapTo:string
+//go:generate runtemplate -tpl fast/queue.tpl      Prefix=Fast Type=Apple
 
 // Threadsafe Examples
 //go:generate runtemplate -tpl threadsafe/collection.tpl Type=int    Stringer:true Comparable:true Ordered:true Numeric:true

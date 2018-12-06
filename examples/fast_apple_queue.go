@@ -797,3 +797,97 @@ func (queue *FastAppleQueue) Map(f func(Apple) Apple) *FastAppleQueue {
 
 	return queue.doClone(slice)
 }
+
+// FlatMap returns a new FastAppleQueue by transforming every element with function f that
+// returns zero or more items in a slice. The resulting queue may have a different size to the original queue.
+// The original queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *FastAppleQueue) FlatMap(f func(Apple) []Apple) *FastAppleQueue {
+	if queue == nil {
+		return nil
+	}
+
+	slice := make([]Apple, 0, queue.length)
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		slice = append(slice, f(v)...)
+	}
+	for _, v := range back {
+		slice = append(slice, f(v)...)
+	}
+
+	return queue.doClone(slice)
+}
+
+// CountBy gives the number elements of FastAppleQueue that return true for the predicate p.
+func (queue *FastAppleQueue) CountBy(p func(Apple) bool) (result int) {
+	if queue == nil {
+		return 0
+	}
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		if p(v) {
+			result++
+		}
+	}
+	for _, v := range back {
+		if p(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of FastAppleQueue containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *FastAppleQueue) MinBy(less func(Apple, Apple) bool) Apple {
+
+	if queue.length == 0 {
+		panic("Cannot determine the minimum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		f := indexes[0]
+		for i := f; i < indexes[1]; i++ {
+			if i != m {
+				if less(queue.m[i], queue.m[m]) {
+					m = i
+				}
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}
+
+// MaxBy returns an element of FastAppleQueue containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
+// element is returned. Panics if there are no elements.
+func (queue *FastAppleQueue) MaxBy(less func(Apple, Apple) bool) Apple {
+
+	if queue.length == 0 {
+		panic("Cannot determine the maximum of an empty queue.")
+	}
+
+	indexes := queue.indexes()
+	m := indexes[0]
+	for len(indexes) > 1 {
+		f := indexes[0]
+		for i := f; i < indexes[1]; i++ {
+			if i != m {
+				if less(queue.m[m], queue.m[i]) {
+					m = i
+				}
+			}
+		}
+		indexes = indexes[2:]
+	}
+	return queue.m[m]
+}

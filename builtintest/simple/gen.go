@@ -8,18 +8,18 @@ package simple
 
 //go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=string  ToSet:true Stringer:true Comparable:true
 //go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=int     ToSet:true Stringer:true Comparable:true Ordered:true Numeric:true MapTo:string MapTo:int64
-//go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=Apple   ToSet:true Stringer:false                                          MapTo:string
+//go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=Apple   ToSet:true Stringer:false
 //go:generate runtemplate -tpl simple/collection.tpl Prefix=X1 Type=Pear
 //go:generate runtemplate -tpl simple/collection.tpl Prefix=X2 Type=big.Int Import:"math/big"
 
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=string  ToSet:true  Stringer:true  Comparable:true Ordered:false Numeric:false
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=int     ToSet:true  Stringer:true  Comparable:true Ordered:true  Numeric:true  MapTo:string MapTo:int64
-//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=Apple   ToSet:true  Stringer:false Comparable:true                             MapTo:string
+//go:generate runtemplate -tpl simple/list.tpl  Prefix=X1 Type=Apple   ToSet:true  Stringer:false Comparable:true
 //go:generate runtemplate -tpl simple/list.tpl  Prefix=X2 Type=big.Int ToSet:false Import:"math/big"                                          MapTo:string MapTo:int
 
 //go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=string  ToList:true  Stringer:true  Ordered:false Numeric:false
 //go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=int     ToList:true  Stringer:true  Ordered:true  Numeric:true                 MapTo:string MapTo:int64
-//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=Apple   ToList:true  Stringer:false                                            MapTo:string
+//go:generate runtemplate -tpl simple/set.tpl   Prefix=X1 Type=Apple   ToList:true  Stringer:false
 //go:generate runtemplate -tpl simple/set.tpl   Prefix=X2 Type=url.URL ToList:false Stringer:true  Comparable:true Import:"net/url"
 
 //go:generate runtemplate -tpl simple/map.tpl   Prefix=TX1 Key=int     Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true JsonEncode:true
@@ -32,9 +32,9 @@ package simple
 
 //go:generate runtemplate -tpl types/stringy.tpl Prefix=X1 Type=Email SortableSlice:true
 
-//go:generate runtemplate -tpl ../list_test.tpl         Type=int Mutable:true M: Numeric:true Comparable:true
-//go:generate runtemplate -tpl ../set_test.tpl          Type=int Mutable:true M: Numeric:true Comparable:true
-//go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int Mutable:true M: Numeric:true Comparable:true
+//go:generate runtemplate -tpl ../list_test.tpl         Type=int Mutable:true M:
+//go:generate runtemplate -tpl ../set_test.tpl          Type=int Mutable:true M:
+//go:generate runtemplate -tpl ../map_test.tpl  Key=int Type=int Mutable:true M:
 
 //-------------------------------------------------------------------------------------------------
 // Code generation with pointer values

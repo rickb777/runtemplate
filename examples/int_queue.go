@@ -6,9 +6,9 @@
 //
 // The queue provides a method to sort its elements.
 //
-// Not thread-safe.
+// Thread-safe.
 //
-// Generated from fast/queue.tpl with Type=int
+// Generated from threadsafe/queue.tpl with Type=int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:<no value> ToSet:<no value>
 // by runtemplate v2.7.0
@@ -19,11 +19,12 @@ package examples
 import (
 	//
 	"sort"
+	"sync"
 )
 
-// FastIntQueue is a ring buffer containing a slice of type int. It is optimised
+// IntQueue is a ring buffer containing a slice of type int. It is optimised
 // for FIFO operations.
-type FastIntQueue struct {
+type IntQueue struct {
 	m         []int
 	read      int
 	write     int
@@ -31,21 +32,22 @@ type FastIntQueue struct {
 	capacity  int
 	overwrite bool
 	less      func(i, j int) bool
+	s         *sync.RWMutex
 }
 
-// NewFastIntQueue returns a new queue of int. The behaviour when adding
+// NewIntQueue returns a new queue of int. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func NewFastIntQueue(capacity int, overwrite bool) *FastIntQueue {
-	return NewFastIntSortedQueue(capacity, overwrite, nil)
+func NewIntQueue(capacity int, overwrite bool) *IntQueue {
+	return NewIntSortedQueue(capacity, overwrite, nil)
 }
 
-// NewFastIntSortedQueue returns a new queue of int. The behaviour when adding
+// NewIntSortedQueue returns a new queue of int. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
-func NewFastIntSortedQueue(capacity int, overwrite bool, less func(i, j int) bool) *FastIntQueue {
-	return &FastIntQueue{
+func NewIntSortedQueue(capacity int, overwrite bool, less func(i, j int) bool) *IntQueue {
+	return &IntQueue{
 		m:         make([]int, capacity),
 		read:      0,
 		write:     0,
@@ -53,13 +55,14 @@ func NewFastIntSortedQueue(capacity int, overwrite bool, less func(i, j int) boo
 		capacity:  capacity,
 		overwrite: overwrite,
 		less:      less,
+		s:         &sync.RWMutex{},
 	}
 }
 
-// BuildFastIntQueueFromChan constructs a new FastIntQueue from a channel that supplies
+// BuildIntQueueFromChan constructs a new IntQueue from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func BuildFastIntQueueFromChan(source <-chan int) *FastIntQueue {
-	queue := NewFastIntQueue(0, false)
+func BuildIntQueueFromChan(source <-chan int) *IntQueue {
+	queue := NewIntQueue(0, false)
 	for v := range source {
 		queue.m = append(queue.m, v)
 	}
@@ -82,15 +85,17 @@ func BuildFastIntQueueFromChan(source <-chan int) *FastIntQueue {
 // Reallocate adjusts the storage space but does not clone the underlying elements.
 //
 // The queue must not be nil.
-func (queue *FastIntQueue) Reallocate(capacity int, overwrite bool) *FastIntQueue {
+func (queue *IntQueue) Reallocate(capacity int, overwrite bool) *IntQueue {
 	if capacity < 1 {
 		panic("capacity must be at least 1")
 	}
 
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	return queue.doReallocate(capacity, overwrite)
 }
 
-func (queue *FastIntQueue) doReallocate(capacity int, overwrite bool) *FastIntQueue {
+func (queue *IntQueue) doReallocate(capacity int, overwrite bool) *IntQueue {
 	queue.overwrite = overwrite
 
 	if capacity < queue.length {
@@ -116,15 +121,17 @@ func (queue *FastIntQueue) doReallocate(capacity int, overwrite bool) *FastIntQu
 }
 
 // Space returns the space available in the queue.
-func (queue *FastIntQueue) Space() int {
+func (queue *IntQueue) Space() int {
 	if queue == nil {
 		return 0
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.capacity - queue.length
 }
 
 // Cap gets the capacity of this queue.
-func (queue *FastIntQueue) Cap() int {
+func (queue *IntQueue) Cap() int {
 	if queue == nil {
 		return 0
 	}
@@ -134,25 +141,28 @@ func (queue *FastIntQueue) Cap() int {
 //-------------------------------------------------------------------------------------------------
 
 // IsSequence returns true for ordered lists and queues.
-func (queue *FastIntQueue) IsSequence() bool {
+func (queue *IntQueue) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists or queues.
-func (queue *FastIntQueue) IsSet() bool {
+func (queue *IntQueue) IsSet() bool {
 	return false
 }
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *FastIntQueue) ToSlice() []int {
+func (queue *IntQueue) ToSlice() []int {
 	if queue == nil {
 		return nil
 	}
 
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
 	return queue.toSlice(make([]int, queue.length))
 }
 
-func (queue *FastIntQueue) toSlice(s []int) []int {
+func (queue *IntQueue) toSlice(s []int) []int {
 	front, back := queue.frontAndBack()
 	copy(s, front)
 	if len(back) > 0 && len(s) >= len(front) {
@@ -163,10 +173,13 @@ func (queue *FastIntQueue) toSlice(s []int) []int {
 
 // ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
 // The queue is not altered.
-func (queue *FastIntQueue) ToInterfaceSlice() []interface{} {
+func (queue *IntQueue) ToInterfaceSlice() []interface{} {
 	if queue == nil {
 		return nil
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	s := make([]interface{}, 0, queue.length)
@@ -182,21 +195,24 @@ func (queue *FastIntQueue) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *FastIntQueue) Clone() *FastIntQueue {
+func (queue *IntQueue) Clone() *IntQueue {
 	if queue == nil {
 		return nil
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	buffer := queue.toSlice(make([]int, queue.capacity))
 	return queue.doClone(buffer[:queue.length])
 }
 
-func (queue *FastIntQueue) doClone(buffer []int) *FastIntQueue {
+func (queue *IntQueue) doClone(buffer []int) *IntQueue {
 	w := 0
 	if len(buffer) < cap(buffer) {
 		w = len(buffer)
 	}
-	return &FastIntQueue{
+	return &IntQueue{
 		m:         buffer,
 		read:      0,
 		write:     w,
@@ -204,6 +220,7 @@ func (queue *FastIntQueue) doClone(buffer []int) *FastIntQueue {
 		capacity:  cap(buffer),
 		overwrite: queue.overwrite,
 		less:      queue.less,
+		s:         &sync.RWMutex{},
 	}
 }
 
@@ -211,7 +228,9 @@ func (queue *FastIntQueue) doClone(buffer []int) *FastIntQueue {
 
 // Get gets the specified element in the queue.
 // Panics if the index is out of range or the queue is nil.
-func (queue *FastIntQueue) Get(i int) int {
+func (queue *IntQueue) Get(i int) int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	ri := (queue.read + i) % queue.capacity
 	return queue.m[ri]
@@ -219,17 +238,22 @@ func (queue *FastIntQueue) Get(i int) int {
 
 // Head gets the first element in the queue. Head is the opposite of Last.
 // Panics if queue is empty or nil.
-func (queue *FastIntQueue) Head() int {
+func (queue *IntQueue) Head() int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	return queue.m[queue.read]
 }
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns the zero value instead.
-func (queue *FastIntQueue) HeadOption() int {
+func (queue *IntQueue) HeadOption() int {
 	if queue == nil {
 		return 0
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		return 0
@@ -241,7 +265,9 @@ func (queue *FastIntQueue) HeadOption() int {
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
 // Last is the opposite of Head.
 // Panics if queue is empty or nil.
-func (queue *FastIntQueue) Last() int {
+func (queue *IntQueue) Last() int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	i := queue.write - 1
 	if i < 0 {
@@ -253,10 +279,13 @@ func (queue *FastIntQueue) Last() int {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns the zero value instead.
-func (queue *FastIntQueue) LastOption() int {
+func (queue *IntQueue) LastOption() int {
 	if queue == nil {
 		return 0
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		return 0
@@ -273,53 +302,63 @@ func (queue *FastIntQueue) LastOption() int {
 //-------------------------------------------------------------------------------------------------
 
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue *FastIntQueue) IsOverwriting() bool {
+func (queue *IntQueue) IsOverwriting() bool {
 	if queue == nil {
 		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.overwrite
 }
 
 // IsFull returns true if the queue is full.
-func (queue *FastIntQueue) IsFull() bool {
+func (queue *IntQueue) IsFull() bool {
 	if queue == nil {
 		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length == queue.capacity
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue *FastIntQueue) IsEmpty() bool {
+func (queue *IntQueue) IsEmpty() bool {
 	if queue == nil {
 		return true
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue *FastIntQueue) NonEmpty() bool {
+func (queue *IntQueue) NonEmpty() bool {
 	if queue == nil {
 		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue *FastIntQueue) Size() int {
+func (queue *IntQueue) Size() int {
 	if queue == nil {
 		return 0
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue *FastIntQueue) Len() int {
+func (queue *IntQueue) Len() int {
 	return queue.Size()
 }
 
 // Swap swaps the elements with indexes i and j.
 // The queue must not be empty.
-func (queue *FastIntQueue) Swap(i, j int) {
+func (queue *IntQueue) Swap(i, j int) {
 	ri := (queue.read + i) % queue.capacity
 	rj := (queue.read + j) % queue.capacity
 	queue.m[ri], queue.m[rj] = queue.m[rj], queue.m[ri]
@@ -328,7 +367,7 @@ func (queue *FastIntQueue) Swap(i, j int) {
 // Less reports whether the element with index i should sort before the element with index j.
 // The queue must have been created with a non-nil 'less' comparison function and it must not
 // be empty.
-func (queue *FastIntQueue) Less(i, j int) bool {
+func (queue *IntQueue) Less(i, j int) bool {
 	ri := (queue.read + i) % queue.capacity
 	rj := (queue.read + j) % queue.capacity
 	return queue.less(queue.m[ri], queue.m[rj])
@@ -336,22 +375,22 @@ func (queue *FastIntQueue) Less(i, j int) bool {
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
 // This function will panic if the collection was created with a nil 'less' function
-// (see NewFastIntSortedQueue).
-func (queue *FastIntQueue) Sort() {
+// (see NewIntSortedQueue).
+func (queue *IntQueue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
 // This function will panic if the collection was created with a nil 'less' function
-// (see NewFastIntSortedQueue).
-func (queue *FastIntQueue) StableSort() {
+// (see NewIntSortedQueue).
+func (queue *IntQueue) StableSort() {
 	sort.Stable(queue)
 }
 
 // frontAndBack gets the front and back portions of the queue. The front portion starts
 // from the read index. The back portion ends at the write index.
-func (queue *FastIntQueue) frontAndBack() ([]int, []int) {
+func (queue *IntQueue) frontAndBack() ([]int, []int) {
 	if queue == nil || queue.length == 0 {
 		return nil, nil
 	}
@@ -363,7 +402,7 @@ func (queue *FastIntQueue) frontAndBack() ([]int, []int) {
 
 // indexes gets the indexes for the front and back portions of the queue. The front
 // portion starts from the read index. The back portion ends at the write index.
-func (queue *FastIntQueue) indexes() []int {
+func (queue *IntQueue) indexes() []int {
 	if queue == nil || queue.length == 0 {
 		return nil
 	}
@@ -376,8 +415,10 @@ func (queue *FastIntQueue) indexes() []int {
 //-------------------------------------------------------------------------------------------------
 
 // Clear the entire queue.
-func (queue *FastIntQueue) Clear() {
+func (queue *IntQueue) Clear() {
 	if queue != nil {
+		queue.s.Lock()
+		defer queue.s.Unlock()
 		queue.read = 0
 		queue.write = 0
 		queue.length = 0
@@ -385,7 +426,7 @@ func (queue *FastIntQueue) Clear() {
 }
 
 // Add adds items to the queue. This is a synonym for Push.
-func (queue *FastIntQueue) Add(more ...int) {
+func (queue *IntQueue) Add(more ...int) {
 	queue.Push(more...)
 }
 
@@ -399,7 +440,9 @@ func (queue *FastIntQueue) Add(more ...int) {
 // without any older items being affected.
 //
 // The modified queue is returned.
-func (queue *FastIntQueue) Push(items ...int) *FastIntQueue {
+func (queue *IntQueue) Push(items ...int) *IntQueue {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 
 	n := queue.capacity
 	if queue.overwrite && len(items) > queue.capacity {
@@ -432,11 +475,13 @@ func (queue *FastIntQueue) Push(items ...int) *FastIntQueue {
 //
 // If the capacity is too small for the number of items, the excess items are returned.
 // The queue capacity is never altered.
-func (queue *FastIntQueue) Offer(items ...int) []int {
+func (queue *IntQueue) Offer(items ...int) []int {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	return queue.doPush(items...)
 }
 
-func (queue *FastIntQueue) doPush(items ...int) []int {
+func (queue *IntQueue) doPush(items ...int) []int {
 	n := len(items)
 
 	space := queue.capacity - queue.length
@@ -479,7 +524,9 @@ func (queue *FastIntQueue) doPush(items ...int) []int {
 // Pop1 removes and returns the oldest item from the queue. If the queue is
 // empty, it returns the zero value instead.
 // The boolean is true only if the element was available.
-func (queue *FastIntQueue) Pop1() (int, bool) {
+func (queue *IntQueue) Pop1() (int, bool) {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 
 	if queue.length == 0 {
 		return 0, false
@@ -496,11 +543,13 @@ func (queue *FastIntQueue) Pop1() (int, bool) {
 // empty, it returns a nil slice. If n is larger than the current queue length,
 // it returns all the available elements, so in this case the returned slice
 // will be shorter than n.
-func (queue *FastIntQueue) Pop(n int) []int {
+func (queue *IntQueue) Pop(n int) []int {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	return queue.doPop(n)
 }
 
-func (queue *FastIntQueue) doPop(n int) []int {
+func (queue *IntQueue) doPop(n int) []int {
 	if queue.length == 0 {
 		return nil
 	}
@@ -525,12 +574,15 @@ func (queue *FastIntQueue) doPop(n int) []int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Exists verifies that one or more elements of FastIntQueue return true for the predicate p.
+// Exists verifies that one or more elements of IntQueue return true for the predicate p.
 // The function should not alter the values via side-effects.
-func (queue *FastIntQueue) Exists(p func(int) bool) bool {
+func (queue *IntQueue) Exists(p func(int) bool) bool {
 	if queue == nil {
 		return false
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -546,12 +598,15 @@ func (queue *FastIntQueue) Exists(p func(int) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of FastIntQueue return true for the predicate p.
+// Forall verifies that all elements of IntQueue return true for the predicate p.
 // The function should not alter the values via side-effects.
-func (queue *FastIntQueue) Forall(p func(int) bool) bool {
+func (queue *IntQueue) Forall(p func(int) bool) bool {
 	if queue == nil {
 		return true
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -567,12 +622,15 @@ func (queue *FastIntQueue) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Foreach iterates over FastIntQueue and executes function f against each element.
+// Foreach iterates over IntQueue and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (queue *FastIntQueue) Foreach(f func(int)) {
+func (queue *IntQueue) Foreach(f func(int)) {
 	if queue == nil {
 		return
 	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -586,10 +644,12 @@ func (queue *FastIntQueue) Foreach(f func(int)) {
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements
 // have been consumed. The channel will be closed when all the elements have been sent.
-func (queue *FastIntQueue) Send() <-chan int {
+func (queue *IntQueue) Send() <-chan int {
 	ch := make(chan int)
 	go func() {
 		if queue != nil {
+			queue.s.RLock()
+			defer queue.s.RUnlock()
 
 			front, back := queue.frontAndBack()
 			for _, v := range front {
@@ -606,15 +666,17 @@ func (queue *FastIntQueue) Send() <-chan int {
 
 //-------------------------------------------------------------------------------------------------
 
-// DoKeepWhere modifies a FastIntQueue by retaining only those elements that match
+// DoKeepWhere modifies a IntQueue by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the queue in place.
 //
 // The queue is modified and the modified queue is returned.
-func (queue *FastIntQueue) DoKeepWhere(p func(int) bool) *FastIntQueue {
+func (queue *IntQueue) DoKeepWhere(p func(int) bool) *IntQueue {
 	if queue == nil {
 		return nil
 	}
 
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	if queue.length == 0 {
 		return queue
 	}
@@ -622,7 +684,7 @@ func (queue *FastIntQueue) DoKeepWhere(p func(int) bool) *FastIntQueue {
 	return queue.doKeepWhere(p)
 }
 
-func (queue *FastIntQueue) doKeepWhere(p func(int) bool) *FastIntQueue {
+func (queue *IntQueue) doKeepWhere(p func(int) bool) *IntQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
@@ -678,10 +740,13 @@ func (queue *FastIntQueue) doKeepWhere(p func(int) bool) *FastIntQueue {
 
 // Find returns the first int that returns true for predicate p.
 // False is returned if none match.
-func (queue *FastIntQueue) Find(p func(int) bool) (int, bool) {
+func (queue *IntQueue) Find(p func(int) bool) (int, bool) {
 	if queue == nil {
 		return 0, false
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -699,15 +764,18 @@ func (queue *FastIntQueue) Find(p func(int) bool) (int, bool) {
 	return empty, false
 }
 
-// Filter returns a new FastIntQueue whose elements return true for predicate p.
+// Filter returns a new IntQueue whose elements return true for predicate p.
 //
 // The original queue is not modified. See also DoKeepWhere (which does modify the original queue).
-func (queue *FastIntQueue) Filter(p func(int) bool) *FastIntQueue {
+func (queue *IntQueue) Filter(p func(int) bool) *IntQueue {
 	if queue == nil {
 		return nil
 	}
 
-	result := NewFastIntSortedQueue(queue.length, queue.overwrite, queue.less)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	result := NewIntSortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -735,13 +803,16 @@ func (queue *FastIntQueue) Filter(p func(int) bool) *FastIntQueue {
 // original queue.
 //
 // The original queue is not modified
-func (queue *FastIntQueue) Partition(p func(int) bool) (*FastIntQueue, *FastIntQueue) {
+func (queue *IntQueue) Partition(p func(int) bool) (*IntQueue, *IntQueue) {
 	if queue == nil {
 		return nil, nil
 	}
 
-	matching := NewFastIntSortedQueue(queue.length, queue.overwrite, queue.less)
-	others := NewFastIntSortedQueue(queue.length, queue.overwrite, queue.less)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	matching := NewIntSortedQueue(queue.length, queue.overwrite, queue.less)
+	others := NewIntSortedQueue(queue.length, queue.overwrite, queue.less)
 	m, o := 0, 0
 
 	front, back := queue.frontAndBack()
@@ -771,16 +842,19 @@ func (queue *FastIntQueue) Partition(p func(int) bool) (*FastIntQueue, *FastIntQ
 	return matching, others
 }
 
-// Map returns a new FastIntQueue by transforming every element with function f.
+// Map returns a new IntQueue by transforming every element with function f.
 // The resulting queue is the same size as the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *FastIntQueue) Map(f func(int) int) *FastIntQueue {
+func (queue *IntQueue) Map(f func(int) int) *IntQueue {
 	if queue == nil {
 		return nil
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	slice := make([]int, queue.length)
 	i := 0
@@ -804,12 +878,14 @@ func (queue *FastIntQueue) Map(f func(int) int) *FastIntQueue {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *FastIntQueue) MapToString(f func(int) string) []string {
+func (queue *IntQueue) MapToString(f func(int) string) []string {
 	if queue == nil {
 		return nil
 	}
 
 	result := make([]string, 0, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -828,12 +904,14 @@ func (queue *FastIntQueue) MapToString(f func(int) string) []string {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *FastIntQueue) MapToInt64(f func(int) int64) []int64 {
+func (queue *IntQueue) MapToInt64(f func(int) int64) []int64 {
 	if queue == nil {
 		return nil
 	}
 
 	result := make([]int64, 0, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -846,13 +924,13 @@ func (queue *FastIntQueue) MapToInt64(f func(int) int64) []int64 {
 	return result
 }
 
-// FlatMap returns a new FastIntQueue by transforming every element with function f that
+// FlatMap returns a new IntQueue by transforming every element with function f that
 // returns zero or more items in a slice. The resulting queue may have a different size to the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *FastIntQueue) FlatMap(f func(int) []int) *FastIntQueue {
+func (queue *IntQueue) FlatMap(f func(int) []int) *IntQueue {
 	if queue == nil {
 		return nil
 	}
@@ -876,12 +954,14 @@ func (queue *FastIntQueue) FlatMap(f func(int) []int) *FastIntQueue {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *FastIntQueue) FlatMapToString(f func(int) []string) []string {
+func (queue *IntQueue) FlatMapToString(f func(int) []string) []string {
 	if queue == nil {
 		return nil
 	}
 
 	result := make([]string, 0, 32)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	for _, v := range queue.m {
 		result = append(result, f(v)...)
@@ -896,12 +976,14 @@ func (queue *FastIntQueue) FlatMapToString(f func(int) []string) []string {
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *FastIntQueue) FlatMapToInt64(f func(int) []int64) []int64 {
+func (queue *IntQueue) FlatMapToInt64(f func(int) []int64) []int64 {
 	if queue == nil {
 		return nil
 	}
 
 	result := make([]int64, 0, 32)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	for _, v := range queue.m {
 		result = append(result, f(v)...)
@@ -910,11 +992,14 @@ func (queue *FastIntQueue) FlatMapToInt64(f func(int) []int64) []int64 {
 	return result
 }
 
-// CountBy gives the number elements of FastIntQueue that return true for the predicate p.
-func (queue *FastIntQueue) CountBy(p func(int) bool) (result int) {
+// CountBy gives the number elements of IntQueue that return true for the predicate p.
+func (queue *IntQueue) CountBy(p func(int) bool) (result int) {
 	if queue == nil {
 		return 0
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -930,10 +1015,12 @@ func (queue *FastIntQueue) CountBy(p func(int) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of FastIntQueue containing the minimum value, when compared to other elements
+// MinBy returns an element of IntQueue containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (queue *FastIntQueue) MinBy(less func(int, int) bool) int {
+func (queue *IntQueue) MinBy(less func(int, int) bool) int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		panic("Cannot determine the minimum of an empty queue.")
@@ -955,10 +1042,12 @@ func (queue *FastIntQueue) MinBy(less func(int, int) bool) int {
 	return queue.m[m]
 }
 
-// MaxBy returns an element of FastIntQueue containing the maximum value, when compared to other elements
+// MaxBy returns an element of IntQueue containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (queue *FastIntQueue) MaxBy(less func(int, int) bool) int {
+func (queue *IntQueue) MaxBy(less func(int, int) bool) int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		panic("Cannot determine the maximum of an empty queue.")

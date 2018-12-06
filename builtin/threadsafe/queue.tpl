@@ -967,7 +967,7 @@ func (queue *{{$.UPrefix}}{{$.UType}}Queue) MapTo{{firstUpper .}}(f func({{$.PTy
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-    front, back = queue.frontAndBack()
+    front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}
