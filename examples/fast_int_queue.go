@@ -188,13 +188,20 @@ func (queue *FastIntQueue) Clone() *FastIntQueue {
 	}
 
 	buffer := queue.toSlice(make([]int, queue.capacity))
+	return queue.doClone(buffer[:queue.length])
+}
 
+func (queue *FastIntQueue) doClone(buffer []int) *FastIntQueue {
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &FastIntQueue{
 		m:         buffer,
 		read:      0,
-		write:     queue.length,
-		length:    queue.length,
-		capacity:  queue.capacity,
+		write:     w,
+		length:    len(buffer),
+		capacity:  cap(buffer),
 		overwrite: queue.overwrite,
 		less:      queue.less,
 	}
@@ -367,6 +374,15 @@ func (queue *FastIntQueue) indexes() []int {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+// Clear the entire queue.
+func (queue *FastIntQueue) Clear() {
+	if queue != nil {
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
+}
 
 // Add adds items to the queue. This is a synonym for Push.
 func (queue *FastIntQueue) Add(more ...int) {
@@ -766,20 +782,130 @@ func (queue *FastIntQueue) Map(f func(int) int) *FastIntQueue {
 		return nil
 	}
 
-	result := NewFastIntSortedQueue(queue.length, queue.overwrite, queue.less)
+	slice := make([]int, queue.length)
 	i := 0
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		result.m[i] = f(v)
+		slice[i] = f(v)
 		i++
 	}
 	for _, v := range back {
-		result.m[i] = f(v)
+		slice[i] = f(v)
 		i++
 	}
-	result.length = i
-	result.write = i
+
+	return queue.doClone(slice)
+}
+
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *FastIntQueue) MapToString(f func(int) string) []string {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]string, 0, queue.length)
+
+	front, back = queue.frontAndBack()
+	for _, v := range front {
+		result = append(result, f(v))
+	}
+	for _, v := range back {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
+// MapToInt64 returns a new []int64 by transforming every element with function f.
+// The resulting slice is the same size as the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *FastIntQueue) MapToInt64(f func(int) int64) []int64 {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, queue.length)
+
+	front, back = queue.frontAndBack()
+	for _, v := range front {
+		result = append(result, f(v))
+	}
+	for _, v := range back {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
+// FlatMap returns a new FastIntQueue by transforming every element with function f that
+// returns zero or more items in a slice. The resulting queue may have a different size to the original queue.
+// The original queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *FastIntQueue) FlatMap(f func(int) []int) *FastIntQueue {
+	if queue == nil {
+		return nil
+	}
+
+	slice := make([]int, 0, queue.length)
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		slice = append(slice, f(v)...)
+	}
+	for _, v := range back {
+		slice = append(slice, f(v)...)
+	}
+
+	return queue.doClone(slice)
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *FastIntQueue) FlatMapToString(f func(int) []string) []string {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]string, 0, 32)
+
+	for _, v := range queue.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *FastIntQueue) FlatMapToInt64(f func(int) []int64) []int64 {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, 32)
+
+	for _, v := range queue.m {
+		result = append(result, f(v)...)
+	}
 
 	return result
 }

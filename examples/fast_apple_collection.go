@@ -53,6 +53,9 @@ type FastAppleCollection interface {
 	// CountBy gives the number elements of FastAppleCollection that return true for the predicate p.
 	CountBy(p func(Apple) bool) int
 
+	// Clear the entire collection.
+	Clear()
+
 	// Add adds items to the current collection.
 	Add(more ...Apple)
 

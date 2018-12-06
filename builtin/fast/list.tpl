@@ -3,7 +3,7 @@
 //
 // Generated from {{.TemplateFile}} with Type={{.PType}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
-// GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}}
+// GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}} MapTo:{{.MapTo}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -435,6 +435,13 @@ func (list *{{.UPrefix}}{{.UType}}List) doShuffle() *{{.UPrefix}}{{.UType}}List 
 
 //-------------------------------------------------------------------------------------------------
 
+// Clear the entire collection.
+func (list *{{.UPrefix}}{{.UType}}List) Clear() {
+	if list != nil {
+	    list.m = list.m[:]
+    }
+}
+
 // Add adds items to the current list. This is a synonym for Append.
 func (list *{{.UPrefix}}{{.UType}}List) Add(more ...{{.PType}}) {
 	list.Append(more...)
@@ -780,6 +787,28 @@ func (list *{{.UPrefix}}{{.UType}}List) Map(f func({{.PType}}) {{.PType}}) *{{.U
 
 	return result
 }
+{{- range .MapTo}}
+
+// MapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f.
+// The resulting slice is the same size as the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *{{$.UPrefix}}{{$.UType}}List) MapTo{{firstUpper .}}(f func({{$.PType}}) {{.}}) []{{.}} {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, len(list.m))
+
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+{{- end}}
 
 // FlatMap returns a new {{.UPrefix}}{{.UType}}List by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
@@ -800,6 +829,28 @@ func (list *{{.UPrefix}}{{.UType}}List) FlatMap(f func({{.PType}}) []{{.PType}})
 
 	return result
 }
+{{- range .MapTo}}
+
+// FlatMapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *{{$.UPrefix}}{{$.UType}}List) FlatMapTo{{firstUpper .}}(f func({{$.PType}}) []{{.}}) []{{.}} {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, 0, len(list.m))
+
+	for _, v := range list.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+{{- end}}
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}List that return true for the predicate p.
 func (list *{{.UPrefix}}{{.UType}}List) CountBy(p func({{.PType}}) bool) (result int) {

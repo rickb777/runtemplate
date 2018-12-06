@@ -459,6 +459,46 @@ func (set *FastIntSet) Map(f func(int) int) *FastIntSet {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *FastIntSet) MapToString(f func(int) string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
+// MapToInt64 returns a new []int64 by transforming every element with function f.
+// The resulting slice is the same size as the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *FastIntSet) MapToInt64(f func(int) int64) []int64 {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
 // FlatMap returns a new FastIntSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 // The original set is not modified.
@@ -476,6 +516,46 @@ func (set *FastIntSet) FlatMap(f func(int) []int) *FastIntSet {
 		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *FastIntSet) FlatMapToString(f func(int) string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *FastIntSet) FlatMapToInt64(f func(int) int64) []int64 {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f(v)...)
 	}
 
 	return result
@@ -613,7 +693,7 @@ func (set *FastIntSet) Equals(other *FastIntSet) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-// StringList gets a list of strings that depicts all the elements.
+// StringSet gets a list of strings that depicts all the elements.
 func (set *FastIntSet) StringList() []string {
 
 	strings := make([]string, len(set.m))

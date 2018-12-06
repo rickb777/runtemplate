@@ -88,6 +88,19 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// Find returns the first {{.Type}} that returns true for the predicate p.
 	// False is returned if none match.
 	Find(p func({{.PType}}) bool) ({{.PType}}, bool)
+{{- range .MapTo}}
+
+    // MapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f.
+    // The resulting slice is the same size as the collection. The collection is not modified.
+    MapTo{{firstUpper .}}(f func({{$.PType}}) {{.}}) []{{.}}
+{{- end}}
+{{- range .MapTo}}
+
+    // FlatMap{{firstUpper .}} returns a new []{{.}} by transforming every element with function f
+    // that returns zero or more items in a slice. The resulting list may have a different size to the
+    // collection. The collection is not modified.
+    FlatMapTo{{firstUpper .}}(f func({{$.PType}}) []{{.}}) []{{.}}
+{{- end}}
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
@@ -103,6 +116,9 @@ type {{.UPrefix}}{{.UType}}Collection interface {
 	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...{{.Type}}) bool
 {{- end}}
+
+    // Clear the entire collection.
+    Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...{{.Type}})

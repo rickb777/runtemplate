@@ -560,6 +560,30 @@ func (set *{{.UPrefix}}{{.UType}}Set) Map(f func({{.PType}}) {{.PType}}) *{{.UPr
 
 	return result
 }
+{{- range .MapTo}}
+
+// MapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f.
+// The resulting slice is the same size as the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *{{$.UPrefix}}{{$.UType}}Set) MapTo{{firstUpper .}}(f func({{$.PType}}) {{.}}) []{{.}} {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, 0, len(set.m))
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v := range set.m {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+{{- end}}
 
 // FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
@@ -584,6 +608,30 @@ func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(f func({{.PType}}) []{{.PType}}) *
 
 	return result
 }
+{{- range .MapTo}}
+
+// FlatMapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *{{$.UPrefix}}{{$.UType}}Set) FlatMapTo{{firstUpper .}}(f func({{$.PType}}) {{.}}) []{{.}} {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, 0, len(set.m))
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	for v := range set.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+{{- end}}
 
 // CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the predicate p.
 func (set *{{.UPrefix}}{{.UType}}Set) CountBy(p func({{.Type}}) bool) (result int) {
@@ -741,7 +789,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) b
 
 //-------------------------------------------------------------------------------------------------
 
-// StringList gets a list of strings that depicts all the elements.
+// StringSet gets a list of strings that depicts all the elements.
 func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
 	set.s.RLock()
 	defer set.s.RUnlock()

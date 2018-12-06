@@ -188,13 +188,20 @@ func (queue *FastAppleQueue) Clone() *FastAppleQueue {
 	}
 
 	buffer := queue.toSlice(make([]Apple, queue.capacity))
+	return queue.doClone(buffer[:queue.length])
+}
 
+func (queue *FastAppleQueue) doClone(buffer []Apple) *FastAppleQueue {
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &FastAppleQueue{
 		m:         buffer,
 		read:      0,
-		write:     queue.length,
-		length:    queue.length,
-		capacity:  queue.capacity,
+		write:     w,
+		length:    len(buffer),
+		capacity:  cap(buffer),
 		overwrite: queue.overwrite,
 		less:      queue.less,
 	}
@@ -367,6 +374,15 @@ func (queue *FastAppleQueue) indexes() []int {
 }
 
 //-------------------------------------------------------------------------------------------------
+
+// Clear the entire queue.
+func (queue *FastAppleQueue) Clear() {
+	if queue != nil {
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
+}
 
 // Add adds items to the queue. This is a synonym for Push.
 func (queue *FastAppleQueue) Add(more ...Apple) {
@@ -766,90 +782,18 @@ func (queue *FastAppleQueue) Map(f func(Apple) Apple) *FastAppleQueue {
 		return nil
 	}
 
-	result := NewFastAppleSortedQueue(queue.length, queue.overwrite, queue.less)
+	slice := make([]Apple, queue.length)
 	i := 0
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		result.m[i] = f(v)
+		slice[i] = f(v)
 		i++
 	}
 	for _, v := range back {
-		result.m[i] = f(v)
+		slice[i] = f(v)
 		i++
 	}
-	result.length = i
-	result.write = i
 
-	return result
-}
-
-// CountBy gives the number elements of FastAppleQueue that return true for the predicate p.
-func (queue *FastAppleQueue) CountBy(p func(Apple) bool) (result int) {
-	if queue == nil {
-		return 0
-	}
-
-	front, back := queue.frontAndBack()
-	for _, v := range front {
-		if p(v) {
-			result++
-		}
-	}
-	for _, v := range back {
-		if p(v) {
-			result++
-		}
-	}
-	return
-}
-
-// MinBy returns an element of FastAppleQueue containing the minimum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Panics if there are no elements.
-func (queue *FastAppleQueue) MinBy(less func(Apple, Apple) bool) Apple {
-
-	if queue.length == 0 {
-		panic("Cannot determine the minimum of an empty queue.")
-	}
-
-	indexes := queue.indexes()
-	m := indexes[0]
-	for len(indexes) > 1 {
-		f := indexes[0]
-		for i := f; i < indexes[1]; i++ {
-			if i != m {
-				if less(queue.m[i], queue.m[m]) {
-					m = i
-				}
-			}
-		}
-		indexes = indexes[2:]
-	}
-	return queue.m[m]
-}
-
-// MaxBy returns an element of FastAppleQueue containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
-// element is returned. Panics if there are no elements.
-func (queue *FastAppleQueue) MaxBy(less func(Apple, Apple) bool) Apple {
-
-	if queue.length == 0 {
-		panic("Cannot determine the maximum of an empty queue.")
-	}
-
-	indexes := queue.indexes()
-	m := indexes[0]
-	for len(indexes) > 1 {
-		f := indexes[0]
-		for i := f; i < indexes[1]; i++ {
-			if i != m {
-				if less(queue.m[m], queue.m[i]) {
-					m = i
-				}
-			}
-		}
-		indexes = indexes[2:]
-	}
-	return queue.m[m]
+	return queue.doClone(slice)
 }

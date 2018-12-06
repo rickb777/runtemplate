@@ -82,6 +82,9 @@ type FastIntCollection interface {
 	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...int) bool
 
+	// Clear the entire collection.
+	Clear()
+
 	// Add adds items to the current collection.
 	Add(more ...int)
 

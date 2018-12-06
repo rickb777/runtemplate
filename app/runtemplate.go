@@ -100,16 +100,17 @@ func makeFuncMap() template.FuncMap {
 }
 
 func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[string]interface{}) {
-	Debug("ReadFile %+v\n", foundTemplate)
 	var b []byte
 	var err error
 
 	if foundTemplate.Embedded {
+		Debug("ReadFile builtin %+v\n", foundTemplate)
 		b, err = builtins.ReadFile("/builtin/" + foundTemplate.Name)
 		if err != nil {
 			Fail(foundTemplate.Name, err)
 		}
 	} else {
+		Debug("ReadFile %+v\n", foundTemplate)
 		b, err = ioutil.ReadFile(foundTemplate.Path)
 		if err != nil {
 			Fail(foundTemplate.Path, err)

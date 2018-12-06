@@ -3,7 +3,7 @@
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
-// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:[string int64]
 // by runtemplate v2.7.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -404,6 +404,13 @@ func (list *FastIntList) doShuffle() *FastIntList {
 
 //-------------------------------------------------------------------------------------------------
 
+// Clear the entire collection.
+func (list *FastIntList) Clear() {
+	if list != nil {
+		list.m = list.m[:]
+	}
+}
+
 // Add adds items to the current list. This is a synonym for Append.
 func (list *FastIntList) Add(more ...int) {
 	list.Append(more...)
@@ -745,6 +752,46 @@ func (list *FastIntList) Map(f func(int) int) *FastIntList {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *FastIntList) MapToString(f func(int) string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, len(list.m))
+
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
+// MapToInt64 returns a new []int64 by transforming every element with function f.
+// The resulting slice is the same size as the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *FastIntList) MapToInt64(f func(int) int64) []int64 {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int64, len(list.m))
+
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
 // FlatMap returns a new FastIntList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
@@ -760,6 +807,46 @@ func (list *FastIntList) FlatMap(f func(int) []int) *FastIntList {
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *FastIntList) FlatMapToString(f func(int) []string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(list.m))
+
+	for _, v := range list.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *FastIntList) FlatMapToInt64(f func(int) []int64) []int64 {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(list.m))
+
+	for _, v := range list.m {
+		result = append(result, f(v)...)
 	}
 
 	return result
