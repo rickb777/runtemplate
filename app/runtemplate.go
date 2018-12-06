@@ -51,12 +51,12 @@ func findTemplateFileFromPath(templateFile string) FileMeta {
 	st := "/builtin/" + templateFile
 	f, err := builtins.GetHTTPFile(st)
 	if err != nil {
-		Fail(err)
+		Fail(templateFile, err)
 	}
 
 	fi, err := f.Stat()
 	if err != nil {
-		Fail(err)
+		Fail(st, err)
 	}
 
 	mt := fi.ModTime()
@@ -100,18 +100,20 @@ func makeFuncMap() template.FuncMap {
 }
 
 func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[string]interface{}) {
-	Debug("ReadFile %s\n", foundTemplate)
+	Debug("ReadFile %+v\n", foundTemplate)
 	var b []byte
 	var err error
 
 	if foundTemplate.Embedded {
 		b, err = builtins.ReadFile("/builtin/" + foundTemplate.Name)
+		if err != nil {
+			Fail(foundTemplate.Name, err)
+		}
 	} else {
 		b, err = ioutil.ReadFile(foundTemplate.Path)
-	}
-
-	if err != nil {
-		Fail(err)
+		if err != nil {
+			Fail(foundTemplate.Path, err)
+		}
 	}
 
 	funcMap := makeFuncMap()
@@ -135,7 +137,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	Debug("Execute template\n")
 	err = tmpl.Execute(w, context)
 	if err != nil {
-		Fail(err)
+		Fail("execute template:", err)
 	}
 }
 

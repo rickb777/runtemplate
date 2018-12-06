@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/rickb777/runtemplate/app"
 	. "github.com/rickb777/runtemplate/app/support"
+	"os"
 	"strings"
 )
 
@@ -33,14 +34,26 @@ func failIfLeftoversExist(leftover []string) {
 	}
 }
 
+func usage() {
+	fmt.Fprintln(os.Stderr, "A template file must be specified.")
+	fmt.Fprintf(os.Stderr, "Usage of %s:\n\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "  %s [options] [template] [Type=Name ...] [Flag:Value ...]\n", os.Args[0])
+	fmt.Fprintln(os.Stderr, "\nOptions:")
+	flag.PrintDefaults()
+	fmt.Fprintln(os.Stderr, "\nSee https://github.com/rickb777/runtemplate/blob/master/README.md")
+	fmt.Fprintln(os.Stderr, "and https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md")
+	fmt.Fprintln(os.Stderr, "Version", appVersion)
+	os.Exit(1)
+}
+
 func main() {
 	var tpl, output1, output2 string
 	flag.StringVar(&tpl, "tpl", "", "Name of template file; this must be available locally or be on TEMPLATEPATH.")
-	flag.StringVar(&output1, "output", "", "Name of the output file.")
+	flag.StringVar(&output1, "output", "", "Name of the output file. Default is computed from template name plus types.")
 	flag.StringVar(&output2, "o", "", "Alias for -output.")
 
 	var depsList Strings
-	flag.Var(&depsList, "deps", "List of other dependent files (separated by commas). May appear several times.")
+	flag.Var(&depsList, "deps", "List of other dependent files (separated by commas) to avoid unnecessary output file change. May appear several times.")
 
 	var force bool
 	flag.BoolVar(&Verbose, "v", false, "Verbose progress messages.")
@@ -50,6 +63,10 @@ func main() {
 	flag.Parse()
 
 	tpl, args := FindTemplateArg(tpl, flag.Args())
+
+	if tpl == "" {
+		usage()
+	}
 
 	var deps []string
 	for _, s := range depsList {

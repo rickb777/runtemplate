@@ -2,7 +2,7 @@
 //
 // Generated from types/stringy.tpl with Type=Email
 // options: SortableSlice:true
-// by runtemplate v2.6.1
+// by runtemplate v2.7.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
