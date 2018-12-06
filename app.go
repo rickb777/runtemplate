@@ -55,10 +55,11 @@ func main() {
 	var depsList Strings
 	flag.Var(&depsList, "deps", "List of other dependent files (separated by commas) to avoid unnecessary output file change. May appear several times.")
 
-	var force bool
+	var force, showVersion bool
 	flag.BoolVar(&Verbose, "v", false, "Verbose progress messages.")
 	flag.BoolVar(&force, "f", false, "Force output generation, even if up to date.")
 	flag.BoolVar(&Dbg, "z", false, "Debug messages.")
+	flag.BoolVar(&showVersion, "version", false, "Show the version.")
 
 	flag.Parse()
 
@@ -66,6 +67,10 @@ func main() {
 
 	if tpl == "" {
 		usage()
+	}
+
+	if showVersion {
+		fmt.Println(appVersion)
 	}
 
 	var deps []string

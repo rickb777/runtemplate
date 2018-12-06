@@ -1,66 +1,59 @@
 package support
 
 import (
+	. "github.com/onsi/gomega"
 	"testing"
 )
 
 func TestRichStringNoDots(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a := RichString(".foo.Bar.Baz.").NoDots()
-	if a != RichString("fooBarBaz") {
-		t.Errorf("Want 'fooBarBaz', got %q", a)
-	}
+	g.Expect(a).To(BeEquivalentTo(RichString("fooBarBaz")))
 }
 
 func TestRichStringDivideOr0A(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a, b := RichString("foo,bar").DivideLastOr0(',')
-	if a != "foo" {
-		t.Errorf("Want 'foo', got %q", a)
-	}
-	if b != "bar" {
-		t.Errorf("Want 'bar', got %q", b)
-	}
+	g.Expect(a).To(BeEquivalentTo("foo"))
+	g.Expect(b).To(BeEquivalentTo("bar"))
 }
 
 func TestRichStringDivideOr0B(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a, b := RichString("foo bar").DivideLastOr0(',')
-	if a != "foo bar" {
-		t.Errorf("Want 'foo bar', got %q", a)
-	}
-	if b != "" {
-		t.Errorf("Want '', got %q", b)
-	}
+	g.Expect(a).To(BeEquivalentTo("foo bar"))
+	g.Expect(b).To(BeEquivalentTo(""))
 }
 
 func TestRichStringDivideOr1A(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a, b := RichString("foo,bar").DivideLastOr1(',')
-	if a != "foo" {
-		t.Errorf("Want 'foo', got %q", a)
-	}
-	if b != "bar" {
-		t.Errorf("Want 'bar', got %q", b)
-	}
+	g.Expect(a).To(BeEquivalentTo("foo"))
+	g.Expect(b).To(BeEquivalentTo("bar"))
 }
 
 func TestRichStringDivideOr1B(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a, b := RichString("foo bar").DivideLastOr1(',')
-	if a != "" {
-		t.Errorf("Want 'foo bar', got %q", a)
-	}
-	if b != "foo bar" {
-		t.Errorf("Want '', got %q", b)
-	}
+	g.Expect(a).To(BeEquivalentTo(""))
+	g.Expect(b).To(BeEquivalentTo("foo bar"))
 }
 
 func TestRichStringRemoveBeforeA(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a := RichString("foo/bar/baz").RemoveBeforeLast('/')
-	if a != "baz" {
-		t.Errorf("Want 'baz', got %q", a)
-	}
+	g.Expect(a).To(BeEquivalentTo("baz"))
 }
 
 func TestRichStringRemoveBeforeB(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a := RichString("foo/bar/baz").RemoveBeforeLast(',')
-	if a != "foo/bar/baz" {
-		t.Errorf("Want 'foo/bar/baz', got %q", a)
-	}
+	g.Expect(a).To(BeEquivalentTo("foo/bar/baz"))
 }

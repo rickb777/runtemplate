@@ -15,7 +15,7 @@ import (
 {{- if .GobEncode}}
 	"encoding/gob"
 {{- end}}
-{{- if and .Stringer (eq .Key "string")}}
+{{- if and .Stringer (eq .Key.String "string")}}
 	"encoding/json"
 {{- end}}
 	"fmt"
@@ -490,7 +490,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, af
 	b.WriteString(after)
 	return b
 }
-{{- if eq .Key "string"}}
+{{- if eq .Key.String "string"}}
 
 //-------------------------------------------------------------------------------------------------
 

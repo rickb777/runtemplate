@@ -8,7 +8,7 @@ import (
     "bytes"
     "encoding/gob"
 {{- end}}
-{{- if eq .Key "string"}}
+{{- if eq .Key.String "string"}}
     "encoding/json"
 	"strings"
 {{- end}}
@@ -546,7 +546,7 @@ func Test{{.UType}}MapGobEncode(t *testing.T) {
 	}
 }
 {{- end}}
-{{- if eq .Key "string"}}
+{{- if eq .Key.String "string"}}
 
 func Test{{.UType}}MapJsonEncode(t *testing.T) {
 	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
