@@ -5,8 +5,25 @@ import (
 	"strings"
 )
 
+type Strings []RichString
+
+func (ss Strings) Slice() []string {
+	s := make([]string, len(ss))
+	for i, rs := range ss {
+		s[i] = string(rs)
+	}
+	return s
+}
+
+func (ss Strings) String() string {
+	return strings.Join(ss.Slice(), ",")
+}
+
+//-------------------------------------------------------------------------------------------------
+
 type Pair struct {
-	Key, Val string
+	Key string
+	Val RichString
 }
 
 func NewPair(a string) Pair {
@@ -15,7 +32,7 @@ func NewPair(a string) Pair {
 		return Pair{"", ""}
 	}
 	k, v := a[:co], a[co+1:]
-	return Pair{Key: k, Val: v}
+	return Pair{Key: k, Val: RichString(v)}
 }
 
 func (p Pair) Valid() bool {
@@ -63,15 +80,23 @@ func (t Type) IsPtr() bool {
 	return len(t.s) > 0 && t.s[0] == '*'
 }
 
-func (t Type) P() string {
+func (t Type) String() string {
 	return t.s
 }
 
-func (t Type) String() string {
+func (t Type) Name() string {
 	if t.IsPtr() {
 		return t.s[1:]
 	}
 	return t.s
+}
+
+func (t Type) U() RichString {
+	return t.ident.FirstUpper()
+}
+
+func (t Type) L() RichString {
+	return t.ident.FirstLower()
 }
 
 func (t Type) Star() string {

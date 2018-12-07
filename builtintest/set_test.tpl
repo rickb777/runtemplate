@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
@@ -14,11 +14,11 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestNew{{.UType}}Set_withEquals(t *testing.T) {
+func TestNew{{.Type.U}}Set_withEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3)
-	b := NewX1{{.UType}}Set(2, 3, 1)
+	a := NewX1{{.Type.U}}Set(1, 2, 3)
+	b := NewX1{{.Type.U}}Set(2, 3, 1)
 
 	g.Expect(a.Size()).To(Equal(3))
 
@@ -26,18 +26,18 @@ func TestNew{{.UType}}Set_withEquals(t *testing.T) {
 	g.Expect(a.IsSequence()).To(BeFalse())
 	g.Expect(a.Equals(b)).To(BeTrue())
 	g.Expect(a.Equals(nil)).To(BeFalse())
-	g.Expect(a.Equals(NewX1{{.UType}}Set(2))).To(BeFalse())
-	g.Expect(a.Equals(NewX1{{.UType}}Set(1, 2, 4))).To(BeFalse())
+	g.Expect(a.Equals(NewX1{{.Type.U}}Set(2))).To(BeFalse())
+	g.Expect(a.Equals(NewX1{{.Type.U}}Set(1, 2, 4))).To(BeFalse())
 
 	a = nil
 	g.Expect(a.Equals(b)).To(BeFalse())
 	g.Expect(a.Equals(nil)).To(BeTrue())
 }
 
-func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
+func TestNew{{.Type.U}}SetNoDuplicate(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(7, 5, 3, 7)
+	a := NewX1{{.Type.U}}Set(7, 5, 3, 7)
 
 	g.Expect(a.Size()).To(Equal(3))
 	g.Expect(a.Contains(7)).To(BeTrue())
@@ -45,25 +45,25 @@ func TestNew{{.UType}}SetNoDuplicate(t *testing.T) {
 	g.Expect(a.Contains(3)).To(BeTrue())
 }
 
-func TestConvert{{.UType}}Set(t *testing.T) {
+func TestConvert{{.Type.U}}Set(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a, ok := ConvertX1{{.UType}}Set(1, 5.1, uint8(2), 7, 3)
+	a, ok := ConvertX1{{.Type.U}}Set(1, 5.1, uint8(2), 7, 3)
 
 	g.Expect(ok).To(BeTrue())
-	g.Expect(a.Equals(NewX1{{.UType}}Set(1, 5, 2, 7, 3))).To(BeTrue())
+	g.Expect(a.Equals(NewX1{{.Type.U}}Set(1, 5, 2, 7, 3))).To(BeTrue())
 
-    b, ok := ConvertX1{{.UType}}Set(a.ToInterfaceSlice()...)
+    b, ok := ConvertX1{{.Type.U}}Set(a.ToInterfaceSlice()...)
 
 	g.Expect(ok).To(BeTrue())
 	g.Expect(a.Equals(b)).To(BeTrue())
 }
 {{- if .Mutable}}
 
-func TestMutable{{.UType}}SetCardinality(t *testing.T) {
+func TestMutable{{.Type.U}}SetCardinality(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set()
+	a := NewX1{{.Type.U}}Set()
 
 	g.Expect(a.Size()).To(Equal(0))
 
@@ -81,10 +81,10 @@ func TestMutable{{.UType}}SetCardinality(t *testing.T) {
 	g.Expect(a.Size()).To(Equal(1))
 }
 
-func TestMutable{{.UType}}SetRemove(t *testing.T) {
+func TestMutable{{.Type.U}}SetRemove(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(6, 3, 1)
+	a := NewX1{{.Type.U}}Set(6, 3, 1)
 
 	a.Remove(3)
 
@@ -98,21 +98,21 @@ func TestMutable{{.UType}}SetRemove(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}SetContainsAll(t *testing.T) {
+func Test{{.Type.U}}SetContainsAll(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(8, 6, 7, 5, 3, 0, 9)
+	a := NewX1{{.Type.U}}Set(8, 6, 7, 5, 3, 0, 9)
 
 	g.Expect(a.ContainsAll(8, 6, 7, 5, 3, 0, 9)).To(BeTrue())
 	g.Expect(a.ContainsAll(8, 6, 11, 5, 3, 0, 9)).To(BeFalse())
 }
 
-func Test{{.UType}}SetIsSubset(t *testing.T) {
+func Test{{.Type.U}}SetIsSubset(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 5, 7)
-	b := NewX1{{.UType}}Set(3, 5, 7)
-	c := NewX1{{.UType}}Set(3, 5, 7, 72)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 5, 7)
+	b := NewX1{{.Type.U}}Set(3, 5, 7)
+	c := NewX1{{.Type.U}}Set(3, 5, 7, 72)
 
 	g.Expect(b.IsSubset(a)).To(BeTrue())
 	g.Expect(c.IsSubset(a)).To(BeFalse())
@@ -123,12 +123,12 @@ func Test{{.UType}}SetIsSubset(t *testing.T) {
 	g.Expect(a.IsSubset(b)).To(BeTrue())
 }
 
-func Test{{.UType}}SetIsSuperSet(t *testing.T) {
+func Test{{.Type.U}}SetIsSuperSet(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(9, 5, 2, 1, 11)
-	b := NewX1{{.UType}}Set(5, 2, 11)
-	c := NewX1{{.UType}}Set(5, 2, 11, 42)
+	a := NewX1{{.Type.U}}Set(9, 5, 2, 1, 11)
+	b := NewX1{{.Type.U}}Set(5, 2, 11)
+	c := NewX1{{.Type.U}}Set(5, 2, 11, 42)
 
 	g.Expect(a.IsSuperset(b)).To(BeTrue())
 	g.Expect(a.IsSuperset(c)).To(BeFalse())
@@ -139,26 +139,26 @@ func Test{{.UType}}SetIsSuperSet(t *testing.T) {
 	g.Expect(a.IsSuperset(b)).To(BeFalse())
 }
 
-func Test{{.UType}}SetUnion(t *testing.T) {
+func Test{{.Type.U}}SetUnion(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set()
+	a := NewX1{{.Type.U}}Set()
 
-	b := NewX1{{.UType}}Set(1, 2, 3, 4, 5)
+	b := NewX1{{.Type.U}}Set(1, 2, 3, 4, 5)
 
 	c := a.Union(b)
 
-	g.Expect(c.Equals(NewX1{{.UType}}Set(1, 2, 3, 4, 5))).To(BeTrue())
+	g.Expect(c.Equals(NewX1{{.Type.U}}Set(1, 2, 3, 4, 5))).To(BeTrue())
 
-	d := NewX1{{.UType}}Set(10, 14, 0)
+	d := NewX1{{.Type.U}}Set(10, 14, 0)
 
 	e := c.Union(d)
-	g.Expect(e.Equals(NewX1{{.UType}}Set(1, 2, 3, 4, 5, 10, 14, 0))).To(BeTrue())
+	g.Expect(e.Equals(NewX1{{.Type.U}}Set(1, 2, 3, 4, 5, 10, 14, 0))).To(BeTrue())
 
-	a = NewX1{{.UType}}Set(14, 3)
+	a = NewX1{{.Type.U}}Set(14, 3)
 
 	f := a.Union(e)
-	g.Expect(f.Equals(NewX1{{.UType}}Set(1, 2, 3, 4, 5, 10, 14, 0))).To(BeTrue())
+	g.Expect(f.Equals(NewX1{{.Type.U}}Set(1, 2, 3, 4, 5, 10, 14, 0))).To(BeTrue())
 
     // check correct nil handling
     a = nil
@@ -169,14 +169,14 @@ func Test{{.UType}}SetUnion(t *testing.T) {
 	g.Expect(d.Equals(b)).To(BeTrue())
 }
 
-func Test{{.UType}}SetIntersection(t *testing.T) {
+func Test{{.Type.U}}SetIntersection(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a1 := NewX1{{.UType}}Set(1, 3, 5, 7)
-	a2 := NewX1{{.UType}}Set(1, 3, 5, 7, 10)
+	a1 := NewX1{{.Type.U}}Set(1, 3, 5, 7)
+	a2 := NewX1{{.Type.U}}Set(1, 3, 5, 7, 10)
 
-	b1 := NewX1{{.UType}}Set(0, 2, 4, 6)
-	b2 := NewX1{{.UType}}Set(2, 4, 6, 10)
+	b1 := NewX1{{.Type.U}}Set(0, 2, 4, 6)
+	b2 := NewX1{{.Type.U}}Set(2, 4, 6, 10)
 
 	c1 := a1.Intersect(a2)
 	c2 := b1.Intersect(a1)
@@ -199,11 +199,11 @@ func Test{{.UType}}SetIntersection(t *testing.T) {
 	g.Expect(d1.NonEmpty()).To(BeFalse())
 }
 
-func Test{{.UType}}SetDifference(t *testing.T) {
+func Test{{.Type.U}}SetDifference(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3)
-	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
+	a := NewX1{{.Type.U}}Set(1, 2, 3)
+	b := NewX1{{.Type.U}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.Difference(b)
 	d := b.Difference(a)
@@ -219,11 +219,11 @@ func Test{{.UType}}SetDifference(t *testing.T) {
 	g.Expect(d.Equals(b)).To(BeTrue())
 }
 
-func Test{{.UType}}SetSymmetricDifference(t *testing.T) {
+func Test{{.Type.U}}SetSymmetricDifference(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 50)
-	b := NewX1{{.UType}}Set(1, 3, 4, 5, 6, 99)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 50)
+	b := NewX1{{.Type.U}}Set(1, 3, 4, 5, 6, 99)
 
 	c := a.SymmetricDifference(b)
 	d := b.SymmetricDifference(a)
@@ -239,16 +239,16 @@ func Test{{.UType}}SetSymmetricDifference(t *testing.T) {
 	g.Expect(d.Equals(b)).To(BeTrue())
 }
 
-func Test{{.UType}}SetEquals(t *testing.T) {
+func Test{{.Type.U}}SetEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set()
-	b := NewX1{{.UType}}Set()
+	a := NewX1{{.Type.U}}Set()
+	b := NewX1{{.Type.U}}Set()
 
 	g.Expect(a.Equals(b)).To(BeTrue())
 
-	c := NewX1{{.UType}}Set(1, 3, 5, 6, 8)
-	d := NewX1{{.UType}}Set(1, 3, 5, 6, 9)
+	c := NewX1{{.Type.U}}Set(1, 3, 5, 6, 8)
+	d := NewX1{{.Type.U}}Set(1, 3, 5, 6, 9)
 
 	g.Expect(c.Equals(d)).To(BeFalse())
 
@@ -259,10 +259,10 @@ func Test{{.UType}}SetEquals(t *testing.T) {
 }
 {{- if .Append}}
 
-func Test{{.UType}}SetToList(t *testing.T) {
+func Test{{.Type.U}}SetToList(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 	b := a.ToList()
 
 	g.Expect(a.Size()).To(Equal(4))
@@ -288,14 +288,14 @@ func Test{{.UType}}SetToList(t *testing.T) {
 {{- end}}
 {{- if .Append}}
 
-func Test{{.UType}}SetToSlice(t *testing.T) {
+func Test{{.Type.U}}SetToSlice(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b1 := a.ToSlice()
 	b2 := a.ToInterfaceSlice()
 
-	g.Expect(b1).To(Equal([]{{.PType}}{1, 2, 3, 4}))
+	g.Expect(b1).To(Equal([]{{.Type}}{1, 2, 3, 4}))
 	g.Expect(b2).To(Equal([]interface{}{1, 2, 3, 4}))
 {{- if .Mutable}}
 
@@ -309,27 +309,27 @@ func Test{{.UType}}SetToSlice(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}SetSend(t *testing.T) {
+func Test{{.Type.U}}SetSend(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
-	b := BuildX1{{.UType}}SetFromChan(a.Send())
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
+	b := BuildX1{{.Type.U}}SetFromChan(a.Send())
 
 	g.Expect(a.Equals(b)).To(BeTrue())
 {{- if .Mutable}}
 
     // check correct nil handling
 	a = nil
-	b = BuildX1{{.UType}}SetFromChan(a.Send())
+	b = BuildX1{{.Type.U}}SetFromChan(a.Send())
 
 	g.Expect(a.Equals(b)).To(BeTrue())
 {{- end}}
 }
 
-func Test{{.UType}}SetForall(t *testing.T) {
+func Test{{.Type.U}}SetForall(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 	found := a.Forall(func(v int) bool {
 		return v > 0
 	})
@@ -351,10 +351,10 @@ func Test{{.UType}}SetForall(t *testing.T) {
 	g.Expect(found).To(BeTrue())
 }
 
-func Test{{.UType}}SetExists(t *testing.T) {
+func Test{{.Type.U}}SetExists(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 	found := a.Exists(func(v int) bool {
 		return v > 2
 	})
@@ -376,10 +376,10 @@ func Test{{.UType}}SetExists(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 }
 
-func Test{{.UType}}SetForeach(t *testing.T) {
+func Test{{.Type.U}}SetForeach(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 	s := 0
 
 	a.Foreach(func(v int) {
@@ -397,16 +397,16 @@ func Test{{.UType}}SetForeach(t *testing.T) {
 	g.Expect(s).To(Equal(10))
 }
 
-func Test{{.UType}}SetFilter(t *testing.T) {
+func Test{{.Type.U}}SetFilter(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}Set(3, 4))).To(BeTrue())
+	g.Expect(b.Equals(NewX1{{.Type.U}}Set(3, 4))).To(BeTrue())
 
     // check correct nil handling
 	a = nil
@@ -415,17 +415,17 @@ func Test{{.UType}}SetFilter(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}SetPartition(t *testing.T) {
+func Test{{.Type.U}}SetPartition(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}Set(3, 4))).To(BeTrue())
-	g.Expect(c.Equals(NewX1{{.UType}}Set(1, 2))).To(BeTrue())
+	g.Expect(b.Equals(NewX1{{.Type.U}}Set(3, 4))).To(BeTrue())
+	g.Expect(c.Equals(NewX1{{.Type.U}}Set(1, 2))).To(BeTrue())
 
     // check correct nil handling
 	a = nil
@@ -434,42 +434,42 @@ func Test{{.UType}}SetPartition(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}SetTransform(t *testing.T) {
+func Test{{.Type.U}}SetTransform(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 
-	b := a.Map(func(v {{.Type}}) {{.Type}} {
+	b := a.Map(func(v {{.Type.Name}}) {{.Type.Name}} {
 		return v * v
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}Set(1, 4, 9, 16))).To(BeTrue())
+	g.Expect(b.Equals(NewX1{{.Type.U}}Set(1, 4, 9, 16))).To(BeTrue())
 
     // check correct nil handling
 	a = nil
-	a.Map(func(v {{.Type}}) {{.Type}} {
+	a.Map(func(v {{.Type.Name}}) {{.Type.Name}} {
 		return v * v
 	})
 }
 
-func Test{{.UType}}SetFlatMap(t *testing.T) {
+func Test{{.Type.U}}SetFlatMap(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 
-	b := a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	b := a.FlatMap(func(v {{.Type.Name}}) []{{.Type.Name}} {
 	    if v > 3 {
 	        return nil
 	    }
 		return []int{v * 2, v * 3}
 	})
 
-    exp := NewX1{{.UType}}Set(2, 3, 4, 6, 6, 9)
+    exp := NewX1{{.Type.U}}Set(2, 3, 4, 6, 6, 9)
 	g.Expect(b.Equals(exp)).To(BeTrue())
 
     // check correct nil handling
 	a = nil
-	a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	a.FlatMap(func(v {{.Type.Name}}) []{{.Type.Name}} {
 	    if v > 3 {
 	        return nil
 	    }
@@ -477,10 +477,10 @@ func Test{{.UType}}SetFlatMap(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}SetStringMap(t *testing.T) {
+func Test{{.Type.U}}SetStringMap(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Set(1, 2, 3, 4)
 
 	b := a.StringMap()
 
@@ -496,10 +496,10 @@ func Test{{.UType}}SetStringMap(t *testing.T) {
 }
 {{- if .Mutable}}
 
-func TestMutable{{.UType}}SetClear(t *testing.T) {
+func TestMutable{{.Type.U}}SetClear(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(2, 5, 9, 10)
+	a := NewX1{{.Type.U}}Set(2, 5, 9, 10)
 
 	a.Clear()
 
@@ -510,10 +510,10 @@ func TestMutable{{.UType}}SetClear(t *testing.T) {
 	a.Clear()
 }
 
-func TestMutable{{.UType}}SetClone(t *testing.T) {
+func TestMutable{{.Type.U}}SetClone(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(1, 2)
+	a := NewX1{{.Type.U}}Set(1, 2)
 
 	b := a.Clone()
 
@@ -533,10 +533,10 @@ func TestMutable{{.UType}}SetClone(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}SetMkString(t *testing.T) {
+func Test{{.Type.U}}SetMkString(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(13, 4)
+	a := NewX1{{.Type.U}}Set(13, 4)
 
 	c := a.MkString("|")
 
@@ -547,10 +547,10 @@ func Test{{.UType}}SetMkString(t *testing.T) {
 	a.MkString("|")
 }
 
-func Test{{.UType}}SetMkString3(t *testing.T) {
+func Test{{.Type.U}}SetMkString3(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(13, 4)
+	a := NewX1{{.Type.U}}Set(13, 4)
 
 	c := a.MkString3("<", ", ", ">")
 
@@ -562,11 +562,11 @@ func Test{{.UType}}SetMkString3(t *testing.T) {
 }
 
 {{if .GobEncode}}
-func Test{{.UType}}SetGobEncode(t *testing.T) {
+func Test{{.Type.U}}SetGobEncode(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(13, 4, 7, -2, 9)
-	b := NewX1{{.UType}}Set()
+	a := NewX1{{.Type.U}}Set(13, 4, 7, -2, 9)
+	b := NewX1{{.Type.U}}Set()
 
     buf := &bytes.Buffer{}
     err := gob.NewEncoder(buf).Encode(a)
@@ -580,11 +580,11 @@ func Test{{.UType}}SetGobEncode(t *testing.T) {
 }
 
 {{end}}
-func Test{{.UType}}SetJsonEncode(t *testing.T) {
+func Test{{.Type.U}}SetJsonEncode(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Set(13, 4, 7, -2, 9)
-	b := NewX1{{.UType}}Set()
+	a := NewX1{{.Type.U}}Set(13, 4, 7, -2, 9)
+	b := NewX1{{.Type.U}}Set()
 
     buf, err := json.Marshal(a)
 

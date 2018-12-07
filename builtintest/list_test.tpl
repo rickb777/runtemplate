@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Append:{{.Append}} Find:{{.Find}} Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func {{.LType}}RangeOf(from, to int) []int {
+func {{.Type.L}}RangeOf(from, to int) []int {
 	n := 1 + to - from
 	a := make([]int, n, n)
 	for i := 0; i < n; i++ {
@@ -22,11 +22,11 @@ func {{.LType}}RangeOf(from, to int) []int {
 	return a
 }
 
-func TestNew{{.UType}}List_withEquals(t *testing.T) {
+func TestNew{{.Type.U}}List_withEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3)
-	b := NewX1{{.UType}}List(1, 3, 2)
+	a := NewX1{{.Type.U}}List(1, 2, 3)
+	b := NewX1{{.Type.U}}List(1, 3, 2)
 
 	g.Expect(a.Size()).To(Equal(3))
 	g.Expect(a.Len()).To(Equal(3))
@@ -36,32 +36,32 @@ func TestNew{{.UType}}List_withEquals(t *testing.T) {
 	g.Expect(a.Equals(a)).To(BeTrue())
 	g.Expect(a.Equals(b)).To(BeFalse())
 	g.Expect(a.Equals(nil)).To(BeFalse())
-	g.Expect(a.Equals(NewX1{{.UType}}List(1, 2))).To(BeFalse())
+	g.Expect(a.Equals(NewX1{{.Type.U}}List(1, 2))).To(BeFalse())
 
 	a = nil
 	g.Expect(a.Equals(b)).To(BeFalse())
 }
 
-func TestConvert{{.UType}}List(t *testing.T) {
+func TestConvert{{.Type.U}}List(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a, ok := ConvertX1{{.UType}}List(1, 5.1, uint8(2), 7, 3)
+	a, ok := ConvertX1{{.Type.U}}List(1, 5.1, uint8(2), 7, 3)
 
 	g.Expect(ok).To(BeTrue())
 
-	g.Expect(a.Equals(NewX1{{.UType}}List(1, 5, 2, 7, 3))).To(BeTrue(), "%v", a)
+	g.Expect(a.Equals(NewX1{{.Type.U}}List(1, 5, 2, 7, 3))).To(BeTrue(), "%v", a)
 
-    b, ok := ConvertX1{{.UType}}List(a.ToInterfaceSlice()...)
+    b, ok := ConvertX1{{.Type.U}}List(a.ToInterfaceSlice()...)
 
 	g.Expect(ok).To(BeTrue())
 	g.Expect(a).To(Equal(b))
 }
 {{- if .Append}}
 
-func Test{{.UType}}ListAppend(t *testing.T) {
+func Test{{.Type.U}}ListAppend(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	var a *X1{{.UType}}List
+	var a *X1{{.Type.U}}List
 
 	b := a.Append(1, 2, 3).Append(4, 5).Append(6, 7)
 
@@ -73,20 +73,20 @@ func Test{{.UType}}ListAppend(t *testing.T) {
 	g.Expect(b.Last()).To(Equal(7))
 }
 
-func Test{{.UType}}ListDoInsertAt(t *testing.T) {
+func Test{{.Type.U}}ListDoInsertAt(t *testing.T) {
 	g := NewGomegaWithT(t)
 
     cases := []struct{
         i int
-        act *X1{{.UType}}List
-        more []{{.PType}}
-        exp *X1{{.UType}}List
+        act *X1{{.Type.U}}List
+        more []{{.Type}}
+        exp *X1{{.Type.U}}List
     }{
         {
             0,
             nil,
-            []{{.PType}}{10, 11},
-            NewX1{{.UType}}List(10, 11),
+            []{{.Type}}{10, 11},
+            NewX1{{.Type.U}}List(10, 11),
         },
         {
             0,
@@ -96,27 +96,27 @@ func Test{{.UType}}ListDoInsertAt(t *testing.T) {
         },
         {
             0,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            []{{.PType}}{10, 11},
-            NewX1{{.UType}}List(10, 11, 1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            []{{.Type}}{10, 11},
+            NewX1{{.Type.U}}List(10, 11, 1, 2, 3, 4, 5, 6),
         },
         {
             2,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            []{{.PType}}{10, 11, 12},
-            NewX1{{.UType}}List(1, 2, 10, 11, 12, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            []{{.Type}}{10, 11, 12},
+            NewX1{{.Type.U}}List(1, 2, 10, 11, 12, 3, 4, 5, 6),
         },
         {
             6,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            []{{.PType}}{10, 11},
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6, 10, 11),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            []{{.Type}}{10, 11},
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6, 10, 11),
         },
         {
             3,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            []{{.PType}}{},
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            []{{.Type}}{},
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
         },
     }
 
@@ -126,32 +126,32 @@ func Test{{.UType}}ListDoInsertAt(t *testing.T) {
     }
 }
 
-func Test{{.UType}}ListDoDeleteAt(t *testing.T) {
+func Test{{.Type.U}}ListDoDeleteAt(t *testing.T) {
 	g := NewGomegaWithT(t)
 
     cases := []struct{
         i, n int
-        act, exp *X1{{.UType}}List
+        act, exp *X1{{.Type.U}}List
     }{
         {
             0, 2,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(3, 4, 5, 6),
         },
         {
             2, 2,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 5, 6),
         },
         {
             4, 2,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 3, 4),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4),
         },
         {
             3, 0,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
         },
     }
 
@@ -163,27 +163,27 @@ func Test{{.UType}}ListDoDeleteAt(t *testing.T) {
     }
 }
 
-func Test{{.UType}}ListDoDeleteFirst(t *testing.T) {
+func Test{{.Type.U}}ListDoDeleteFirst(t *testing.T) {
 	g := NewGomegaWithT(t)
 
     cases := []struct{
         n int
-        act, exp *X1{{.UType}}List
+        act, exp *X1{{.Type.U}}List
     }{
         {
             0,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
         },
         {
             1,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(2, 3, 4, 5, 6),
         },
         {
             3,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(4, 5, 6),
         },
     }
 
@@ -195,27 +195,27 @@ func Test{{.UType}}ListDoDeleteFirst(t *testing.T) {
     }
 }
 
-func Test{{.UType}}ListDoDeleteLast(t *testing.T) {
+func Test{{.Type.U}}ListDoDeleteLast(t *testing.T) {
 	g := NewGomegaWithT(t)
 
     cases := []struct{
         n int
-        act, exp *X1{{.UType}}List
+        act, exp *X1{{.Type.U}}List
     }{
         {
             0,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
         },
         {
             1,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 3, 4, 5),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5),
         },
         {
             3,
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(1, 2, 3),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(1, 2, 3),
         },
     }
 
@@ -229,24 +229,24 @@ func Test{{.UType}}ListDoDeleteLast(t *testing.T) {
 {{- end}}
 {{- if and .Mutable .Numeric}}
 
-func Test{{.UType}}ListDoKeepWhere(t *testing.T) {
+func Test{{.Type.U}}ListDoKeepWhere(t *testing.T) {
 	g := NewGomegaWithT(t)
 
     cases := []struct{
-        act, exp *X1{{.UType}}List
+        act, exp *X1{{.Type.U}}List
     }{
         {
             nil,
             nil,
         },
         {
-            NewX1{{.UType}}List(1, 2, 3, 4, 5, 6),
-            NewX1{{.UType}}List(2, 4, 6),
+            NewX1{{.Type.U}}List(1, 2, 3, 4, 5, 6),
+            NewX1{{.Type.U}}List(2, 4, 6),
         },
     }
 
     for i, c := range cases {
-        r := c.act.DoKeepWhere(func (v {{.PType}}) bool {
+        r := c.act.DoKeepWhere(func (v {{.Type}}) bool {
             return v % 2 == 0
         })
 
@@ -256,10 +256,10 @@ func Test{{.UType}}ListDoKeepWhere(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}ListClone(t *testing.T) {
+func Test{{.Type.U}}ListClone(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b := a.Clone()
 
 	g.Expect(a).To(Equal(b))
@@ -277,10 +277,10 @@ func Test{{.UType}}ListClone(t *testing.T) {
 }
 {{- if .Append}}
 
-func Test{{.UType}}ListToSet(t *testing.T) {
+func Test{{.Type.U}}ListToSet(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b := a.ToSet()
 
 	g.Expect(a.Size()).To(Equal(4))
@@ -302,14 +302,14 @@ func Test{{.UType}}ListToSet(t *testing.T) {
 {{- end}}
 {{- if .Append}}
 
-func Test{{.UType}}ListToSlice(t *testing.T) {
+func Test{{.Type.U}}ListToSlice(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b1 := a.ToSlice()
 	b2 := a.ToInterfaceSlice()
 
-	g.Expect(b1).To(Equal([]{{.PType}}{1, 2, 3, 4}))
+	g.Expect(b1).To(Equal([]{{.Type}}{1, 2, 3, 4}))
 	g.Expect(b2).To(Equal([]interface{}{1, 2, 3, 4}))
 {{- if .Mutable}}
 
@@ -323,27 +323,27 @@ func Test{{.UType}}ListToSlice(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}ListSend(t *testing.T) {
+func Test{{.Type.U}}ListSend(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
-	b := BuildX1{{.UType}}ListFromChan(a.Send())
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
+	b := BuildX1{{.Type.U}}ListFromChan(a.Send())
 
 	g.Expect(a{{.M}}).To(Equal(b{{.M}}))
 {{- if .Mutable}}
 
     // check correct nil handling
 	a = nil
-	b = BuildX1{{.UType}}ListFromChan(a.Send())
+	b = BuildX1{{.Type.U}}ListFromChan(a.Send())
 
 	g.Expect(b.IsEmpty()).To(BeTrue())
 {{- end}}
 }
 
-func Test{{.UType}}ListGetHeadTailLastInit(t *testing.T) {
+func Test{{.Type.U}}ListGetHeadTailLastInit(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 
 	g.Expect(a.Get(0)).To(Equal(1))
 	g.Expect(a.Get(3)).To(Equal(4))
@@ -354,11 +354,11 @@ func Test{{.UType}}ListGetHeadTailLastInit(t *testing.T) {
 
 	tail := a.Tail()
 
-	g.Expect(tail.Equals(NewX1{{.UType}}List(2, 3, 4))).To(BeTrue())
+	g.Expect(tail.Equals(NewX1{{.Type.U}}List(2, 3, 4))).To(BeTrue())
 
 	init := a.Init()
 
-	g.Expect(init.Equals(NewX1{{.UType}}List(1, 2, 3))).To(BeTrue())
+	g.Expect(init.Equals(NewX1{{.Type.U}}List(1, 2, 3))).To(BeTrue())
 
     // check correct nil handling
     a = nil
@@ -367,10 +367,10 @@ func Test{{.UType}}ListGetHeadTailLastInit(t *testing.T) {
 	g.Expect(a.LastOption()).To(Equal(0))
 }
 
-func Test{{.UType}}ListContains(t *testing.T) {
+func Test{{.Type.U}}ListContains(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 
 	found := a.Contains(3)
 
@@ -385,10 +385,10 @@ func Test{{.UType}}ListContains(t *testing.T) {
     a.Contains(3)
 }
 
-func Test{{.UType}}ListContainsAll(t *testing.T) {
+func Test{{.Type.U}}ListContainsAll(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 
 	found := a.ContainsAll(3)
 
@@ -403,10 +403,10 @@ func Test{{.UType}}ListContainsAll(t *testing.T) {
     a.ContainsAll(3)
 }
 
-func Test{{.UType}}ListFind(t *testing.T) {
+func Test{{.Type.U}}ListFind(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b, found := a.Find(func(v int) bool {
 		return v > 2
 	})
@@ -430,10 +430,10 @@ func Test{{.UType}}ListFind(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 }
 
-func Test{{.UType}}ListForall(t *testing.T) {
+func Test{{.Type.U}}ListForall(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	found := a.Forall(func(v int) bool {
 		return v > 0
 	})
@@ -455,10 +455,10 @@ func Test{{.UType}}ListForall(t *testing.T) {
 	g.Expect(found).To(BeTrue())
 }
 
-func Test{{.UType}}ListExists(t *testing.T) {
+func Test{{.Type.U}}ListExists(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	found := a.Exists(func(v int) bool {
 		return v > 2
 	})
@@ -480,10 +480,10 @@ func Test{{.UType}}ListExists(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 }
 
-func Test{{.UType}}ListForeach(t *testing.T) {
+func Test{{.Type.U}}ListForeach(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	s := 0
 
 	a.Foreach(func(v int) {
@@ -501,15 +501,15 @@ func Test{{.UType}}ListForeach(t *testing.T) {
 	g.Expect(s).To(Equal(10))
 }
 
-func Test{{.UType}}ListFilter(t *testing.T) {
+func Test{{.Type.U}}ListFilter(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b := a.Filter(func(v int) bool {
 		return v > 2
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}List(3, 4))).To(BeTrue(), "%v", b)
+	g.Expect(b.Equals(NewX1{{.Type.U}}List(3, 4))).To(BeTrue(), "%v", b)
 
 	b = a.Filter(func(v int) bool {
 		return v > 100
@@ -525,16 +525,16 @@ func Test{{.UType}}ListFilter(t *testing.T) {
 	g.Expect(b.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}ListPartition(t *testing.T) {
+func Test{{.Type.U}}ListPartition(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b, c := a.Partition(func(v int) bool {
 		return v > 2
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}List(3, 4))).To(BeTrue(), "%v", b)
-	g.Expect(c.Equals(NewX1{{.UType}}List(1, 2))).To(BeTrue(), "%v", c)
+	g.Expect(b.Equals(NewX1{{.Type.U}}List(3, 4))).To(BeTrue(), "%v", b)
+	g.Expect(c.Equals(NewX1{{.Type.U}}List(1, 2))).To(BeTrue(), "%v", c)
 
 	a = nil
 	b, c = a.Partition(func(v int) bool {
@@ -545,15 +545,15 @@ func Test{{.UType}}ListPartition(t *testing.T) {
 	g.Expect(c.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}ListTransform(t *testing.T) {
+func Test{{.Type.U}}ListTransform(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 	b := a.Map(func(v int) int {
 		return v * v
 	})
 
-    exp := NewX1{{.UType}}List(1, 4, 9, 16)
+    exp := NewX1{{.Type.U}}List(1, 4, 9, 16)
 	g.Expect(b.Equals(exp)).To(BeTrue(), "%v %v", b, exp)
 
 	a = nil
@@ -564,69 +564,69 @@ func Test{{.UType}}ListTransform(t *testing.T) {
 	g.Expect(b.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}ListFlatMap(t *testing.T) {
+func Test{{.Type.U}}ListFlatMap(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 2, 3, 4, 5)
-	b := a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	a := NewX1{{.Type.U}}List(1, 2, 3, 4, 5)
+	b := a.FlatMap(func(v {{.Type.Name}}) []{{.Type.Name}} {
 	    if v > 3 {
 	        return nil
 	    }
-		return []{{.Type}}{v * 2, v * 3}
+		return []{{.Type.Name}}{v * 2, v * 3}
 	})
 
-    exp := NewX1{{.UType}}List(2, 3, 4, 6, 6, 9)
+    exp := NewX1{{.Type.U}}List(2, 3, 4, 6, 6, 9)
 
 	g.Expect(b.Equals(exp)).To(BeTrue(), "%v %v", b, exp)
 
     // check correct nil handling
 	a = nil
-	b = a.FlatMap(func(v {{.Type}}) []{{.Type}} {
+	b = a.FlatMap(func(v {{.Type.Name}}) []{{.Type.Name}} {
 	    if v > 3 {
 	        return nil
 	    }
-		return []{{.Type}}{v * 2, v * 3}
+		return []{{.Type.Name}}{v * 2, v * 3}
 	})
 
 	g.Expect(b.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}ListSorted(t *testing.T) {
+func Test{{.Type.U}}ListSorted(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
 	b := a.Sorted()
 
 {{if .Mutable}}
-	g.Expect(a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", a)
+	g.Expect(a.Equals(NewX1{{.Type.U}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", a)
 {{- end}}
-	g.Expect(b.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", b)
+	g.Expect(b.Equals(NewX1{{.Type.U}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", b)
 
     // check correct nil handling
 	a = nil
 	a.Sorted()
 }
 
-func Test{{.UType}}ListStableSorted(t *testing.T) {
+func Test{{.Type.U}}ListStableSorted(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
 	b := a.StableSorted()
 
 {{if .Mutable}}
-	g.Expect(a.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", a)
+	g.Expect(a.Equals(NewX1{{.Type.U}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", a)
 {{- end}}
-	g.Expect(b.Equals(NewX1{{.UType}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", b)
+	g.Expect(b.Equals(NewX1{{.Type.U}}List(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", b)
 
     // check correct nil handling
 	a = nil
 	a.StableSorted()
 }
 
-func Test{{.UType}}ListReverseOdd(t *testing.T) {
+func Test{{.Type.U}}ListReverseOdd(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
 
 	b := a.Reverse()
 
@@ -641,10 +641,10 @@ func Test{{.UType}}ListReverseOdd(t *testing.T) {
 	a.Reverse()
 }
 
-func Test{{.UType}}ListReverseEven(t *testing.T) {
+func Test{{.Type.U}}ListReverseEven(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9, 17)
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9, 17)
 
 	b := a.Reverse()
 
@@ -656,10 +656,10 @@ func Test{{.UType}}ListReverseEven(t *testing.T) {
 }
 {{- if .Mutable}}
 
-func Test{{.UType}}ListDoReverse(t *testing.T) {
+func Test{{.Type.U}}ListDoReverse(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a1 := NewX1{{.UType}}List(13, 4, 7, -2, 9, 17)
+	a1 := NewX1{{.Type.U}}List(13, 4, 7, -2, 9, 17)
 	a2 := a1.Clone()
 
 	b := a2.DoReverse()
@@ -676,10 +676,10 @@ func Test{{.UType}}ListDoReverse(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}ListShuffle(t *testing.T) {
+func Test{{.Type.U}}ListShuffle(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.Shuffle()
 
@@ -696,10 +696,10 @@ func Test{{.UType}}ListShuffle(t *testing.T) {
 }
 {{- if and .Append .Mutable}}
 
-func Test{{.UType}}ListDoShuffle(t *testing.T) {
+func Test{{.Type.U}}ListDoShuffle(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.Clone()
 	c := b.DoShuffle()
@@ -718,10 +718,10 @@ func Test{{.UType}}ListDoShuffle(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}ListTake(t *testing.T) {
+func Test{{.Type.U}}ListTake(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.Take(30)
 
@@ -753,10 +753,10 @@ func Test{{.UType}}ListTake(t *testing.T) {
 	a.TakeLast(0)
 }
 
-func Test{{.UType}}ListDrop(t *testing.T) {
+func Test{{.Type.U}}ListDrop(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.Drop(70)
 
@@ -784,10 +784,10 @@ func Test{{.UType}}ListDrop(t *testing.T) {
 	a.DropLast(0)
 }
 
-func Test{{.UType}}ListTakeWhile(t *testing.T) {
+func Test{{.Type.U}}ListTakeWhile(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.TakeWhile(func(v int) bool {
 		return v <= 20
@@ -812,10 +812,10 @@ func Test{{.UType}}ListTakeWhile(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}ListDropWhile(t *testing.T) {
+func Test{{.Type.U}}ListDropWhile(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.DropWhile(func(v int) bool {
 		return v <= 80
@@ -838,16 +838,16 @@ func Test{{.UType}}ListDropWhile(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}ListDistinctBy(t *testing.T) {
+func Test{{.Type.U}}ListDistinctBy(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(1, 1, 1, 2, 1, 2, 3, 4, 5, 3, 3, 5)
+	a := NewX1{{.Type.U}}List(1, 1, 1, 2, 1, 2, 3, 4, 5, 3, 3, 5)
 
 	c := a.DistinctBy(func(v1, v2 int) bool {
 		return v1 == v2
 	})
 
-	g.Expect(c.Equals(NewX1{{.UType}}List(1, 2, 3, 4, 5))).To(BeTrue(), "%v", c)
+	g.Expect(c.Equals(NewX1{{.Type.U}}List(1, 2, 3, 4, 5))).To(BeTrue(), "%v", c)
 
     // check correct nil handling
     a = nil
@@ -856,10 +856,10 @@ func Test{{.UType}}ListDistinctBy(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}ListIndexWhere(t *testing.T) {
+func Test{{.Type.U}}ListIndexWhere(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.IndexWhere(func(v int) bool {
 		return v >= 47
@@ -880,10 +880,10 @@ func Test{{.UType}}ListIndexWhere(t *testing.T) {
 	g.Expect(d).To(Equal(11))
 }
 
-func Test{{.UType}}ListLastIndexWhere(t *testing.T) {
+func Test{{.Type.U}}ListLastIndexWhere(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List({{.LType}}RangeOf(1, 100)...)
+	a := NewX1{{.Type.U}}List({{.Type.L}}RangeOf(1, 100)...)
 
 	b := a.LastIndexWhere(func(v int) bool {
 		return v <= 47
@@ -904,10 +904,10 @@ func Test{{.UType}}ListLastIndexWhere(t *testing.T) {
 	g.Expect(d).To(Equal(59))
 }
 
-func Test{{.UType}}ListMkString(t *testing.T) {
+func Test{{.Type.U}}ListMkString(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
 
 	c := a.MkString("|")
 
@@ -918,10 +918,10 @@ func Test{{.UType}}ListMkString(t *testing.T) {
 	a.MkString("|")
 }
 
-func Test{{.UType}}ListMkString3(t *testing.T) {
+func Test{{.Type.U}}ListMkString3(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
 
 	c := a.MkString3("<", ", ", ">")
 
@@ -933,11 +933,11 @@ func Test{{.UType}}ListMkString3(t *testing.T) {
 }
 {{- if .GobEncode}}
 
-func Test{{.UType}}ListGobEncode(t *testing.T) {
+func Test{{.Type.U}}ListGobEncode(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
-	b := NewX1{{.UType}}List()
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
+	b := NewX1{{.Type.U}}List()
 
     buf := &bytes.Buffer{}
     err := gob.NewEncoder(buf).Encode(a)
@@ -952,11 +952,11 @@ func Test{{.UType}}ListGobEncode(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}ListJsonEncode(t *testing.T) {
+func Test{{.Type.U}}ListJsonEncode(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}List(13, 4, 7, -2, 9)
-	b := NewX1{{.UType}}List()
+	a := NewX1{{.Type.U}}List(13, 4, 7, -2, 9)
+	b := NewX1{{.Type.U}}List()
 
     buf, err := json.Marshal(a)
 
@@ -970,9 +970,9 @@ func Test{{.UType}}ListJsonEncode(t *testing.T) {
 }
 {{- if and .Append .Mutable}}
 
-func Benchmark{{.UType}}ListTakeDrop(b *testing.B) {
+func Benchmark{{.Type.U}}ListTakeDrop(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -981,9 +981,9 @@ func Benchmark{{.UType}}ListTakeDrop(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListTakeDropLast(b *testing.B) {
+func Benchmark{{.Type.U}}ListTakeDropLast(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -992,9 +992,9 @@ func Benchmark{{.UType}}ListTakeDropLast(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListDistinctBy(b *testing.B) {
+func Benchmark{{.Type.U}}ListDistinctBy(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1004,9 +1004,9 @@ func Benchmark{{.UType}}ListDistinctBy(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListCountBy(b *testing.B) {
+func Benchmark{{.Type.U}}ListCountBy(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1016,9 +1016,9 @@ func Benchmark{{.UType}}ListCountBy(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListFilter(b *testing.B) {
+func Benchmark{{.Type.U}}ListFilter(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1028,9 +1028,9 @@ func Benchmark{{.UType}}ListFilter(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListDoKeepWhere(b *testing.B) {
+func Benchmark{{.Type.U}}ListDoKeepWhere(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1040,9 +1040,9 @@ func Benchmark{{.UType}}ListDoKeepWhere(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListMap(b *testing.B) {
+func Benchmark{{.Type.U}}ListMap(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1052,9 +1052,9 @@ func Benchmark{{.UType}}ListMap(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListFlatMap(b *testing.B) {
+func Benchmark{{.Type.U}}ListFlatMap(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1064,9 +1064,9 @@ func Benchmark{{.UType}}ListFlatMap(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}ListSum(b *testing.B) {
+func Benchmark{{.Type.U}}ListSum(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}List(1000)
+    a := fibonacciX1{{.Type.U}}List(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -1074,8 +1074,8 @@ func Benchmark{{.UType}}ListSum(b *testing.B) {
     }
 }
 
-func fibonacciX1{{.UType}}List(n int) *X1{{.UType}}List {
-    a := NewX1{{.UType}}List()
+func fibonacciX1{{.Type.U}}List(n int) *X1{{.Type.U}}List {
+    a := NewX1{{.Type.U}}List()
     i0 := 1
     i1 := 1
     for j := 0; j < n; j++ {

@@ -1,6 +1,6 @@
 // A derived string-based type compatible with marshalling and database APIs.
 //
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: SortableSlice:{{.SortableSlice}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -17,85 +17,85 @@ import (
 	"fmt"
 )
 
-// {{.Type}} is a specialised kind of string.
-type {{.Type}} string
+// {{.Type.Name}} is a specialised kind of string.
+type {{.Type.Name}} string
 
-// Ptr returns the address of a {{.Type}}.
-func ({{.LType}} {{.Type}}) Ptr() *{{.Type}} {
-	return &{{.LType}}
+// Ptr returns the address of a {{.Type.Name}}.
+func ({{.Type.L}} {{.Type.Name}}) Ptr() *{{.Type.Name}} {
+	return &{{.Type.L}}
 }
 
 // String converts to a string and implements fmt.Stringer.
-func ({{.LType}} {{.Type}}) String() string {
-	return string({{.LType}})
+func ({{.Type.L}} {{.Type.Name}}) String() string {
+	return string({{.Type.L}})
 }
 
 // TrimSpace removes surrounding whitespace.
-func ({{.LType}} {{.Type}}) TrimSpace() {{.Type}} {
-	return {{.Type}}(strings.TrimSpace({{.LType}}.String()))
+func ({{.Type.L}} {{.Type.Name}}) TrimSpace() {{.Type.Name}} {
+	return {{.Type.Name}}(strings.TrimSpace({{.Type.L}}.String()))
 }
 
 // ToLower converts the value to lowercase.
-func ({{.LType}} {{.Type}}) ToLower() {{.Type}} {
-	return {{.Type}}(strings.ToLower(string({{.LType}})))
+func ({{.Type.L}} {{.Type.Name}}) ToLower() {{.Type.Name}} {
+	return {{.Type.Name}}(strings.ToLower(string({{.Type.L}})))
 }
 
 // ToUpper converts the value to uppercase.
-func ({{.LType}} {{.Type}}) ToUpper() {{.Type}} {
-	return {{.Type}}(strings.ToUpper(string({{.LType}})))
+func ({{.Type.L}} {{.Type.Name}}) ToUpper() {{.Type.Name}} {
+	return {{.Type.Name}}(strings.ToUpper(string({{.Type.L}})))
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Scan parses some value. It implements sql.Scanner,
 // https://golang.org/pkg/database/sql/#Scanner
-func ({{.LType}} *{{.Type}}) Scan(value interface{}) error {
+func ({{.Type.L}} *{{.Type.Name}}) Scan(value interface{}) error {
 	if value == nil {
-		*{{.LType}} = {{.Type}}("")
+		*{{.Type.L}} = {{.Type.Name}}("")
 		return nil
 	}
 
 	switch value.(type) {
 	case string:
-		*{{.LType}} = {{.Type}}(value.(string))
+		*{{.Type.L}} = {{.Type.Name}}(value.(string))
 	case []byte:
-		*{{.LType}} = {{.Type}}(string(value.([]byte)))
+		*{{.Type.L}} = {{.Type.Name}}(string(value.([]byte)))
 	case nil:
 	default:
-		return errors.New(fmt.Sprintf("{{.Type}}.Scan(%#v)", value))
+		return errors.New(fmt.Sprintf("{{.Type.Name}}.Scan(%#v)", value))
 	}
 	return nil
 }
 
 // Value converts the value to a string. It implements driver.Valuer,
 // https://golang.org/pkg/database/sql/driver/#Valuer
-func ({{.LType}} {{.Type}}) Value() (driver.Value, error) {
-	return string({{.LType}}), nil
+func ({{.Type.L}} {{.Type.Name}}) Value() (driver.Value, error) {
+	return string({{.Type.L}}), nil
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // MarshalText converts values to a form suitable for transmission via JSON, XML etc.
 // https://golang.org/pkg/encoding/#TextMarshaler
-func ({{.LType}} {{.Type}}) MarshalText() (text []byte, err error) {
-	return []byte({{.LType}}.String()), nil
+func ({{.Type.L}} {{.Type.Name}}) MarshalText() (text []byte, err error) {
+	return []byte({{.Type.L}}.String()), nil
 }
 
 // UnmarshalText converts transmitted values to ordinary values.
 // https://golang.org/pkg/encoding/#TextUnmarshaler
-func ({{.LType}} *{{.Type}}) UnmarshalText(text []byte) error {
-	return {{.LType}}.Scan(text)
+func ({{.Type.L}} *{{.Type.Name}}) UnmarshalText(text []byte) error {
+	return {{.Type.L}}.Scan(text)
 }
 
 //-------------------------------------------------------------------------------------------------
 {{if .SortableSlice}}
-// {{.UType}}Slice attaches the methods of sort.Interface to []{{.Type}}, sorting in increasing order.
-type {{.UType}}Slice []{{.Type}}
+// {{.Type.U}}Slice attaches the methods of sort.Interface to []{{.Type.Name}}, sorting in increasing order.
+type {{.Type.U}}Slice []{{.Type.Name}}
 
-func (p {{.UType}}Slice) Len() int           { return len(p) }
-func (p {{.UType}}Slice) Less(i, j int) bool { return p[i] < p[j] }
-func (p {{.UType}}Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+func (p {{.Type.U}}Slice) Len() int           { return len(p) }
+func (p {{.Type.U}}Slice) Less(i, j int) bool { return p[i] < p[j] }
+func (p {{.Type.U}}Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // SortedN is a convenience method.
-func (p {{.UType}}Slice) Sorted() { sort.Sort(p) }
+func (p {{.Type.U}}Slice) Sorted() { sort.Sort(p) }
 {{end}}

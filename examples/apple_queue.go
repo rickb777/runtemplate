@@ -872,6 +872,32 @@ func (queue *AppleQueue) Map(f func(Apple) Apple) *AppleQueue {
 	return queue.doClone(slice)
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *AppleQueue) MapToString(f func(Apple) string) []string {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]string, 0, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		result = append(result, f(v))
+	}
+	for _, v := range back {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
 // FlatMap returns a new AppleQueue by transforming every element with function f that
 // returns zero or more items in a slice. The resulting queue may have a different size to the original queue.
 // The original queue is not modified.
@@ -894,6 +920,28 @@ func (queue *AppleQueue) FlatMap(f func(Apple) []Apple) *AppleQueue {
 	}
 
 	return queue.doClone(slice)
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *AppleQueue) FlatMapToString(f func(Apple) []string) []string {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]string, 0, 32)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	for _, v := range queue.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
 }
 
 // CountBy gives the number elements of AppleQueue that return true for the predicate p.

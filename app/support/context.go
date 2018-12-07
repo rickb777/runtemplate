@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const Prefix = "Prefix"
-
 func choosePackage(outputFile string) (string, string) {
 	wd, err := os.Getwd()
 	if err != nil {
@@ -32,28 +30,28 @@ func choosePackage(outputFile string) (string, string) {
 }
 
 func setIdentInContext(pp Tuple, context map[string]interface{}) {
-	Debug("setIdentInContext %+v\n", pp)
+	Debug("setIdentInContext %s %#v\n", pp.Key, pp.Type)
 
 	k := pp.Key
-	rs := pp.Ident().NoDots()
-	context[k] = pp
-	context["U"+k] = rs.FirstUpper().String()
-	context["L"+k] = rs.FirstLower().String()
+	context[k] = pp.Type
+	//rs := pp.Ident().NoDots()
+	//context["U"+k] = rs.FirstUpper().String()
+	//context["L"+k] = rs.FirstLower().String()
 }
 
-func setTypeInContext(pp Tuple, context map[string]interface{}) {
-	Debug("setTypeInContext %+v\n", pp)
-
-	k := pp.Key
-
-	if !strings.HasSuffix(k, Prefix) {
-		context["P"+k] = pp.s
-		context[k+"IsPtr"] = pp.IsPtr()
-		context[k+"Star"] = pp.Star()
-		context[k+"Amp"] = pp.Amp()
-		context[k+"Zero"] = pp.Zero()
-	}
-}
+//func setTypeInContext(pp Tuple, context map[string]interface{}) {
+//	Debug("setTypeInContext %+v\n", pp)
+//
+//	k := pp.Key
+//
+//	if !strings.HasSuffix(k, Prefix) {
+//		context["P"+k] = pp.s
+//		context[k+"IsPtr"] = pp.IsPtr()
+//		context[k+"Star"] = pp.Star()
+//		context[k+"Amp"] = pp.Amp()
+//		context[k+"Zero"] = pp.Zero()
+//	}
+//}
 
 func setPairTypeInContext(pp Tuple, context map[string]interface{}) {
 	k := pp.Key
@@ -65,7 +63,7 @@ func setPairTypeInContext(pp Tuple, context map[string]interface{}) {
 		context[k] = false
 	default:
 		setIdentInContext(pp, context)
-		setTypeInContext(pp, context)
+		//setTypeInContext(pp, context)
 	}
 	context["Has"+k] = true
 }
@@ -81,16 +79,9 @@ func addPairInContext(pp Pair, context map[string]interface{}) {
 	default:
 		e, ok := context[k]
 		if ok {
-			s, ok := e.(string)
-			if ok {
-				context[k] = []string{s, v}
-			} else {
-				ss := e.([]string)
-				ss = append(ss, v)
-				context[k] = ss
-			}
+			context[k] = append(e.(Strings), v)
 		} else {
-			context[k] = v
+			context[k] = Strings{v}
 			context["Has"+k] = true
 		}
 	}
@@ -163,7 +154,7 @@ func CreateContext(templateFile FileMeta, outputFile string, types Tuples, other
 		if strings.HasSuffix(p.Key, "Type") {
 			l := len(p.Key)
 			k := p.Key[:l-4]
-			setIdentInContext(NewTuple(k+Prefix+"="), context)
+			setIdentInContext(NewTuple(k+"Prefix="), context)
 		}
 	}
 

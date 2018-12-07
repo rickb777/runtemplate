@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
@@ -18,10 +18,10 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestIm{{.UKey}}{{.UType}}MapGet(t *testing.T) {
+func TestIm{{.Key.U}}{{.Type.U}}MapGet(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map1(1, 2)
 	v, found := a.Get(1)
 
 	g.Expect(found).To(BeTrue())
@@ -32,10 +32,10 @@ func TestIm{{.UKey}}{{.UType}}MapGet(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 }
 
-func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
+func TestIm{{.Key.U}}{{.Type.U}}MapToSlice(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map1(1, 2)
 	s := a.ToSlice()
 
 	g.Expect(a.Size()).To(Equal(1))
@@ -46,11 +46,11 @@ func TestIm{{.UKey}}{{.UType}}MapToSlice(t *testing.T) {
     a.ToSlice()
 }
 
-func TestIm{{.UKey}}{{.UType}}MapSize(t *testing.T) {
+func TestIm{{.Key.U}}{{.Type.U}}MapSize(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a1 := NewTX1{{.UKey}}{{.UType}}Map()
-	a2 := NewTX1{{.UKey}}{{.UType}}Map1(1, 2)
+	a1 := NewTX1{{.Key.U}}{{.Type.U}}Map()
+	a2 := NewTX1{{.Key.U}}{{.Type.U}}Map1(1, 2)
 
 	g.Expect(a1.Size()).To(Equal(0))
 	g.Expect(a2.Size()).To(Equal(1))
@@ -60,8 +60,8 @@ func TestIm{{.UKey}}{{.UType}}MapSize(t *testing.T) {
     a1.Size()
 }
 
-func Test{{.UKey}}{{.UType}}Keys(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4, 2).Values(4, 0, 5)...)
+func Test{{.Key.U}}{{.Type.U}}Keys(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4, 2).Values(4, 0, 5)...)
 
     k := a.Keys()
     sort.Ints(k)
@@ -74,8 +74,8 @@ func Test{{.UKey}}{{.UType}}Keys(t *testing.T) {
     a.Keys()
 }
 
-func Test{{.UKey}}{{.UType}}Values(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4, 2).Values(4, 0, 5)...)
+func Test{{.Key.U}}{{.Type.U}}Values(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4, 2).Values(4, 0, 5)...)
 
     v := a.Values()
     sort.Ints(v)
@@ -88,8 +88,8 @@ func Test{{.UKey}}{{.UType}}Values(t *testing.T) {
     a.Values()
 }
 
-func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 6}, TX1{{.UKey}}{{.UType}}Tuple{1, 10}, TX1{{.UKey}}{{.UType}}Tuple{2, 11})
+func TestIm{{.Key.U}}{{.Type.U}}MapContainsAllKeys(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{8, 6}, TX1{{.Key.U}}{{.Type.U}}Tuple{1, 10}, TX1{{.Key.U}}{{.Type.U}}Tuple{2, 11})
 
 	if !a.ContainsAllKeys(8, 1, 2) {
 		t.Errorf("Got %+v", a)
@@ -104,14 +104,14 @@ func TestIm{{.UKey}}{{.UType}}MapContainsAllKeys(t *testing.T) {
     a.ContainsAllKeys()
 }
 
-func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
+func TestIm{{.Key.U}}{{.Type.U}}MapEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a1 := NewTX1{{.UKey}}{{.UType}}Map()
-	b1 := NewTX1{{.UKey}}{{.UType}}Map()
-	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append2(10, 4, 8, 19)...)
-	a3 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(10, 4, 3, 1, 8, 19)...)
-	b3 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuples{}.Append3(8, 19, 10, 4, 3, 1)...)
+	a1 := NewTX1{{.Key.U}}{{.Type.U}}Map()
+	b1 := NewTX1{{.Key.U}}{{.Type.U}}Map()
+	a2 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuples{}.Append2(10, 4, 8, 19)...)
+	a3 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuples{}.Append3(10, 4, 3, 1, 8, 19)...)
+	b3 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuples{}.Append3(8, 19, 10, 4, 3, 1)...)
 
 	g.Expect(a1.Equals(b1)).To(BeTrue())
 	g.Expect(b1.Equals(a1)).To(BeTrue())
@@ -127,10 +127,10 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
     b1.Equals(a1)
 }
 
-//func TestIm{{.UKey}}{{.UType}}MapSend(t *testing.T) {
-//	a := NewTX1{{.UKey}}{{.UType}}Map(1, 2, 3, 4)
+//func TestIm{{.Key.U}}{{.Type.U}}MapSend(t *testing.T) {
+//	a := NewTX1{{.Key.U}}{{.Type.U}}Map(1, 2, 3, 4)
 //
-//	b := NewTX1{{.UKey}}{{.UType}}Map()
+//	b := NewTX1{{.Key.U}}{{.Type.U}}Map()
 //	for val := range a.Send() {
 //		b.Add(val)
 //	}
@@ -140,8 +140,8 @@ func TestIm{{.UKey}}{{.UType}}MapEquals(t *testing.T) {
 //	}
 //}
 
-func Test{{.UType}}MapForall(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+func Test{{.Type.U}}MapForall(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	found := a.Forall(func(k, v int) bool {
 		return v > 0
@@ -176,8 +176,8 @@ func Test{{.UType}}MapForall(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapExists(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+func Test{{.Type.U}}MapExists(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	found := a.Exists(func(k, v int) bool {
 		return v > 2
@@ -212,8 +212,8 @@ func Test{{.UType}}MapExists(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapForeach(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+func Test{{.Type.U}}MapForeach(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 	s := 0
 
 	a.Foreach(func(k, v int) {
@@ -241,16 +241,16 @@ func Test{{.UType}}MapForeach(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapFind(t *testing.T) {
+func Test{{.Type.U}}MapFind(t *testing.T) {
     g := NewGomegaWithT(t)
 
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	b, found := a.Find(func(k, v int) bool {
 		return v > 2
 	})
 
-	exp := TX1{{.UKey}}{{.UType}}Tuple{2, 3}
+	exp := TX1{{.Key.U}}{{.Type.U}}Tuple{2, 3}
 	g.Expect(found).To(BeTrue())
 	g.Expect(b).To(Equal(exp))
 
@@ -267,16 +267,16 @@ func Test{{.UType}}MapFind(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapFilter(t *testing.T) {
+func Test{{.Type.U}}MapFilter(t *testing.T) {
     g := NewGomegaWithT(t)
 
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	b := a.Filter(func(k, v int) bool {
 		return v > 2
 	})
 
-	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{2, 3})
+	exp := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{2, 3})
 	g.Expect(b.Equals(exp)).To(BeTrue())
 
     // check correct nil handling
@@ -286,19 +286,19 @@ func Test{{.UType}}MapFilter(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapPartition(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 2, 4).Values(4, 11, 0)...)
+func Test{{.Type.U}}MapPartition(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 2, 4).Values(4, 11, 0)...)
 
 	b, c := a.Partition(func(k, v int) bool {
 		return v > 5
 	})
 
-	exp1 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{2, 11})
+	exp1 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{2, 11})
 	if !b.Equals(exp1) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp1{{.M}}, b{{.M}})
 	}
 
-	exp2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4).Values(4, 0)...)
+	exp2 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4).Values(4, 0)...)
 	if !c.Equals(exp2) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp2{{.M}}, c{{.M}})
 	}
@@ -310,14 +310,14 @@ func Test{{.UType}}MapPartition(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapTransform(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 9, 10).Values(6, 10, 5)...)
+func Test{{.Type.U}}MapTransform(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 9, 10).Values(6, 10, 5)...)
 
 	b := a.Map(func(k, v int) (int, int) {
 		return k + 1, v * v
 	})
 
-	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(9, 10, 11).Values(36, 100, 25)...)
+	exp := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(9, 10, 11).Values(36, 100, 25)...)
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp{{.M}}, b{{.M}})
 	}
@@ -329,35 +329,35 @@ func Test{{.UType}}MapTransform(t *testing.T) {
 	})
 }
 
-func Test{{.UType}}MapFlatMap(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(2, 1, 18).Values(6, 10, 5)...)
+func Test{{.Type.U}}MapFlatMap(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(2, 1, 18).Values(6, 10, 5)...)
 
-	b := a.FlatMap(func(k {{.Key}}, v {{.Type}}) []TX1{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+	b := a.FlatMap(func(k {{.Key.Name}}, v {{.Type.Name}}) []TX1{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
 	    if k > 3 {
 	        return nil
 	    }
-		return []TX1{{.UPrefix}}{{.UKey}}{{.UType}}Tuple{
+		return []TX1{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{
 		    {k-1, v+1},
 		    {k+1, v+2},
 		}
 	})
 
-	exp := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{1, 7}, TX1{{.UKey}}{{.UType}}Tuple{3, 8},
-	    TX1{{.UKey}}{{.UType}}Tuple{0, 11}, TX1{{.UKey}}{{.UType}}Tuple{2, 12})
+	exp := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{1, 7}, TX1{{.Key.U}}{{.Type.U}}Tuple{3, 8},
+	    TX1{{.Key.U}}{{.Type.U}}Tuple{0, 11}, TX1{{.Key.U}}{{.Type.U}}Tuple{2, 12})
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp{{.M}}, b{{.M}})
 	}
 
     // check correct nil handling
     a = nil
-	a.FlatMap(func(k {{.Key}}, v {{.Type}}) []TX1{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+	a.FlatMap(func(k {{.Key.Name}}, v {{.Type.Name}}) []TX1{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
         return nil
 	})
 }
 {{- if .Mutable}}
 
-func TestMu{{.UKey}}{{.UType}}MapPop(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+func TestMu{{.Key.U}}{{.Type.U}}MapPop(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	v, y := a.Pop(8)
 
@@ -399,8 +399,8 @@ func TestMu{{.UKey}}{{.UType}}MapPop(t *testing.T) {
 	}
 }
 
-func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 8, 2).Values(1, 2, 3)...)
+func TestMu{{.Key.U}}{{.Type.U}}MapRemove(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 8, 2).Values(1, 2, 3)...)
 
 	a.Remove(8)
 
@@ -424,8 +424,8 @@ func TestMu{{.UKey}}{{.UType}}MapRemove(t *testing.T) {
 	a.Remove(1)
 }
 
-func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map1(13, 1)
+func TestMu{{.Key.U}}{{.Type.U}}MapContainsKey(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map1(13, 1)
 
 	a.Put(71, 13)
 
@@ -452,8 +452,8 @@ func TestMu{{.UKey}}{{.UType}}MapContainsKey(t *testing.T) {
 	}
 }
 
-func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map1(2, 5)
+func TestMu{{.Key.U}}{{.Type.U}}MapClear(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map1(2, 5)
 
 	a.Clear()
 
@@ -466,9 +466,9 @@ func TestMu{{.UKey}}{{.UType}}MapClear(t *testing.T) {
     a.Clear()
 }
 
-func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
-	a1 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 2).Values(9, 8)...)
-	a2 := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 2, 3).Values(9, 8, 7)...)
+func TestMu{{.Key.U}}{{.Type.U}}MapClone(t *testing.T) {
+	a1 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 2).Values(9, 8)...)
+	a2 := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 2, 3).Values(9, 8, 7)...)
 
 	b := a1.Clone()
 
@@ -495,8 +495,8 @@ func TestMu{{.UKey}}{{.UType}}MapClone(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}MapMkString(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(8, 4).Values(4, 0)...)
+func Test{{.Type.U}}MapMkString(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4).Values(4, 0)...)
 
 	c := a.MkString("|")
 
@@ -509,8 +509,8 @@ func Test{{.UType}}MapMkString(t *testing.T) {
 	a.MkString("|")
 }
 
-func Test{{.UType}}MapMkString3(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Tuple{8, 4}, TX1{{.UKey}}{{.UType}}Tuple{4, 0})
+func Test{{.Type.U}}MapMkString3(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{8, 4}, TX1{{.Key.U}}{{.Type.U}}Tuple{4, 0})
 
 	c := a.MkString3("<", ",", ">")
 
@@ -524,9 +524,9 @@ func Test{{.UType}}MapMkString3(t *testing.T) {
 }
 {{- if .GobEncode}}
 
-func Test{{.UType}}MapGobEncode(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
-	b := NewTX1{{.UKey}}{{.UType}}Map()
+func Test{{.Type.U}}MapGobEncode(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
+	b := NewTX1{{.Key.U}}{{.Type.U}}Map()
 
     buf := &bytes.Buffer{}
     err := gob.NewEncoder(buf).Encode(a)
@@ -548,9 +548,9 @@ func Test{{.UType}}MapGobEncode(t *testing.T) {
 {{- end}}
 {{- if eq .Key.String "string"}}
 
-func Test{{.UType}}MapJsonEncode(t *testing.T) {
-	a := NewTX1{{.UKey}}{{.UType}}Map(TX1{{.UKey}}{{.UType}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
-	b := NewTX1{{.UKey}}{{.UType}}Map()
+func Test{{.Type.U}}MapJsonEncode(t *testing.T) {
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
+	b := NewTX1{{.Key.U}}{{.Type.U}}Map()
 
     buf, err := json.Marshal(a)
 

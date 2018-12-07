@@ -1,7 +1,7 @@
-// An encapsulated map[{{.Type}}]struct{} used as a set.
+// An encapsulated map[{{.Type.Name}}]struct{} used as a set.
 // Thread-safe.
 //
-// Generated from {{.TemplateFile}} with Type={{.Type}}
+// Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -26,15 +26,15 @@ import (
 )
 
 {{end -}}
-// {{.UPrefix}}{{.UType}}Set is the primary type that represents a set.
-type {{.UPrefix}}{{.UType}}Set struct {
-	m map[{{.Type}}]struct{}
+// {{.Prefix.U}}{{.Type.U}}Set is the primary type that represents a set.
+type {{.Prefix.U}}{{.Type.U}}Set struct {
+	m map[{{.Type.Name}}]struct{}
 }
 
-// New{{.UPrefix}}{{.UType}}Set creates and returns a reference to an empty set.
-func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) *{{.UPrefix}}{{.UType}}Set {
-	set := &{{.UPrefix}}{{.UType}}Set{
-		m: make(map[{{.Type}}]struct{}),
+// New{{.Prefix.U}}{{.Type.U}}Set creates and returns a reference to an empty set.
+func New{{.Prefix.U}}{{.Type.U}}Set(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+	set := &{{.Prefix.U}}{{.Type.U}}Set{
+		m: make(map[{{.Type.Name}}]struct{}),
 	}
 	for _, i := range values {
 		set.m[i] = struct{}{}
@@ -42,43 +42,43 @@ func New{{.UPrefix}}{{.UType}}Set(values ...{{.Type}}) *{{.UPrefix}}{{.UType}}Se
 	return set
 }
 
-// Convert{{.UPrefix}}{{.UType}}Set constructs a new set containing the supplied values, if any.
+// Convert{{.Prefix.U}}{{.Type.U}}Set constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned set will contain all the values that were correctly converted.
-func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) (*{{.UPrefix}}{{.UType}}Set, bool) {
-	set := New{{.UPrefix}}{{.UType}}Set()
+func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{.Type.U}}Set, bool) {
+	set := New{{.Prefix.U}}{{.Type.U}}Set()
 {{if and .Numeric (not .TypeIsPtr)}}
 	for _, i := range values {
 		switch i.(type) {
 		case int:
-			set.m[{{.PType}}(i.(int))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(int))] = struct{}{}
 		case int8:
-			set.m[{{.PType}}(i.(int8))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(int8))] = struct{}{}
 		case int16:
-			set.m[{{.PType}}(i.(int16))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(int16))] = struct{}{}
 		case int32:
-			set.m[{{.PType}}(i.(int32))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(int32))] = struct{}{}
 		case int64:
-			set.m[{{.PType}}(i.(int64))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(int64))] = struct{}{}
 		case uint:
-			set.m[{{.PType}}(i.(uint))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(uint))] = struct{}{}
 		case uint8:
-			set.m[{{.PType}}(i.(uint8))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(uint8))] = struct{}{}
 		case uint16:
-			set.m[{{.PType}}(i.(uint16))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(uint16))] = struct{}{}
 		case uint32:
-			set.m[{{.PType}}(i.(uint32))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(uint32))] = struct{}{}
 		case uint64:
-			set.m[{{.PType}}(i.(uint64))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(uint64))] = struct{}{}
 		case float32:
-			set.m[{{.PType}}(i.(float32))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(float32))] = struct{}{}
 		case float64:
-			set.m[{{.PType}}(i.(float64))] = struct{}{}
+			set.m[{{.Type.Name}}(i.(float64))] = struct{}{}
 		}
 	}
 {{else}}
 	for _, i := range values {
-		v, ok := i.({{.PType}})
+		v, ok := i.({{.Type.Name}})
 		if ok {
 			set.m[v] = struct{}{}
 		}
@@ -87,10 +87,10 @@ func Convert{{.UPrefix}}{{.UType}}Set(values ...interface{}) (*{{.UPrefix}}{{.UT
 	return set, len(set.m) == len(values)
 }
 
-// Build{{.UPrefix}}{{.UType}}SetFromChan constructs a new {{.UPrefix}}{{.UType}}Set from a channel that supplies a sequence
+// Build{{.Prefix.U}}{{.Type.U}}SetFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Set from a channel that supplies a sequence
 // of values until it is closed. The function doesn't return until then.
-func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}Set {
-	set := New{{.UPrefix}}{{.UType}}Set()
+func Build{{.Prefix.U}}{{.Type.U}}SetFromChan(source <-chan {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+	set := New{{.Prefix.U}}{{.Type.U}}Set()
 	for v := range source {
 		set.m[v] = struct{}{}
 	}
@@ -100,41 +100,41 @@ func Build{{.UPrefix}}{{.UType}}SetFromChan(source <-chan {{.PType}}) *{{.UPrefi
 //-------------------------------------------------------------------------------------------------
 
 // IsSequence returns true for lists and queues.
-func (set *{{.UPrefix}}{{.UType}}Set) IsSequence() bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) IsSequence() bool {
 	return false
 }
 
 // IsSet returns false for lists or queues.
-func (set *{{.UPrefix}}{{.UType}}Set) IsSet() bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) IsSet() bool {
 	return true
 }
 {{- if .ToList}}
 
 // ToList returns the elements of the set as a list. The returned list is a shallow
 // copy; the set is not altered.
-func (set *{{.UPrefix}}{{.UType}}Set) ToList() *{{.UPrefix}}{{.UType}}List {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ToList() *{{.Prefix.U}}{{.Type.U}}List {
 	if set == nil {
 		return nil
 	}
 
-	return &{{.UPrefix}}{{.UType}}List{
+	return &{{.Prefix.U}}{{.Type.U}}List{
 		m: set.ToSlice(),
 	}
 }
 {{- end}}
 
 // ToSet returns the set; this is an identity operation in this case.
-func (set *{{.UPrefix}}{{.UType}}Set) ToSet() *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ToSet() *{{.Prefix.U}}{{.Type.U}}Set {
 	return set
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ToSlice() []{{.Type.Name}} {
 	if set == nil {
 		return nil
 	}
 
-	s := make([]{{.Type}}, 0, len(set.m))
+	s := make([]{{.Type.Name}}, 0, len(set.m))
 	for v := range set.m {
 		s = append(s, v)
 	}
@@ -142,7 +142,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToSlice() []{{.Type}} {
 }
 
 // ToInterfaceSlice returns the elements of the current set as a slice of arbitrary type.
-func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ToInterfaceSlice() []interface{} {
 
 	s := make([]interface{}, 0, len(set.m))
 	for v := range set.m {
@@ -152,24 +152,24 @@ func (set *{{.UPrefix}}{{.UType}}Set) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns the same set, which is immutable.
-func (set *{{.UPrefix}}{{.UType}}Set) Clone() *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Clone() *{{.Prefix.U}}{{.Type.U}}Set {
 	return set
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // IsEmpty returns true if the set is empty.
-func (set *{{.UPrefix}}{{.UType}}Set) IsEmpty() bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) IsEmpty() bool {
 	return set.Size() == 0
 }
 
 // NonEmpty returns true if the set is not empty.
-func (set *{{.UPrefix}}{{.UType}}Set) NonEmpty() bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) NonEmpty() bool {
 	return set.Size() > 0
 }
 
 // Size returns how many items are currently in the set. This is a synonym for Cardinality.
-func (set *{{.UPrefix}}{{.UType}}Set) Size() int {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Size() int {
 	if set == nil {
 		return 0
 	}
@@ -178,7 +178,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Size() int {
 }
 
 // Cardinality returns how many items are currently in the set. This is a synonym for Size.
-func (set *{{.UPrefix}}{{.UType}}Set) Cardinality() int {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Cardinality() int {
 	return set.Size()
 }
 
@@ -186,8 +186,8 @@ func (set *{{.UPrefix}}{{.UType}}Set) Cardinality() int {
 
 // Add returns a new set with all original items and all in `more`.
 // The original set is not altered.
-func (set *{{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) *{{.UPrefix}}{{.UType}}Set {
-	newSet := New{{.UPrefix}}{{.UType}}Set()
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Add(more ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+	newSet := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		newSet.doAdd(v)
@@ -200,12 +200,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) Add(more ...{{.Type}}) *{{.UPrefix}}{{.UTy
 	return newSet
 }
 
-func (set *{{.UPrefix}}{{.UType}}Set) doAdd(i {{.Type}}) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) doAdd(i {{.Type.Name}}) {
 	set.m[i] = struct{}{}
 }
 
 // Contains determines whether a given item is already in the set, returning true if so.
-func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Contains(i {{.Type.Name}}) bool {
 	if set == nil {
 		return false
 	}
@@ -215,7 +215,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Contains(i {{.Type}}) bool {
 }
 
 // ContainsAll determines whether a given item is already in the set, returning true if so.
-func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ContainsAll(i ...{{.Type.Name}}) bool {
 	if set == nil {
 		return false
 	}
@@ -231,7 +231,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) ContainsAll(i ...{{.Type}}) bool {
 //-------------------------------------------------------------------------------------------------
 
 // IsSubset determines whether every item in the other set is in this set, returning true if so.
-func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) IsSubset(other *{{.Prefix.U}}{{.Type.U}}Set) bool {
 	if set.IsEmpty() {
 		return !other.IsEmpty()
 	}
@@ -249,12 +249,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) IsSubset(other *{{.UPrefix}}{{.UType}}Set)
 }
 
 // IsSuperset determines whether every item of this set is in the other set, returning true if so.
-func (set *{{.UPrefix}}{{.UType}}Set) IsSuperset(other *{{.UPrefix}}{{.UType}}Set) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) IsSuperset(other *{{.Prefix.U}}{{.Type.U}}Set) bool {
 	return other.IsSubset(set)
 }
 
 // Union returns a new set with all items in both sets.
-func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Union(other *{{.Prefix.U}}{{.Type.U}}Set) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return other
 	}
@@ -263,7 +263,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{
 		return set
 	}
 
-	unionedSet := New{{.UPrefix}}{{.UType}}Set()
+	unionedSet := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		unionedSet.doAdd(v)
@@ -277,12 +277,12 @@ func (set *{{.UPrefix}}{{.UType}}Set) Union(other *{{.UPrefix}}{{.UType}}Set) *{
 }
 
 // Intersect returns a new set with items that exist only in both sets.
-func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Intersect(other *{{.Prefix.U}}{{.Type.U}}Set) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil || other == nil {
 		return nil
 	}
 
-	intersection := New{{.UPrefix}}{{.UType}}Set()
+	intersection := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	// loop over smaller set
 	if set.Size() < other.Size() {
@@ -303,7 +303,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Intersect(other *{{.UPrefix}}{{.UType}}Set
 }
 
 // Difference returns a new set with items in the current set but not in the other set
-func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Difference(other *{{.Prefix.U}}{{.Type.U}}Set) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
@@ -312,7 +312,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Se
 		return set
 	}
 
-	differencedSet := New{{.UPrefix}}{{.UType}}Set()
+	differencedSet := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		if !other.Contains(v) {
@@ -324,19 +324,19 @@ func (set *{{.UPrefix}}{{.UType}}Set) Difference(other *{{.UPrefix}}{{.UType}}Se
 }
 
 // SymmetricDifference returns a new set with items in the current set or the other set but not in both.
-func (set *{{.UPrefix}}{{.UType}}Set) SymmetricDifference(other *{{.UPrefix}}{{.UType}}Set) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) SymmetricDifference(other *{{.Prefix.U}}{{.Type.U}}Set) *{{.Prefix.U}}{{.Type.U}}Set {
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
 }
 
 // Remove removes a single item from the set. A new set is returned that has all the elements except the removed one.
-func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Remove(i {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
 
-	clonedSet := New{{.UPrefix}}{{.UType}}Set()
+	clonedSet := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		if i != v {
@@ -351,8 +351,8 @@ func (set *{{.UPrefix}}{{.UType}}Set) Remove(i {{.Type}}) *{{.UPrefix}}{{.UType}
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
-	ch := make(chan {{.Type}})
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Send() <-chan {{.Type.Name}} {
+	ch := make(chan {{.Type.Name}})
 	go func() {
 		if set != nil {
 			for v := range set.m {
@@ -373,7 +373,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Send() <-chan {{.Type}} {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *{{.UPrefix}}{{.UType}}Set) Forall(p func({{.Type}}) bool) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Forall(p func({{.Type.Name}}) bool) bool {
 	if set == nil {
 		return true
 	}
@@ -389,7 +389,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Forall(p func({{.Type}}) bool) bool {
 // Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *{{.UPrefix}}{{.UType}}Set) Exists(p func({{.Type}}) bool) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Exists(p func({{.Type.Name}}) bool) bool {
 	if set == nil {
 		return false
 	}
@@ -402,8 +402,8 @@ func (set *{{.UPrefix}}{{.UType}}Set) Exists(p func({{.Type}}) bool) bool {
 	return false
 }
 
-// Foreach iterates over {{.Type}}Set and executes the function f against each element.
-func (set *{{.UPrefix}}{{.UType}}Set) Foreach(f func({{.Type}})) {
+// Foreach iterates over {{.Type.Name}}Set and executes the function f against each element.
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Foreach(f func({{.Type.Name}})) {
 	if set == nil {
 		return
 	}
@@ -415,32 +415,32 @@ func (set *{{.UPrefix}}{{.UType}}Set) Foreach(f func({{.Type}})) {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for the predicate p. If there are many matches
+// Find returns the first {{.Type.Name}} that returns true for the predicate p. If there are many matches
 // one is arbtrarily chosen. False is returned if none match.
-func (set *{{.UPrefix}}{{.UType}}Set) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Find(p func({{.Type.Name}}) bool) ({{.Type.Name}}, bool) {
 
 	for v := range set.m {
 		if p(v) {
 			return v, true
 		}
 	}
-{{- if eq .TypeStar "*"}}
+{{- if eq .Type.Star "*"}}
 
 	return nil, false
 {{- else}}
 
-	var empty {{.Type}}
+	var empty {{.Type.Name}}
 	return empty, false
 {{- end}}
 }
 
-// Filter returns a new {{.UPrefix}}{{.UType}}Set whose elements return true for the predicate p.
-func (set *{{.UPrefix}}{{.UType}}Set) Filter(p func({{.Type}}) bool) *{{.UPrefix}}{{.UType}}Set {
+// Filter returns a new {{.Prefix.U}}{{.Type.U}}Set whose elements return true for the predicate p.
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Filter(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UType}}Set()
+	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		if p(v) {
@@ -450,17 +450,17 @@ func (set *{{.UPrefix}}{{.UType}}Set) Filter(p func({{.Type}}) bool) *{{.UPrefix
 	return result
 }
 
-// Partition returns two new {{.Type}}Sets whose elements return true or false for the predicate, p.
+// Partition returns two new {{.Type.Name}}Sets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPrefix}}{{.UType}}Set, *{{.UPrefix}}{{.UType}}Set) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Partition(p func({{.Type.Name}}) bool) (*{{.Prefix.U}}{{.Type.U}}Set, *{{.Prefix.U}}{{.Type.U}}Set) {
 	if set == nil {
 		return nil, nil
 	}
 
-	matching := New{{.UPrefix}}{{.UType}}Set()
-	others := New{{.UPrefix}}{{.UType}}Set()
+	matching := New{{.Prefix.U}}{{.Type.U}}Set()
+	others := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		if p(v) {
@@ -472,16 +472,16 @@ func (set *{{.UPrefix}}{{.UType}}Set) Partition(p func({{.Type}}) bool) (*{{.UPr
 	return matching, others
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function f.
+// Map returns a new {{.Prefix.U}}{{.Type.U}}Set by transforming every element with a function f.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *{{.UPrefix}}{{.UType}}Set) Map(f func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Map(f func({{.Type.Name}}) {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UType}}Set()
+	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		result.m[f(v)] = struct{}{}
@@ -490,17 +490,17 @@ func (set *{{.UPrefix}}{{.UType}}Set) Map(f func({{.PType}}) {{.PType}}) *{{.UPr
 	return result
 }
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}Set by transforming every element with a function f that
+// FlatMap returns a new {{.Prefix.U}}{{.Type.U}}Set by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(f func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) FlatMap(f func({{.Type.Name}}) []{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UType}}Set()
+	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
 		for _, x := range f(v) {
@@ -511,8 +511,8 @@ func (set *{{.UPrefix}}{{.UType}}Set) FlatMap(f func({{.PType}}) []{{.PType}}) *
 	return result
 }
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Set that return true for the predicate p.
-func (set *{{.UPrefix}}{{.UType}}Set) CountBy(p func({{.Type}}) bool) (result int) {
+// CountBy gives the number elements of {{.Prefix.U}}{{.Type.U}}Set that return true for the predicate p.
+func (set *{{.Prefix.U}}{{.Type.U}}Set) CountBy(p func({{.Type.Name}}) bool) (result int) {
 
 	for v := range set.m {
 		if p(v) {
@@ -524,13 +524,13 @@ func (set *{{.UPrefix}}{{.UType}}Set) CountBy(p func({{.Type}}) bool) (result in
 {{- if .Ordered}}
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
+// These methods are included when {{.Type.Name}} is ordered.
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set *{{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Min() {{.Type.Name}} {
 
-	var m {{.Type}}
+	var m {{.Type.Name}}
 	first := true
 	for v := range set.m {
 		if first {
@@ -545,9 +545,9 @@ func (set *{{.UPrefix}}{{.UType}}Set) Min() {{.Type}} {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set *{{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Max() (result {{.Type.Name}}) {
 
-	var m {{.Type}}
+	var m {{.Type.Name}}
 	first := true
 	for v := range set.m {
 		if first {
@@ -561,15 +561,15 @@ func (set *{{.UPrefix}}{{.UType}}Set) Max() (result {{.Type}}) {
 }
 {{- end}}
 
-// MinBy returns an element of {{.UPrefix}}{{.UType}}Set containing the minimum value, when compared to other elements
+// MinBy returns an element of {{.Prefix.U}}{{.Type.U}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set *{{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MinBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty set.")
 	}
 
-	var m {{.Type}}
+	var m {{.Type.Name}}
 	first := true
 	for v := range set.m {
 		if first {
@@ -582,15 +582,15 @@ func (set *{{.UPrefix}}{{.UType}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool
 	return m
 }
 
-// MaxBy returns an element of {{.UPrefix}}{{.UType}}Set containing the maximum value, when compared to other elements
+// MaxBy returns an element of {{.Prefix.U}}{{.Type.U}}Set containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set *{{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MaxBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty set.")
 	}
 
-	var m {{.Type}}
+	var m {{.Type.Name}}
 	first := true
 	for v := range set.m {
 		if first {
@@ -605,14 +605,14 @@ func (set *{{.UPrefix}}{{.UType}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool
 {{- if .Numeric}}
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is numeric.
+// These methods are included when {{.Type.Name}} is numeric.
 
 // Sum returns the sum of all the elements in the set.
-func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Sum() {{.Type.Name}} {
 
-	sum := {{.Type}}(0)
+	sum := {{.Type.Name}}(0)
 	for v := range set.m {
-		sum = sum + {{.TypeStar}}v
+		sum = sum + {{.Type.Star}}v
 	}
 	return sum
 }
@@ -623,7 +623,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Sum() {{.Type}} {
 // Equals determines whether two sets are equal to each other, returning true if so.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
-func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Equals(other *{{.Prefix.U}}{{.Type.U}}Set) bool {
 	if set == nil {
 		return other == nil || other.IsEmpty()
 	}
@@ -649,7 +649,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) Equals(other *{{.UPrefix}}{{.UType}}Set) b
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) StringList() []string {
 
 	strings := make([]string, len(set.m))
 	i := 0
@@ -661,24 +661,24 @@ func (set *{{.UPrefix}}{{.UType}}Set) StringList() []string {
 }
 
 // String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
-func (set *{{.UPrefix}}{{.UType}}Set) String() string {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) String() string {
 	return set.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (set *{{.UPrefix}}{{.UType}}Set) MkString(sep string) string {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MkString(sep string) string {
 	return set.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (set *{{.UPrefix}}{{.UType}}Set) MkString3(before, between, after string) string {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MkString3(before, between, after string) string {
 	if set == nil {
 		return ""
 	}
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set *{{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -695,21 +695,21 @@ func (set *{{.UPrefix}}{{.UType}}Set) mkString3Bytes(before, between, after stri
 //-------------------------------------------------------------------------------------------------
 
 // UnmarshalJSON implements JSON decoding for this set type.
-func (set *{{.UPrefix}}{{.UType}}Set) UnmarshalJSON(b []byte) error {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) UnmarshalJSON(b []byte) error {
 
-	values := make([]{{.PType}}, 0)
+	values := make([]{{.Type.Name}}, 0)
 	err := json.Unmarshal(b, &values)
 	if err != nil {
 		return err
 	}
 
-	s2 := New{{.UPrefix}}{{.UType}}Set(values...)
+	s2 := New{{.Prefix.U}}{{.Type.U}}Set(values...)
 	*set = *s2
 	return nil
 }
 
 // MarshalJSON implements JSON encoding for this set type.
-func (set *{{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MarshalJSON() ([]byte, error) {
 
 	buf, err := json.Marshal(set.ToSlice())
 	return buf, err
@@ -717,7 +717,7 @@ func (set *{{.UPrefix}}{{.UType}}Set) MarshalJSON() ([]byte, error) {
 
 // StringMap renders the set as a map of strings. The value of each item in the set becomes stringified as a key in the
 // resulting map.
-func (set *{{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) StringMap() map[string]bool {
 	if set == nil {
 		return nil
 	}
@@ -734,15 +734,15 @@ func (set *{{.UPrefix}}{{.UType}}Set) StringMap() map[string]bool {
 //-------------------------------------------------------------------------------------------------
 
 // GobDecode implements 'gob' decoding for this set type.
-// You must register {{.Type}} with the 'gob' package before this method is used.
-func (set *{{.UPrefix}}{{.UType}}Set) GobDecode(b []byte) error {
+// You must register {{.Type.Name}} with the 'gob' package before this method is used.
+func (set *{{.Prefix.U}}{{.Type.U}}Set) GobDecode(b []byte) error {
 	buf := bytes.NewBuffer(b)
 	return gob.NewDecoder(buf).Decode(&set.m)
 }
 
 // GobEncode implements 'gob' encoding for this list type.
-// You must register {{.Type}} with the 'gob' package before this method is used.
-func (set {{.UPrefix}}{{.UType}}Set) GobEncode() ([]byte, error) {
+// You must register {{.Type.Name}} with the 'gob' package before this method is used.
+func (set {{.Prefix.U}}{{.Type.U}}Set) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := gob.NewEncoder(buf).Encode(set.m)
 	return buf.Bytes(), err

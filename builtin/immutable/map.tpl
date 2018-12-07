@@ -1,7 +1,7 @@
-// An encapsulated map[{{.Key}}]{{.Type}}.
+// An encapsulated map[{{.Key.Name}}]{{.Type}}.
 // Thread-safe.
 //
-// Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
+// Generated from {{.TemplateFile}} with Key={{.Key.Name}} Type={{.Type}}
 // options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} ValueList:{{.ValueList}} Mutable:disabled
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -24,48 +24,48 @@ import (
 {{end}}
 )
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Map is the primary type that represents a thread-safe map
-type {{.UPrefix}}{{.UKey}}{{.UType}}Map struct {
-	m map[{{.PKey}}]{{.PType}}
+// {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map is the primary type that represents a thread-safe map
+type {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map struct {
+	m map[{{.Key}}]{{.Type}}
 }
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Tuple represents a key/value pair.
-type {{.UPrefix}}{{.UKey}}{{.UType}}Tuple struct {
-	Key {{.PKey}}
-	Val {{.PType}}
+// {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple represents a key/value pair.
+type {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple struct {
+	Key {{.Key}}
+	Val {{.Type}}
 }
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Tuples can be used as a builder for unmodifiable maps.
-type {{.UPrefix}}{{.UKey}}{{.UType}}Tuples []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple
+// {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples can be used as a builder for unmodifiable maps.
+type {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple
 
 // Append1 adds one item.
-func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append1(k {{.PKey}}, v {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) Append1(k {{.Key}}, v {{.Type}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
+	return append(ts, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
 }
 
 // Append2 adds two items.
-func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append2(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2})
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) Append2(k1 {{.Key}}, v1 {{.Type}}, k2 {{.Key}}, v2 {{.Type}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
+	return append(ts, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k1, v1}, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k2, v2})
 }
 
 // Append3 adds three items.
-func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Append3(k1 {{.PKey}}, v1 {{.PType}}, k2 {{.PKey}}, v2 {{.PType}}, k3 {{.PKey}}, v3 {{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-	return append(ts, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k1, v1}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k2, v2}, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k3, v3})
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) Append3(k1 {{.Key}}, v1 {{.Type}}, k2 {{.Key}}, v2 {{.Type}}, k3 {{.Key}}, v3 {{.Type}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
+	return append(ts, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k1, v1}, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k2, v2}, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k3, v3})
 }
 
-// {{.UPrefix}}{{.UKey}}{{.UType}}Zip is used with the Values method to zip (i.e. interleave) a slice of
-// keys with a slice of values. These can then be passed in to the New{{.UPrefix}}{{.UKey}}{{.UType}}Map
+// {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Zip is used with the Values method to zip (i.e. interleave) a slice of
+// keys with a slice of values. These can then be passed in to the New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map
 // constructor function.
-func {{.UPrefix}}{{.UKey}}{{.UType}}Zip(keys ...{{.PKey}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
-	ts := make({{.UPrefix}}{{.UKey}}{{.UType}}Tuples, len(keys))
+func {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Zip(keys ...{{.Key}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
+	ts := make({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples, len(keys))
 	for i, k := range keys {
 		ts[i].Key = k
 	}
 	return ts
 }
 
-// Values sets the values in a tuple slice. Use this with {{.UPrefix}}{{.UKey}}{{.UType}}Zip.
-func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.UPrefix}}{{.UKey}}{{.UType}}Tuples {
+// Values sets the values in a tuple slice. Use this with {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Zip.
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) Values(values ...{{.Type}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
 	if len(ts) != len(values) {
 		panic(fmt.Errorf("Mismatched %d keys and %d values", len(ts), len(values)))
 	}
@@ -77,22 +77,22 @@ func (ts {{.UPrefix}}{{.UKey}}{{.UType}}Tuples) Values(values ...{{.PType}}) {{.
 
 //-------------------------------------------------------------------------------------------------
 
-func new{{.UPrefix}}{{.UKey}}{{.UType}}Map() *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	return &{{.UPrefix}}{{.UKey}}{{.UType}}Map{
-		m: make(map[{{.PKey}}]{{.PType}}),
+func new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map() *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
+	return &{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map{
+		m: make(map[{{.Key}}]{{.Type}}),
 	}
 }
 
-// New{{.UPrefix}}{{.UKey}}{{.UType}}Map1 creates and returns a reference to a map containing one item.
-func New{{.UPrefix}}{{.UKey}}{{.UType}}Map1(k {{.PKey}}, v {{.PType}}) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	mm := new{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+// New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map1 creates and returns a reference to a map containing one item.
+func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map1(k {{.Key}}, v {{.Type}}) *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
+	mm := new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 	mm.m[k] = v
 	return mm
 }
 
-// New{{.UPrefix}}{{.UKey}}{{.UType}}Map creates and returns a reference to a map, optionally containing some items.
-func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
-	mm := new{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+// New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map creates and returns a reference to a map, optionally containing some items.
+func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(kv ...{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple) *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
+	mm := new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 	for _, t := range kv {
 		mm.m[t.Key] = t.Val
 	}
@@ -100,12 +100,12 @@ func New{{.UPrefix}}{{.UKey}}{{.UType}}Map(kv ...{{.UPrefix}}{{.UKey}}{{.UType}}
 }
 
 // Keys returns the keys of the current map as a slice.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}} {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}} {
 	if mm == nil {
 		return nil
 	}
 
-	s := make({{if .KeyList}}{{.KeyList}}{{else}}[]{{.PKey}}{{end}}, 0, len(mm.m))
+	s := make({{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}}, 0, len(mm.m))
 	for k := range mm.m {
 		s = append(s, k)
 	}
@@ -114,12 +114,12 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Keys() {{if .KeyList}}{{.KeyList}}
 }
 
 // Values returns the values of the current map as a slice.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}} {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Values() {{if .ValueList}}{{.ValueList}}{{else}}[]{{.Type}}{{end}} {
 	if mm == nil {
 		return nil
 	}
 
-	s := make({{if .ValueList}}{{.ValueList}}{{else}}[]{{.PType}}{{end}}, 0, len(mm.m))
+	s := make({{if .ValueList}}{{.ValueList}}{{else}}[]{{.Type}}{{end}}, 0, len(mm.m))
 	for _, v := range mm.m {
 		s = append(s, v)
 	}
@@ -128,32 +128,32 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Values() {{if .ValueList}}{{.Value
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) slice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) slice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]{{.UPrefix}}{{.UKey}}{{.UType}}Tuple, 0, len(mm.m))
+	s := make([]{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple, 0, len(mm.m))
 	for k, v := range mm.m {
-		s = append(s, {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v})
+		s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
 	}
 
 	return s
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ToSlice() []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ToSlice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
 	return mm.slice()
 }
 
 // Get returns one of the items in the map, if present.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Get(k {{.PKey}}) ({{.PType}}, bool) {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Get(k {{.Key}}) ({{.Type}}, bool) {
 	v, found := mm.m[k]
 	return v, found
 }
 
 // ContainsKey determines if a given item is already in the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ContainsKey(k {{.Key}}) bool {
 	if mm == nil {
 		return false
 	}
@@ -163,7 +163,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsKey(k {{.PKey}}) bool {
 }
 
 // ContainsAllKeys determines if the given items are all in the map.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ContainsAllKeys(kk ...{{.Key}}) bool {
 	if mm == nil {
 		return len(kk) == 0
 	}
@@ -177,7 +177,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) ContainsAllKeys(kk ...{{.PKey}}) b
 }
 
 // Size returns how many items are currently in the map. This is a synonym for Len.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Size() int {
 	if mm == nil {
 		return 0
 	}
@@ -186,18 +186,18 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Size() int {
 }
 
 // IsEmpty returns true if the map is empty.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) IsEmpty() bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) IsEmpty() bool {
 	return mm.Size() == 0
 }
 
 // NonEmpty returns true if the map is not empty.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) NonEmpty() bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) NonEmpty() bool {
 	return mm.Size() > 0
 }
 
 // Foreach applies the function f to every element in the map.
 // The function can safely alter the values via side-effects.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(f func({{.PKey}}, {{.PType}})) {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Foreach(f func({{.Key}}, {{.Type}})) {
 	if mm != nil {
 		for k, v := range mm.m {
 			f(k, v)
@@ -211,7 +211,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Foreach(f func({{.PKey}}, {{.PType
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(f func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Forall(f func({{.Key}}, {{.Type}}) bool) bool {
 	if mm == nil {
 		return true
 	}
@@ -228,7 +228,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Forall(f func({{.PKey}}, {{.PType}
 // Exists applies the predicate p to every element in the map. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(p func({{.PKey}}, {{.PType}}) bool) bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Exists(p func({{.Key}}, {{.Type}}) bool) bool {
 	if mm == nil {
 		return false
 	}
@@ -244,28 +244,28 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Exists(p func({{.PKey}}, {{.PType}
 
 // Find returns the first {{.Type}} that returns true for the predicate p.
 // False is returned if none match.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Find(p func({{.PKey}}, {{.PType}}) bool) ({{.UPrefix}}{{.UKey}}{{.UType}}Tuple, bool) {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Find(p func({{.Key}}, {{.Type}}) bool) ({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple, bool) {
 	if mm == nil {
-		return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
+		return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{}, false
 	}
 
 	for k, v := range mm.m {
 		if p(k, v) {
-			return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{k, v}, true
+			return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v}, true
 		}
 	}
 
-	return {{.UPrefix}}{{.UKey}}{{.UType}}Tuple{}, false
+	return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{}, false
 }
 
 // Filter applies the predicate p to every element in the map and returns a copied map containing
 // only the elements for which the predicate returned true.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(p func({{.PKey}}, {{.PType}}) bool) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Filter(p func({{.Key}}, {{.Type}}) bool) *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	if mm == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+	result := New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 
 	for k, v := range mm.m {
 		if p(k, v) {
@@ -279,13 +279,13 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Filter(p func({{.PKey}}, {{.PType}
 // Partition applies the predicate p to every element in the map. It divides the map into two copied maps,
 // the first containing all the elements for which the predicate returned true, and the second containing all
 // the others.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(p func({{.PKey}}, {{.PType}}) bool) (matching *{{.UPrefix}}{{.UKey}}{{.UType}}Map, others *{{.UPrefix}}{{.UKey}}{{.UType}}Map) {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Partition(p func({{.Key}}, {{.Type}}) bool) (matching *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map, others *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) {
 	if mm == nil {
 		return nil, nil
 	}
 
-	matching = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
-	others = New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+	matching = New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
+	others = New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 
 	for k, v := range mm.m {
 		if p(k, v) {
@@ -297,16 +297,16 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Partition(p func({{.PKey}}, {{.PTy
 	return
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with the function f.
+// Map returns a new {{.Prefix.U}}{{.Type.U}}Map by transforming every element with the function f.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(f func({{.PKey}}, {{.PType}}) ({{.PKey}}, {{.PType}})) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Map(f func({{.Key}}, {{.Type}}) ({{.Key}}, {{.Type}})) *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	if mm == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+	result := New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 
 	for k1, v1 := range mm.m {
 		k2, v2 := f(k1, v1)
@@ -316,17 +316,17 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Map(f func({{.PKey}}, {{.PType}}) 
 	return result
 }
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}Map by transforming every element with the function f that
+// FlatMap returns a new {{.Prefix.U}}{{.Type.U}}Map by transforming every element with the function f that
 // returns zero or more items in a slice. The resulting map may have a different size to the original map.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(f func({{.PKey}}, {{.PType}}) []{{.UPrefix}}{{.UKey}}{{.UType}}Tuple) *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) FlatMap(f func({{.Key}}, {{.Type}}) []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple) *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	if mm == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UKey}}{{.UType}}Map()
+	result := New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 
 	for k1, v1 := range mm.m {
 		ts := f(k1, v1)
@@ -342,7 +342,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) FlatMap(f func({{.PKey}}, {{.PType
 // Equals determines if two maps are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for maps to be equal.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other *{{.UPrefix}}{{.UKey}}{{.UType}}Map) bool {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Equals(other *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) bool {
 	if mm == nil || other == nil {
 		return mm.IsEmpty() && other.IsEmpty()
 	}
@@ -352,7 +352,7 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other *{{.UPrefix}}{{.UKey}
 	}
 	for k, v1 := range mm.m {
 		v2, found := other.m[k]
-		if !found || {{.TypeStar}}v1 != {{.TypeStar}}v2 {
+		if !found || {{.Type.Star}}v1 != {{.Type.Star}}v2 {
 			return false
 		}
 	}
@@ -361,38 +361,38 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Equals(other *{{.UPrefix}}{{.UKey}
 {{- end}}
 
 // Clone returns the same map, which is immutable.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) Clone() *{{.UPrefix}}{{.UKey}}{{.UType}}Map {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Clone() *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	return mm
 }
 {{- if .Stringer}}
 
 //-------------------------------------------------------------------------------------------------
 
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) String() string {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) String() string {
 	return mm.MkString3("[", ", ", "]")
 }
 
 // implements encoding.Marshaler interface {
-//func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
+//func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MarshalJSON() ([]byte, error) {
 //	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
 //}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString(sep string) string {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MkString(sep string) string {
 	return mm.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 {{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MkString3(before, between, after string) string {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MkString3(before, between, after string) string {
 	if mm == nil {
 		return ""
 	}
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -424,13 +424,13 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) mkString3Bytes(before, between, af
 //-------------------------------------------------------------------------------------------------
 
 // UnmarshalJSON implements JSON decoding for this map type.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) UnmarshalJSON(b []byte) error {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) UnmarshalJSON(b []byte) error {
 	buf := bytes.NewBuffer(b)
 	return json.NewDecoder(buf).Decode(&mm.m)
 }
 
 // MarshalJSON implements JSON encoding for this map type.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MarshalJSON() ([]byte, error) {
 	return json.Marshal(mm.m)
 }
 {{- end}}
@@ -441,14 +441,14 @@ func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) MarshalJSON() ([]byte, error) {
 
 // GobDecode implements 'gob' decoding for this map type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobDecode(b []byte) error {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) GobDecode(b []byte) error {
 	buf := bytes.NewBuffer(b)
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
 // GobEncode implements 'gob' encoding for this list type.
 // You must register {{.Type}} with the 'gob' package before this method is used.
-func (mm *{{.UPrefix}}{{.UKey}}{{.UType}}Map) GobEncode() ([]byte, error) {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := gob.NewEncoder(buf).Encode(mm.m)
 	return buf.Bytes(), err

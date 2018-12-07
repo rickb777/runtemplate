@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.Type}}
+// Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // No other options are available.
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -20,24 +20,24 @@ import (
 
 //-------------------------------------------------------------------------------------------------
 
-// {{.UPrefix}}{{.UType}}Generator produces a stream of {{.PType}} based on a supplied generator function.
+// {{.Prefix.U}}{{.Type.U}}Generator produces a stream of {{.Type.Name}} based on a supplied generator function.
 // The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Generator(out chan<- {{.PType}}, iterations int, fn func(int) {{.PType}}) {
-	{{.UPrefix}}{{.UType}}Generator3(out, 0, iterations-1, 1, fn)
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Generator(out chan<- {{.Type.Name}}, iterations int, fn func(int) {{.Type.Name}}) {
+	{{.Prefix.U}}{{.Type.U}}Generator3(out, 0, iterations-1, 1, fn)
 }
 
-// {{.UPrefix}}{{.UType}}Generator produces a stream of {{.PType}} based on a supplied generator function.
+// {{.Prefix.U}}{{.Type.U}}Generator produces a stream of {{.Type.Name}} based on a supplied generator function.
 // The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
 // from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
 // If stride is zero, the loop never terminates. Otherwise, after the generator has reached the
 // loop end, the output channel is closed and the generator terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Generator3(out chan<- {{.PType}}, from, to, stride int, fn func(int) {{.PType}}) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Generator3(out chan<- {{.Type.Name}}, from, to, stride int, fn func(int) {{.Type.Name}}) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
 		panic("Loop conditions are divergent.")
 	}
@@ -53,11 +53,11 @@ func {{.UPrefix}}{{.UType}}Generator3(out chan<- {{.PType}}, from, to, stride in
 	close(out)
 }
 
-// {{.UPrefix}}{{.UType}}Delta duplicates a stream of {{.PType}} to two output channels.
+// {{.Prefix.U}}{{.Type.U}}Delta duplicates a stream of {{.Type.Name}} to two output channels.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Delta(in <-chan {{.PType}}, out1, out2 chan<- {{.PType}}) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Delta(in <-chan {{.Type.Name}}, out1, out2 chan<- {{.Type.Name}}) {
 	for v := range in {
 		select {
 		case out1 <- v:
@@ -70,13 +70,13 @@ func {{.UPrefix}}{{.UType}}Delta(in <-chan {{.PType}}, out1, out2 chan<- {{.PTyp
 	close(out2)
 }
 
-// {{.UPrefix}}{{.UType}}Zip2 interleaves two streams of {{.PType}}.
+// {{.Prefix.U}}{{.Type.U}}Zip2 interleaves two streams of {{.Type.Name}}.
 // Each input channel is used in turn, alternating between them.
 // The function terminates when *both* input channels have been closed by their senders.
 // The output channel is then closed also.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Zip2(in1, in2 <-chan {{.PType}}, out chan<- {{.PType}}) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Zip2(in1, in2 <-chan {{.Type.Name}}, out chan<- {{.Type.Name}}) {
 	closed2 := false
 	for v := range in1 {
 		out <- v
@@ -95,14 +95,14 @@ func {{.UPrefix}}{{.UType}}Zip2(in1, in2 <-chan {{.PType}}, out chan<- {{.PType}
 	close(out)
 }
 
-// {{.UPrefix}}{{.UType}}Mux2 multiplexes two streams of {{.PType}} into a single output channel.
+// {{.Prefix.U}}{{.Type.U}}Mux2 multiplexes two streams of {{.Type.Name}} into a single output channel.
 // Each input channel is used as soon as it is ready.
 // When a signal is received from the closer channel, the output channel is then closed.
 // Concurrently, both input channels are then passed into blackholes that comsume them until they too are closed,
 // and the function terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Mux2(in1, in2 <-chan {{.PType}}, closer <-chan bool, out chan<- {{.PType}}) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Mux2(in1, in2 <-chan {{.Type.Name}}, closer <-chan bool, out chan<- {{.Type.Name}}) {
 	running := true
 	for running {
 		select {
@@ -114,26 +114,26 @@ func {{.UPrefix}}{{.UType}}Mux2(in1, in2 <-chan {{.PType}}, closer <-chan bool, 
 			running = false
 		}
 	}
-	go {{.UPrefix}}{{.UType}}BlackHole(in1)
-	go {{.UPrefix}}{{.UType}}BlackHole(in2)
+	go {{.Prefix.U}}{{.Type.U}}BlackHole(in1)
+	go {{.Prefix.U}}{{.Type.U}}BlackHole(in2)
 	close(out)
 }
 
-// {{.UPrefix}}{{.UType}}BlackHole silently consumes a stream of {{.PType}}.
+// {{.Prefix.U}}{{.Type.U}}BlackHole silently consumes a stream of {{.Type.Name}}.
 // It terminates when the sender closes the channel.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}BlackHole(in <-chan {{.PType}}) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}BlackHole(in <-chan {{.Type.Name}}) {
 	for _ = range in {
 		// om nom nom
 	}
 }
 
-// {{.UPrefix}}{{.UType}}Filter filters a stream of {{.PType}}, silently dropping elements that do not match the predicate p.
+// {{.Prefix.U}}{{.Type.U}}Filter filters a stream of {{.Type.Name}}, silently dropping elements that do not match the predicate p.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Filter(in <-chan {{.PType}}, out chan<- {{.PType}}, p func({{.PType}}) bool) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Filter(in <-chan {{.Type.Name}}, out chan<- {{.Type.Name}}, p func({{.Type.Name}}) bool) {
 	for v := range in {
 		if p(v) {
 			out <- v
@@ -142,12 +142,12 @@ func {{.UPrefix}}{{.UType}}Filter(in <-chan {{.PType}}, out chan<- {{.PType}}, p
 	close(out)
 }
 
-// {{.UPrefix}}{{.UType}}Partition filters a stream of {{.PType}} into two output streams using a predicate p, those that
+// {{.Prefix.U}}{{.Type.U}}Partition filters a stream of {{.Type.Name}} into two output streams using a predicate p, those that
 // match and all others.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Partition(in <-chan {{.PType}}, matching, others chan<- {{.PType}}, p func({{.PType}}) bool) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Partition(in <-chan {{.Type.Name}}, matching, others chan<- {{.Type.Name}}, p func({{.Type.Name}}) bool) {
 	for v := range in {
 		if p(v) {
 			matching <- v
@@ -159,26 +159,26 @@ func {{.UPrefix}}{{.UType}}Partition(in <-chan {{.PType}}, matching, others chan
 	close(others)
 }
 
-// {{.UPrefix}}{{.UType}}Map transforms a stream of {{.PType}} by applying a function fn to each item in the stream.
+// {{.Prefix.U}}{{.Type.U}}Map transforms a stream of {{.Type.Name}} by applying a function fn to each item in the stream.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}Map(in <-chan {{.PType}}, out chan<- {{.PType}}, fn func({{.PType}}) {{.PType}}) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}Map(in <-chan {{.Type.Name}}, out chan<- {{.Type.Name}}, fn func({{.Type.Name}}) {{.Type.Name}}) {
 	for v := range in {
 		out <- fn(v)
 	}
 	close(out)
 }
 
-// {{.UPrefix}}{{.UType}}FlatMap transforms a stream of {{.PType}} by applying a function fn to each item in the stream that
+// {{.Prefix.U}}{{.Type.U}}FlatMap transforms a stream of {{.Type.Name}} by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 //
-// It is part of the Plumbing function suite for {{.UType}}.
-func {{.UPrefix}}{{.UType}}FlatMap(in <-chan {{.PType}}, out chan<- {{.PType}}, fn func({{.PType}}) {{.UPrefix}}{{.UType}}Collection) {
+// It is part of the Plumbing function suite for {{.Type.U}}.
+func {{.Prefix.U}}{{.Type.U}}FlatMap(in <-chan {{.Type.Name}}, out chan<- {{.Type.Name}}, fn func({{.Type.Name}}) {{.Prefix.U}}{{.Type.U}}Collection) {
 	for vi := range in {
 		c := fn(vi)
-		c.Foreach(func(vo {{.PType}}) {
+		c.Foreach(func(vo {{.Type.Name}}) {
 			out <- vo
 		})
 	}

@@ -3,7 +3,7 @@
 //
 // Generated from threadsafe/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
-// GobEncode:true Mutable:always ToList:always ToSet:<no value> MapTo:<no value>
+// GobEncode:true Mutable:always ToList:always ToSet:<no value> MapTo:string
 // by runtemplate v2.7.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -827,6 +827,28 @@ func (list *AppleList) Map(f func(Apple) Apple) *AppleList {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *AppleList) MapToString(f func(Apple) string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, len(list.m))
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
 // FlatMap returns a new AppleList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
@@ -844,6 +866,28 @@ func (list *AppleList) FlatMap(f func(Apple) []Apple) *AppleList {
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *AppleList) FlatMapToString(f func(Apple) []string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(list.m))
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	for _, v := range list.m {
+		result = append(result, f(v)...)
 	}
 
 	return result

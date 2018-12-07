@@ -64,7 +64,7 @@ func SplitKeyValArgs(args []string) (Tuples, Pairs, []string) {
 			found = true
 		} else if co >= 0 {
 			k, v := a[:co], a[co+1:]
-			p := Pair{Key: k, Val: expandSpecialChars(v)}
+			p := Pair{Key: k, Val: RichString(expandSpecialChars(string(v)))}
 			others = append(others, p)
 			found = p.Valid()
 		}

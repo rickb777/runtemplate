@@ -3,7 +3,7 @@
 //
 // Generated from fast/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
-// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:[string int64]
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:string,int64
 // by runtemplate v2.7.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 

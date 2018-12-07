@@ -51,12 +51,22 @@ func (rs RichString) ToTitle() RichString {
 	return RichString(strings.ToTitle(string(rs)))
 }
 
+// UL is an alias for FirstUpper.
+func (rs RichString) U() RichString {
+	return rs.FirstUpper()
+}
+
 // FirstUpper returns a copy of the string rs with the first letter mapped to upper case.
 func (rs RichString) FirstUpper() RichString {
 	if rs == "" {
 		return ""
 	}
 	return rs[:1].ToUpper() + rs[1:]
+}
+
+// L is an alias for FirstLower
+func (rs RichString) L() RichString {
+	return rs.FirstLower()
 }
 
 // FirstLower returns a copy of the string rs with the first letter mapped to lower case.

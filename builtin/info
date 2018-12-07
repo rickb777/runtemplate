@@ -14,8 +14,9 @@ for d in simple immutable threadsafe; do
         grep -v 'Queue) [a-z]' | \
         grep -v 'Set) [a-z]' | \
         grep -v 'func [a-z]' >info.tpl
-      runtemplate -tpl info.tpl -o $d-$tpl-api.txt Type=Type Key=Key
+      runtemplate -v -z -tpl info.tpl -o $d-$tpl-api.txt Type=Type Key=Key
       rm info.tpl
+      echo
     fi
   done
 done

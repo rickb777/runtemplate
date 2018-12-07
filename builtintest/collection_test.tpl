@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Append:{{.Append}}
 
 package {{.Package}}
@@ -15,15 +15,15 @@ type Sizer interface {
 	Size() int
 }
 
-func TestNewX{{.UType}}Collection(t *testing.T) {
-	testEmpty{{.UType}}Collection(t, NewX1{{.UType}}Set(), "Set")
-	testEmpty{{.UType}}Collection(t, NewX1{{.UType}}List(), "List")
+func TestNewX{{.Type.U}}Collection(t *testing.T) {
+	testEmpty{{.Type.U}}Collection(t, NewX1{{.Type.U}}Set(), "Set")
+	testEmpty{{.Type.U}}Collection(t, NewX1{{.Type.U}}List(), "List")
 {{- if .Mutable}}
-	testEmpty{{.UType}}Collection(t, NewX1{{.UType}}Queue(5, false), "Queue")
+	testEmpty{{.Type.U}}Collection(t, NewX1{{.Type.U}}Queue(5, false), "Queue")
 {{- end}}
 }
 
-func testEmpty{{.UType}}Collection(t *testing.T, a Sizer, kind string) {
+func testEmpty{{.Type.U}}Collection(t *testing.T, a Sizer, kind string) {
 	g := NewGomegaWithT(t)
 
 	g.Expect(a.Size()).To(Equal(0))
@@ -31,16 +31,16 @@ func testEmpty{{.UType}}Collection(t *testing.T, a Sizer, kind string) {
 	g.Expect(a.NonEmpty()).To(BeFalse())
 }
 
-func Test{{.UType}}ToSlice(t *testing.T) {
-	test{{.UType}}ToSlice(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
-	test{{.UType}}ToSlice(t, NewX1{{.UType}}List(1, 2, 3), "List")
+func Test{{.Type.U}}ToSlice(t *testing.T) {
+	test{{.Type.U}}ToSlice(t, NewX1{{.Type.U}}Set(1, 2, 3), "Set")
+	test{{.Type.U}}ToSlice(t, NewX1{{.Type.U}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}ToSlice(t, interestingFullQueue(1, 2, 3), "Queue")
-	test{{.UType}}ToSlice(t, interestingPartialQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}ToSlice(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}ToSlice(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}ToSlice(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}ToSlice(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	s := a.ToSlice()
@@ -49,16 +49,16 @@ func test{{.UType}}ToSlice(t *testing.T, a X1{{.UType}}Collection, kind string) 
 	g.Expect(len(s)).To(Equal(3))
 }
 
-func Test{{.UType}}Exists(t *testing.T) {
-	test{{.UType}}Exists1(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
-	test{{.UType}}Exists1(t, NewX1{{.UType}}List(1, 2, 3), "List")
+func Test{{.Type.U}}Exists(t *testing.T) {
+	test{{.Type.U}}Exists1(t, NewX1{{.Type.U}}Set(1, 2, 3), "Set")
+	test{{.Type.U}}Exists1(t, NewX1{{.Type.U}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}Exists1(t, interestingFullQueue(1, 2, 3), "Queue")
-	test{{.UType}}Exists1(t, interestingPartialQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Exists1(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Exists1(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Exists1(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}Exists1(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	has2 := a.Exists(func(v int) bool {
@@ -74,16 +74,16 @@ func test{{.UType}}Exists1(t *testing.T, a X1{{.UType}}Collection, kind string) 
 	g.Expect(has5).To(BeFalse())
 }
 
-func Test{{.UType}}Forall(t *testing.T) {
-	test{{.UType}}Forall(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
-	test{{.UType}}Forall(t, NewX1{{.UType}}List(1, 2, 3), "List")
+func Test{{.Type.U}}Forall(t *testing.T) {
+	test{{.Type.U}}Forall(t, NewX1{{.Type.U}}Set(1, 2, 3), "Set")
+	test{{.Type.U}}Forall(t, NewX1{{.Type.U}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}Forall(t, interestingFullQueue(1, 2, 3), "Queue")
-	test{{.UType}}Forall(t, interestingPartialQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Forall(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Forall(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Forall(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}Forall(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	has1 := a.Forall(func(v int) bool {
@@ -99,16 +99,16 @@ func test{{.UType}}Forall(t *testing.T, a X1{{.UType}}Collection, kind string) {
 	g.Expect(has2).To(BeFalse())
 }
 
-func Test{{.UType}}Find(t *testing.T) {
-	test{{.UType}}Find(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
-	test{{.UType}}Find(t, NewX1{{.UType}}List(1, 2, 3, 4), "List")
+func Test{{.Type.U}}Find(t *testing.T) {
+	test{{.Type.U}}Find(t, NewX1{{.Type.U}}Set(1, 2, 3), "Set")
+	test{{.Type.U}}Find(t, NewX1{{.Type.U}}List(1, 2, 3, 4), "List")
 {{- if .Mutable}}
-	test{{.UType}}Find(t, interestingFullQueue(1, 2, 3), "Queue")
-	test{{.UType}}Find(t, interestingPartialQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Find(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Find(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}Find(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	b, e := a.Find(func(v int) bool {
@@ -125,16 +125,16 @@ func test{{.UType}}Find(t *testing.T, a X1{{.UType}}Collection, kind string) {
 	g.Expect(e).To(BeFalse())
 }
 
-func Test{{.UType}}CountBy(t *testing.T) {
-	test{{.UType}}CountBy(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
-	test{{.UType}}CountBy(t, NewX1{{.UType}}List(1, 2, 3), "List")
+func Test{{.Type.U}}CountBy(t *testing.T) {
+	test{{.Type.U}}CountBy(t, NewX1{{.Type.U}}Set(1, 2, 3), "Set")
+	test{{.Type.U}}CountBy(t, NewX1{{.Type.U}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}CountBy(t, interestingFullQueue(1, 2, 3), "Queue")
-	test{{.UType}}CountBy(t, interestingPartialQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}CountBy(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}CountBy(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}CountBy(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}CountBy(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	n := a.CountBy(func(v int) bool {
@@ -144,16 +144,16 @@ func test{{.UType}}CountBy(t *testing.T, a X1{{.UType}}Collection, kind string) 
 	g.Expect(n).To(Equal(2))
 }
 
-func Test{{.UType}}Foreach(t *testing.T) {
-	test{{.UType}}Foreach(t, NewX1{{.UType}}Set(1, 2, 3), "Set")
-	test{{.UType}}Foreach(t, NewX1{{.UType}}List(1, 2, 3), "List")
+func Test{{.Type.U}}Foreach(t *testing.T) {
+	test{{.Type.U}}Foreach(t, NewX1{{.Type.U}}Set(1, 2, 3), "Set")
+	test{{.Type.U}}Foreach(t, NewX1{{.Type.U}}List(1, 2, 3), "List")
 {{- if .Mutable}}
-	test{{.UType}}Foreach(t, interestingFullQueue(1, 2, 3), "Queue")
-	test{{.UType}}Foreach(t, interestingPartialQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Foreach(t, interestingFullQueue(1, 2, 3), "Queue")
+	test{{.Type.U}}Foreach(t, interestingPartialQueue(1, 2, 3), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Foreach(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}Foreach(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	sum1 := int(0)
@@ -164,16 +164,16 @@ func test{{.UType}}Foreach(t *testing.T, a X1{{.UType}}Collection, kind string) 
 	g.Expect(sum1).To(Equal(6))
 }
 
-func Test{{.UType}}Contains(t *testing.T) {
-	test{{.UType}}Contains(t, NewX1{{.UType}}Set(71, 1, 7, 13), "Set")
-	test{{.UType}}Contains(t, NewX1{{.UType}}List(71, 1, 7, 13), "List")
+func Test{{.Type.U}}Contains(t *testing.T) {
+	test{{.Type.U}}Contains(t, NewX1{{.Type.U}}Set(71, 1, 7, 13), "Set")
+	test{{.Type.U}}Contains(t, NewX1{{.Type.U}}List(71, 1, 7, 13), "List")
 {{- if .Mutable}}
-	test{{.UType}}Contains(t, interestingFullQueue(71, 1, 7, 13), "Queue")
-	test{{.UType}}Contains(t, interestingPartialQueue(71, 1, 7, 13), "Queue")
+	test{{.Type.U}}Contains(t, interestingFullQueue(71, 1, 7, 13), "Queue")
+	test{{.Type.U}}Contains(t, interestingPartialQueue(71, 1, 7, 13), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Contains(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}Contains(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	g.Expect(a.Contains(71)).To(BeTrue())
@@ -183,17 +183,17 @@ func test{{.UType}}Contains(t *testing.T, a X1{{.UType}}Collection, kind string)
 	g.Expect(a.ContainsAll(1, 3, 5, 7, 9, 11, 13)).To(BeFalse())
 }
 
-func Test{{.UType}}MinMaxSum(t *testing.T) {
-	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), "Set")
-	test{{.UType}}MinMaxSum(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), "List")
+func Test{{.Type.U}}MinMaxSum(t *testing.T) {
+	test{{.Type.U}}MinMaxSum(t, NewX1{{.Type.U}}Set(10, 71, 3, 7, 13), "Set")
+	test{{.Type.U}}MinMaxSum(t, NewX1{{.Type.U}}List(10, 71, 3, 7, 13), "List")
 {{- if .Mutable}}
-	test{{.UType}}MinMaxSum(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
-	test{{.UType}}MinMaxSum(t, interestingPartialQueue(10, 13, 3, 7, 71), "Queue")
-	test{{.UType}}MinMaxSum(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.Type.U}}MinMaxSum(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.Type.U}}MinMaxSum(t, interestingPartialQueue(10, 13, 3, 7, 71), "Queue")
+	test{{.Type.U}}MinMaxSum(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}MinMaxSum(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}MinMaxSum(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
 	g.Expect(a.Min()).To(Equal(3))
@@ -209,35 +209,35 @@ func test{{.UType}}MinMaxSum(t *testing.T, a X1{{.UType}}Collection, kind string
 	g.Expect(c).To(Equal(71))
 }
 
-func Test{{.UType}}Send(t *testing.T) {
-	//test{{.UType}}Send(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), "Set")
-	test{{.UType}}Send(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), "List")
+func Test{{.Type.U}}Send(t *testing.T) {
+	//test{{.Type.U}}Send(t, NewX1{{.Type.U}}Set(10, 71, 3, 7, 13), "Set")
+	test{{.Type.U}}Send(t, NewX1{{.Type.U}}List(10, 71, 3, 7, 13), "List")
 {{- if .Mutable}}
-	test{{.UType}}Send(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
-	test{{.UType}}Send(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.Type.U}}Send(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.Type.U}}Send(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Send(t *testing.T, a X1{{.UType}}Collection, kind string) {
+func test{{.Type.U}}Send(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
 	g := NewGomegaWithT(t)
 
-    s := make([]{{.PType}}, 0)
+    s := make([]{{.Type}}, 0)
     for v := range a.Send() {
         s = append(s, v)
     }
-	g.Expect(s).To(Equal([]{{.PType}}{10, 71, 3, 7, 13}))
+	g.Expect(s).To(Equal([]{{.Type}}{10, 71, 3, 7, 13}))
 }
 
-func Test{{.UType}}Stringer(t *testing.T) {
-	test{{.UType}}Stringer(t, NewX1{{.UType}}Set(10, 71, 3, 7, 13), false, "Set")
-	test{{.UType}}Stringer(t, NewX1{{.UType}}List(10, 71, 3, 7, 13), true, "List")
+func Test{{.Type.U}}Stringer(t *testing.T) {
+	test{{.Type.U}}Stringer(t, NewX1{{.Type.U}}Set(10, 71, 3, 7, 13), false, "Set")
+	test{{.Type.U}}Stringer(t, NewX1{{.Type.U}}List(10, 71, 3, 7, 13), true, "List")
 {{- if .Mutable}}
-	test{{.UType}}Stringer(t, interestingFullQueue(10, 71, 3, 7, 13), true, "Queue")
-	test{{.UType}}Stringer(t, interestingPartialQueue(10, 71, 3, 7, 13), true, "Queue")
+	test{{.Type.U}}Stringer(t, interestingFullQueue(10, 71, 3, 7, 13), true, "Queue")
+	test{{.Type.U}}Stringer(t, interestingPartialQueue(10, 71, 3, 7, 13), true, "Queue")
 {{- end}}
 }
 
-func test{{.UType}}Stringer(t *testing.T, a X1{{.UType}}Collection, ordered bool, kind string) {
+func test{{.Type.U}}Stringer(t *testing.T, a X1{{.Type.U}}Collection, ordered bool, kind string) {
 	s1 := a.String()
 	if ordered && s1 != "[10, 71, 3, 7, 13]" {
 		t.Errorf("Got %s for %+v", s1, a)
@@ -283,17 +283,17 @@ func test{{.UType}}Stringer(t *testing.T, a X1{{.UType}}Collection, ordered bool
 }
 {{- if .Mutable}}
 
-func interestingFullQueue(values ...{{.PType}}) *X1{{.UType}}Queue {
+func interestingFullQueue(values ...{{.Type}}) *X1{{.Type.U}}Queue {
     // need to use Pop in order to wrap the read & write indexes of the queue
-    q := NewX1{{.UType}}Queue(len(values), false).Push(0, 1, 2, values[0])
+    q := NewX1{{.Type.U}}Queue(len(values), false).Push(0, 1, 2, values[0])
     q.Pop(3)
     q.Push(values[1:]...)
 	return q
 }
 
-func interestingPartialQueue(values ...{{.PType}}) *X1{{.UType}}Queue {
+func interestingPartialQueue(values ...{{.Type}}) *X1{{.Type.U}}Queue {
     // need to use Pop in order to wrap the read & write indexes of the queue
-    q := NewX1{{.UType}}Queue(len(values)+2, false).Push(0, 1, 2, values[0])
+    q := NewX1{{.Type.U}}Queue(len(values)+2, false).Push(0, 1, 2, values[0])
     q.Pop(3)
     q.Push(values[1:]...)
 	return q

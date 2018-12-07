@@ -1,4 +1,4 @@
-// A queue or fifo that holds {{.Type}}, implemented via a ring buffer. Unlike the list collections, these
+// A queue or fifo that holds {{.Type.Name}}, implemented via a ring buffer. Unlike the list collections, these
 // have a fixed size (although this can be changed when needed). For mutable collection that need frequent
 // appending, the fixed size is a benefit because the memory footprint is constrained. However, this is
 // not usable unless the rate of removing items from the queue is, over time, the same as the rate of addition.
@@ -8,7 +8,7 @@
 //
 // Not thread-safe.
 //
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Sorted:{{.Sorted}} Stringer:{{.Stringer}}
 // ToList:{{.ToList}} ToSet:{{.ToSet}}
 // by runtemplate {{.AppVersion}}
@@ -33,32 +33,32 @@ import (
 {{- end}}
 )
 
-// {{.UPrefix}}{{.UType}}Queue is a ring buffer containing a slice of type {{.PType}}. It is optimised
+// {{.Prefix.U}}{{.Type.U}}Queue is a ring buffer containing a slice of type {{.Type.Name}}. It is optimised
 // for FIFO operations.
-type {{.UPrefix}}{{.UType}}Queue struct {
-	m         []{{.PType}}
+type {{.Prefix.U}}{{.Type.U}}Queue struct {
+	m         []{{.Type.Name}}
 	read      int
 	write     int
 	length    int
 	capacity  int
 	overwrite bool
-	less      func(i, j {{.PType}}) bool
+	less      func(i, j {{.Type.Name}}) bool
 }
 
-// New{{.UPrefix}}{{.UType}}Queue returns a new queue of {{.PType}}. The behaviour when adding
+// New{{.Prefix.U}}{{.Type.U}}Queue returns a new queue of {{.Type.Name}}. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func New{{.UPrefix}}{{.UType}}Queue(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
-	return New{{.UPrefix}}{{.UType}}SortedQueue(capacity, overwrite, nil)
+func New{{.Prefix.U}}{{.Type.U}}Queue(capacity int, overwrite bool) *{{.Prefix.U}}{{.Type.U}}Queue {
+	return New{{.Prefix.U}}{{.Type.U}}SortedQueue(capacity, overwrite, nil)
 }
 
-// New{{.UPrefix}}{{.UType}}SortedQueue returns a new queue of {{.PType}}. The behaviour when adding
+// New{{.Prefix.U}}{{.Type.U}}SortedQueue returns a new queue of {{.Type.Name}}. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
-func New{{.UPrefix}}{{.UType}}SortedQueue(capacity int, overwrite bool, less func(i, j {{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
-	return &{{.UPrefix}}{{.UType}}Queue{
-		m:         make([]{{.PType}}, capacity),
+func New{{.Prefix.U}}{{.Type.U}}SortedQueue(capacity int, overwrite bool, less func(i, j {{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}Queue {
+	return &{{.Prefix.U}}{{.Type.U}}Queue{
+		m:         make([]{{.Type.Name}}, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
@@ -68,10 +68,10 @@ func New{{.UPrefix}}{{.UType}}SortedQueue(capacity int, overwrite bool, less fun
 	}
 }
 
-// Build{{.UPrefix}}{{.UType}}QueueFromChan constructs a new {{.UPrefix}}{{.UType}}Queue from a channel that supplies
+// Build{{.Prefix.U}}{{.Type.U}}QueueFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Queue from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func Build{{.UPrefix}}{{.UType}}QueueFromChan(source <-chan {{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
-	queue := New{{.UPrefix}}{{.UType}}Queue(0, false)
+func Build{{.Prefix.U}}{{.Type.U}}QueueFromChan(source <-chan {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Queue {
+	queue := New{{.Prefix.U}}{{.Type.U}}Queue(0, false)
 	for v := range source {
 		queue.m = append(queue.m, v)
 	}
@@ -94,7 +94,7 @@ func Build{{.UPrefix}}{{.UType}}QueueFromChan(source <-chan {{.PType}}) *{{.UPre
 // Reallocate adjusts the storage space but does not clone the underlying elements.
 //
 // The queue must not be nil.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Reallocate(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Reallocate(capacity int, overwrite bool) *{{.Prefix.U}}{{.Type.U}}Queue {
 	if capacity < 1 {
 		panic("capacity must be at least 1")
 	}
@@ -102,7 +102,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Reallocate(capacity int, overwrite boo
 	return queue.doReallocate(capacity, overwrite)
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) doReallocate(capacity int, overwrite bool) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doReallocate(capacity int, overwrite bool) *{{.Prefix.U}}{{.Type.U}}Queue {
 	queue.overwrite = overwrite
 
 	if capacity < queue.length {
@@ -114,7 +114,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doReallocate(capacity int, overwrite b
 
 	if capacity != queue.capacity {
 		oldLength := queue.length
-		queue.m = queue.toSlice(make([]{{.PType}}, capacity))
+		queue.m = queue.toSlice(make([]{{.Type.Name}}, capacity))
 		if oldLength > len(queue.m) {
 			oldLength = len(queue.m)
 		}
@@ -128,7 +128,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doReallocate(capacity int, overwrite b
 }
 
 // Space returns the space available in the queue.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Space() int {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Space() int {
 	if queue == nil {
 		return 0
 	}
@@ -136,7 +136,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Space() int {
 }
 
 // Cap gets the capacity of this queue.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Cap() int {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Cap() int {
 	if queue == nil {
 		return 0
 	}
@@ -146,12 +146,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Cap() int {
 //-------------------------------------------------------------------------------------------------
 
 // IsSequence returns true for ordered lists and queues.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsSequence() bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists or queues.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsSet() bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) IsSet() bool {
 	return false
 }
 
@@ -159,12 +159,12 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) IsSet() bool {
 
 // ToList returns the elements of the queue as a list. The returned list is a shallow
 // copy; the queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) ToList() *{{.Prefix.U}}{{.Type.U}}List {
 	if queue == nil {
 		return nil
 	}
 
-	list := Make{{.UPrefix}}{{.UType}}List(queue.length, queue.length)
+	list := Make{{.Prefix.U}}{{.Type.U}}List(queue.length, queue.length)
 	queue.toSlice(list.m)
 	return list
 }
@@ -173,26 +173,26 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToList() *{{.UPrefix}}{{.UType}}List {
 
 // ToSet returns the elements of the queue as a set. The returned set is a shallow
 // copy; the queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToSet() *{{.UPrefix}}{{.UType}}Set {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) ToSet() *{{.Prefix.U}}{{.Type.U}}Set {
 	if queue == nil {
 		return nil
 	}
 
-	slice := queue.toSlice(make([]{{.PType}}, queue.length))
-	return New{{.UPrefix}}{{.UType}}Set(slice...)
+	slice := queue.toSlice(make([]{{.Type.Name}}, queue.length))
+	return New{{.Prefix.U}}{{.Type.U}}Set(slice...)
 }
 {{- end}}
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToSlice() []{{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) ToSlice() []{{.Type.Name}} {
 	if queue == nil {
 		return nil
 	}
 
-	return queue.toSlice(make([]{{.PType}}, queue.length))
+	return queue.toSlice(make([]{{.Type.Name}}, queue.length))
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) toSlice(s []{{.Type.Name}}) []{{.Type.Name}} {
 	front, back := queue.frontAndBack()
 	copy(s, front)
 	if len(back) > 0 && len(s) >= len(front) {
@@ -203,7 +203,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) toSlice(s []{{.PType}}) []{{.PType}} {
 
 // ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
 // The queue is not altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) ToInterfaceSlice() []interface{} {
 	if queue == nil {
 		return nil
 	}
@@ -222,21 +222,21 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Clone() *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Clone() *{{.Prefix.U}}{{.Type.U}}Queue {
 	if queue == nil {
 		return nil
 	}
 
-	buffer := queue.toSlice(make([]{{.PType}}, queue.capacity))
+	buffer := queue.toSlice(make([]{{.Type.Name}}, queue.capacity))
 	return queue.doClone(buffer[:queue.length])
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) doClone(buffer []{{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doClone(buffer []{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Queue {
     w := 0
     if len(buffer) < cap(buffer) {
         w = len(buffer)
     }
-	return &{{.UPrefix}}{{.UType}}Queue{
+	return &{{.Prefix.U}}{{.Type.U}}Queue{
 		m:         buffer,
 		read:      0,
 		write:     w,
@@ -251,7 +251,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doClone(buffer []{{.PType}}) *{{.UPref
 
 // Get gets the specified element in the queue.
 // Panics if the index is out of range or the queue is nil.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Get(i int) {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Get(i int) {{.Type.Name}} {
 
 	ri := (queue.read + i) % queue.capacity
 	return queue.m[ri]
@@ -259,20 +259,20 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Get(i int) {{.PType}} {
 
 // Head gets the first element in the queue. Head is the opposite of Last.
 // Panics if queue is empty or nil.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Head() {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Head() {{.Type.Name}} {
 
 	return queue.m[queue.read]
 }
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
-func (queue *{{.UPrefix}}{{.UType}}Queue) HeadOption() {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) HeadOption() {{.Type.Name}} {
 	if queue == nil {
-		return {{.TypeZero}}
+		return {{.Type.Zero}}
 	}
 
 	if queue.length == 0 {
-		return {{.TypeZero}}
+		return {{.Type.Zero}}
 	}
 
 	return queue.m[queue.read]
@@ -281,7 +281,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) HeadOption() {{.PType}} {
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
 // Last is the opposite of Head.
 // Panics if queue is empty or nil.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Last() {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Last() {{.Type.Name}} {
 
 	i := queue.write - 1
 	if i < 0 {
@@ -293,13 +293,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Last() {{.PType}} {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
-func (queue *{{.UPrefix}}{{.UType}}Queue) LastOption() {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) LastOption() {{.Type.Name}} {
 	if queue == nil {
-		return {{.TypeZero}}
+		return {{.Type.Zero}}
 	}
 
 	if queue.length == 0 {
-		return {{.TypeZero}}
+		return {{.Type.Zero}}
 	}
 
 	i := queue.write - 1
@@ -313,7 +313,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) LastOption() {{.PType}} {
 //-------------------------------------------------------------------------------------------------
 
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) IsOverwriting() bool {
 	if queue == nil {
 		return false
 	}
@@ -321,7 +321,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) IsOverwriting() bool {
 }
 
 // IsFull returns true if the queue is full.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsFull() bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) IsFull() bool {
 	if queue == nil {
 		return false
 	}
@@ -329,7 +329,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) IsFull() bool {
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) IsEmpty() bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) IsEmpty() bool {
 	if queue == nil {
 		return true
 	}
@@ -337,7 +337,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) IsEmpty() bool {
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) NonEmpty() bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) NonEmpty() bool {
 	if queue == nil {
 		return false
 	}
@@ -345,7 +345,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) NonEmpty() bool {
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Size() int {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Size() int {
 	if queue == nil {
 		return 0
 	}
@@ -353,13 +353,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Size() int {
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Len() int {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Len() int {
 	return queue.Size()
 }
 
 // Swap swaps the elements with indexes i and j.
 // The queue must not be empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Swap(i, j int) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Swap(i, j int) {
 	ri := (queue.read + i) % queue.capacity
 	rj := (queue.read + j) % queue.capacity
 	queue.m[ri], queue.m[rj] = queue.m[rj], queue.m[ri]
@@ -368,7 +368,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Swap(i, j int) {
 // Less reports whether the element with index i should sort before the element with index j.
 // The queue must have been created with a non-nil 'less' comparison function and it must not
 // be empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Less(i, j int) bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Less(i, j int) bool {
 	ri := (queue.read + i) % queue.capacity
 	rj := (queue.read + j) % queue.capacity
 	return queue.less(queue.m[ri], queue.m[rj])
@@ -376,22 +376,22 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Less(i, j int) bool {
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
 // This function will panic if the collection was created with a nil 'less' function
-// (see New{{.UPrefix}}{{.UType}}SortedQueue).
-func (queue *{{.UPrefix}}{{.UType}}Queue) Sort() {
+// (see New{{.Prefix.U}}{{.Type.U}}SortedQueue).
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
 // This function will panic if the collection was created with a nil 'less' function
-// (see New{{.UPrefix}}{{.UType}}SortedQueue).
-func (queue *{{.UPrefix}}{{.UType}}Queue) StableSort() {
+// (see New{{.Prefix.U}}{{.Type.U}}SortedQueue).
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) StableSort() {
 	sort.Stable(queue)
 }
 
 // frontAndBack gets the front and back portions of the queue. The front portion starts
 // from the read index. The back portion ends at the write index.
-func (queue *{{.UPrefix}}{{.UType}}Queue) frontAndBack() ([]{{.PType}}, []{{.PType}}) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) frontAndBack() ([]{{.Type.Name}}, []{{.Type.Name}}) {
 	if queue == nil || queue.length == 0 {
 		return nil, nil
 	}
@@ -403,7 +403,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) frontAndBack() ([]{{.PType}}, []{{.PTy
 
 // indexes gets the indexes for the front and back portions of the queue. The front
 // portion starts from the read index. The back portion ends at the write index.
-func (queue *{{.UPrefix}}{{.UType}}Queue) indexes() []int {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) indexes() []int {
 	if queue == nil || queue.length == 0 {
 		return nil
 	}
@@ -416,7 +416,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) indexes() []int {
 //-------------------------------------------------------------------------------------------------
 
 // Clear the entire queue.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Clear() {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Clear() {
 	if queue != nil {
     	queue.read = 0
 	    queue.write = 0
@@ -425,7 +425,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Clear() {
 }
 
 // Add adds items to the queue. This is a synonym for Push.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Add(more ...{{.PType}}) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Add(more ...{{.Type.Name}}) {
 	queue.Push(more...)
 }
 
@@ -439,7 +439,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Add(more ...{{.PType}}) {
 // without any older items being affected.
 //
 // The modified queue is returned.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Push(items ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Queue {
 
 	n := queue.capacity
 	if queue.overwrite && len(items) > queue.capacity {
@@ -472,11 +472,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Push(items ...{{.PType}}) *{{.UPrefix}
 //
 // If the capacity is too small for the number of items, the excess items are returned.
 // The queue capacity is never altered.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Offer(items ...{{.PType}}) []{{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Offer(items ...{{.Type.Name}}) []{{.Type.Name}} {
 	return queue.doPush(items...)
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doPush(items ...{{.Type.Name}}) []{{.Type.Name}} {
 	n := len(items)
 
 	space := queue.capacity - queue.length
@@ -519,10 +519,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPush(items ...{{.PType}}) []{{.PType
 // Pop1 removes and returns the oldest item from the queue. If the queue is
 // empty, it returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}} instead.
 // The boolean is true only if the element was available.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Pop1() ({{.Type.Name}}, bool) {
 
 	if queue.length == 0 {
-		return {{.TypeZero}}, false
+		return {{.Type.Zero}}, false
 	}
 
 	v := queue.m[queue.read]
@@ -536,11 +536,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Pop1() ({{.PType}}, bool) {
 // empty, it returns a nil slice. If n is larger than the current queue length,
 // it returns all the available elements, so in this case the returned slice
 // will be shorter than n.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Pop(n int) []{{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Pop(n int) []{{.Type.Name}} {
 	return queue.doPop(n)
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) doPop(n int) []{{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doPop(n int) []{{.Type.Name}} {
 	if queue.length == 0 {
 		return nil
 	}
@@ -549,7 +549,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPop(n int) []{{.PType}} {
 		n = queue.length
 	}
 
-	s := make([]{{.PType}}, n)
+	s := make([]{{.Type.Name}}, n)
 	front, back := queue.frontAndBack()
 	// note the length copied is whichever is shorter
 	copy(s, front)
@@ -567,15 +567,15 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doPop(n int) []{{.PType}} {
 {{- if .Comparable}}
 
 // Contains determines whether a given item is already in the queue, returning true if so.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Contains(v {{.Type}}) bool {
-	return queue.Exists(func(x {{.PType}}) bool {
-		return {{.TypeStar}}x == v
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Contains(v {{.Type.Name}}) bool {
+	return queue.Exists(func(x {{.Type.Name}}) bool {
+		return {{.Type.Star}}x == v
 	})
 }
 
 // ContainsAll determines whether the given items are all in the queue, returning true if so.
 // This is potentially a slow method and should only be used rarely.
-func (queue *{{.UPrefix}}{{.UType}}Queue) ContainsAll(i ...{{.Type}}) bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) ContainsAll(i ...{{.Type.Name}}) bool {
 	if queue == nil {
 		return len(i) == 0
 	}
@@ -589,9 +589,9 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) ContainsAll(i ...{{.Type}}) bool {
 }
 {{- end}}
 
-// Exists verifies that one or more elements of {{.UPrefix}}{{.UType}}Queue return true for the predicate p.
+// Exists verifies that one or more elements of {{.Prefix.U}}{{.Type.U}}Queue return true for the predicate p.
 // The function should not alter the values via side-effects.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Exists(p func({{.PType}}) bool) bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Exists(p func({{.Type.Name}}) bool) bool {
 	if queue == nil {
 		return false
 	}
@@ -610,9 +610,9 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Exists(p func({{.PType}}) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of {{.UPrefix}}{{.UType}}Queue return true for the predicate p.
+// Forall verifies that all elements of {{.Prefix.U}}{{.Type.U}}Queue return true for the predicate p.
 // The function should not alter the values via side-effects.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Forall(p func({{.PType}}) bool) bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Forall(p func({{.Type.Name}}) bool) bool {
 	if queue == nil {
 		return true
 	}
@@ -631,9 +631,9 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Forall(p func({{.PType}}) bool) bool {
 	return true
 }
 
-// Foreach iterates over {{.UPrefix}}{{.UType}}Queue and executes function f against each element.
+// Foreach iterates over {{.Prefix.U}}{{.Type.U}}Queue and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Foreach(f func({{.PType}})) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Foreach(f func({{.Type.Name}})) {
 	if queue == nil {
 		return
 	}
@@ -650,8 +650,8 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Foreach(f func({{.PType}})) {
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements
 // have been consumed. The channel will be closed when all the elements have been sent.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Send() <-chan {{.PType}} {
-	ch := make(chan {{.PType}})
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Send() <-chan {{.Type.Name}} {
+	ch := make(chan {{.Type.Name}})
 	go func() {
 		if queue != nil {
 
@@ -670,11 +670,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Send() <-chan {{.PType}} {
 
 //-------------------------------------------------------------------------------------------------
 
-// DoKeepWhere modifies a {{.UPrefix}}{{.UType}}Queue by retaining only those elements that match
+// DoKeepWhere modifies a {{.Prefix.U}}{{.Type.U}}Queue by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the queue in place.
 //
 // The queue is modified and the modified queue is returned.
-func (queue *{{.UPrefix}}{{.UType}}Queue) DoKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) DoKeepWhere(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}Queue {
 	if queue == nil {
 		return nil
 	}
@@ -686,7 +686,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) DoKeepWhere(p func({{.PType}}) bool) *
 	return queue.doKeepWhere(p)
 }
 
-func (queue *{{.UPrefix}}{{.UType}}Queue) doKeepWhere(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doKeepWhere(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}Queue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
@@ -740,11 +740,11 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) doKeepWhere(p func({{.PType}}) bool) *
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first {{.Type}} that returns true for predicate p.
+// Find returns the first {{.Type.Name}} that returns true for predicate p.
 // False is returned if none match.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Find(p func({{.PType}}) bool) ({{.PType}}, bool) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Find(p func({{.Type.Name}}) bool) ({{.Type.Name}}, bool) {
 	if queue == nil {
-		return {{.TypeZero}}, false
+		return {{.Type.Zero}}, false
 	}
 
 	front, back := queue.frontAndBack()
@@ -758,25 +758,25 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Find(p func({{.PType}}) bool) ({{.PTyp
 			return v, true
 		}
 	}
-{{- if eq .TypeStar "*"}}
+{{- if eq .Type.Star "*"}}
 
 	return nil, false
 {{- else}}
 
-	var empty {{.Type}}
+	var empty {{.Type.Name}}
 	return empty, false
 {{- end}}
 }
 
-// Filter returns a new {{.UPrefix}}{{.UType}}Queue whose elements return true for predicate p.
+// Filter returns a new {{.Prefix.U}}{{.Type.U}}Queue whose elements return true for predicate p.
 //
 // The original queue is not modified. See also DoKeepWhere (which does modify the original queue).
-func (queue *{{.UPrefix}}{{.UType}}Queue) Filter(p func({{.PType}}) bool) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Filter(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}Queue {
 	if queue == nil {
 		return nil
 	}
 
-	result := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
+	result := New{{.Prefix.U}}{{.Type.U}}SortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -798,19 +798,19 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Filter(p func({{.PType}}) bool) *{{.UP
 	return result
 }
 
-// Partition returns two new {{.Type}}Queues whose elements return true or false for the predicate, p.
+// Partition returns two new {{.Type.Name}}Queues whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original queue.
 //
 // The original queue is not modified
-func (queue *{{.UPrefix}}{{.UType}}Queue) Partition(p func({{.PType}}) bool) (*{{.UPrefix}}{{.UType}}Queue, *{{.UPrefix}}{{.UType}}Queue) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Partition(p func({{.Type.Name}}) bool) (*{{.Prefix.U}}{{.Type.U}}Queue, *{{.Prefix.U}}{{.Type.U}}Queue) {
 	if queue == nil {
 		return nil, nil
 	}
 
-	matching := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
-	others := New{{.UPrefix}}{{.UType}}SortedQueue(queue.length, queue.overwrite, queue.less)
+	matching := New{{.Prefix.U}}{{.Type.U}}SortedQueue(queue.length, queue.overwrite, queue.less)
+	others := New{{.Prefix.U}}{{.Type.U}}SortedQueue(queue.length, queue.overwrite, queue.less)
 	m, o := 0, 0
 
 	front, back := queue.frontAndBack()
@@ -840,18 +840,18 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Partition(p func({{.PType}}) bool) (*{
 	return matching, others
 }
 
-// Map returns a new {{.UPrefix}}{{.UType}}Queue by transforming every element with function f.
+// Map returns a new {{.Prefix.U}}{{.Type.U}}Queue by transforming every element with function f.
 // The resulting queue is the same size as the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Map(f func({{.PType}}) {{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Map(f func({{.Type.Name}}) {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Queue {
 	if queue == nil {
 		return nil
 	}
 
-	slice := make([]{{.PType}}, queue.length)
+	slice := make([]{{.Type.Name}}, queue.length)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -868,13 +868,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Map(f func({{.PType}}) {{.PType}}) *{{
 }
 {{- range .MapTo}}
 
-// MapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f.
+// MapTo{{.U}} returns a new []{{.}} by transforming every element with function f.
 // The resulting slice is the same size as the queue.
 // The queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *{{$.UPrefix}}{{$.UType}}Queue) MapTo{{firstUpper .}}(f func({{$.PType}}) {{.}}) []{{.}} {
+func (queue *{{$.Prefix.U}}{{$.Type.U}}Queue) MapTo{{.U}}(f func({{$.Type}}) {{.}}) []{{.}} {
 	if queue == nil {
 		return nil
 	}
@@ -893,18 +893,18 @@ func (queue *{{$.UPrefix}}{{$.UType}}Queue) MapTo{{firstUpper .}}(f func({{$.PTy
 }
 {{- end}}
 
-// FlatMap returns a new {{.UPrefix}}{{.UType}}Queue by transforming every element with function f that
+// FlatMap returns a new {{.Prefix.U}}{{.Type.U}}Queue by transforming every element with function f that
 // returns zero or more items in a slice. The resulting queue may have a different size to the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *{{.UPrefix}}{{.UType}}Queue) FlatMap(f func({{.PType}}) []{{.PType}}) *{{.UPrefix}}{{.UType}}Queue {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) FlatMap(f func({{.Type.Name}}) []{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Queue {
 	if queue == nil {
 		return nil
 	}
 
-	slice := make([]{{.PType}}, 0, queue.length)
+	slice := make([]{{.Type.Name}}, 0, queue.length)
 
     front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -918,13 +918,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) FlatMap(f func({{.PType}}) []{{.PType}
 }
 {{- range .MapTo}}
 
-// FlatMapTo{{firstUpper .}} returns a new []{{.}} by transforming every element with function f that
+// FlatMapTo{{.U}} returns a new []{{.}} by transforming every element with function f that
 // returns zero or more items in a slice. The resulting slice may have a different size to the queue.
 // The queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *{{$.UPrefix}}{{$.UType}}Queue) FlatMapTo{{firstUpper .}}(f func({{$.PType}}) []{{.}}) []{{.}} {
+func (queue *{{$.Prefix.U}}{{$.Type.U}}Queue) FlatMapTo{{.U}}(f func({{$.Type}}) []{{.}}) []{{.}} {
 	if queue == nil {
 		return nil
 	}
@@ -939,8 +939,8 @@ func (queue *{{$.UPrefix}}{{$.UType}}Queue) FlatMapTo{{firstUpper .}}(f func({{$
 }
 {{- end}}
 
-// CountBy gives the number elements of {{.UPrefix}}{{.UType}}Queue that return true for the predicate p.
-func (queue *{{.UPrefix}}{{.UType}}Queue) CountBy(p func({{.PType}}) bool) (result int) {
+// CountBy gives the number elements of {{.Prefix.U}}{{.Type.U}}Queue that return true for the predicate p.
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) CountBy(p func({{.Type.Name}}) bool) (result int) {
 	if queue == nil {
 		return 0
 	}
@@ -959,10 +959,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) CountBy(p func({{.PType}}) bool) (resu
 	return
 }
 
-// MinBy returns an element of {{.UPrefix}}{{.UType}}Queue containing the minimum value, when compared to other elements
+// MinBy returns an element of {{.Prefix.U}}{{.Type.U}}Queue containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (queue *{{.UPrefix}}{{.UType}}Queue) MinBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) MinBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
 
 	if queue.length == 0 {
 		panic("Cannot determine the minimum of an empty queue.")
@@ -984,10 +984,10 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MinBy(less func({{.PType}}, {{.PType}}
 	return queue.m[m]
 }
 
-// MaxBy returns an element of {{.UPrefix}}{{.UType}}Queue containing the maximum value, when compared to other elements
+// MaxBy returns an element of {{.Prefix.U}}{{.Type.U}}Queue containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (queue *{{.UPrefix}}{{.UType}}Queue) MaxBy(less func({{.PType}}, {{.PType}}) bool) {{.PType}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) MaxBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
 
 	if queue.length == 0 {
 		panic("Cannot determine the maximum of an empty queue.")
@@ -1011,13 +1011,13 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MaxBy(less func({{.PType}}, {{.PType}}
 {{- if .Comparable}}
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is comparable.
+// These methods are included when {{.Type.Name}} is comparable.
 
 // Equals determines if two queues are equal to each other.
 // If they both are the same size and have the same items they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil queues are considered to be empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Equals(other *{{.UPrefix}}{{.UType}}Queue) bool {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Equals(other *{{.Prefix.U}}{{.Type.U}}Queue) bool {
 	if queue == nil {
 		if other == nil {
 			return true
@@ -1047,27 +1047,27 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Equals(other *{{.UPrefix}}{{.UType}}Qu
 {{- if .Ordered}}
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is ordered.
+// These methods are included when {{.Type.Name}} is ordered.
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Min() {{.Type}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Min() {{.Type.Name}} {
 
 	if queue.length == 0 {
 		panic("Cannot determine the minimum of an empty queue.")
 	}
 
 	z := queue.m[queue.read]
-	m := {{.TypeStar}}z
+	m := {{.Type.Star}}z
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		if {{.TypeStar}}v < m {
-			m = {{.TypeStar}}v
+		if {{.Type.Star}}v < m {
+			m = {{.Type.Star}}v
 		}
 	}
 	for _, v := range back {
-		if {{.TypeStar}}v < m {
-			m = {{.TypeStar}}v
+		if {{.Type.Star}}v < m {
+			m = {{.Type.Star}}v
 		}
 	}
 	return m
@@ -1075,23 +1075,23 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Min() {{.Type}} {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Max() (result {{.Type}}) {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Max() (result {{.Type.Name}}) {
 
 	if queue.length == 0 {
 		panic("Cannot determine the maximum of an empty queue.")
 	}
 
 	z := queue.m[queue.read]
-	m := {{.TypeStar}}z
+	m := {{.Type.Star}}z
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		if {{.TypeStar}}v > m {
-			m = {{.TypeStar}}v
+		if {{.Type.Star}}v > m {
+			m = {{.Type.Star}}v
 		}
 	}
 	for _, v := range back {
-		if {{.TypeStar}}v > m {
-			m = {{.TypeStar}}v
+		if {{.Type.Star}}v > m {
+			m = {{.Type.Star}}v
 		}
 	}
 	return m
@@ -1100,18 +1100,18 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Max() (result {{.Type}}) {
 {{- if .Numeric}}
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when {{.Type}} is numeric.
+// These methods are included when {{.Type.Name}} is numeric.
 
 // Sum returns the sum of all the elements in the queue.
-func (queue *{{.UPrefix}}{{.UType}}Queue) Sum() {{.Type}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Sum() {{.Type.Name}} {
 
-	sum := {{.Type}}(0)
+	sum := {{.Type.Name}}(0)
 	front, back := queue.frontAndBack()
 	for _, v := range front {
-		sum = sum + {{.TypeStar}}v
+		sum = sum + {{.Type.Star}}v
 	}
 	for _, v := range back {
-		sum = sum + {{.TypeStar}}v
+		sum = sum + {{.Type.Star}}v
 	}
 	return sum
 }
@@ -1121,8 +1121,8 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) Sum() {{.Type}} {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (queue *{{.UPrefix}}{{.UType}}Queue) StringList() []string {
-{{- if eq .PType "string"}}
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) StringList() []string {
+{{- if eq .Type.String "string"}}
 	return queue.ToSlice()
 {{- else}}
 	if queue == nil {
@@ -1145,17 +1145,17 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) StringList() []string {
 }
 
 // String implements the Stringer interface to render the queue as a comma-separated string enclosed in square brackets.
-func (queue *{{.UPrefix}}{{.UType}}Queue) String() string {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) String() string {
 	return queue.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (queue *{{.UPrefix}}{{.UType}}Queue) MkString(sep string) string {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) MkString(sep string) string {
 	return queue.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (queue *{{.UPrefix}}{{.UType}}Queue) MkString3(before, between, after string) string {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) MkString3(before, between, after string) string {
 	if queue == nil {
 		return ""
 	}
@@ -1163,7 +1163,7 @@ func (queue *{{.UPrefix}}{{.UType}}Queue) MkString3(before, between, after strin
 	return queue.mkString3Bytes(before, between, after).String()
 }
 
-func (queue {{.UPrefix}}{{.UType}}Queue) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (queue {{.Prefix.U}}{{.Type.U}}Queue) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -1186,13 +1186,13 @@ func (queue {{.UPrefix}}{{.UType}}Queue) mkString3Bytes(before, between, after s
 //-------------------------------------------------------------------------------------------------
 
 // UnmarshalJSON implements JSON decoding for this queue type.
-func (queue *{{.UPrefix}}{{.UType}}Queue) UnmarshalJSON(b []byte) error {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) UnmarshalJSON(b []byte) error {
 
 	return json.Unmarshal(b, &queue.m)
 }
 
 // MarshalJSON implements JSON encoding for this queue type.
-func (queue {{.UPrefix}}{{.UType}}Queue) MarshalJSON() ([]byte, error) {
+func (queue {{.Prefix.U}}{{.Type.U}}Queue) MarshalJSON() ([]byte, error) {
 
 	buf, err := json.Marshal(queue.m)
 	return buf, err
@@ -1203,16 +1203,16 @@ func (queue {{.UPrefix}}{{.UType}}Queue) MarshalJSON() ([]byte, error) {
 //-------------------------------------------------------------------------------------------------
 
 //// GobDecode implements 'gob' decoding for this queue type.
-//// You must register {{.Type}} with the 'gob' package before this method is used.
-//func (queue *{{.UPrefix}}{{.UType}}Queue) GobDecode(b []byte) error {
+//// You must register {{.Type.Name}} with the 'gob' package before this method is used.
+//func (queue *{{.Prefix.U}}{{.Type.U}}Queue) GobDecode(b []byte) error {
 //
 //	buf := bytes.NewBuffer(b)
 //	return gob.NewDecoder(buf).Decode(&queue.m)
 //}
 //
 // GobEncode implements 'gob' encoding for this list type.
-// You must register {{.Type}} with the 'gob' package before this method is used.
-//func (queue {{.UPrefix}}{{.UType}}Queue) GobEncode() ([]byte, error) {
+// You must register {{.Type.Name}} with the 'gob' package before this method is used.
+//func (queue {{.Prefix.U}}{{.Type.U}}Queue) GobEncode() ([]byte, error) {
 //
 //	buf := &bytes.Buffer{}
 //	err := gob.NewEncoder(buf).Encode(queue.m)

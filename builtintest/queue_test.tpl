@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.PType}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Append:{{.Append}} Find:{{.Find}} Mutable:{{.Mutable}} M:{{.M}}
 
 package {{.Package}}
@@ -8,11 +8,11 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func Test{{.UType}}Queue_withEquals(t *testing.T) {
+func Test{{.Type.U}}Queue_withEquals(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false)
-	b := NewX1{{.UType}}Queue(12, true)
+	a := NewX1{{.Type.U}}Queue(10, false)
+	b := NewX1{{.Type.U}}Queue(12, true)
 
 	g.Expect(a.IsSequence()).To(BeTrue())
 	g.Expect(a.IsSet()).To(BeFalse())
@@ -31,15 +31,15 @@ func Test{{.UType}}Queue_withEquals(t *testing.T) {
 	g.Expect(a.Equals(b)).To(BeFalse())
 
 	a = nil
-	g.Expect(a.Equals(NewX1{{.UType}}Queue(2, true))).To(BeTrue())
+	g.Expect(a.Equals(NewX1{{.Type.U}}Queue(2, true))).To(BeTrue())
 	g.Expect(a.Equals(b)).To(BeFalse())
 	g.Expect(a.Equals(nil)).To(BeTrue())
 }
 
-func Test{{.UType}}OverwritingQueueOffer(t *testing.T) {
+func Test{{.Type.U}}OverwritingQueueOffer(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, true)
+	a := NewX1{{.Type.U}}Queue(10, true)
 
 	g.Expect(a.IsOverwriting()).To(BeTrue())
 	g.Expect(a.Cap()).To(Equal(10))
@@ -52,7 +52,7 @@ func Test{{.UType}}OverwritingQueueOffer(t *testing.T) {
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(6))
 	g.Expect(a.Space()).To(Equal(4))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4, 5, 6}))
 	g.Expect(r1).To(HaveLen(0))
 
 	r2 := a.Offer(7, 8, 9, 10, 11, 12)
@@ -60,7 +60,7 @@ func Test{{.UType}}OverwritingQueueOffer(t *testing.T) {
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
 	g.Expect(a.Space()).To(Equal(0))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{3, 4, 5, 6, 7, 8, 9, 10, 11, 12}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{3, 4, 5, 6, 7, 8, 9, 10, 11, 12}))
 	g.Expect(r2).To(HaveLen(0))
 
 	r3 := a.Offer(20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30)
@@ -68,14 +68,14 @@ func Test{{.UType}}OverwritingQueueOffer(t *testing.T) {
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
 	g.Expect(a.Space()).To(Equal(0))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{20, 21, 22, 23, 24, 25, 26, 27, 28, 29}))
-	g.Expect(r3).To(Equal([]{{.Type}}{30}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{20, 21, 22, 23, 24, 25, 26, 27, 28, 29}))
+	g.Expect(r3).To(Equal([]{{.Type.Name}}{30}))
 }
 
-func Test{{.UType}}RefusingQueueOffer(t *testing.T) {
+func Test{{.Type.U}}RefusingQueueOffer(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false)
+	a := NewX1{{.Type.U}}Queue(10, false)
 
 	g.Expect(a.IsOverwriting()).To(BeFalse())
 	g.Expect(a.Cap()).To(Equal(10))
@@ -88,7 +88,7 @@ func Test{{.UType}}RefusingQueueOffer(t *testing.T) {
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(6))
 	g.Expect(a.Space()).To(Equal(4))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4, 5, 6}))
 	g.Expect(r1).To(HaveLen(0))
 
 	r2 := a.Offer(7, 8, 9, 10, 11, 12)
@@ -96,62 +96,62 @@ func Test{{.UType}}RefusingQueueOffer(t *testing.T) {
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
 	g.Expect(a.Space()).To(Equal(0))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-	g.Expect(r2).To(Equal([]{{.Type}}{11, 12}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
+	g.Expect(r2).To(Equal([]{{.Type.Name}}{11, 12}))
 
 	r3 := a.Offer(20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30)
 
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
 	g.Expect(a.Space()).To(Equal(0))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-	g.Expect(r3).To(Equal([]{{.Type}}{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
+	g.Expect(r3).To(Equal([]{{.Type.Name}}{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}))
 }
 
-func Test{{.UType}}OverwritingQueuePush(t *testing.T) {
+func Test{{.Type.U}}OverwritingQueuePush(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(5, true)
+	a := NewX1{{.Type.U}}Queue(5, true)
 
 	a.Push(1, 2, 3, 4)
 
 	g.Expect(a.Cap()).To(Equal(5))
 	g.Expect(a.Len()).To(Equal(4))
 	g.Expect(a.Space()).To(Equal(1))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4}))
 
 	a.Push(5, 6, 7, 8, 9, 10, 11)
 
 	g.Expect(a.Cap()).To(Equal(7))
 	g.Expect(a.Len()).To(Equal(7))
 	g.Expect(a.Space()).To(Equal(0))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{5, 6, 7, 8, 9, 10, 11}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{5, 6, 7, 8, 9, 10, 11}))
 }
 
-func Test{{.UType}}RefusingQueuePush(t *testing.T) {
+func Test{{.Type.U}}RefusingQueuePush(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(5, false)
+	a := NewX1{{.Type.U}}Queue(5, false)
 
 	a.Push(1, 2, 3, 4)
 
 	g.Expect(a.Cap()).To(Equal(5))
 	g.Expect(a.Len()).To(Equal(4))
 	g.Expect(a.Space()).To(Equal(1))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4}))
 
 	a.Push(5, 6, 7, 8, 9, 10, 11)
 
 	g.Expect(a.Cap()).To(Equal(128))
 	g.Expect(a.Len()).To(Equal(11))
 	g.Expect(a.Space()).To(Equal(117))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}))
 }
 
-func Test{{.UType}}SortedQueue(t *testing.T) {
+func Test{{.Type.U}}SortedQueue(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}SortedQueue(10, false, func(i, j int) bool {return i < j})
+	a := NewX1{{.Type.U}}SortedQueue(10, false, func(i, j int) bool {return i < j})
 
 	g.Expect(a.IsOverwriting()).To(BeFalse())
 	g.Expect(a.Cap()).To(Equal(10))
@@ -165,14 +165,14 @@ func Test{{.UType}}SortedQueue(t *testing.T) {
 	g.Expect(a.Cap()).To(Equal(10))
 	g.Expect(a.Len()).To(Equal(10))
 	g.Expect(a.Space()).To(Equal(0))
-	g.Expect(a.ToSlice()).To(Equal([]{{.Type}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
+	g.Expect(a.ToSlice()).To(Equal([]{{.Type.Name}}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
 	g.Expect(r1).To(HaveLen(0))
 }
 
-func Test{{.UType}}QueuePop(t *testing.T) {
+func Test{{.Type.U}}QueuePop(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false)
+	a := NewX1{{.Type.U}}Queue(10, false)
 
 	g.Expect(a.IsEmpty()).To(BeTrue())
 	g.Expect(a.NonEmpty()).To(BeFalse())
@@ -223,10 +223,10 @@ func Test{{.UType}}QueuePop(t *testing.T) {
 	g.Expect(a.Space()).To(Equal(10))
 }
 
-func Test{{.UType}}QueueGetHeadLast(t *testing.T) {
+func Test{{.Type.U}}QueueGetHeadLast(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(8, false)
+	a := NewX1{{.Type.U}}Queue(8, false)
 
 	g.Expect(a.HeadOption()).To(Equal(0))
 	g.Expect(a.LastOption()).To(Equal(0))
@@ -266,32 +266,32 @@ func Test{{.UType}}QueueGetHeadLast(t *testing.T) {
 	g.Expect(a.LastOption()).To(Equal(0))
 }
 
-func Test{{.UType}}QueueSend(t *testing.T) {
+func Test{{.Type.U}}QueueSend(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingFullQueue(1, 2, 3, 4)
-	b := BuildX1{{.UType}}QueueFromChan(a.Send())
+	b := BuildX1{{.Type.U}}QueueFromChan(a.Send())
 	g.Expect(a.Equals(b)).To(BeTrue())
 
 	a = interestingPartialQueue(1, 2, 3, 4)
-	b = BuildX1{{.UType}}QueueFromChan(a.Send())
+	b = BuildX1{{.Type.U}}QueueFromChan(a.Send())
 	g.Expect(a.Equals(b)).To(BeTrue())
 {{- if .Mutable}}
 
     // check correct nil handling
 	a = nil
-	b = BuildX1{{.UType}}QueueFromChan(a.Send())
+	b = BuildX1{{.Type.U}}QueueFromChan(a.Send())
 
 	g.Expect(b.IsEmpty()).To(BeTrue())
 {{- end}}
 }
 {{- if and .Mutable .Numeric}}
 
-func Test{{.UType}}QueueDoKeepWhere(t *testing.T) {
+func Test{{.Type.U}}QueueDoKeepWhere(t *testing.T) {
 	g := NewGomegaWithT(t)
 
     cases := []struct{
-        act, exp *X1{{.UType}}Queue
+        act, exp *X1{{.Type.U}}Queue
         m int
     }{
         {
@@ -299,54 +299,54 @@ func Test{{.UType}}QueueDoKeepWhere(t *testing.T) {
             exp: nil,
         },
         {
-            act: NewX1{{.UType}}Queue(7, false).Push(1, 3, 5, 2, 4, 6),
-            exp: NewX1{{.UType}}Queue(7, false).Push(5, 4, 6),
+            act: NewX1{{.Type.U}}Queue(7, false).Push(1, 3, 5, 2, 4, 6),
+            exp: NewX1{{.Type.U}}Queue(7, false).Push(5, 4, 6),
             m: 1,
         },
         {
-            act: NewX1{{.UType}}Queue(6, false).Push(1, 3, 5, 2, 4, 6),
-            exp: NewX1{{.UType}}Queue(6, false).Push(5, 4, 6),
+            act: NewX1{{.Type.U}}Queue(6, false).Push(1, 3, 5, 2, 4, 6),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(5, 4, 6),
             m: 1,
         },
         {
-            act: NewX1{{.UType}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(7, false).Push(4, 6, 5, 7),
+            act: NewX1{{.Type.U}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(7, false).Push(4, 6, 5, 7),
             m: 1,
         },
         {
-            act: NewX1{{.UType}}Queue(6, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            act: NewX1{{.Type.U}}Queue(6, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(4, 6, 5, 7),
             m: 1,
         },
         {
-            act: NewX1{{.UType}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            act: NewX1{{.Type.U}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(4, 6, 5, 7),
             m: 1,
         },
         {
-            act: NewX1{{.UType}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(6, false).Push(),
+            act: NewX1{{.Type.U}}Queue(7, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(),
             m: 0,
         },
         {
             act: interestingFullQueue(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(4, 6, 5, 7),
             m: 1,
         },
         {
             act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(6, false).Push(4, 6, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(4, 6, 5, 7),
             m: 1,
         },
         {
             act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
-            exp: NewX1{{.UType}}Queue(6, false).Push(2, 4, 6, 3, 5, 7),
+            exp: NewX1{{.Type.U}}Queue(6, false).Push(2, 4, 6, 3, 5, 7),
             m: 3,
         },
     }
 
     for i, c := range cases {
-        r := c.act.DoKeepWhere(func (v {{.PType}}) bool {
+        r := c.act.DoKeepWhere(func (v {{.Type}}) bool {
             return (v * c.m) > 3
         })
 
@@ -356,10 +356,10 @@ func Test{{.UType}}QueueDoKeepWhere(t *testing.T) {
 }
 {{- end}}
 
-func Test{{.UType}}QueueClone(t *testing.T) {
+func Test{{.Type.U}}QueueClone(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(10, false)
+	a := NewX1{{.Type.U}}Queue(10, false)
 
 	g.Expect(a.Clone().ToSlice()).To(HaveLen(0))
 	g.Expect(a.ToList().ToSlice()).To(HaveLen(0))
@@ -386,10 +386,10 @@ func Test{{.UType}}QueueClone(t *testing.T) {
 	g.Expect(a.ToInterfaceSlice()).To(HaveLen(0))
 }
 
-func Test{{.UType}}QueueToList(t *testing.T) {
+func Test{{.Type.U}}QueueToList(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(5, false)
+	a := NewX1{{.Type.U}}Queue(5, false)
 	a.Push(1, 2, 3, 4)
 	b := a.ToList()
 
@@ -403,10 +403,10 @@ func Test{{.UType}}QueueToList(t *testing.T) {
 {{- end}}
 }
 
-func Test{{.UType}}QueueToSet(t *testing.T) {
+func Test{{.Type.U}}QueueToSet(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(5, false)
+	a := NewX1{{.Type.U}}Queue(5, false)
 	a.Push(1, 2, 3, 4)
 	b := a.ToSet()
 
@@ -424,10 +424,10 @@ func Test{{.UType}}QueueToSet(t *testing.T) {
 {{- end}}
 }
 
-func Test{{.UType}}QueueResize(t *testing.T) {
+func Test{{.Type.U}}QueueResize(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false)
+	a := NewX1{{.Type.U}}Queue(4, false)
 
 	g.Expect(a.IsOverwriting()).To(BeFalse())
 	g.Expect(a.ToSlice()).To(HaveLen(0))
@@ -468,10 +468,10 @@ func Test{{.UType}}QueueResize(t *testing.T) {
 	g.Expect(a.ToSlice()).To(Equal([]int{5, 6, 7, 8}))
 }
 
-func Test{{.UType}}QueueContains(t *testing.T) {
+func Test{{.Type.U}}QueueContains(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Queue(4, false).Push(1, 2, 3, 4)
 
 	found := a.Contains(3)
 
@@ -486,10 +486,10 @@ func Test{{.UType}}QueueContains(t *testing.T) {
 	a.Contains(3)
 }
 
-func Test{{.UType}}QueueContainsAll(t *testing.T) {
+func Test{{.Type.U}}QueueContainsAll(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Queue(4, false).Push(1, 2, 3, 4)
 
 	found := a.ContainsAll(3)
 
@@ -504,10 +504,10 @@ func Test{{.UType}}QueueContainsAll(t *testing.T) {
 	a.ContainsAll(3)
 }
 
-func Test{{.UType}}QueueFind(t *testing.T) {
+func Test{{.Type.U}}QueueFind(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1{{.UType}}Queue(4, false).Push(1, 2, 3, 4)
+	a := NewX1{{.Type.U}}Queue(4, false).Push(1, 2, 3, 4)
 
 	b, found := a.Find(func(v int) bool {
 		return v > 2
@@ -532,7 +532,7 @@ func Test{{.UType}}QueueFind(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 }
 
-func Test{{.UType}}QueueForall(t *testing.T) {
+func Test{{.Type.U}}QueueForall(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingFullQueue(1, 2, 3, 4)
@@ -558,7 +558,7 @@ func Test{{.UType}}QueueForall(t *testing.T) {
 	g.Expect(found).To(BeTrue())
 }
 
-func Test{{.UType}}QueueExists(t *testing.T) {
+func Test{{.Type.U}}QueueExists(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingFullQueue(1, 2, 3, 4)
@@ -592,7 +592,7 @@ func Test{{.UType}}QueueExists(t *testing.T) {
 	g.Expect(found).To(BeFalse())
 }
 
-func Test{{.UType}}QueueForeach(t *testing.T) {
+func Test{{.Type.U}}QueueForeach(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingFullQueue(1, 2, 3, 4)
@@ -614,7 +614,7 @@ func Test{{.UType}}QueueForeach(t *testing.T) {
 	g.Expect(s).To(Equal(10))
 }
 
-func Test{{.UType}}QueueFilter(t *testing.T) {
+func Test{{.Type.U}}QueueFilter(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingPartialQueue(1, 2, 3, 4)
@@ -623,7 +623,7 @@ func Test{{.UType}}QueueFilter(t *testing.T) {
 		return v > 2
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}Queue(2, false).Push(3, 4))).To(BeTrue(), "%v", b)
+	g.Expect(b.Equals(NewX1{{.Type.U}}Queue(2, false).Push(3, 4))).To(BeTrue(), "%v", b)
 
 	b = a.Filter(func(v int) bool {
 		return v > 100
@@ -639,7 +639,7 @@ func Test{{.UType}}QueueFilter(t *testing.T) {
 	g.Expect(b.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}QueuePartition(t *testing.T) {
+func Test{{.Type.U}}QueuePartition(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingPartialQueue(1, 2, 3, 4)
@@ -648,8 +648,8 @@ func Test{{.UType}}QueuePartition(t *testing.T) {
 		return v > 2
 	})
 
-	g.Expect(b.Equals(NewX1{{.UType}}Queue(4, false).Push(3, 4))).To(BeTrue(), "%v", b)
-	g.Expect(c.Equals(NewX1{{.UType}}Queue(4, false).Push(1, 2))).To(BeTrue(), "%v", c)
+	g.Expect(b.Equals(NewX1{{.Type.U}}Queue(4, false).Push(3, 4))).To(BeTrue(), "%v", b)
+	g.Expect(c.Equals(NewX1{{.Type.U}}Queue(4, false).Push(1, 2))).To(BeTrue(), "%v", c)
 
 	a = nil
 	b, c = a.Partition(func(v int) bool {
@@ -660,7 +660,7 @@ func Test{{.UType}}QueuePartition(t *testing.T) {
 	g.Expect(c.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}QueueTransform(t *testing.T) {
+func Test{{.Type.U}}QueueTransform(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingFullQueue(1, 2, 3, 4)
@@ -669,7 +669,7 @@ func Test{{.UType}}QueueTransform(t *testing.T) {
 		return v * v
 	})
 
-	exp := NewX1{{.UType}}Queue(4, false).Push(1, 4, 9, 16)
+	exp := NewX1{{.Type.U}}Queue(4, false).Push(1, 4, 9, 16)
 
 	g.Expect(b.Equals(exp)).To(BeTrue(), "%v %v", b, exp)
 
@@ -681,7 +681,7 @@ func Test{{.UType}}QueueTransform(t *testing.T) {
 	g.Expect(b.IsEmpty()).To(BeTrue())
 }
 
-func Test{{.UType}}QueueMkString(t *testing.T) {
+func Test{{.Type.U}}QueueMkString(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingPartialQueue(13, 4, 7, -2, 9)
@@ -695,7 +695,7 @@ func Test{{.UType}}QueueMkString(t *testing.T) {
 	a.MkString("|")
 }
 
-func Test{{.UType}}QueueMkString3(t *testing.T) {
+func Test{{.Type.U}}QueueMkString3(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingPartialQueue(13, 4, 7, -2, 9)
@@ -710,11 +710,11 @@ func Test{{.UType}}QueueMkString3(t *testing.T) {
 }
 //{{- if .GobEncode}}
 //
-//func Test{{.UType}}QueueGobEncode(t *testing.T) {
+//func Test{{.Type.U}}QueueGobEncode(t *testing.T) {
 //	g := NewGomegaWithT(t)
 //
-//	a := NewX1{{.UType}}Queue(10, false).Push(13, 4, 7, -2, 9)
-//	b := NewX1{{.UType}}Queue(10, false)
+//	a := NewX1{{.Type.U}}Queue(10, false).Push(13, 4, 7, -2, 9)
+//	b := NewX1{{.Type.U}}Queue(10, false)
 //
 //    buf := &bytes.Buffer{}
 //    err := gob.NewEncoder(buf).Encode(a)
@@ -729,11 +729,11 @@ func Test{{.UType}}QueueMkString3(t *testing.T) {
 //}
 //{{- end}}
 //
-//func Test{{.UType}}QueueJsonEncode(t *testing.T) {
+//func Test{{.Type.U}}QueueJsonEncode(t *testing.T) {
 //	g := NewGomegaWithT(t)
 //
-//	a := NewX1{{.UType}}Queue(10, false).Push(13, 4, 7, -2, 9)
-//	b := NewX1{{.UType}}Queue(10, false)
+//	a := NewX1{{.Type.U}}Queue(10, false).Push(13, 4, 7, -2, 9)
+//	b := NewX1{{.Type.U}}Queue(10, false)
 //
 //    buf, err := json.Marshal(a)
 //
@@ -749,9 +749,9 @@ func Test{{.UType}}QueueMkString3(t *testing.T) {
 
 {{- if .Mutable}}
 
-func Benchmark{{.UType}}QueuePopPush(b *testing.B) {
+func Benchmark{{.Type.U}}QueuePopPush(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}Queue(1000)
+    a := fibonacciX1{{.Type.U}}Queue(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -760,9 +760,9 @@ func Benchmark{{.UType}}QueuePopPush(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}QueueCountBy(b *testing.B) {
+func Benchmark{{.Type.U}}QueueCountBy(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}Queue(1000)
+    a := fibonacciX1{{.Type.U}}Queue(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -772,9 +772,9 @@ func Benchmark{{.UType}}QueueCountBy(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}QueueFilter(b *testing.B) {
+func Benchmark{{.Type.U}}QueueFilter(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}Queue(1000)
+    a := fibonacciX1{{.Type.U}}Queue(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -784,9 +784,9 @@ func Benchmark{{.UType}}QueueFilter(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}QueueDoKeepWhere(b *testing.B) {
+func Benchmark{{.Type.U}}QueueDoKeepWhere(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}Queue(1000)
+    a := fibonacciX1{{.Type.U}}Queue(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -796,9 +796,9 @@ func Benchmark{{.UType}}QueueDoKeepWhere(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}QueueMap(b *testing.B) {
+func Benchmark{{.Type.U}}QueueMap(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}Queue(1000)
+    a := fibonacciX1{{.Type.U}}Queue(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -808,9 +808,9 @@ func Benchmark{{.UType}}QueueMap(b *testing.B) {
     }
 }
 
-func Benchmark{{.UType}}QueueSum(b *testing.B) {
+func Benchmark{{.Type.U}}QueueSum(b *testing.B) {
     b.StopTimer()
-    a := fibonacciX1{{.UType}}Queue(1000)
+    a := fibonacciX1{{.Type.U}}Queue(1000)
     b.StartTimer()
 
     for i := 0; i < b.N; i++ {
@@ -818,8 +818,8 @@ func Benchmark{{.UType}}QueueSum(b *testing.B) {
     }
 }
 
-func fibonacciX1{{.UType}}Queue(n int) *X1{{.UType}}Queue {
-    a := NewX1{{.UType}}Queue(n + 10, false)
+func fibonacciX1{{.Type.U}}Queue(n int) *X1{{.Type.U}}Queue {
+    a := NewX1{{.Type.U}}Queue(n + 10, false)
     i0 := 1
     i1 := 1
     for j := 0; j < n; j++ {
