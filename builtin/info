@@ -14,7 +14,22 @@ for d in simple immutable threadsafe; do
         grep -v 'Queue) [a-z]' | \
         grep -v 'Set) [a-z]' | \
         grep -v 'func [a-z]' >info.tpl
-      runtemplate -v -z -tpl info.tpl -o $d-$tpl-api.txt Type=Type Key=Key
+      runtemplate -v -tpl info.tpl -o $d-$tpl-api.txt Type=Type Key=Key
+      rm info.tpl
+      echo
+    fi
+  done
+  for tpl in list queue map set; do
+    if [ -f $d/$tpl.tpl ]; then
+      grep '^func ' $d/$tpl.tpl | \
+        fgrep -v '$' | \
+        sed 's# {$##' | \
+        grep -v 'List) [a-z]' | \
+        grep -v 'Map) [a-z]' | \
+        grep -v 'Queue) [a-z]' | \
+        grep -v 'Set) [a-z]' | \
+        grep -v 'func [a-z]' >info.tpl
+      runtemplate -v -tpl info.tpl -o $d-p$tpl-api.txt Type=*Type Key=*Key
       rm info.tpl
       echo
     fi

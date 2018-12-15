@@ -1,5 +1,6 @@
-// An encapsulated map[int]int.
+// An encapsulated immutable map[int]int.
 // Thread-safe.
+//
 //
 // Generated from immutable/map.tpl with Key=int Type=int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:disabled

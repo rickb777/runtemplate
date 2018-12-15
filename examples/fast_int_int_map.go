@@ -1,4 +1,5 @@
 // An encapsulated map[int]int.
+//
 // Not thread-safe.
 //
 // Generated from fast/map.tpl with Key=int Type=int
@@ -124,7 +125,7 @@ func (mm *FastIntIntMap) slice() []FastIntIntTuple {
 
 	s := make([]FastIntIntTuple, 0, len(mm.m))
 	for k, v := range mm.m {
-		s = append(s, FastIntIntTuple{k, v})
+		s = append(s, FastIntIntTuple{(k), v})
 	}
 
 	return s
@@ -233,7 +234,7 @@ func (mm *FastIntIntMap) DropWhere(fn func(int, int) bool) FastIntIntTuples {
 	removed := make(FastIntIntTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-			removed = append(removed, FastIntIntTuple{k, v})
+			removed = append(removed, FastIntIntTuple{(k), v})
 			delete(mm.m, k)
 		}
 	}
@@ -298,7 +299,7 @@ func (mm *FastIntIntMap) Find(p func(int, int) bool) (FastIntIntTuple, bool) {
 
 	for k, v := range mm.m {
 		if p(k, v) {
-			return FastIntIntTuple{k, v}, true
+			return FastIntIntTuple{(k), v}, true
 		}
 	}
 

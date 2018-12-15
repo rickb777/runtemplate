@@ -729,7 +729,7 @@ func (queue *FastAppleQueue) Filter(p func(Apple) bool) *FastAppleQueue {
 	return result
 }
 
-// Partition returns two new AppleQueues whose elements return true or false for the predicate, p.
+// Partition returns two new FastAppleQueues whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original queue.

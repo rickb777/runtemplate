@@ -1,4 +1,5 @@
 // An encapsulated map[int]int.
+//
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=int Type=int
@@ -133,7 +134,7 @@ func (mm *IntIntMap) slice() []IntIntTuple {
 
 	s := make([]IntIntTuple, 0, len(mm.m))
 	for k, v := range mm.m {
-		s = append(s, IntIntTuple{k, v})
+		s = append(s, IntIntTuple{(k), v})
 	}
 
 	return s
@@ -267,7 +268,7 @@ func (mm *IntIntMap) DropWhere(fn func(int, int) bool) IntIntTuples {
 	removed := make(IntIntTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-			removed = append(removed, IntIntTuple{k, v})
+			removed = append(removed, IntIntTuple{(k), v})
 			delete(mm.m, k)
 		}
 	}
@@ -343,7 +344,7 @@ func (mm *IntIntMap) Find(p func(int, int) bool) (IntIntTuple, bool) {
 
 	for k, v := range mm.m {
 		if p(k, v) {
-			return IntIntTuple{k, v}, true
+			return IntIntTuple{(k), v}, true
 		}
 	}
 

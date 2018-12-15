@@ -1,5 +1,8 @@
-// An encapsulated map[{{.Type.Name}}]struct{} used as a set.
+// An encapsulated immutable map[{{.Type.Name}}]struct{} used as a set.
 // Thread-safe.
+//{{if .Type.IsPtr}}
+// Warning: THIS COLLECTION IS NOT DESIGNED TO BE USED WITH POINTER TYPES.
+//{{end}}
 //
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
@@ -47,43 +50,91 @@ func New{{.Prefix.U}}{{.Type.U}}Set(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.T
 // The returned set will contain all the values that were correctly converted.
 func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{.Type.U}}Set, bool) {
 	set := New{{.Prefix.U}}{{.Type.U}}Set()
-{{if and .Numeric (not .TypeIsPtr)}}
+
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
+{{- if .Numeric}}
 		case int:
-			set.m[{{.Type.Name}}(i.(int))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int8:
-			set.m[{{.Type.Name}}(i.(int8))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int8:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int16:
-			set.m[{{.Type.Name}}(i.(int16))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int16:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int32:
-			set.m[{{.Type.Name}}(i.(int32))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int32:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int64:
-			set.m[{{.Type.Name}}(i.(int64))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int64:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint:
-			set.m[{{.Type.Name}}(i.(uint))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint8:
-			set.m[{{.Type.Name}}(i.(uint8))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint8:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint16:
-			set.m[{{.Type.Name}}(i.(uint16))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint16:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint32:
-			set.m[{{.Type.Name}}(i.(uint32))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint32:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint64:
-			set.m[{{.Type.Name}}(i.(uint64))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint64:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case float32:
-			set.m[{{.Type.Name}}(i.(float32))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *float32:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case float64:
-			set.m[{{.Type.Name}}(i.(float64))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *float64:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
+{{- else}}
+        case {{.Type.Name}}:
+			set.m[j] = struct{}{}
+        case *{{.Type.Name}}:
+			set.m[*j] = struct{}{}
+{{- end}}
 		}
 	}
-{{else}}
-	for _, i := range values {
-		v, ok := i.({{.Type.Name}})
-		if ok {
-			set.m[v] = struct{}{}
-		}
-	}
-{{end}}
+
 	return set, len(set.m) == len(values)
 }
 

@@ -48,9 +48,11 @@ func ConvertFastAppleList(values ...interface{}) (*FastAppleList, bool) {
 	list := MakeFastAppleList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			list.m = append(list.m, v)
+		switch j := i.(type) {
+		case Apple:
+			list.m = append(list.m, j)
+		case *Apple:
+			list.m = append(list.m, *j)
 		}
 	}
 
@@ -231,7 +233,7 @@ func (list *FastAppleList) Swap(i, j int) {
 // Contains determines whether a given item is already in the list, returning true if so.
 func (list *FastAppleList) Contains(v Apple) bool {
 	return list.Exists(func(x Apple) bool {
-		return x == v
+		return v == x
 	})
 }
 
@@ -684,7 +686,7 @@ func (list *FastAppleList) Filter(p func(Apple) bool) *FastAppleList {
 	return result
 }
 
-// Partition returns two new AppleLists whose elements return true or false for the predicate, p.
+// Partition returns two new FastAppleLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -779,6 +781,7 @@ func (list *FastAppleList) MinBy(less func(Apple, Apple) bool) Apple {
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
@@ -791,6 +794,7 @@ func (list *FastAppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {

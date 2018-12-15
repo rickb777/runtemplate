@@ -1,4 +1,5 @@
 // A simple type derived from map[int]struct{}
+//
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=int
@@ -32,31 +33,79 @@ func ConvertSimpleIntSet(values ...interface{}) (SimpleIntSet, bool) {
 	set := make(SimpleIntSet)
 
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
 		case int:
-			set[int(i.(int))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *int:
+			k := int(*j)
+			set[k] = struct{}{}
 		case int8:
-			set[int(i.(int8))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *int8:
+			k := int(*j)
+			set[k] = struct{}{}
 		case int16:
-			set[int(i.(int16))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *int16:
+			k := int(*j)
+			set[k] = struct{}{}
 		case int32:
-			set[int(i.(int32))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *int32:
+			k := int(*j)
+			set[k] = struct{}{}
 		case int64:
-			set[int(i.(int64))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *int64:
+			k := int(*j)
+			set[k] = struct{}{}
 		case uint:
-			set[int(i.(uint))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *uint:
+			k := int(*j)
+			set[k] = struct{}{}
 		case uint8:
-			set[int(i.(uint8))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *uint8:
+			k := int(*j)
+			set[k] = struct{}{}
 		case uint16:
-			set[int(i.(uint16))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *uint16:
+			k := int(*j)
+			set[k] = struct{}{}
 		case uint32:
-			set[int(i.(uint32))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *uint32:
+			k := int(*j)
+			set[k] = struct{}{}
 		case uint64:
-			set[int(i.(uint64))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *uint64:
+			k := int(*j)
+			set[k] = struct{}{}
 		case float32:
-			set[int(i.(float32))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *float32:
+			k := int(*j)
+			set[k] = struct{}{}
 		case float64:
-			set[int(i.(float64))] = struct{}{}
+			k := int(j)
+			set[k] = struct{}{}
+		case *float64:
+			k := int(*j)
+			set[k] = struct{}{}
 		}
 	}
 
@@ -301,7 +350,7 @@ func (set SimpleIntSet) Exists(p func(int) bool) bool {
 	return false
 }
 
-// Foreach iterates over intSet and executes the function f against each element.
+// Foreach iterates over the set and executes the function f against each element.
 func (set SimpleIntSet) Foreach(f func(int)) {
 	for v := range set {
 		f(v)
@@ -337,7 +386,7 @@ func (set SimpleIntSet) Filter(p func(int) bool) SimpleIntSet {
 	return result
 }
 
-// Partition returns two new intSets whose elements return true or false for the predicate, p.
+// Partition returns two new SimpleIntSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't.
 //
@@ -364,7 +413,46 @@ func (set SimpleIntSet) Map(f func(int) int) SimpleIntSet {
 	result := NewSimpleIntSet()
 
 	for v := range set {
-		result[f(v)] = struct{}{}
+		k := f(v)
+		result[k] = struct{}{}
+	}
+
+	return result
+}
+
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set SimpleIntSet) MapToString(f func(int) string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set))
+	for v := range set {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
+// MapToInt64 returns a new []int64 by transforming every element with function f.
+// The resulting slice is the same size as the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set SimpleIntSet) MapToInt64(f func(int) int64) []int64 {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(set))
+	for v := range set {
+		result = append(result, f(v))
 	}
 
 	return result
@@ -388,6 +476,44 @@ func (set SimpleIntSet) FlatMap(f func(int) []int) SimpleIntSet {
 	return result
 }
 
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set SimpleIntSet) FlatMapToString(f func(int) []string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set))
+	for v := range set {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set SimpleIntSet) FlatMapToInt64(f func(int) []int64) []int64 {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(set))
+	for v := range set {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
 // CountBy gives the number elements of SimpleIntSet that return true for the predicate p.
 func (set SimpleIntSet) CountBy(p func(int) bool) (result int) {
 	for v := range set {
@@ -404,17 +530,19 @@ func (set SimpleIntSet) CountBy(p func(int) bool) (result int) {
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
 func (set SimpleIntSet) Min() int {
-	return set.MinBy(func(a int, b int) bool {
+	v := set.MinBy(func(a int, b int) bool {
 		return a < b
 	})
+	return v
 }
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (set SimpleIntSet) Max() (result int) {
-	return set.MaxBy(func(a int, b int) bool {
+func (set SimpleIntSet) Max() int {
+	v := set.MaxBy(func(a int, b int) bool {
 		return a < b
 	})
+	return v
 }
 
 // MinBy returns an element of SimpleIntSet containing the minimum value, when compared to other elements

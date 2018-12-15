@@ -44,31 +44,31 @@ func ConvertSimpleIntList(values ...interface{}) (SimpleIntList, bool) {
 	list := MakeSimpleIntList(0, len(values))
 
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
 		case int:
-			list = append(list, int(i.(int)))
+			list = append(list, int(j))
 		case int8:
-			list = append(list, int(i.(int8)))
+			list = append(list, int(j))
 		case int16:
-			list = append(list, int(i.(int16)))
+			list = append(list, int(j))
 		case int32:
-			list = append(list, int(i.(int32)))
+			list = append(list, int(j))
 		case int64:
-			list = append(list, int(i.(int64)))
+			list = append(list, int(j))
 		case uint:
-			list = append(list, int(i.(uint)))
+			list = append(list, int(j))
 		case uint8:
-			list = append(list, int(i.(uint8)))
+			list = append(list, int(j))
 		case uint16:
-			list = append(list, int(i.(uint16)))
+			list = append(list, int(j))
 		case uint32:
-			list = append(list, int(i.(uint32)))
+			list = append(list, int(j))
 		case uint64:
-			list = append(list, int(i.(uint64)))
+			list = append(list, int(j))
 		case float32:
-			list = append(list, int(i.(float32)))
+			list = append(list, int(j))
 		case float64:
-			list = append(list, int(i.(float64)))
+			list = append(list, int(j))
 		}
 	}
 
@@ -87,7 +87,7 @@ func BuildSimpleIntListFromChan(source <-chan int) SimpleIntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (list SimpleIntList) IsSequence() bool {
 	return true
 }
@@ -95,6 +95,11 @@ func (list SimpleIntList) IsSequence() bool {
 // IsSet returns false for lists or queues.
 func (list SimpleIntList) IsSet() bool {
 	return false
+}
+
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list SimpleIntList) slice() []int {
+	return list
 }
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
@@ -445,7 +450,7 @@ func (list SimpleIntList) Filter(p func(int) bool) SimpleIntList {
 	return result
 }
 
-// Partition returns two new intLists whose elements return true or false for the predicate, p.
+// Partition returns two new IntLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.

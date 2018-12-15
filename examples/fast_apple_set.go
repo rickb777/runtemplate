@@ -1,4 +1,5 @@
 // An encapsulated map[Apple]struct{} used as a set.
+//
 // Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=Apple
@@ -36,9 +37,11 @@ func ConvertFastAppleSet(values ...interface{}) (*FastAppleSet, bool) {
 	set := NewFastAppleSet()
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			set.m[v] = struct{}{}
+		switch j := i.(type) {
+		case Apple:
+			set.m[j] = struct{}{}
+		case *Apple:
+			set.m[*j] = struct{}{}
 		}
 	}
 
@@ -347,7 +350,7 @@ func (set *FastAppleSet) Exists(p func(Apple) bool) bool {
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the function f against each element.
+// Foreach iterates over the set and executes the function f against each element.
 // The function can safely alter the values via side-effects.
 func (set *FastAppleSet) Foreach(f func(Apple)) {
 	if set == nil {
@@ -393,7 +396,7 @@ func (set *FastAppleSet) Filter(p func(Apple) bool) *FastAppleSet {
 	return result
 }
 
-// Partition returns two new AppleSets whose elements return true or false for the predicate, p.
+// Partition returns two new FastAppleSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -430,7 +433,8 @@ func (set *FastAppleSet) Map(f func(Apple) Apple) *FastAppleSet {
 	result := NewFastAppleSet()
 
 	for v := range set.m {
-		result.m[f(v)] = struct{}{}
+		k := f(v)
+		result.m[k] = struct{}{}
 	}
 
 	return result

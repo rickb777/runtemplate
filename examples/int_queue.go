@@ -797,7 +797,7 @@ func (queue *IntQueue) Filter(p func(int) bool) *IntQueue {
 	return result
 }
 
-// Partition returns two new intQueues whose elements return true or false for the predicate, p.
+// Partition returns two new IntQueues whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original queue.

@@ -1,4 +1,5 @@
 // An encapsulated map[Apple]struct{} used as a set.
+//
 // Thread-safe.
 //
 // Generated from threadsafe/set.tpl with Type=Apple
@@ -39,9 +40,11 @@ func ConvertAppleSet(values ...interface{}) (*AppleSet, bool) {
 	set := NewAppleSet()
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			set.m[v] = struct{}{}
+		switch j := i.(type) {
+		case Apple:
+			set.m[j] = struct{}{}
+		case *Apple:
+			set.m[*j] = struct{}{}
 		}
 	}
 
@@ -398,7 +401,7 @@ func (set *AppleSet) Exists(p func(Apple) bool) bool {
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the function f against each element.
+// Foreach iterates over the set and executes the function f against each element.
 // The function can safely alter the values via side-effects.
 func (set *AppleSet) Foreach(f func(Apple)) {
 	if set == nil {
@@ -492,7 +495,8 @@ func (set *AppleSet) Map(f func(Apple) Apple) *AppleSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-		result.m[f(v)] = struct{}{}
+		k := f(v)
+		result.m[k] = struct{}{}
 	}
 
 	return result

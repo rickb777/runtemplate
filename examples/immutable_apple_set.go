@@ -1,5 +1,6 @@
-// An encapsulated map[Apple]struct{} used as a set.
+// An encapsulated immutable map[Apple]struct{} used as a set.
 // Thread-safe.
+//
 //
 // Generated from immutable/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
@@ -36,9 +37,11 @@ func ConvertImmutableAppleSet(values ...interface{}) (*ImmutableAppleSet, bool) 
 	set := NewImmutableAppleSet()
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			set.m[v] = struct{}{}
+		switch j := i.(type) {
+		case Apple:
+			set.m[j] = struct{}{}
+		case *Apple:
+			set.m[*j] = struct{}{}
 		}
 	}
 

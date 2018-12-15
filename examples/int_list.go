@@ -52,31 +52,79 @@ func ConvertIntList(values ...interface{}) (*IntList, bool) {
 	list := MakeIntList(0, len(values))
 
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
 		case int:
-			list.m = append(list.m, int(i.(int)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int8:
-			list.m = append(list.m, int(i.(int8)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int8:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int16:
-			list.m = append(list.m, int(i.(int16)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int16:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int32:
-			list.m = append(list.m, int(i.(int32)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int32:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int64:
-			list.m = append(list.m, int(i.(int64)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int64:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint:
-			list.m = append(list.m, int(i.(uint)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint8:
-			list.m = append(list.m, int(i.(uint8)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint8:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint16:
-			list.m = append(list.m, int(i.(uint16)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint16:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint32:
-			list.m = append(list.m, int(i.(uint32)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint32:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint64:
-			list.m = append(list.m, int(i.(uint64)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint64:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case float32:
-			list.m = append(list.m, int(i.(float32)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *float32:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case float64:
-			list.m = append(list.m, int(i.(float64)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *float64:
+			k := int(*j)
+			list.m = append(list.m, k)
 		}
 	}
 
@@ -287,7 +335,7 @@ func (list *IntList) Swap(i, j int) {
 // Contains determines whether a given item is already in the list, returning true if so.
 func (list *IntList) Contains(v int) bool {
 	return list.Exists(func(x int) bool {
-		return x == v
+		return v == x
 	})
 }
 
@@ -800,7 +848,7 @@ func (list *IntList) Filter(p func(int) bool) *IntList {
 	return result
 }
 
-// Partition returns two new intLists whose elements return true or false for the predicate, p.
+// Partition returns two new IntLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -995,6 +1043,7 @@ func (list *IntList) MinBy(less func(int, int) bool) int {
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
@@ -1009,6 +1058,7 @@ func (list *IntList) MaxBy(less func(int, int) bool) int {
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {

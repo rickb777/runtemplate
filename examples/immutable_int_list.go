@@ -1,5 +1,6 @@
-// An encapsulated []int.
+// An encapsulated immutable []int.
 // Thread-safe.
+//
 //
 // Generated from immutable/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:disabled
@@ -49,39 +50,87 @@ func ConvertImmutableIntList(values ...interface{}) (*ImmutableIntList, bool) {
 	list := newImmutableIntList(0, len(values))
 
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
 		case int:
-			list.m = append(list.m, int(i.(int)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int8:
-			list.m = append(list.m, int(i.(int8)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int8:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int16:
-			list.m = append(list.m, int(i.(int16)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int16:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int32:
-			list.m = append(list.m, int(i.(int32)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int32:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case int64:
-			list.m = append(list.m, int(i.(int64)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *int64:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint:
-			list.m = append(list.m, int(i.(uint)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint8:
-			list.m = append(list.m, int(i.(uint8)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint8:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint16:
-			list.m = append(list.m, int(i.(uint16)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint16:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint32:
-			list.m = append(list.m, int(i.(uint32)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint32:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case uint64:
-			list.m = append(list.m, int(i.(uint64)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *uint64:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case float32:
-			list.m = append(list.m, int(i.(float32)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *float32:
+			k := int(*j)
+			list.m = append(list.m, k)
 		case float64:
-			list.m = append(list.m, int(i.(float64)))
+			k := int(j)
+			list.m = append(list.m, k)
+		case *float64:
+			k := int(*j)
+			list.m = append(list.m, k)
 		}
 	}
 
 	return list, len(list.m) == len(values)
 }
 
-// BuildImmutableIntListFromChan constructs a new ImmutableIntList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildImmutableIntListFromChan constructs a new ImmutableIntList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildImmutableIntListFromChan(source <-chan int) *ImmutableIntList {
 	list := newImmutableIntList(0, 0)
 	for v := range source {
@@ -156,7 +205,8 @@ func (list *ImmutableIntList) Head() int {
 // Otherwise returns the zero value.
 func (list *ImmutableIntList) HeadOption() int {
 	if list == nil || len(list.m) == 0 {
-		return 0
+		var v int
+		return v
 	}
 	return list.m[0]
 }
@@ -171,7 +221,8 @@ func (list *ImmutableIntList) Last() int {
 // Otherwise returns the zero value.
 func (list *ImmutableIntList) LastOption() int {
 	if list == nil || len(list.m) == 0 {
-		return 0
+		var v int
+		return v
 	}
 	return list.m[len(list.m)-1]
 }

@@ -1,5 +1,6 @@
-// An encapsulated map[int]struct{} used as a set.
+// An encapsulated immutable map[int]struct{} used as a set.
 // Thread-safe.
+//
 //
 // Generated from immutable/set.tpl with Type=int
 // options: Comparable:always Numeric:true Ordered:true Stringer:true Mutable:disabled
@@ -37,31 +38,79 @@ func ConvertImmutableIntSet(values ...interface{}) (*ImmutableIntSet, bool) {
 	set := NewImmutableIntSet()
 
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
 		case int:
-			set.m[int(i.(int))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int8:
-			set.m[int(i.(int8))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int8:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int16:
-			set.m[int(i.(int16))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int16:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int32:
-			set.m[int(i.(int32))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int32:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int64:
-			set.m[int(i.(int64))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int64:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint:
-			set.m[int(i.(uint))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint8:
-			set.m[int(i.(uint8))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint8:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint16:
-			set.m[int(i.(uint16))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint16:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint32:
-			set.m[int(i.(uint32))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint32:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint64:
-			set.m[int(i.(uint64))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint64:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case float32:
-			set.m[int(i.(float32))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *float32:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case float64:
-			set.m[int(i.(float64))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *float64:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		}
 	}
 

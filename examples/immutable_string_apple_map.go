@@ -1,5 +1,6 @@
-// An encapsulated map[string]Apple.
+// An encapsulated immutable map[string]Apple.
 // Thread-safe.
+//
 //
 // Generated from immutable/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:disabled

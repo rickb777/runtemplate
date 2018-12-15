@@ -51,9 +51,11 @@ func ConvertAppleList(values ...interface{}) (*AppleList, bool) {
 	list := MakeAppleList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			list.m = append(list.m, v)
+		switch j := i.(type) {
+		case Apple:
+			list.m = append(list.m, j)
+		case *Apple:
+			list.m = append(list.m, *j)
 		}
 	}
 
@@ -264,7 +266,7 @@ func (list *AppleList) Swap(i, j int) {
 // Contains determines whether a given item is already in the list, returning true if so.
 func (list *AppleList) Contains(v Apple) bool {
 	return list.Exists(func(x Apple) bool {
-		return x == v
+		return v == x
 	})
 }
 
@@ -928,6 +930,7 @@ func (list *AppleList) MinBy(less func(Apple, Apple) bool) Apple {
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
@@ -942,6 +945,7 @@ func (list *AppleList) MaxBy(less func(Apple, Apple) bool) Apple {
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {

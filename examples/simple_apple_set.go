@@ -1,4 +1,5 @@
 // A simple type derived from map[Apple]struct{}
+//
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=Apple
@@ -26,9 +27,11 @@ func ConvertSimpleAppleSet(values ...interface{}) (SimpleAppleSet, bool) {
 	set := make(SimpleAppleSet)
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			set[v] = struct{}{}
+		switch j := i.(type) {
+		case Apple:
+			set[j] = struct{}{}
+		case *Apple:
+			set[*j] = struct{}{}
 		}
 	}
 
@@ -273,7 +276,7 @@ func (set SimpleAppleSet) Exists(p func(Apple) bool) bool {
 	return false
 }
 
-// Foreach iterates over AppleSet and executes the function f against each element.
+// Foreach iterates over the set and executes the function f against each element.
 func (set SimpleAppleSet) Foreach(f func(Apple)) {
 	for v := range set {
 		f(v)
@@ -309,7 +312,7 @@ func (set SimpleAppleSet) Filter(p func(Apple) bool) SimpleAppleSet {
 	return result
 }
 
-// Partition returns two new AppleSets whose elements return true or false for the predicate, p.
+// Partition returns two new SimpleAppleSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't.
 //
@@ -336,7 +339,27 @@ func (set SimpleAppleSet) Map(f func(Apple) Apple) SimpleAppleSet {
 	result := NewSimpleAppleSet()
 
 	for v := range set {
-		result[f(v)] = struct{}{}
+		k := f(v)
+		result[k] = struct{}{}
+	}
+
+	return result
+}
+
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set SimpleAppleSet) MapToString(f func(Apple) string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set))
+	for v := range set {
+		result = append(result, f(v))
 	}
 
 	return result
@@ -355,6 +378,25 @@ func (set SimpleAppleSet) FlatMap(f func(Apple) []Apple) SimpleAppleSet {
 		for _, x := range f(v) {
 			result[x] = struct{}{}
 		}
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+// The set is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set SimpleAppleSet) FlatMapToString(f func(Apple) []string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set))
+	for v := range set {
+		result = append(result, f(v)...)
 	}
 
 	return result

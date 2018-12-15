@@ -1,7 +1,8 @@
-// An encapsulated map[{{.Type.Name}}]struct{} used as a set.
+// An encapsulated map[{{.Type}}]struct{} used as a set.
+//{{if .Type.IsPtr}} Note that the api uses {{.Type}} but the set uses {{.Key.Name}} keys.{{end}}
 // Not thread-safe.
 //
-// Generated from {{.TemplateFile}} with Type={{.Type.Name}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} ToList:{{.ToList}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -30,12 +31,12 @@ type {{.Prefix.U}}{{.Type.U}}Set struct {
 }
 
 // New{{.Prefix.U}}{{.Type.U}}Set creates and returns a reference to an empty set.
-func New{{.Prefix.U}}{{.Type.U}}Set(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+func New{{.Prefix.U}}{{.Type.U}}Set(values ...{{.Type}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	set := &{{.Prefix.U}}{{.Type.U}}Set{
 		m: make(map[{{.Type.Name}}]struct{}),
 	}
 	for _, i := range values {
-		set.m[i] = struct{}{}
+		set.m[{{.Type.Star}}i] = struct{}{}
 	}
 	return set
 }
@@ -45,52 +46,100 @@ func New{{.Prefix.U}}{{.Type.U}}Set(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.T
 // The returned set will contain all the values that were correctly converted.
 func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{.Type.U}}Set, bool) {
 	set := New{{.Prefix.U}}{{.Type.U}}Set()
-{{if and .Numeric (not .TypeIsPtr)}}
+
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
+{{- if .Numeric}}
 		case int:
-			set.m[{{.Type.Name}}(i.(int))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int8:
-			set.m[{{.Type.Name}}(i.(int8))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int8:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int16:
-			set.m[{{.Type.Name}}(i.(int16))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int16:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int32:
-			set.m[{{.Type.Name}}(i.(int32))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int32:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case int64:
-			set.m[{{.Type.Name}}(i.(int64))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *int64:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint:
-			set.m[{{.Type.Name}}(i.(uint))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint8:
-			set.m[{{.Type.Name}}(i.(uint8))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint8:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint16:
-			set.m[{{.Type.Name}}(i.(uint16))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint16:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint32:
-			set.m[{{.Type.Name}}(i.(uint32))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint32:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case uint64:
-			set.m[{{.Type.Name}}(i.(uint64))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *uint64:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case float32:
-			set.m[{{.Type.Name}}(i.(float32))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *float32:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
 		case float64:
-			set.m[{{.Type.Name}}(i.(float64))] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *float64:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
+{{- else}}
+        case {{.Type.Name}}:
+			set.m[j] = struct{}{}
+        case *{{.Type.Name}}:
+			set.m[*j] = struct{}{}
+{{- end}}
 		}
 	}
-{{else}}
-	for _, i := range values {
-		v, ok := i.({{.Type.Name}})
-		if ok {
-			set.m[v] = struct{}{}
-		}
-	}
-{{end}}
+
 	return set, len(set.m) == len(values)
 }
 
 // Build{{.Prefix.U}}{{.Type.U}}SetFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Set from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func Build{{.Prefix.U}}{{.Type.U}}SetFromChan(source <-chan {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+func Build{{.Prefix.U}}{{.Type.U}}SetFromChan(source <-chan {{.Type}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	set := New{{.Prefix.U}}{{.Type.U}}Set()
 	for v := range source {
-		set.m[v] = struct{}{}
+		set.m[{{.Type.Star}}v] = struct{}{}
 	}
 	return set
 }
@@ -127,20 +176,20 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) ToSet() *{{.Prefix.U}}{{.Type.U}}Set {
 }
 
 // slice returns the internal elements of the current set. This is a seam for testing etc.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) slice() []{{.Type.Name}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) slice() []{{.Type}} {
 	if set == nil {
 		return nil
 	}
 
-	s := make([]{{.Type.Name}}, 0, len(set.m))
+	s := make([]{{.Type}}, 0, len(set.m))
 	for v := range set.m {
-		s = append(s, v)
+		s = append(s, {{.Type.Amp}}v)
 	}
 	return s
 }
 
 // ToSlice returns the elements of the current set as a slice.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) ToSlice() []{{.Type.Name}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ToSlice() []{{.Type}} {
 
 	return set.slice()
 }
@@ -198,10 +247,10 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Cardinality() int {
 //-------------------------------------------------------------------------------------------------
 
 // Add adds items to the current set.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Add(more ...{{.Type.Name}}) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Add(more ...{{.Type}}) {
 
 	for _, v := range more {
-		set.doAdd(v)
+		set.doAdd({{.Type.Star}}v)
 	}
 }
 
@@ -210,17 +259,17 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) doAdd(i {{.Type.Name}}) {
 }
 
 // Contains determines whether a given item is already in the set, returning true if so.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Contains(i {{.Type.Name}}) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Contains(i {{.Type}}) bool {
 	if set == nil {
 		return false
 	}
 
-	_, found := set.m[i]
+	_, found := set.m[{{.Type.Star}}i]
 	return found
 }
 
 // ContainsAll determines whether the given items are all in the set, returning true if so.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) ContainsAll(i ...{{.Type.Name}}) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) ContainsAll(i ...{{.Type}}) bool {
 	if set == nil {
 		return false
 	}
@@ -246,7 +295,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) IsSubset(other *{{.Prefix.U}}{{.Type.U}}
 	}
 
 	for v := range set.m {
-		if !other.Contains(v) {
+		if !other.Contains({{.Type.Amp}}v) {
 			return false
 		}
 	}
@@ -288,13 +337,13 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Intersect(other *{{.Prefix.U}}{{.Type.U}
 	// loop over smaller set
 	if set.Size() < other.Size() {
 		for v := range set.m {
-			if other.Contains(v) {
+			if other.Contains({{.Type.Amp}}v) {
 				intersection.doAdd(v)
 			}
 		}
 	} else {
 		for v := range other.m {
-			if set.Contains(v) {
+			if set.Contains({{.Type.Amp}}v) {
 				intersection.doAdd(v)
 			}
 		}
@@ -316,7 +365,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Difference(other *{{.Prefix.U}}{{.Type.U
 	differencedSet := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
-		if !other.Contains(v) {
+		if !other.Contains({{.Type.Amp}}v) {
 			differencedSet.doAdd(v)
 		}
 	}
@@ -340,22 +389,22 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Clear() {
 }
 
 // Remove a single item from the set.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Remove(i {{.Type.Name}}) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Remove(i {{.Type}}) {
 
-	delete(set.m, i)
+	delete(set.m, {{.Type.Star}}i)
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements have been consumed
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Send() <-chan {{.Type.Name}} {
-	ch := make(chan {{.Type.Name}})
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Send() <-chan {{.Type}} {
+	ch := make(chan {{.Type}})
 	go func() {
 		if set != nil {
 
 			for v := range set.m {
-				ch <- v
+				ch <- {{.Type.Amp}}v
 			}
 		}
 		close(ch)
@@ -372,13 +421,13 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Send() <-chan {{.Type.Name}} {
 //
 // Note that this method can also be used simply as a way to visit every element using a function
 // with some side-effects; such a function must always return true.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Forall(p func({{.Type.Name}}) bool) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Forall(p func({{.Type}}) bool) bool {
 	if set == nil {
 		return true
 	}
 
 	for v := range set.m {
-		if !p(v) {
+		if !p({{.Type.Amp}}v) {
 			return false
 		}
 	}
@@ -388,28 +437,28 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Forall(p func({{.Type.Name}}) bool) bool
 // Exists applies a predicate p to every element in the set. If the function returns true,
 // the iteration terminates early. The returned value is true if an early return occurred.
 // or false if all elements were visited without finding a match.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Exists(p func({{.Type.Name}}) bool) bool {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Exists(p func({{.Type}}) bool) bool {
 	if set == nil {
 		return false
 	}
 
 	for v := range set.m {
-		if p(v) {
+		if p({{.Type.Amp}}v) {
 			return true
 		}
 	}
 	return false
 }
 
-// Foreach iterates over {{.Type.Name}}Set and executes the function f against each element.
+// Foreach iterates over the set and executes the function f against each element.
 // The function can safely alter the values via side-effects.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Foreach(f func({{.Type.Name}})) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Foreach(f func({{.Type}})) {
 	if set == nil {
 		return
 	}
 
 	for v := range set.m {
-		f(v)
+		f({{.Type.Amp}}v)
 	}
 }
 
@@ -417,14 +466,14 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Foreach(f func({{.Type.Name}})) {
 
 // Find returns the first {{.Type.Name}} that returns true for the predicate p. If there are many matches
 // one is arbtrarily chosen. False is returned if none match.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Find(p func({{.Type.Name}}) bool) ({{.Type.Name}}, bool) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Find(p func({{.Type}}) bool) ({{.Type}}, bool) {
 
 	for v := range set.m {
-		if p(v) {
-			return v, true
+		if p({{.Type.Amp}}v) {
+			return {{.Type.Amp}}v, true
 		}
 	}
-{{- if eq .Type.Star "*"}}
+{{- if .Type.IsPtr}}
 
 	return nil, false
 {{- else}}
@@ -437,7 +486,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Find(p func({{.Type.Name}}) bool) ({{.Ty
 // Filter returns a new {{.Prefix.U}}{{.Type.U}}Set whose elements return true for the predicate p.
 //
 // The original set is not modified
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Filter(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Filter(p func({{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
@@ -445,20 +494,20 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Filter(p func({{.Type.Name}}) bool) *{{.
 	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
-		if p(v) {
+		if p({{.Type.Amp}}v) {
 			result.doAdd(v)
 		}
 	}
 	return result
 }
 
-// Partition returns two new {{.Type.Name}}Sets whose elements return true or false for the predicate, p.
+// Partition returns two new {{.Prefix.U}}{{.Type.U}}Sets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 //
 // The original set is not modified
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Partition(p func({{.Type.Name}}) bool) (*{{.Prefix.U}}{{.Type.U}}Set, *{{.Prefix.U}}{{.Type.U}}Set) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Partition(p func({{.Type}}) bool) (*{{.Prefix.U}}{{.Type.U}}Set, *{{.Prefix.U}}{{.Type.U}}Set) {
 	if set == nil {
 		return nil, nil
 	}
@@ -467,7 +516,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Partition(p func({{.Type.Name}}) bool) (
 	others := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
-		if p(v) {
+		if p({{.Type.Amp}}v) {
 			matching.doAdd(v)
 		} else {
 			others.doAdd(v)
@@ -481,7 +530,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Partition(p func({{.Type.Name}}) bool) (
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) Map(f func({{.Type.Name}}) {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Map(f func({{.Type}}) {{.Type}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
@@ -489,7 +538,8 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Map(f func({{.Type.Name}}) {{.Type.Name}
 	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
-		result.m[f(v)] = struct{}{}
+	    k := f({{.Type.Amp}}v)
+		result.m[{{.Type.Star}}k] = struct{}{}
 	}
 
 	return result
@@ -510,7 +560,7 @@ func (set *{{$.Prefix.U}}{{$.Type.U}}Set) MapTo{{.U}}(f func({{$.Type}}) {{.}}) 
 	result := make([]{{.}}, 0, len(set.m))
 
 	for v := range set.m {
-		result = append(result, f(v))
+		result = append(result, f({{$.Type.Amp}}v))
 	}
 
 	return result
@@ -523,7 +573,7 @@ func (set *{{$.Prefix.U}}{{$.Type.U}}Set) MapTo{{.U}}(f func({{$.Type}}) {{.}}) 
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) FlatMap(f func({{.Type.Name}}) []{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) FlatMap(f func({{.Type}}) []{{.Type}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	if set == nil {
 		return nil
 	}
@@ -531,8 +581,8 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) FlatMap(f func({{.Type.Name}}) []{{.Type
 	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set.m {
-		for _, x := range f(v) {
-			result.m[x] = struct{}{}
+		for _, x := range f({{.Type.Amp}}v) {
+			result.m[{{.Type.Star}}x] = struct{}{}
 		}
 	}
 
@@ -554,7 +604,7 @@ func (set *{{$.Prefix.U}}{{$.Type.U}}Set) FlatMapTo{{.U}}(f func({{$.Type}}) []{
 	result := make([]{{.}}, 0, len(set.m))
 
 	for v := range set.m {
-		result = append(result, f(v)...)
+		result = append(result, f({{$.Type.Amp}}v)...)
 	}
 
 	return result
@@ -562,10 +612,10 @@ func (set *{{$.Prefix.U}}{{$.Type.U}}Set) FlatMapTo{{.U}}(f func({{$.Type}}) []{
 {{- end}}
 
 // CountBy gives the number elements of {{.Prefix.U}}{{.Type.U}}Set that return true for the predicate p.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) CountBy(p func({{.Type.Name}}) bool) (result int) {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) CountBy(p func({{.Type}}) bool) (result int) {
 
 	for v := range set.m {
-		if p(v) {
+		if p({{.Type.Amp}}v) {
 			result++
 		}
 	}
@@ -614,7 +664,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Max() (result {{.Type.Name}}) {
 // MinBy returns an element of {{.Prefix.U}}{{.Type.U}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) MinBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty set.")
 	}
@@ -625,17 +675,17 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) MinBy(less func({{.Type.Name}}, {{.Type.
 		if first {
 			m = v
 			first = false
-		} else if less(v, m) {
+		} else if less({{.Type.Amp}}v, {{.Type.Amp}}m) {
 			m = v
 		}
 	}
-	return m
+	return {{.Type.Amp}}m
 }
 
 // MaxBy returns an element of {{.Prefix.U}}{{.Type.U}}Set containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (set *{{.Prefix.U}}{{.Type.U}}Set) MaxBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
+func (set *{{.Prefix.U}}{{.Type.U}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	if set.IsEmpty() {
 		panic("Cannot determine the minimum of an empty set.")
 	}
@@ -646,11 +696,11 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) MaxBy(less func({{.Type.Name}}, {{.Type.
 		if first {
 			m = v
 			first = false
-		} else if less(m, v) {
+		} else if less({{.Type.Amp}}m, {{.Type.Amp}}v) {
 			m = v
 		}
 	}
-	return m
+	return {{.Type.Amp}}m
 }
 {{- if .Numeric}}
 
@@ -662,7 +712,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Sum() {{.Type.Name}} {
 
 	sum := {{.Type.Name}}(0)
 	for v := range set.m {
-		sum = sum + {{.Type.Star}}v
+		sum = sum + v
 	}
 	return sum
 }
@@ -687,7 +737,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Equals(other *{{.Prefix.U}}{{.Type.U}}Se
 	}
 
 	for v := range set.m {
-		if !other.Contains(v) {
+		if !other.Contains({{.Type.Amp}}v) {
 			return false
 		}
 	}
@@ -747,7 +797,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) mkString3Bytes(before, between, after st
 // UnmarshalJSON implements JSON decoding for this set type.
 func (set *{{.Prefix.U}}{{.Type.U}}Set) UnmarshalJSON(b []byte) error {
 
-	values := make([]{{.Type.Name}}, 0)
+	values := make([]{{.Type}}, 0)
 	err := json.Unmarshal(b, &values)
 	if err != nil {
 		return err
@@ -784,7 +834,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) StringMap() map[string]bool {
 //-------------------------------------------------------------------------------------------------
 
 // GobDecode implements 'gob' decoding for this set type.
-// You must register {{.Type.Name}} with the 'gob' package before this method is used.
+// You must register {{.Type}} with the 'gob' package before this method is used.
 func (set *{{.Prefix.U}}{{.Type.U}}Set) GobDecode(b []byte) error {
 
 	buf := bytes.NewBuffer(b)
@@ -792,7 +842,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) GobDecode(b []byte) error {
 }
 
 // GobEncode implements 'gob' encoding for this list type.
-// You must register {{.Type.Name}} with the 'gob' package before this method is used.
+// You must register {{.Type}} with the 'gob' package before this method is used.
 func (set {{.Prefix.U}}{{.Type.U}}Set) GobEncode() ([]byte, error) {
 
 	buf := &bytes.Buffer{}

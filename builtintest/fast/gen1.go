@@ -46,34 +46,6 @@ package fast
 //go:generate runtemplate -tpl ../map_test.tpl   Key=int Type=int Mutable:true Numeric:true Comparable:true M:.slice() GobEncode:true JsonEncode:true
 
 //-------------------------------------------------------------------------------------------------
-// Code generation with pointer values
-
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*string Stringer:true Comparable:true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*int    Stringer:true Comparable:true Ordered:true Numeric:true
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*Apple  Stringer:false
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P1 Type=*Pear
-//go:generate runtemplate -tpl fast/collection.tpl Prefix=P2 Type=*big.Int Import:"math/big"
-
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*string Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*int    Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P1 Type=*Apple  Stringer:false Comparable:true
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=P2 Type=*big.Int Import:"math/big"
-
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P1 Type=*string  ToList:true Stringer:true  Comparable:true Ordered:false Numeric:false
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P1 Type=*int     ToList:true Stringer:true  Comparable:true Ordered:true  Numeric:true
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P1 Type=*Apple   ToList:true Stringer:false Comparable:true
-//go:generate runtemplate -tpl fast/queue.tpl      Prefix=P2 Type=*big.Int ToList:true Import:"math/big"
-
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*int    Type=*int     Comparable:true Stringer:true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*string  Comparable:true
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*string Type=*Apple
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*string
-//go:generate runtemplate -tpl fast/map.tpl        Prefix=TP1 Key=*Apple  Type=*Pear
-
-//go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=P1 Type=*Apple
-//go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=P1 Type=*Apple ToPrefix=P1 ToType=*Pear
-
-//-------------------------------------------------------------------------------------------------
 
 type Apple struct {
 	N int

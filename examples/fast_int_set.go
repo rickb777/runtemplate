@@ -1,4 +1,5 @@
 // An encapsulated map[int]struct{} used as a set.
+//
 // Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=int
@@ -37,31 +38,79 @@ func ConvertFastIntSet(values ...interface{}) (*FastIntSet, bool) {
 	set := NewFastIntSet()
 
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
 		case int:
-			set.m[int(i.(int))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int8:
-			set.m[int(i.(int8))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int8:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int16:
-			set.m[int(i.(int16))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int16:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int32:
-			set.m[int(i.(int32))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int32:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case int64:
-			set.m[int(i.(int64))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *int64:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint:
-			set.m[int(i.(uint))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint8:
-			set.m[int(i.(uint8))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint8:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint16:
-			set.m[int(i.(uint16))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint16:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint32:
-			set.m[int(i.(uint32))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint32:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case uint64:
-			set.m[int(i.(uint64))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *uint64:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case float32:
-			set.m[int(i.(float32))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *float32:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		case float64:
-			set.m[int(i.(float64))] = struct{}{}
+			k := int(j)
+			set.m[k] = struct{}{}
+		case *float64:
+			k := int(*j)
+			set.m[k] = struct{}{}
 		}
 	}
 
@@ -370,7 +419,7 @@ func (set *FastIntSet) Exists(p func(int) bool) bool {
 	return false
 }
 
-// Foreach iterates over intSet and executes the function f against each element.
+// Foreach iterates over the set and executes the function f against each element.
 // The function can safely alter the values via side-effects.
 func (set *FastIntSet) Foreach(f func(int)) {
 	if set == nil {
@@ -416,7 +465,7 @@ func (set *FastIntSet) Filter(p func(int) bool) *FastIntSet {
 	return result
 }
 
-// Partition returns two new intSets whose elements return true or false for the predicate, p.
+// Partition returns two new FastIntSets whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
@@ -453,7 +502,8 @@ func (set *FastIntSet) Map(f func(int) int) *FastIntSet {
 	result := NewFastIntSet()
 
 	for v := range set.m {
-		result.m[f(v)] = struct{}{}
+		k := f(v)
+		result.m[k] = struct{}{}
 	}
 
 	return result

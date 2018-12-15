@@ -1,5 +1,6 @@
-// An encapsulated []Apple.
+// An encapsulated immutable []Apple.
 // Thread-safe.
+//
 //
 // Generated from immutable/list.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:disabled
@@ -48,17 +49,19 @@ func ConvertImmutableAppleList(values ...interface{}) (*ImmutableAppleList, bool
 	list := newImmutableAppleList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			list.m = append(list.m, v)
+		switch j := i.(type) {
+		case Apple:
+			list.m = append(list.m, j)
+		case *Apple:
+			list.m = append(list.m, *j)
 		}
 	}
 
 	return list, len(list.m) == len(values)
 }
 
-// BuildImmutableAppleListFromChan constructs a new ImmutableAppleList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildImmutableAppleListFromChan constructs a new ImmutableAppleList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildImmutableAppleListFromChan(source <-chan Apple) *ImmutableAppleList {
 	list := newImmutableAppleList(0, 0)
 	for v := range source {
@@ -133,7 +136,8 @@ func (list *ImmutableAppleList) Head() Apple {
 // Otherwise returns the zero value.
 func (list *ImmutableAppleList) HeadOption() Apple {
 	if list == nil || len(list.m) == 0 {
-		return *(new(Apple))
+		var v Apple
+		return v
 	}
 	return list.m[0]
 }
@@ -148,7 +152,8 @@ func (list *ImmutableAppleList) Last() Apple {
 // Otherwise returns the zero value.
 func (list *ImmutableAppleList) LastOption() Apple {
 	if list == nil || len(list.m) == 0 {
-		return *(new(Apple))
+		var v Apple
+		return v
 	}
 	return list.m[len(list.m)-1]
 }

@@ -1,4 +1,5 @@
 // A simple type derived from map[{{.Key.Name}}]{{.Type}}.
+//{{if .Key.IsPtr}} Note that the api uses {{.Key}} but the map uses {{.Key.Name}} keys.{{end}}
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Key={{.Key}} Type={{.Type}}
@@ -19,7 +20,7 @@ import (
 )
 
 // {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map is the primary type that represents a map
-type {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map map[{{.Key}}]{{.Type}}
+type {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map map[{{.Key.Name}}]{{.Type}}
 
 // {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple represents a key/value pair.
 type {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple struct {
@@ -70,13 +71,13 @@ func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) Values(values ...{{.Type}}) {
 //-------------------------------------------------------------------------------------------------
 
 func new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map() {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
-	return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(make(map[{{.Key}}]{{.Type}}))
+	return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(make(map[{{.Key.Name}}]{{.Type}}))
 }
 
 // New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map1 creates and returns a reference to a map containing one item.
 func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map1(k {{.Key}}, v {{.Type}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	mm := new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
-	mm[k] = v
+	mm[{{.Key.Star}}k] = v
 	return mm
 }
 
@@ -84,7 +85,7 @@ func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map1(k {{.Key}}, v {{.Type}}) {{.Prefi
 func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(kv ...{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	mm := new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 	for _, t := range kv {
-		mm[t.Key] = t.Val
+		mm[{{.Key.Star}}t.Key] = t.Val
 	}
 	return mm
 }
@@ -93,7 +94,7 @@ func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(kv ...{{.Prefix.U}}{{.Key.U}}{{.Ty
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}} {
 	s := make({{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}}, 0, len(mm))
 	for k := range mm {
-		s = append(s, k)
+		s = append(s, {{.Key.Amp}}k)
 	}
 	return s
 }
@@ -107,31 +108,36 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Values() {{if .ValueList}}{{.Val
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ToSlice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
+// slice returns the internal elements of the map. This is a seam for testing etc.
+func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) slice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
 	s := make([]{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple, 0, len(mm))
 	for k, v := range mm {
-		s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
+		s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{({{.Key.Amp}}k), v})
 	}
 	return s
 }
 
+// ToSlice returns the key/value pairs as a slice
+func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ToSlice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
+	return mm.slice()
+}
+
 // Get returns one of the items in the map, if present.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Get(k {{.Key}}) ({{.Type}}, bool) {
-	v, found := mm[k]
+	v, found := mm[{{.Key.Star}}k]
 	return v, found
 }
 
 // Put adds an item to the current map, replacing any prior value.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Put(k {{.Key}}, v {{.Type}}) bool {
-	_, found := mm[k]
-	mm[k] = v
+	_, found := mm[{{.Key.Star}}k]
+	mm[{{.Key.Star}}k] = v
 	return !found //False if it existed already
 }
 
 // ContainsKey determines if a given item is already in the map.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ContainsKey(k {{.Key}}) bool {
-	_, found := mm[k]
+	_, found := mm[{{.Key.Star}}k]
 	return found
 }
 
@@ -147,18 +153,18 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ContainsAllKeys(kk ...{{.Key}}) 
 
 // Clear clears the entire map.
 func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Clear() {
-	*mm = make(map[{{.Key}}]{{.Type}})
+	*mm = make(map[{{.Key.Name}}]{{.Type}})
 }
 
 // Remove a single item from the map.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Remove(k {{.Key}}) {
-	delete(mm, k)
+	delete(mm, {{.Key.Star}}k)
 }
 
 // Pop removes a single item from the map, returning the value present prior to removal.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Pop(k {{.Key}}) ({{.Type}}, bool) {
-	v, found := mm[k]
-	delete(mm, k)
+	v, found := mm[{{.Key.Star}}k]
+	delete(mm, {{.Key.Star}}k)
 	return v, found
 }
 
@@ -183,8 +189,8 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) NonEmpty() bool {
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) DropWhere(fn func({{.Key}}, {{.Type}}) bool) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
 	removed := make({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples, 0)
 	for k, v := range mm {
-		if fn(k, v) {
-			removed = append(removed, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
+		if fn({{.Key.Amp}}k, v) {
+			removed = append(removed, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{({{.Key.Amp}}k), v})
 			delete(mm, k)
 		}
 	}
@@ -195,7 +201,7 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) DropWhere(fn func({{.Key}}, {{.T
 // The function can safely alter the values via side-effects.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Foreach(f func({{.Key}}, {{.Type}})) {
 	for k, v := range mm {
-		f(k, v)
+		f({{.Key.Amp}}k, v)
 	}
 }
 
@@ -207,7 +213,7 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Foreach(f func({{.Key}}, {{.Type
 // with some side-effects; such a function must always return true.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Forall(p func({{.Key}}, {{.Type}}) bool) bool {
 	for k, v := range mm {
-		if !p(k, v) {
+		if !p({{.Key.Amp}}k, v) {
 			return false
 		}
 	}
@@ -220,7 +226,7 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Forall(p func({{.Key}}, {{.Type}
 // or false if all elements were visited without finding a match.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Exists(p func({{.Key}}, {{.Type}}) bool) bool {
 	for k, v := range mm {
-		if p(k, v) {
+		if p({{.Key.Amp}}k, v) {
 			return true
 		}
 	}
@@ -233,8 +239,8 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Exists(p func({{.Key}}, {{.Type}
 // The original map is not modified.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Find(p func({{.Key}}, {{.Type}}) bool) ({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple, bool) {
 	for k, v := range mm {
-		if p(k, v) {
-			return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v}, true
+		if p({{.Key.Amp}}k, v) {
+			return {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{({{.Key.Amp}}k), v}, true
 		}
 	}
 
@@ -247,7 +253,7 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Find(p func({{.Key}}, {{.Type}})
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Filter(p func({{.Key}}, {{.Type}}) bool) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
 	result := New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 	for k, v := range mm {
-		if p(k, v) {
+		if p({{.Key.Amp}}k, v) {
 			result[k] = v
 		}
 	}
@@ -263,7 +269,7 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Partition(p func({{.Key}}, {{.Ty
 	matching = New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 	others = New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 	for k, v := range mm {
-		if p(k, v) {
+		if p({{.Key.Amp}}k, v) {
 			matching[k] = v
 		} else {
 			others[k] = v
@@ -281,8 +287,8 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Map(f func({{.Key}}, {{.Type}}) 
 	result := New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 
 	for k1, v1 := range mm {
-		k2, v2 := f(k1, v1)
-		result[k2] = v2
+		k2, v2 := f({{.Key.Amp}}k1, v1)
+		result[{{.Key.Star}}k2] = v2
 	}
 
 	return result
@@ -298,9 +304,9 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) FlatMap(f func({{.Key}}, {{.Type
 	result := New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map()
 
 	for k1, v1 := range mm {
-		ts := f(k1, v1)
+		ts := f({{.Key.Amp}}k1, v1)
 		for _, t := range ts {
-			result[t.Key] = t.Val
+			result[{{.Key.Star}}t.Key] = t.Val
 		}
 	}
 

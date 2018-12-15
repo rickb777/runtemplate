@@ -1,7 +1,7 @@
-// An encapsulated []{{.Type.Name}}.
+// An encapsulated []{{.Type}}.
 // Thread-safe.
 //
-// Generated from {{.TemplateFile}} with Type={{.Type.Name}}
+// Generated from {{.TemplateFile}} with Type={{.Type}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
 // GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}} MapTo:{{.MapTo}}
 // by runtemplate {{.AppVersion}}
@@ -28,14 +28,14 @@ import (
 {{- end}}
 )
 
-// {{.Prefix.U}}{{.Type.U}}List contains a slice of type {{.Type.Name}}.
+// {{.Prefix.U}}{{.Type.U}}List contains a slice of type {{.Type}}.
 // It encapsulates the slice and provides methods to access or mutate it.
 //
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type {{.Prefix.U}}{{.Type.U}}List struct {
 	s *sync.RWMutex
-	m []{{.Type.Name}}
+	m []{{.Type}}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -44,12 +44,12 @@ type {{.Prefix.U}}{{.Type.U}}List struct {
 func Make{{.Prefix.U}}{{.Type.U}}List(length, capacity int) *{{.Prefix.U}}{{.Type.U}}List {
 	return &{{.Prefix.U}}{{.Type.U}}List{
 		s: &sync.RWMutex{},
-		m: make([]{{.Type.Name}}, length, capacity),
+		m: make([]{{.Type}}, length, capacity),
 	}
 }
 
 // New{{.Prefix.U}}{{.Type.U}}List constructs a new list containing the supplied values, if any.
-func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	list := Make{{.Prefix.U}}{{.Type.U}}List(len(values), len(values))
 	copy(list.m, values)
 	return list
@@ -60,49 +60,104 @@ func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{{.Type.U}}List, bool) {
 	list := Make{{.Prefix.U}}{{.Type.U}}List(0, len(values))
-{{if and .Numeric (not .TypeIsPtr)}}
+
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
+{{- if .Numeric}}
 		case int:
-			list.m = append(list.m, {{.Type.Name}}(i.(int)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int8:
-			list.m = append(list.m, {{.Type.Name}}(i.(int8)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int8:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int16:
-			list.m = append(list.m, {{.Type.Name}}(i.(int16)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int16:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int32:
-			list.m = append(list.m, {{.Type.Name}}(i.(int32)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int32:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int64:
-			list.m = append(list.m, {{.Type.Name}}(i.(int64)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int64:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint8:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint8)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint8:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint16:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint16)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint16:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint32:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint32)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint32:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint64:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint64)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint64:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case float32:
-			list.m = append(list.m, {{.Type.Name}}(i.(float32)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *float32:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case float64:
-			list.m = append(list.m, {{.Type.Name}}(i.(float64)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *float64:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+{{- else}}
+		{{- if .Type.IsPtr}}
+        case {{.Type.Name}}:
+			list.m = append(list.m, &j)
+        case *{{.Type.Name}}:
+			list.m = append(list.m, j)
+		{{- else}}
+        case {{.Type}}:
+			list.m = append(list.m, j)
+        case *{{.Type}}:
+			list.m = append(list.m, *j)
+		{{- end}}
+{{- end}}
 		}
 	}
-{{else}}
-	for _, i := range values {
-		v, ok := i.({{.Type.Name}})
-		if ok {
-			list.m = append(list.m, v)
-		}
-	}
-{{end}}
+
 	return list, len(list.m) == len(values)
 }
 
 // Build{{.Prefix.U}}{{.Type.U}}ListFromChan constructs a new {{.Prefix.U}}{{.Type.U}}List from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func Build{{.Prefix.U}}{{.Type.U}}ListFromChan(source <-chan {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func Build{{.Prefix.U}}{{.Type.U}}ListFromChan(source <-chan {{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	list := Make{{.Prefix.U}}{{.Type.U}}List(0, 0)
 	for v := range source {
 		list.m = append(list.m, v)
@@ -123,7 +178,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) IsSet() bool {
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
-func (list *{{.Prefix.U}}{{.Type.U}}List) slice() []{{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) slice() []{{.Type}} {
 	if list == nil {
 		return nil
 	}
@@ -151,7 +206,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) ToSet() *{{.Prefix.U}}{{.Type.U}}Set {
 {{- end}}
 
 // ToSlice returns the elements of the current list as a slice.
-func (list *{{.Prefix.U}}{{.Type.U}}List) ToSlice() []{{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) ToSlice() []{{.Type}} {
 	if list == nil {
 		return nil
 	}
@@ -159,7 +214,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) ToSlice() []{{.Type.Name}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
-	s := make([]{{.Type.Name}}, len(list.m), len(list.m))
+	s := make([]{{.Type}}, len(list.m), len(list.m))
 	copy(s, list.m)
 	return s
 }
@@ -196,7 +251,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Clone() *{{.Prefix.U}}{{.Type.U}}List 
 
 // Get gets the specified element in the list.
 // Panics if the index is out of range or the list is nil.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Get(i int) {{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Get(i int) {{.Type}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -205,7 +260,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Get(i int) {{.Type.Name}} {
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty or nil.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Head() {{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Head() {{.Type}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -213,8 +268,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Head() {{.Type.Name}} {
 }
 
 // HeadOption gets the first element in the list, if possible.
-// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
-func (list *{{.Prefix.U}}{{.Type.U}}List) HeadOption() {{.Type.Name}} {
+// Otherwise returns {{if .Type.IsPtr}}nil{{else}}the zero value{{end}}.
+func (list *{{.Prefix.U}}{{.Type.U}}List) HeadOption() {{.Type}} {
 	if list == nil {
 		return {{.Type.Zero}}
 	}
@@ -230,7 +285,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) HeadOption() {{.Type.Name}} {
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty or nil.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Last() {{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Last() {{.Type}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -238,8 +293,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Last() {{.Type.Name}} {
 }
 
 // LastOption gets the last element in the list, if possible.
-// Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
-func (list *{{.Prefix.U}}{{.Type.U}}List) LastOption() {{.Type.Name}} {
+// Otherwise returns {{if .Type.IsPtr}}nil{{else}}the zero value{{end}}.
+func (list *{{.Prefix.U}}{{.Type.U}}List) LastOption() {{.Type}} {
 	if list == nil {
 		return {{.Type.Zero}}
 	}
@@ -318,15 +373,15 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Swap(i, j int) {
 {{- if .Comparable}}
 
 // Contains determines whether a given item is already in the list, returning true if so.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Contains(v {{.Type.Name}}) bool {
-	return list.Exists(func(x {{.Type.Name}}) bool {
-		return {{.Type.Star}}x == v
+func (list *{{.Prefix.U}}{{.Type.U}}List) Contains(v {{.Type}}) bool {
+	return list.Exists(func(x {{.Type}}) bool {
+		return {{.Type.Star}}v == {{.Type.Star}}x
 	})
 }
 
 // ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
-func (list *{{.Prefix.U}}{{.Type.U}}List) ContainsAll(i ...{{.Type.Name}}) bool {
+func (list *{{.Prefix.U}}{{.Type.U}}List) ContainsAll(i ...{{.Type}}) bool {
 	if list == nil {
 		return len(i) == 0
 	}
@@ -344,7 +399,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) ContainsAll(i ...{{.Type.Name}}) bool 
 {{- end}}
 
 // Exists verifies that one or more elements of {{.Prefix.U}}{{.Type.U}}List return true for the predicate p.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Exists(p func({{.Type.Name}}) bool) bool {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Exists(p func({{.Type}}) bool) bool {
 	if list == nil {
 		return false
 	}
@@ -361,7 +416,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Exists(p func({{.Type.Name}}) bool) bo
 }
 
 // Forall verifies that all elements of {{.Prefix.U}}{{.Type.U}}List return true for the predicate p.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Forall(p func({{.Type.Name}}) bool) bool {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Forall(p func({{.Type}}) bool) bool {
 	if list == nil {
 		return true
 	}
@@ -379,7 +434,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Forall(p func({{.Type.Name}}) bool) bo
 
 // Foreach iterates over {{.Prefix.U}}{{.Type.U}}List and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Foreach(f func({{.Type.Name}})) {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Foreach(f func({{.Type}})) {
 	if list == nil {
 		return
 	}
@@ -395,8 +450,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Foreach(f func({{.Type.Name}})) {
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements
 // have been consumed. The channel will be closed when all the elements have been sent.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Send() <-chan {{.Type.Name}} {
-	ch := make(chan {{.Type.Name}})
+func (list *{{.Prefix.U}}{{.Type.U}}List) Send() <-chan {{.Type}} {
+	ch := make(chan {{.Type}})
 	go func() {
 		if list != nil {
 			list.s.RLock()
@@ -503,13 +558,13 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Clear() {
 }
 
 // Add adds items to the current list. This is a synonym for Append.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Add(more ...{{.Type.Name}}) {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Add(more ...{{.Type}}) {
 	list.Append(more...)
 }
 
 // Append adds items to the current list.
 // If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Append(more ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Append(more ...{{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		if len(more) == 0 {
 			return nil
@@ -522,7 +577,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Append(more ...{{.Type.Name}}) *{{.Pre
 	return list.doAppend(more...)
 }
 
-func (list *{{.Prefix.U}}{{.Type.U}}List) doAppend(more ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) doAppend(more ...{{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	list.m = append(list.m, more...)
 	return list
 }
@@ -532,7 +587,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) doAppend(more ...{{.Type.Name}}) *{{.P
 //
 // If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if the index is out of range.
-func (list *{{.Prefix.U}}{{.Type.U}}List) DoInsertAt(index int, more ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) DoInsertAt(index int, more ...{{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		if len(more) == 0 {
 			return nil
@@ -546,7 +601,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) DoInsertAt(index int, more ...{{.Type.
 	return list.doInsertAt(index, more...)
 }
 
-func (list *{{.Prefix.U}}{{.Type.U}}List) doInsertAt(index int, more ...{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) doInsertAt(index int, more ...{{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	if len(more) == 0 {
 		return list
 	}
@@ -556,7 +611,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) doInsertAt(index int, more ...{{.Type.
 		return list.doAppend(more...)
 	}
 
-	newlist := make([]{{.Type.Name}}, 0, len(list.m)+len(more))
+	newlist := make([]{{.Type}}, 0, len(list.m)+len(more))
 
 	if index != 0 {
 		newlist = append(newlist, list.m[:index]...)
@@ -609,7 +664,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) doDeleteAt(index, n int) *{{.Prefix.U}
 		return list
 	}
 
-	newlist := make([]{{.Type.Name}}, 0, len(list.m)-n)
+	newlist := make([]{{.Type}}, 0, len(list.m)-n)
 
 	if index != 0 {
 		newlist = append(newlist, list.m[:index]...)
@@ -631,7 +686,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) doDeleteAt(index, n int) *{{.Prefix.U}
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The list is modified and the modified list is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) DoKeepWhere(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) DoKeepWhere(p func({{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -641,8 +696,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) DoKeepWhere(p func({{.Type.Name}}) boo
 	return list.doKeepWhere(p)
 }
 
-func (list *{{.Prefix.U}}{{.Type.U}}List) doKeepWhere(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
-	result := make([]{{.Type.Name}}, 0, len(list.m))
+func (list *{{.Prefix.U}}{{.Type.U}}List) doKeepWhere(p func({{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+	result := make([]{{.Type}}, 0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -745,7 +800,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) DropLast(n int) *{{.Prefix.U}}{{.Type.
 // elements are excluded.
 //
 // The original list is not modified.
-func (list *{{.Prefix.U}}{{.Type.U}}List) TakeWhile(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) TakeWhile(p func({{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -769,7 +824,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) TakeWhile(p func({{.Type.Name}}) bool)
 // elements are added.
 //
 // The original list is not modified.
-func (list *{{.Prefix.U}}{{.Type.U}}List) DropWhile(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) DropWhile(p func({{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -794,7 +849,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) DropWhile(p func({{.Type.Name}}) bool)
 
 // Find returns the first {{.Type.Name}} that returns true for predicate p.
 // False is returned if none match.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Find(p func({{.Type.Name}}) bool) ({{.Type.Name}}, bool) {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Find(p func({{.Type}}) bool) ({{.Type}}, bool) {
 	if list == nil {
 		return {{.Type.Zero}}, false
 	}
@@ -807,12 +862,12 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Find(p func({{.Type.Name}}) bool) ({{.
 			return v, true
 		}
 	}
-{{- if eq .Type.Star "*"}}
+{{- if .Type.IsPtr}}
 
 	return nil, false
 {{- else}}
 
-	var empty {{.Type.Name}}
+	var empty {{.Type}}
 	return empty, false
 {{- end}}
 }
@@ -820,7 +875,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Find(p func({{.Type.Name}}) bool) ({{.
 // Filter returns a new {{.Prefix.U}}{{.Type.U}}List whose elements return true for predicate p.
 //
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
-func (list *{{.Prefix.U}}{{.Type.U}}List) Filter(p func({{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Filter(p func({{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -839,13 +894,13 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Filter(p func({{.Type.Name}}) bool) *{
 	return result
 }
 
-// Partition returns two new {{.Type.Name}}Lists whose elements return true or false for the predicate, p.
+// Partition returns two new {{.Prefix.U}}{{.Type.U}}Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 //
 // The original list is not modified
-func (list *{{.Prefix.U}}{{.Type.U}}List) Partition(p func({{.Type.Name}}) bool) (*{{.Prefix.U}}{{.Type.U}}List, *{{.Prefix.U}}{{.Type.U}}List) {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Partition(p func({{.Type}}) bool) (*{{.Prefix.U}}{{.Type.U}}List, *{{.Prefix.U}}{{.Type.U}}List) {
 	if list == nil {
 		return nil, nil
 	}
@@ -873,7 +928,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Partition(p func({{.Type.Name}}) bool)
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *{{.Prefix.U}}{{.Type.U}}List) Map(f func({{.Type.Name}}) {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) Map(f func({{.Type}}) {{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -919,7 +974,7 @@ func (list *{{$.Prefix.U}}{{$.Type.U}}List) MapTo{{.U}}(f func({{$.Type}}) {{.}}
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *{{.Prefix.U}}{{.Type.U}}List) FlatMap(f func({{.Type.Name}}) []{{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) FlatMap(f func({{.Type}}) []{{.Type}}) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -960,7 +1015,7 @@ func (list *{{$.Prefix.U}}{{$.Type.U}}List) FlatMapTo{{.U}}(f func({{$.Type}}) [
 {{- end}}
 
 // CountBy gives the number elements of {{.Prefix.U}}{{.Type.U}}List that return true for the predicate p.
-func (list *{{.Prefix.U}}{{.Type.U}}List) CountBy(p func({{.Type.Name}}) bool) (result int) {
+func (list *{{.Prefix.U}}{{.Type.U}}List) CountBy(p func({{.Type}}) bool) (result int) {
 	if list == nil {
 		return 0
 	}
@@ -979,7 +1034,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) CountBy(p func({{.Type.Name}}) bool) (
 // MinBy returns an element of {{.Prefix.U}}{{.Type.U}}List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (list *{{.Prefix.U}}{{.Type.U}}List) MinBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) MinBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -994,13 +1049,14 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) MinBy(less func({{.Type.Name}}, {{.Typ
 			m = i
 		}
 	}
+
 	return list.m[m]
 }
 
 // MaxBy returns an element of {{.Prefix.U}}{{.Type.U}}List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (list *{{.Prefix.U}}{{.Type.U}}List) MaxBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}} {
+func (list *{{.Prefix.U}}{{.Type.U}}List) MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}} {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -1008,6 +1064,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) MaxBy(less func({{.Type.Name}}, {{.Typ
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
 	}
+
 	m := 0
 	for i := 1; i < l; i++ {
 		if less(list.m[m], list.m[i]) {
@@ -1019,7 +1076,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) MaxBy(less func({{.Type.Name}}, {{.Typ
 }
 
 // DistinctBy returns a new {{.Prefix.U}}{{.Type.U}}List whose elements are unique, where equality is defined by the equal function.
-func (list *{{.Prefix.U}}{{.Type.U}}List) DistinctBy(equal func({{.Type.Name}}, {{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) DistinctBy(equal func({{.Type}}, {{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -1041,13 +1098,13 @@ Outer:
 }
 
 // IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) IndexWhere(p func({{.Type.Name}}) bool) int {
+func (list *{{.Prefix.U}}{{.Type.U}}List) IndexWhere(p func({{.Type}}) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
 // IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) IndexWhere2(p func({{.Type.Name}}) bool, from int) int {
+func (list *{{.Prefix.U}}{{.Type.U}}List) IndexWhere2(p func({{.Type}}) bool, from int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -1061,13 +1118,13 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) IndexWhere2(p func({{.Type.Name}}) boo
 
 // LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) LastIndexWhere(p func({{.Type.Name}}) bool) int {
+func (list *{{.Prefix.U}}{{.Type.U}}List) LastIndexWhere(p func({{.Type}}) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) LastIndexWhere2(p func({{.Type.Name}}) bool, before int) int {
+func (list *{{.Prefix.U}}{{.Type.U}}List) LastIndexWhere2(p func({{.Type}}) bool, before int) int {
 	list.s.RLock()
 	defer list.s.RUnlock()
 
@@ -1129,8 +1186,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Equals(other *{{.Prefix.U}}{{.Type.U}}
 //-------------------------------------------------------------------------------------------------
 
 type sortable{{.Prefix.U}}{{.Type.U}}List struct {
-	less func(i, j {{.Type.Name}}) bool
-	m []{{.Type.Name}}
+	less func(i, j {{.Type}}) bool
+	m []{{.Type}}
 }
 
 func (sl sortable{{.Prefix.U}}{{.Type.U}}List) Less(i, j int) bool {
@@ -1147,7 +1204,7 @@ func (sl sortable{{.Prefix.U}}{{.Type.U}}List) Swap(i, j int) {
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list *{{.Prefix.U}}{{.Type.U}}List) SortBy(less func(i, j {{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) SortBy(less func(i, j {{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -1162,7 +1219,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) SortBy(less func(i, j {{.Type.Name}}) 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list *{{.Prefix.U}}{{.Type.U}}List) StableSortBy(less func(i, j {{.Type.Name}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
+func (list *{{.Prefix.U}}{{.Type.U}}List) StableSortBy(less func(i, j {{.Type}}) bool) *{{.Prefix.U}}{{.Type.U}}List {
 	if list == nil {
 		return nil
 	}
@@ -1181,7 +1238,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) StableSortBy(less func(i, j {{.Type.Na
 // Sorted alters the list so that the elements are sorted by their natural ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list *{{.Prefix.U}}{{.Type.U}}List) Sorted() *{{.Prefix.U}}{{.Type.U}}List {
-	return list.SortBy(func(a, b {{.Type.Name}}) bool {
+	return list.SortBy(func(a, b {{.Type}}) bool {
 		return {{.Type.Star}}a < {{.Type.Star}}b
 	})
 }
@@ -1189,7 +1246,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Sorted() *{{.Prefix.U}}{{.Type.U}}List
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list *{{.Prefix.U}}{{.Type.U}}List) StableSorted() *{{.Prefix.U}}{{.Type.U}}List {
-	return list.StableSortBy(func(a, b {{.Type.Name}}) bool {
+	return list.StableSortBy(func(a, b {{.Type}}) bool {
 		return {{.Type.Star}}a < {{.Type.Star}}b
 	})
 }

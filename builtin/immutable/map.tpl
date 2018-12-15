@@ -1,5 +1,8 @@
-// An encapsulated map[{{.Key.Name}}]{{.Type}}.
+// An encapsulated immutable map[{{.Key.Name}}]{{.Type}}.
 // Thread-safe.
+//{{if .Type.IsPtr}}
+// Warning: THIS COLLECTION IS NOT DESIGNED TO BE USED WITH POINTER TYPES.
+//{{end}}
 //
 // Generated from {{.TemplateFile}} with Key={{.Key.Name}} Type={{.Type}}
 // options: Comparable:{{.Comparable}} Stringer:{{.Stringer}} KeyList:{{.KeyList}} ValueList:{{.ValueList}} Mutable:disabled

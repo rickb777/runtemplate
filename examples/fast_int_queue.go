@@ -729,7 +729,7 @@ func (queue *FastIntQueue) Filter(p func(int) bool) *FastIntQueue {
 	return result
 }
 
-// Partition returns two new intQueues whose elements return true or false for the predicate, p.
+// Partition returns two new FastIntQueues whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original queue.

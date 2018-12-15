@@ -1,4 +1,4 @@
-// Generated from {{.TemplateFile}} with Type={{.Type.Name}} ToType={{.ToType}}
+// Generated from {{.TemplateFile}} with Type={{.Type}} ToType={{.ToType}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -12,7 +12,7 @@ import (
 {{end -}}
 // {{.Prefix.U}}{{.Type.U}}MapTo{{.ToPrefix.U}}{{.ToType.U}} transforms a stream of {{.Type.Name}} to a stream of {{.ToType.Name}}.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
-func {{.Prefix.U}}{{.Type.U}}MapTo{{.ToPrefix.U}}{{.ToType.U}}(in <-chan {{.Type.Name}}, out chan<- {{.ToType}}, fn func({{.Type.Name}}) {{.ToType}}) {
+func {{.Prefix.U}}{{.Type.U}}MapTo{{.ToPrefix.U}}{{.ToType.U}}(in <-chan {{.Type}}, out chan<- {{.ToType}}, fn func({{.Type}}) {{.ToType}}) {
 	for v := range in {
 		out <- fn(v)
 	}
@@ -21,7 +21,7 @@ func {{.Prefix.U}}{{.Type.U}}MapTo{{.ToPrefix.U}}{{.ToType.U}}(in <-chan {{.Type
 
 // {{.Prefix.U}}{{.Type.U}}FlatMapTo{{.ToPrefix.U}}{{.ToType.U}} transforms a stream of {{.Type.Name}} to a stream of {{.ToType.Name}}.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
-func {{.Prefix.U}}{{.Type.U}}FlatMapTo{{.ToPrefix.U}}{{.ToType.U}}(in <-chan {{.Type.Name}}, out chan<- {{.ToType}}, fn func({{.Type.Name}}) {{.ToPrefix.U}}{{.ToType.U}}Collection) {
+func {{.Prefix.U}}{{.Type.U}}FlatMapTo{{.ToPrefix.U}}{{.ToType.U}}(in <-chan {{.Type}}, out chan<- {{.ToType}}, fn func({{.Type}}) {{.ToPrefix.U}}{{.ToType.U}}Collection) {
 	for vi := range in {
 		c := fn(vi)
 		if c.NonEmpty() {

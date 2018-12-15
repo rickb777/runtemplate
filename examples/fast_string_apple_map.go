@@ -1,4 +1,5 @@
 // An encapsulated map[string]Apple.
+//
 // Not thread-safe.
 //
 // Generated from fast/map.tpl with Key=string Type=Apple
@@ -125,7 +126,7 @@ func (mm *FastStringAppleMap) slice() []FastStringAppleTuple {
 
 	s := make([]FastStringAppleTuple, 0, len(mm.m))
 	for k, v := range mm.m {
-		s = append(s, FastStringAppleTuple{k, v})
+		s = append(s, FastStringAppleTuple{(k), v})
 	}
 
 	return s
@@ -234,7 +235,7 @@ func (mm *FastStringAppleMap) DropWhere(fn func(string, Apple) bool) FastStringA
 	removed := make(FastStringAppleTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-			removed = append(removed, FastStringAppleTuple{k, v})
+			removed = append(removed, FastStringAppleTuple{(k), v})
 			delete(mm.m, k)
 		}
 	}
@@ -299,7 +300,7 @@ func (mm *FastStringAppleMap) Find(p func(string, Apple) bool) (FastStringAppleT
 
 	for k, v := range mm.m {
 		if p(k, v) {
-			return FastStringAppleTuple{k, v}, true
+			return FastStringAppleTuple{(k), v}, true
 		}
 	}
 

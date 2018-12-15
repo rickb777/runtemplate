@@ -1,5 +1,8 @@
-// An encapsulated []{{.Type.Name}}.
+// An encapsulated immutable []{{.Type.Name}}.
 // Thread-safe.
+//{{if .Type.IsPtr}}
+// Warning: THIS COLLECTION IS NOT DESIGNED TO BE USED WITH POINTER TYPES.
+//{{end}}
 //
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:disabled
@@ -57,48 +60,96 @@ func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.
 // The returned list will contain all the values that were correctly converted.
 func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{{.Type.U}}List, bool) {
 	list := new{{.Prefix.U}}{{.Type.U}}List(0, len(values))
-{{if and .Numeric (not .TypeIsPtr)}}
+
 	for _, i := range values {
-		switch i.(type) {
+		switch j := i.(type) {
+{{- if .Numeric}}
 		case int:
-			list.m = append(list.m, {{.Type.Name}}(i.(int)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int8:
-			list.m = append(list.m, {{.Type.Name}}(i.(int8)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int8:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int16:
-			list.m = append(list.m, {{.Type.Name}}(i.(int16)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int16:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int32:
-			list.m = append(list.m, {{.Type.Name}}(i.(int32)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int32:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case int64:
-			list.m = append(list.m, {{.Type.Name}}(i.(int64)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *int64:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint8:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint8)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint8:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint16:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint16)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint16:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint32:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint32)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint32:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case uint64:
-			list.m = append(list.m, {{.Type.Name}}(i.(uint64)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *uint64:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case float32:
-			list.m = append(list.m, {{.Type.Name}}(i.(float32)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *float32:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case float64:
-			list.m = append(list.m, {{.Type.Name}}(i.(float64)))
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *float64:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+{{- else}}
+        case {{.Type.Name}}:
+			list.m = append(list.m, j)
+        case *{{.Type.Name}}:
+			list.m = append(list.m, *j)
+{{- end}}
 		}
 	}
-{{else}}
-	for _, i := range values {
-		v, ok := i.({{.Type.Name}})
-		if ok {
-			list.m = append(list.m, v)
-		}
-	}
-{{end}}
+
 	return list, len(list.m) == len(values)
 }
 
-// Build{{.Prefix.U}}{{.Type.U}}ListFromChan constructs a new {{.Prefix.U}}{{.Type.U}}List from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// Build{{.Prefix.U}}{{.Type.U}}ListFromChan constructs a new {{.Prefix.U}}{{.Type.U}}List from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func Build{{.Prefix.U}}{{.Type.U}}ListFromChan(source <-chan {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}List {
 	list := new{{.Prefix.U}}{{.Type.U}}List(0, 0)
 	for v := range source {
@@ -185,7 +236,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Head() {{.Type.Name}} {
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.Prefix.U}}{{.Type.U}}List) HeadOption() {{.Type.Name}} {
 	if list == nil || len(list.m) == 0 {
-		return {{.Type.Zero}}
+	    var v {{.Type.Name}}
+		return v
 	}
 	return list.m[0]
 }
@@ -200,7 +252,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Last() {{.Type.Name}} {
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.Prefix.U}}{{.Type.U}}List) LastOption() {{.Type.Name}} {
 	if list == nil || len(list.m) == 0 {
-		return {{.Type.Zero}}
+	    var v {{.Type.Name}}
+		return v
 	}
 	return list.m[len(list.m)-1]
 }

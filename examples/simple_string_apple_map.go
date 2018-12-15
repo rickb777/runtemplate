@@ -1,4 +1,5 @@
 // A simple type derived from map[string]Apple.
+//
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=string Type=Apple
@@ -102,13 +103,18 @@ func (mm SimpleStringAppleMap) Values() []Apple {
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm SimpleStringAppleMap) ToSlice() []SimpleStringAppleTuple {
+// slice returns the internal elements of the map. This is a seam for testing etc.
+func (mm SimpleStringAppleMap) slice() []SimpleStringAppleTuple {
 	s := make([]SimpleStringAppleTuple, 0, len(mm))
 	for k, v := range mm {
-		s = append(s, SimpleStringAppleTuple{k, v})
+		s = append(s, SimpleStringAppleTuple{(k), v})
 	}
 	return s
+}
+
+// ToSlice returns the key/value pairs as a slice
+func (mm SimpleStringAppleMap) ToSlice() []SimpleStringAppleTuple {
+	return mm.slice()
 }
 
 // Get returns one of the items in the map, if present.
@@ -179,7 +185,7 @@ func (mm SimpleStringAppleMap) DropWhere(fn func(string, Apple) bool) SimpleStri
 	removed := make(SimpleStringAppleTuples, 0)
 	for k, v := range mm {
 		if fn(k, v) {
-			removed = append(removed, SimpleStringAppleTuple{k, v})
+			removed = append(removed, SimpleStringAppleTuple{(k), v})
 			delete(mm, k)
 		}
 	}
@@ -229,7 +235,7 @@ func (mm SimpleStringAppleMap) Exists(p func(string, Apple) bool) bool {
 func (mm SimpleStringAppleMap) Find(p func(string, Apple) bool) (SimpleStringAppleTuple, bool) {
 	for k, v := range mm {
 		if p(k, v) {
-			return SimpleStringAppleTuple{k, v}, true
+			return SimpleStringAppleTuple{(k), v}, true
 		}
 	}
 

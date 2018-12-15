@@ -1,4 +1,5 @@
 // A simple type derived from map[int]int.
+//
 // Not thread-safe.
 //
 // Generated from simple/map.tpl with Key=int Type=int
@@ -102,13 +103,18 @@ func (mm SimpleIntIntMap) Values() []int {
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm SimpleIntIntMap) ToSlice() []SimpleIntIntTuple {
+// slice returns the internal elements of the map. This is a seam for testing etc.
+func (mm SimpleIntIntMap) slice() []SimpleIntIntTuple {
 	s := make([]SimpleIntIntTuple, 0, len(mm))
 	for k, v := range mm {
-		s = append(s, SimpleIntIntTuple{k, v})
+		s = append(s, SimpleIntIntTuple{(k), v})
 	}
 	return s
+}
+
+// ToSlice returns the key/value pairs as a slice
+func (mm SimpleIntIntMap) ToSlice() []SimpleIntIntTuple {
+	return mm.slice()
 }
 
 // Get returns one of the items in the map, if present.
@@ -179,7 +185,7 @@ func (mm SimpleIntIntMap) DropWhere(fn func(int, int) bool) SimpleIntIntTuples {
 	removed := make(SimpleIntIntTuples, 0)
 	for k, v := range mm {
 		if fn(k, v) {
-			removed = append(removed, SimpleIntIntTuple{k, v})
+			removed = append(removed, SimpleIntIntTuple{(k), v})
 			delete(mm, k)
 		}
 	}
@@ -229,7 +235,7 @@ func (mm SimpleIntIntMap) Exists(p func(int, int) bool) bool {
 func (mm SimpleIntIntMap) Find(p func(int, int) bool) (SimpleIntIntTuple, bool) {
 	for k, v := range mm {
 		if p(k, v) {
-			return SimpleIntIntTuple{k, v}, true
+			return SimpleIntIntTuple{(k), v}, true
 		}
 	}
 

@@ -1,4 +1,5 @@
 // An encapsulated map[string]Apple.
+//
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=string Type=Apple
@@ -134,7 +135,7 @@ func (mm *StringAppleMap) slice() []StringAppleTuple {
 
 	s := make([]StringAppleTuple, 0, len(mm.m))
 	for k, v := range mm.m {
-		s = append(s, StringAppleTuple{k, v})
+		s = append(s, StringAppleTuple{(k), v})
 	}
 
 	return s
@@ -268,7 +269,7 @@ func (mm *StringAppleMap) DropWhere(fn func(string, Apple) bool) StringAppleTupl
 	removed := make(StringAppleTuples, 0)
 	for k, v := range mm.m {
 		if fn(k, v) {
-			removed = append(removed, StringAppleTuple{k, v})
+			removed = append(removed, StringAppleTuple{(k), v})
 			delete(mm.m, k)
 		}
 	}
@@ -344,7 +345,7 @@ func (mm *StringAppleMap) Find(p func(string, Apple) bool) (StringAppleTuple, bo
 
 	for k, v := range mm.m {
 		if p(k, v) {
-			return StringAppleTuple{k, v}, true
+			return StringAppleTuple{(k), v}, true
 		}
 	}
 

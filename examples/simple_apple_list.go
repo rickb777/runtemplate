@@ -42,9 +42,11 @@ func ConvertSimpleAppleList(values ...interface{}) (SimpleAppleList, bool) {
 	list := MakeSimpleAppleList(0, len(values))
 
 	for _, i := range values {
-		v, ok := i.(Apple)
-		if ok {
-			list = append(list, v)
+		switch j := i.(type) {
+		case Apple:
+			list = append(list, j)
+		case *Apple:
+			list = append(list, *j)
 		}
 	}
 
@@ -63,7 +65,7 @@ func BuildSimpleAppleListFromChan(source <-chan Apple) SimpleAppleList {
 
 //-------------------------------------------------------------------------------------------------
 
-// IsSequence returns true for ordered lists and queues.
+// IsSequence returns true for lists and queues.
 func (list SimpleAppleList) IsSequence() bool {
 	return true
 }
@@ -71,6 +73,11 @@ func (list SimpleAppleList) IsSequence() bool {
 // IsSet returns false for lists or queues.
 func (list SimpleAppleList) IsSet() bool {
 	return false
+}
+
+// slice returns the internal elements of the current list. This is a seam for testing etc.
+func (list SimpleAppleList) slice() []Apple {
+	return list
 }
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
