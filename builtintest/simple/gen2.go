@@ -20,6 +20,7 @@ package simple
 //go:generate runtemplate -tpl simple/set.tpl        Prefix=P1 Type=*int     ToList:true  Stringer:true  Ordered:true  Numeric:true JsonEncode:true                MapTo:string MapTo:int64
 //go:generate runtemplate -tpl simple/set.tpl        Prefix=P1 Type=*Apple   ToList:true  Stringer:false
 
+
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TP1 Key=*int    Type=*int     Comparable:true Stringer:true
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TP1 Key=*string Type=*string  Comparable:true
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TP1 Key=*string Type=*Apple
@@ -34,6 +35,7 @@ package simple
 var _ P1StringCollection = NewP1StringList()
 var _ P1IntCollection = NewP1IntList()
 var _ P1AppleCollection = NewP1AppleList()
+
 
 var _ P1StringCollection = NewP1StringSet()
 var _ P1IntCollection = NewP1IntSet()
