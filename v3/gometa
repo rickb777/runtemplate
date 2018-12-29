@@ -1,0 +1,7 @@
+#!/bin/bash -e
+cd $(dirname $0)
+
+PATH=$HOME/go/bin:$PATH
+unset GOPATH
+
+gometalinter ./... --config gometalinter.json

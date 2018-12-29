@@ -1,0 +1,39 @@
+#!/bin/bash -e
+# The builtin/threadsafe templates provide the primary 'source of truth'.
+# This script creates the builtin/fast templates automatically.
+# Then manually verify that the immutable and simple templates are consistent.
+
+sed 's#threadsafe#fast#' < builtintest/threadsafe/gen1.go > builtintest/fast/gen1.go
+sed 's#threadsafe#fast#' < builtintest/threadsafe/gen2.go > builtintest/fast/gen2.go
+
+sed 's#threadsafe#simple#'  < builtintest/threadsafe/gen1.go | \
+  sed 's# Mutable:true##'   | \
+  sed 's# Append:true##'    | \
+  sed 's# GobEncode:true##' | \
+  fgrep -iv queue > builtintest/simple/gen1.go
+
+sed 's#threadsafe#simple#'  < builtintest/threadsafe/gen2.go | \
+  sed 's# Mutable:true##'   | \
+  sed 's# Append:true##'    | \
+  sed 's# GobEncode:true##' | \
+  fgrep -iv queue > builtintest/simple/gen2.go
+
+sed 's#threadsafe#immutable#' < builtintest/threadsafe/gen1.go | \
+  sed 's# Mutable:true##' | \
+  sed 's# Append:true##'  | \
+  fgrep -v plumbing | \
+  fgrep -iv queue > builtintest/immutable/gen1.go
+
+cd builtin
+
+cat threadsafe/collection.tpl > fast/collection.tpl
+
+for tpl in list.tpl queue.tpl map.tpl set.tpl; do
+  echo $tpl
+  cat threadsafe/$tpl | \
+      fgrep -v '"sync"'    | fgrep -v 'sync.RWMutex' | \
+      fgrep -v 's.Lock()'  | fgrep -v 's.Unlock()'   | \
+      fgrep -v 's.RLock()' | fgrep -v 's.RUnlock()'  | \
+      sed 's#Thread-safe#Not thread-safe#' | \
+      cat -s > fast/$tpl
+done
