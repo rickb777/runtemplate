@@ -4,7 +4,7 @@
 //
 // Generated from immutable/set.tpl with Type=testtypes.Email
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:<no value> Mutable:disabled
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable

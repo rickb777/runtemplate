@@ -2,7 +2,7 @@
 //
 // Generated from types/stringy.tpl with Type=Category
 // options: SortableSlice:<no value>
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package testtypes

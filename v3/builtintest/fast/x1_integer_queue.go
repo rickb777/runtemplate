@@ -11,15 +11,14 @@
 // Generated from fast/queue.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:true ToSet:false
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
 
 import (
-	//
-	"math/big"
 	"sort"
+	"math/big"
 )
 
 // X1IntegerQueue is a ring buffer containing a slice of type big.Int. It is optimised
@@ -205,10 +204,10 @@ func (queue *X1IntegerQueue) Clone() *X1IntegerQueue {
 }
 
 func (queue *X1IntegerQueue) doClone(buffer []big.Int) *X1IntegerQueue {
-	w := 0
-	if len(buffer) < cap(buffer) {
-		w = len(buffer)
-	}
+    w := 0
+    if len(buffer) < cap(buffer) {
+        w = len(buffer)
+    }
 	return &X1IntegerQueue{
 		m:         buffer,
 		read:      0,
@@ -391,10 +390,10 @@ func (queue *X1IntegerQueue) indexes() []int {
 // Clear the entire queue.
 func (queue *X1IntegerQueue) Clear() {
 	if queue != nil {
-		queue.read = 0
-		queue.write = 0
-		queue.length = 0
-	}
+    	queue.read = 0
+	    queue.write = 0
+	    queue.length = 0
+    }
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -419,7 +418,7 @@ func (queue *X1IntegerQueue) Push(items ...big.Int) *X1IntegerQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -466,7 +465,7 @@ func (queue *X1IntegerQueue) doPush(items ...big.Int) []big.Int {
 		return surplus
 	}
 
-	if n <= queue.capacity-queue.write {
+	if n <= queue.capacity - queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity
@@ -639,7 +638,7 @@ func (queue *X1IntegerQueue) doKeepWhere(p func(big.Int) bool) *X1IntegerQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
-		// only need to process the front of the queue
+	    // only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -650,9 +649,9 @@ func (queue *X1IntegerQueue) doKeepWhere(p func(big.Int) bool) *X1IntegerQueue {
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-			if w != r {
-				queue.m[w] = queue.m[r]
-			}
+    		if w != r {
+		    	queue.m[w] = queue.m[r]
+	    	}
 			w++
 			n++
 		}
@@ -662,8 +661,8 @@ func (queue *X1IntegerQueue) doKeepWhere(p func(big.Int) bool) *X1IntegerQueue {
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-		// only needed to process the front of the queue
-		queue.write = w
+	    // only needed to process the front of the queue
+    	queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -672,9 +671,9 @@ func (queue *X1IntegerQueue) doKeepWhere(p func(big.Int) bool) *X1IntegerQueue {
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-			if w != r {
-				queue.m[w] = queue.m[r]
-			}
+    		if w != r {
+		    	queue.m[w] = queue.m[r]
+	    	}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -824,7 +823,7 @@ func (queue *X1IntegerQueue) MapToString(f func(big.Int) string) []string {
 
 	result := make([]string, 0, queue.length)
 
-	front, back := queue.frontAndBack()
+    front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}
@@ -848,7 +847,7 @@ func (queue *X1IntegerQueue) MapToInt(f func(big.Int) int) []int {
 
 	result := make([]int, 0, queue.length)
 
-	front, back := queue.frontAndBack()
+    front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}
@@ -872,7 +871,7 @@ func (queue *X1IntegerQueue) FlatMap(f func(big.Int) []big.Int) *X1IntegerQueue 
 
 	slice := make([]big.Int, 0, queue.length)
 
-	front, back := queue.frontAndBack()
+    front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}

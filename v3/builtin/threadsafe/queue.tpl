@@ -20,9 +20,6 @@ import (
 {{- if or .Stringer .GobEncode}}
 	"bytes"
 {{- end}}
-//{{- if .GobEncode}}
-//	"encoding/gob"
-//{{- end}}
 {{- if .Stringer}}
 	"encoding/json"
 	"fmt"
@@ -1318,28 +1315,3 @@ func (queue {{.Prefix.U}}{{.Type.U}}Queue) MarshalJSON() ([]byte, error) {
 	return buf, err
 }
 {{- end}}
-{{- if .GobEncode}}
-
-//-------------------------------------------------------------------------------------------------
-
-//// GobDecode implements 'gob' decoding for this queue type.
-//// You must register {{.Type.Name}} with the 'gob' package before this method is used.
-//func (queue *{{.Prefix.U}}{{.Type.U}}Queue) GobDecode(b []byte) error {
-//	queue.s.Lock()
-//	defer queue.s.Unlock()
-//
-//	buf := bytes.NewBuffer(b)
-//	return gob.NewDecoder(buf).Decode(&queue.m)
-//}
-//
-// GobEncode implements 'gob' encoding for this list type.
-// You must register {{.Type.Name}} with the 'gob' package before this method is used.
-//func (queue {{.Prefix.U}}{{.Type.U}}Queue) GobEncode() ([]byte, error) {
-//	queue.s.RLock()
-//	defer queue.s.RUnlock()
-//
-//	buf := &bytes.Buffer{}
-//	err := gob.NewEncoder(buf).Encode(queue.m)
-//	return buf.Bytes(), err
-//}
-//{{- end}}

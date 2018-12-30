@@ -4,15 +4,16 @@
 //
 // Generated from threadsafe/map.tpl with Key=*string Type=*big.Int
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
 
 import (
 	"fmt"
-	"math/big"
 	"sync"
+	"math/big"
+
 )
 
 // TP1StringIntegerMap is the primary type that represents a thread-safe map

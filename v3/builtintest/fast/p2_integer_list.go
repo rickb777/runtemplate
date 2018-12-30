@@ -4,15 +4,15 @@
 // Generated from fast/list.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:<no value>
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
 
 import (
-	"math/big"
 	"math/rand"
 	"sort"
+	"math/big"
 )
 
 // P2IntegerList contains a slice of type *big.Int.
@@ -48,9 +48,9 @@ func ConvertP2IntegerList(values ...interface{}) (*P2IntegerList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case big.Int:
+        case big.Int:
 			list.m = append(list.m, &j)
-		case *big.Int:
+        case *big.Int:
 			list.m = append(list.m, j)
 		}
 	}
@@ -363,8 +363,8 @@ func (list *P2IntegerList) doShuffle() *P2IntegerList {
 // Clear the entire collection.
 func (list *P2IntegerList) Clear() {
 	if list != nil {
-		list.m = list.m[:]
-	}
+	    list.m = list.m[:]
+    }
 }
 
 // Add adds items to the current list. This is a synonym for Append.
@@ -843,7 +843,7 @@ func (list *P2IntegerList) LastIndexWhere2(p func(*big.Int) bool, before int) in
 
 type sortableP2IntegerList struct {
 	less func(i, j *big.Int) bool
-	m    []*big.Int
+	m []*big.Int
 }
 
 func (sl sortableP2IntegerList) Less(i, j int) bool {

@@ -4,15 +4,15 @@
 // Generated from simple/list.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
 // GobEncode:<no value> Mutable:always ToList:always ToSet:false
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
-	"math/big"
 	"math/rand"
 	"sort"
+	"math/big"
 )
 
 // X1IntegerList is a slice of type big.Int. Use it where you would use []big.Int.
@@ -44,9 +44,9 @@ func ConvertX1IntegerList(values ...interface{}) (X1IntegerList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case big.Int:
+        case big.Int:
 			list = append(list, j)
-		case *big.Int:
+        case *big.Int:
 			list = append(list, *j)
 		}
 	}
@@ -341,7 +341,7 @@ func (list X1IntegerList) DropLast(n int) X1IntegerList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0 : l-n]
+    return list[0:l-n]
 }
 
 // TakeWhile returns a new X1IntegerList containing the leading elements of the source list. Whilst the
@@ -568,7 +568,7 @@ func (list X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int 
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m    []big.Int
+	m []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {

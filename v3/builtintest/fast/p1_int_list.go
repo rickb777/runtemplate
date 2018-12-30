@@ -4,7 +4,7 @@
 // Generated from fast/list.tpl with Type=*int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
@@ -465,8 +465,8 @@ func (list *P1IntList) doShuffle() *P1IntList {
 // Clear the entire collection.
 func (list *P1IntList) Clear() {
 	if list != nil {
-		list.m = list.m[:]
-	}
+	    list.m = list.m[:]
+    }
 }
 
 // Add adds items to the current list. This is a synonym for Append.
@@ -977,7 +977,7 @@ func (list *P1IntList) Equals(other *P1IntList) bool {
 
 type sortableP1IntList struct {
 	less func(i, j *int) bool
-	m    []*int
+	m []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {

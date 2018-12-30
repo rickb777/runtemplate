@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=*int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -402,7 +402,7 @@ func (list P1IntList) DropLast(n int) P1IntList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0 : l-n]
+    return list[0:l-n]
 }
 
 // TakeWhile returns a new P1IntList containing the leading elements of the source list. Whilst the
@@ -656,7 +656,7 @@ func (list P1IntList) Equals(other P1IntList) bool {
 
 type sortableP1IntList struct {
 	less func(i, j *int) bool
-	m    []*int
+	m []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {

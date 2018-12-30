@@ -1,9 +1,10 @@
 // Generated from fast/collection.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> Mutable:always
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
+
 
 import (
 	"math/big"
@@ -57,8 +58,8 @@ type P2IntegerCollection interface {
 	// CountBy gives the number elements of P2IntegerCollection that return true for the predicate p.
 	CountBy(p func(*big.Int) bool) int
 
-	// Clear the entire collection.
-	Clear()
+    // Clear the entire collection.
+    Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...*big.Int)

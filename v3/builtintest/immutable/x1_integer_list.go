@@ -4,15 +4,15 @@
 //
 // Generated from immutable/list.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> GobEncode:<no value> Mutable:disabled
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
 
 import (
-	"math/big"
 	"math/rand"
 	"sort"
+	"math/big"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -29,7 +29,7 @@ type X1IntegerList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newX1IntegerList(length, capacity int) *X1IntegerList {
-	return &X1IntegerList{
+	return &X1IntegerList {
 		m: make([]big.Int, length, capacity),
 	}
 }
@@ -49,9 +49,9 @@ func ConvertX1IntegerList(values ...interface{}) (*X1IntegerList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case big.Int:
+        case big.Int:
 			list.m = append(list.m, j)
-		case *big.Int:
+        case *big.Int:
 			list.m = append(list.m, *j)
 		}
 	}
@@ -135,7 +135,7 @@ func (list *X1IntegerList) Head() big.Int {
 // Otherwise returns the zero value.
 func (list *X1IntegerList) HeadOption() big.Int {
 	if list == nil || len(list.m) == 0 {
-		var v big.Int
+	    var v big.Int
 		return v
 	}
 	return list.m[0]
@@ -151,7 +151,7 @@ func (list *X1IntegerList) Last() big.Int {
 // Otherwise returns the zero value.
 func (list *X1IntegerList) LastOption() big.Int {
 	if list == nil || len(list.m) == 0 {
-		var v big.Int
+	    var v big.Int
 		return v
 	}
 	return list.m[len(list.m)-1]
@@ -429,6 +429,7 @@ func (list *X1IntegerList) Find(p func(big.Int) bool) (big.Int, bool) {
 		}
 	}
 
+
 	var empty big.Int
 	return empty, false
 }
@@ -623,7 +624,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m    []big.Int
+	m []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {

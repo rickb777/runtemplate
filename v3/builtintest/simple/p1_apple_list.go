@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=*Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -43,9 +43,9 @@ func ConvertP1AppleList(values ...interface{}) (P1AppleList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case Apple:
+        case Apple:
 			list = append(list, &j)
-		case *Apple:
+        case *Apple:
 			list = append(list, j)
 		}
 	}
@@ -368,7 +368,7 @@ func (list P1AppleList) DropLast(n int) P1AppleList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0 : l-n]
+    return list[0:l-n]
 }
 
 // TakeWhile returns a new P1AppleList containing the leading elements of the source list. Whilst the
@@ -622,7 +622,7 @@ func (list P1AppleList) Equals(other P1AppleList) bool {
 
 type sortableP1AppleList struct {
 	less func(i, j *Apple) bool
-	m    []*Apple
+	m []*Apple
 }
 
 func (sl sortableP1AppleList) Less(i, j int) bool {

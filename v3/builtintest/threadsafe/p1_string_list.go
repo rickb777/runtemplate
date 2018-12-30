@@ -4,7 +4,7 @@
 // Generated from threadsafe/list.tpl with Type=*string
 // options: Comparable:true Numeric:false Ordered:false Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -53,9 +53,9 @@ func ConvertP1StringList(values ...interface{}) (*P1StringList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case string:
+        case string:
 			list.m = append(list.m, &j)
-		case *string:
+        case *string:
 			list.m = append(list.m, j)
 		}
 	}
@@ -455,10 +455,10 @@ func (list *P1StringList) doShuffle() *P1StringList {
 // Clear the entire collection.
 func (list *P1StringList) Clear() {
 	if list != nil {
-		list.s.Lock()
-		defer list.s.Unlock()
-		list.m = list.m[:]
-	}
+    	list.s.Lock()
+	    defer list.s.Unlock()
+	    list.m = list.m[:]
+    }
 }
 
 // Add adds items to the current list. This is a synonym for Append.
@@ -1035,7 +1035,7 @@ func (list *P1StringList) Equals(other *P1StringList) bool {
 
 type sortableP1StringList struct {
 	less func(i, j *string) bool
-	m    []*string
+	m []*string
 }
 
 func (sl sortableP1StringList) Less(i, j int) bool {

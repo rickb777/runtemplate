@@ -4,15 +4,15 @@
 // Generated from simple/list.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v3.1.0
+// by runtemplate v3.1.2
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
-	"math/big"
 	"math/rand"
 	"sort"
+	"math/big"
 )
 
 // P2IntegerList is a slice of type *big.Int. Use it where you would use []*big.Int.
@@ -44,9 +44,9 @@ func ConvertP2IntegerList(values ...interface{}) (P2IntegerList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case big.Int:
+        case big.Int:
 			list = append(list, &j)
-		case *big.Int:
+        case *big.Int:
 			list = append(list, j)
 		}
 	}
@@ -341,7 +341,7 @@ func (list P2IntegerList) DropLast(n int) P2IntegerList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0 : l-n]
+    return list[0:l-n]
 }
 
 // TakeWhile returns a new P2IntegerList containing the leading elements of the source list. Whilst the
@@ -567,7 +567,7 @@ func (list P2IntegerList) LastIndexWhere2(p func(*big.Int) bool, before int) int
 
 type sortableP2IntegerList struct {
 	less func(i, j *big.Int) bool
-	m    []*big.Int
+	m []*big.Int
 }
 
 func (sl sortableP2IntegerList) Less(i, j int) bool {
