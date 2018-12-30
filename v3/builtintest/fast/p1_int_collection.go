@@ -50,6 +50,12 @@ type P1IntCollection interface {
 	// IsSet returns false for lists and queues.
 	IsSet() bool
 
+	// ToList returns a shallow copy as a list.
+	ToList() *P1IntList
+
+	// ToSet returns a shallow copy as a set.
+	ToSet() *P1IntSet
+
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []*int
 
@@ -82,8 +88,8 @@ type P1IntCollection interface {
 	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...*int) bool
 
-    // Clear the entire collection.
-    Clear()
+	// Clear the entire collection.
+	Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...*int)

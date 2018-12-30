@@ -1,4 +1,4 @@
-// A queue or fifo that holds *big.Int, implemented via a ring buffer. Unlike the list collections, these
+// A queue or fifo that holds big.Int, implemented via a ring buffer. Unlike the list collections, these
 // have a fixed size (although this can be changed when needed). For mutable collection that need frequent
 // appending, the fixed size is a benefit because the memory footprint is constrained. However, this is
 // not usable unless the rate of removing items from the queue is, over time, the same as the rate of addition.
@@ -6,61 +6,64 @@
 //
 // The queue provides a method to sort its elements.
 //
-// Not thread-safe.
+// Thread-safe.
 //
-// Generated from fast/queue.tpl with Type=*big.Int
+// Generated from threadsafe/queue.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
-// ToList:true ToSet:<no value>
+// ToList:true ToSet:false
 // by runtemplate v3.1.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
-package fast
+package threadsafe
 
 import (
-//
-	"sort"
+	//
 	"math/big"
+	"sort"
+	"sync"
 )
 
-// P2BigIntQueue is a ring buffer containing a slice of type *big.Int. It is optimised
+// X1IntegerQueue is a ring buffer containing a slice of type big.Int. It is optimised
 // for FIFO operations.
-type P2BigIntQueue struct {
-	m         []*big.Int
+type X1IntegerQueue struct {
+	m         []big.Int
 	read      int
 	write     int
 	length    int
 	capacity  int
 	overwrite bool
-	less      func(i, j *big.Int) bool
+	less      func(i, j big.Int) bool
+	s         *sync.RWMutex
 }
 
-// NewP2BigIntQueue returns a new queue of *big.Int. The behaviour when adding
+// NewX1IntegerQueue returns a new queue of big.Int. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
-func NewP2BigIntQueue(capacity int, overwrite bool) *P2BigIntQueue {
-	return NewP2BigIntSortedQueue(capacity, overwrite, nil)
+func NewX1IntegerQueue(capacity int, overwrite bool) *X1IntegerQueue {
+	return NewX1IntegerSortedQueue(capacity, overwrite, nil)
 }
 
-// NewP2BigIntSortedQueue returns a new queue of *big.Int. The behaviour when adding
+// NewX1IntegerSortedQueue returns a new queue of big.Int. The behaviour when adding
 // to the queue depends on overwrite. If true, the push operation overwrites oldest values up to
 // the space available, when the queue is full. Otherwise, it refuses to overfill the queue.
 // If the 'less' comparison function is not nil, elements can be easily sorted.
-func NewP2BigIntSortedQueue(capacity int, overwrite bool, less func(i, j *big.Int) bool) *P2BigIntQueue {
-	return &P2BigIntQueue{
-		m:         make([]*big.Int, capacity),
+func NewX1IntegerSortedQueue(capacity int, overwrite bool, less func(i, j big.Int) bool) *X1IntegerQueue {
+	return &X1IntegerQueue{
+		m:         make([]big.Int, capacity),
 		read:      0,
 		write:     0,
 		length:    0,
 		capacity:  capacity,
 		overwrite: overwrite,
 		less:      less,
+		s:         &sync.RWMutex{},
 	}
 }
 
-// BuildP2BigIntQueueFromChan constructs a new P2BigIntQueue from a channel that supplies
+// BuildX1IntegerQueueFromChan constructs a new X1IntegerQueue from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func BuildP2BigIntQueueFromChan(source <-chan *big.Int) *P2BigIntQueue {
-	queue := NewP2BigIntQueue(0, false)
+func BuildX1IntegerQueueFromChan(source <-chan big.Int) *X1IntegerQueue {
+	queue := NewX1IntegerQueue(0, false)
 	for v := range source {
 		queue.m = append(queue.m, v)
 	}
@@ -83,15 +86,17 @@ func BuildP2BigIntQueueFromChan(source <-chan *big.Int) *P2BigIntQueue {
 // Reallocate adjusts the storage space but does not clone the underlying elements.
 //
 // The queue must not be nil.
-func (queue *P2BigIntQueue) Reallocate(capacity int, overwrite bool) *P2BigIntQueue {
+func (queue *X1IntegerQueue) Reallocate(capacity int, overwrite bool) *X1IntegerQueue {
 	if capacity < 1 {
 		panic("capacity must be at least 1")
 	}
 
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	return queue.doReallocate(capacity, overwrite)
 }
 
-func (queue *P2BigIntQueue) doReallocate(capacity int, overwrite bool) *P2BigIntQueue {
+func (queue *X1IntegerQueue) doReallocate(capacity int, overwrite bool) *X1IntegerQueue {
 	queue.overwrite = overwrite
 
 	if capacity < queue.length {
@@ -103,7 +108,7 @@ func (queue *P2BigIntQueue) doReallocate(capacity int, overwrite bool) *P2BigInt
 
 	if capacity != queue.capacity {
 		oldLength := queue.length
-		queue.m = queue.toSlice(make([]*big.Int, capacity))
+		queue.m = queue.toSlice(make([]big.Int, capacity))
 		if oldLength > len(queue.m) {
 			oldLength = len(queue.m)
 		}
@@ -117,15 +122,17 @@ func (queue *P2BigIntQueue) doReallocate(capacity int, overwrite bool) *P2BigInt
 }
 
 // Space returns the space available in the queue.
-func (queue *P2BigIntQueue) Space() int {
+func (queue *X1IntegerQueue) Space() int {
 	if queue == nil {
 		return 0
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.capacity - queue.length
 }
 
 // Cap gets the capacity of this queue.
-func (queue *P2BigIntQueue) Cap() int {
+func (queue *X1IntegerQueue) Cap() int {
 	if queue == nil {
 		return 0
 	}
@@ -135,37 +142,43 @@ func (queue *P2BigIntQueue) Cap() int {
 //-------------------------------------------------------------------------------------------------
 
 // IsSequence returns true for ordered lists and queues.
-func (queue *P2BigIntQueue) IsSequence() bool {
+func (queue *X1IntegerQueue) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists or queues.
-func (queue *P2BigIntQueue) IsSet() bool {
+func (queue *X1IntegerQueue) IsSet() bool {
 	return false
 }
 
 // ToList returns the elements of the queue as a list. The returned list is a shallow
 // copy; the queue is not altered.
-func (queue *P2BigIntQueue) ToList() *P2BigIntList {
+func (queue *X1IntegerQueue) ToList() *X1IntegerList {
 	if queue == nil {
 		return nil
 	}
 
-	list := MakeP2BigIntList(queue.length, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	list := MakeX1IntegerList(queue.length, queue.length)
 	queue.toSlice(list.m)
 	return list
 }
 
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
-func (queue *P2BigIntQueue) ToSlice() []*big.Int {
+func (queue *X1IntegerQueue) ToSlice() []big.Int {
 	if queue == nil {
 		return nil
 	}
 
-	return queue.toSlice(make([]*big.Int, queue.length))
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	return queue.toSlice(make([]big.Int, queue.length))
 }
 
-func (queue *P2BigIntQueue) toSlice(s []*big.Int) []*big.Int {
+func (queue *X1IntegerQueue) toSlice(s []big.Int) []big.Int {
 	front, back := queue.frontAndBack()
 	copy(s, front)
 	if len(back) > 0 && len(s) >= len(front) {
@@ -176,10 +189,13 @@ func (queue *P2BigIntQueue) toSlice(s []*big.Int) []*big.Int {
 
 // ToInterfaceSlice returns the elements of the queue as a slice of arbitrary type.
 // The queue is not altered.
-func (queue *P2BigIntQueue) ToInterfaceSlice() []interface{} {
+func (queue *X1IntegerQueue) ToInterfaceSlice() []interface{} {
 	if queue == nil {
 		return nil
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	s := make([]interface{}, 0, queue.length)
@@ -195,21 +211,24 @@ func (queue *P2BigIntQueue) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the queue. It does not clone the underlying elements.
-func (queue *P2BigIntQueue) Clone() *P2BigIntQueue {
+func (queue *X1IntegerQueue) Clone() *X1IntegerQueue {
 	if queue == nil {
 		return nil
 	}
 
-	buffer := queue.toSlice(make([]*big.Int, queue.capacity))
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	buffer := queue.toSlice(make([]big.Int, queue.capacity))
 	return queue.doClone(buffer[:queue.length])
 }
 
-func (queue *P2BigIntQueue) doClone(buffer []*big.Int) *P2BigIntQueue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
-	return &P2BigIntQueue{
+func (queue *X1IntegerQueue) doClone(buffer []big.Int) *X1IntegerQueue {
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
+	return &X1IntegerQueue{
 		m:         buffer,
 		read:      0,
 		write:     w,
@@ -217,6 +236,7 @@ func (queue *P2BigIntQueue) doClone(buffer []*big.Int) *P2BigIntQueue {
 		capacity:  cap(buffer),
 		overwrite: queue.overwrite,
 		less:      queue.less,
+		s:         &sync.RWMutex{},
 	}
 }
 
@@ -224,7 +244,9 @@ func (queue *P2BigIntQueue) doClone(buffer []*big.Int) *P2BigIntQueue {
 
 // Get gets the specified element in the queue.
 // Panics if the index is out of range or the queue is nil.
-func (queue *P2BigIntQueue) Get(i int) *big.Int {
+func (queue *X1IntegerQueue) Get(i int) big.Int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	ri := (queue.read + i) % queue.capacity
 	return queue.m[ri]
@@ -232,20 +254,25 @@ func (queue *P2BigIntQueue) Get(i int) *big.Int {
 
 // Head gets the first element in the queue. Head is the opposite of Last.
 // Panics if queue is empty or nil.
-func (queue *P2BigIntQueue) Head() *big.Int {
+func (queue *X1IntegerQueue) Head() big.Int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	return queue.m[queue.read]
 }
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
-// is nil or empty, it returns nil instead.
-func (queue *P2BigIntQueue) HeadOption() *big.Int {
+// is nil or empty, it returns the zero value instead.
+func (queue *X1IntegerQueue) HeadOption() big.Int {
 	if queue == nil {
-		return nil
+		return *(new(big.Int))
 	}
 
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
 	if queue.length == 0 {
-		return nil
+		return *(new(big.Int))
 	}
 
 	return queue.m[queue.read]
@@ -254,7 +281,9 @@ func (queue *P2BigIntQueue) HeadOption() *big.Int {
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
 // Last is the opposite of Head.
 // Panics if queue is empty or nil.
-func (queue *P2BigIntQueue) Last() *big.Int {
+func (queue *X1IntegerQueue) Last() big.Int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	i := queue.write - 1
 	if i < 0 {
@@ -265,14 +294,17 @@ func (queue *P2BigIntQueue) Last() *big.Int {
 }
 
 // LastOption returns the newest item in the queue without removing it. If the queue
-// is nil empty, it returns nil instead.
-func (queue *P2BigIntQueue) LastOption() *big.Int {
+// is nil empty, it returns the zero value instead.
+func (queue *X1IntegerQueue) LastOption() big.Int {
 	if queue == nil {
-		return nil
+		return *(new(big.Int))
 	}
 
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
 	if queue.length == 0 {
-		return nil
+		return *(new(big.Int))
 	}
 
 	i := queue.write - 1
@@ -286,53 +318,63 @@ func (queue *P2BigIntQueue) LastOption() *big.Int {
 //-------------------------------------------------------------------------------------------------
 
 // IsOverwriting returns true if the queue is overwriting, false if refusing.
-func (queue *P2BigIntQueue) IsOverwriting() bool {
+func (queue *X1IntegerQueue) IsOverwriting() bool {
 	if queue == nil {
 		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.overwrite
 }
 
 // IsFull returns true if the queue is full.
-func (queue *P2BigIntQueue) IsFull() bool {
+func (queue *X1IntegerQueue) IsFull() bool {
 	if queue == nil {
 		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length == queue.capacity
 }
 
 // IsEmpty returns true if the queue is empty.
-func (queue *P2BigIntQueue) IsEmpty() bool {
+func (queue *X1IntegerQueue) IsEmpty() bool {
 	if queue == nil {
 		return true
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length == 0
 }
 
 // NonEmpty returns true if the queue is not empty.
-func (queue *P2BigIntQueue) NonEmpty() bool {
+func (queue *X1IntegerQueue) NonEmpty() bool {
 	if queue == nil {
 		return false
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length > 0
 }
 
 // Size gets the number of elements currently in this queue. This is an alias for Len.
-func (queue *P2BigIntQueue) Size() int {
+func (queue *X1IntegerQueue) Size() int {
 	if queue == nil {
 		return 0
 	}
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 	return queue.length
 }
 
 // Len gets the current length of this queue. This is an alias for Size.
-func (queue *P2BigIntQueue) Len() int {
+func (queue *X1IntegerQueue) Len() int {
 	return queue.Size()
 }
 
 // Swap swaps the elements with indexes i and j.
 // The queue must not be empty.
-func (queue *P2BigIntQueue) Swap(i, j int) {
+func (queue *X1IntegerQueue) Swap(i, j int) {
 	ri := (queue.read + i) % queue.capacity
 	rj := (queue.read + j) % queue.capacity
 	queue.m[ri], queue.m[rj] = queue.m[rj], queue.m[ri]
@@ -341,7 +383,7 @@ func (queue *P2BigIntQueue) Swap(i, j int) {
 // Less reports whether the element with index i should sort before the element with index j.
 // The queue must have been created with a non-nil 'less' comparison function and it must not
 // be empty.
-func (queue *P2BigIntQueue) Less(i, j int) bool {
+func (queue *X1IntegerQueue) Less(i, j int) bool {
 	ri := (queue.read + i) % queue.capacity
 	rj := (queue.read + j) % queue.capacity
 	return queue.less(queue.m[ri], queue.m[rj])
@@ -349,22 +391,22 @@ func (queue *P2BigIntQueue) Less(i, j int) bool {
 
 // Sort sorts the queue using the 'less' comparison function, which must not be nil.
 // This function will panic if the collection was created with a nil 'less' function
-// (see NewP2BigIntSortedQueue).
-func (queue *P2BigIntQueue) Sort() {
+// (see NewX1IntegerSortedQueue).
+func (queue *X1IntegerQueue) Sort() {
 	sort.Sort(queue)
 }
 
 // StableSort sorts the queue using the 'less' comparison function, which must not be nil.
 // The result is stable so that repeated calls will not arbitrarily swap equal items.
 // This function will panic if the collection was created with a nil 'less' function
-// (see NewP2BigIntSortedQueue).
-func (queue *P2BigIntQueue) StableSort() {
+// (see NewX1IntegerSortedQueue).
+func (queue *X1IntegerQueue) StableSort() {
 	sort.Stable(queue)
 }
 
 // frontAndBack gets the front and back portions of the queue. The front portion starts
 // from the read index. The back portion ends at the write index.
-func (queue *P2BigIntQueue) frontAndBack() ([]*big.Int, []*big.Int) {
+func (queue *X1IntegerQueue) frontAndBack() ([]big.Int, []big.Int) {
 	if queue == nil || queue.length == 0 {
 		return nil, nil
 	}
@@ -376,7 +418,7 @@ func (queue *P2BigIntQueue) frontAndBack() ([]*big.Int, []*big.Int) {
 
 // indexes gets the indexes for the front and back portions of the queue. The front
 // portion starts from the read index. The back portion ends at the write index.
-func (queue *P2BigIntQueue) indexes() []int {
+func (queue *X1IntegerQueue) indexes() []int {
 	if queue == nil || queue.length == 0 {
 		return nil
 	}
@@ -389,16 +431,18 @@ func (queue *P2BigIntQueue) indexes() []int {
 //-------------------------------------------------------------------------------------------------
 
 // Clear the entire queue.
-func (queue *P2BigIntQueue) Clear() {
+func (queue *X1IntegerQueue) Clear() {
 	if queue != nil {
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.s.Lock()
+		defer queue.s.Unlock()
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
-func (queue *P2BigIntQueue) Add(more ...*big.Int) {
+func (queue *X1IntegerQueue) Add(more ...big.Int) {
 	queue.Push(more...)
 }
 
@@ -412,14 +456,16 @@ func (queue *P2BigIntQueue) Add(more ...*big.Int) {
 // without any older items being affected.
 //
 // The modified queue is returned.
-func (queue *P2BigIntQueue) Push(items ...*big.Int) *P2BigIntQueue {
+func (queue *X1IntegerQueue) Push(items ...big.Int) *X1IntegerQueue {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 
 	n := queue.capacity
 	if queue.overwrite && len(items) > queue.capacity {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -445,11 +491,13 @@ func (queue *P2BigIntQueue) Push(items ...*big.Int) *P2BigIntQueue {
 //
 // If the capacity is too small for the number of items, the excess items are returned.
 // The queue capacity is never altered.
-func (queue *P2BigIntQueue) Offer(items ...*big.Int) []*big.Int {
+func (queue *X1IntegerQueue) Offer(items ...big.Int) []big.Int {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	return queue.doPush(items...)
 }
 
-func (queue *P2BigIntQueue) doPush(items ...*big.Int) []*big.Int {
+func (queue *X1IntegerQueue) doPush(items ...big.Int) []big.Int {
 	n := len(items)
 
 	space := queue.capacity - queue.length
@@ -466,7 +514,7 @@ func (queue *P2BigIntQueue) doPush(items ...*big.Int) []*big.Int {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity
@@ -490,12 +538,14 @@ func (queue *P2BigIntQueue) doPush(items ...*big.Int) []*big.Int {
 }
 
 // Pop1 removes and returns the oldest item from the queue. If the queue is
-// empty, it returns nil instead.
+// empty, it returns the zero value instead.
 // The boolean is true only if the element was available.
-func (queue *P2BigIntQueue) Pop1() (*big.Int, bool) {
+func (queue *X1IntegerQueue) Pop1() (big.Int, bool) {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 
 	if queue.length == 0 {
-		return nil, false
+		return *(new(big.Int)), false
 	}
 
 	v := queue.m[queue.read]
@@ -509,11 +559,13 @@ func (queue *P2BigIntQueue) Pop1() (*big.Int, bool) {
 // empty, it returns a nil slice. If n is larger than the current queue length,
 // it returns all the available elements, so in this case the returned slice
 // will be shorter than n.
-func (queue *P2BigIntQueue) Pop(n int) []*big.Int {
+func (queue *X1IntegerQueue) Pop(n int) []big.Int {
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	return queue.doPop(n)
 }
 
-func (queue *P2BigIntQueue) doPop(n int) []*big.Int {
+func (queue *X1IntegerQueue) doPop(n int) []big.Int {
 	if queue.length == 0 {
 		return nil
 	}
@@ -522,7 +574,7 @@ func (queue *P2BigIntQueue) doPop(n int) []*big.Int {
 		n = queue.length
 	}
 
-	s := make([]*big.Int, n)
+	s := make([]big.Int, n)
 	front, back := queue.frontAndBack()
 	// note the length copied is whichever is shorter
 	copy(s, front)
@@ -538,12 +590,15 @@ func (queue *P2BigIntQueue) doPop(n int) []*big.Int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Exists verifies that one or more elements of P2BigIntQueue return true for the predicate p.
+// Exists verifies that one or more elements of X1IntegerQueue return true for the predicate p.
 // The function should not alter the values via side-effects.
-func (queue *P2BigIntQueue) Exists(p func(*big.Int) bool) bool {
+func (queue *X1IntegerQueue) Exists(p func(big.Int) bool) bool {
 	if queue == nil {
 		return false
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -559,12 +614,15 @@ func (queue *P2BigIntQueue) Exists(p func(*big.Int) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of P2BigIntQueue return true for the predicate p.
+// Forall verifies that all elements of X1IntegerQueue return true for the predicate p.
 // The function should not alter the values via side-effects.
-func (queue *P2BigIntQueue) Forall(p func(*big.Int) bool) bool {
+func (queue *X1IntegerQueue) Forall(p func(big.Int) bool) bool {
 	if queue == nil {
 		return true
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -580,12 +638,15 @@ func (queue *P2BigIntQueue) Forall(p func(*big.Int) bool) bool {
 	return true
 }
 
-// Foreach iterates over P2BigIntQueue and executes function f against each element.
+// Foreach iterates over X1IntegerQueue and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (queue *P2BigIntQueue) Foreach(f func(*big.Int)) {
+func (queue *X1IntegerQueue) Foreach(f func(big.Int)) {
 	if queue == nil {
 		return
 	}
+
+	queue.s.Lock()
+	defer queue.s.Unlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -599,10 +660,12 @@ func (queue *P2BigIntQueue) Foreach(f func(*big.Int)) {
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements
 // have been consumed. The channel will be closed when all the elements have been sent.
-func (queue *P2BigIntQueue) Send() <-chan *big.Int {
-	ch := make(chan *big.Int)
+func (queue *X1IntegerQueue) Send() <-chan big.Int {
+	ch := make(chan big.Int)
 	go func() {
 		if queue != nil {
+			queue.s.RLock()
+			defer queue.s.RUnlock()
 
 			front, back := queue.frontAndBack()
 			for _, v := range front {
@@ -619,15 +682,17 @@ func (queue *P2BigIntQueue) Send() <-chan *big.Int {
 
 //-------------------------------------------------------------------------------------------------
 
-// DoKeepWhere modifies a P2BigIntQueue by retaining only those elements that match
+// DoKeepWhere modifies a X1IntegerQueue by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the queue in place.
 //
 // The queue is modified and the modified queue is returned.
-func (queue *P2BigIntQueue) DoKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
+func (queue *X1IntegerQueue) DoKeepWhere(p func(big.Int) bool) *X1IntegerQueue {
 	if queue == nil {
 		return nil
 	}
 
+	queue.s.Lock()
+	defer queue.s.Unlock()
 	if queue.length == 0 {
 		return queue
 	}
@@ -635,11 +700,11 @@ func (queue *P2BigIntQueue) DoKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
 	return queue.doKeepWhere(p)
 }
 
-func (queue *P2BigIntQueue) doKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
+func (queue *X1IntegerQueue) doKeepWhere(p func(big.Int) bool) *X1IntegerQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -650,9 +715,9 @@ func (queue *P2BigIntQueue) doKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -662,8 +727,8 @@ func (queue *P2BigIntQueue) doKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -672,9 +737,9 @@ func (queue *P2BigIntQueue) doKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -689,12 +754,15 @@ func (queue *P2BigIntQueue) doKeepWhere(p func(*big.Int) bool) *P2BigIntQueue {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first *big.Int that returns true for predicate p.
+// Find returns the first big.Int that returns true for predicate p.
 // False is returned if none match.
-func (queue *P2BigIntQueue) Find(p func(*big.Int) bool) (*big.Int, bool) {
+func (queue *X1IntegerQueue) Find(p func(big.Int) bool) (big.Int, bool) {
 	if queue == nil {
-		return nil, false
+		return *(new(big.Int)), false
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -708,19 +776,22 @@ func (queue *P2BigIntQueue) Find(p func(*big.Int) bool) (*big.Int, bool) {
 		}
 	}
 
-	var empty *big.Int
+	var empty big.Int
 	return empty, false
 }
 
-// Filter returns a new P2BigIntQueue whose elements return true for predicate p.
+// Filter returns a new X1IntegerQueue whose elements return true for predicate p.
 //
 // The original queue is not modified. See also DoKeepWhere (which does modify the original queue).
-func (queue *P2BigIntQueue) Filter(p func(*big.Int) bool) *P2BigIntQueue {
+func (queue *X1IntegerQueue) Filter(p func(big.Int) bool) *X1IntegerQueue {
 	if queue == nil {
 		return nil
 	}
 
-	result := NewP2BigIntSortedQueue(queue.length, queue.overwrite, queue.less)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	result := NewX1IntegerSortedQueue(queue.length, queue.overwrite, queue.less)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -742,19 +813,22 @@ func (queue *P2BigIntQueue) Filter(p func(*big.Int) bool) *P2BigIntQueue {
 	return result
 }
 
-// Partition returns two new P2BigIntQueues whose elements return true or false for the predicate, p.
+// Partition returns two new X1IntegerQueues whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original queue.
 //
 // The original queue is not modified
-func (queue *P2BigIntQueue) Partition(p func(*big.Int) bool) (*P2BigIntQueue, *P2BigIntQueue) {
+func (queue *X1IntegerQueue) Partition(p func(big.Int) bool) (*X1IntegerQueue, *X1IntegerQueue) {
 	if queue == nil {
 		return nil, nil
 	}
 
-	matching := NewP2BigIntSortedQueue(queue.length, queue.overwrite, queue.less)
-	others := NewP2BigIntSortedQueue(queue.length, queue.overwrite, queue.less)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	matching := NewX1IntegerSortedQueue(queue.length, queue.overwrite, queue.less)
+	others := NewX1IntegerSortedQueue(queue.length, queue.overwrite, queue.less)
 	m, o := 0, 0
 
 	front, back := queue.frontAndBack()
@@ -784,18 +858,21 @@ func (queue *P2BigIntQueue) Partition(p func(*big.Int) bool) (*P2BigIntQueue, *P
 	return matching, others
 }
 
-// Map returns a new P2BigIntQueue by transforming every element with function f.
+// Map returns a new X1IntegerQueue by transforming every element with function f.
 // The resulting queue is the same size as the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *P2BigIntQueue) Map(f func(*big.Int) *big.Int) *P2BigIntQueue {
+func (queue *X1IntegerQueue) Map(f func(big.Int) big.Int) *X1IntegerQueue {
 	if queue == nil {
 		return nil
 	}
 
-	slice := make([]*big.Int, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	slice := make([]big.Int, queue.length)
 	i := 0
 
 	front, back := queue.frontAndBack()
@@ -811,20 +888,72 @@ func (queue *P2BigIntQueue) Map(f func(*big.Int) *big.Int) *P2BigIntQueue {
 	return queue.doClone(slice)
 }
 
-// FlatMap returns a new P2BigIntQueue by transforming every element with function f that
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *X1IntegerQueue) MapToString(f func(big.Int) string) []string {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]string, 0, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		result = append(result, f(v))
+	}
+	for _, v := range back {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
+// MapToInt returns a new []int by transforming every element with function f.
+// The resulting slice is the same size as the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *X1IntegerQueue) MapToInt(f func(big.Int) int) []int {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]int, 0, queue.length)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		result = append(result, f(v))
+	}
+	for _, v := range back {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
+// FlatMap returns a new X1IntegerQueue by transforming every element with function f that
 // returns zero or more items in a slice. The resulting queue may have a different size to the original queue.
 // The original queue is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (queue *P2BigIntQueue) FlatMap(f func(*big.Int) []*big.Int) *P2BigIntQueue {
+func (queue *X1IntegerQueue) FlatMap(f func(big.Int) []big.Int) *X1IntegerQueue {
 	if queue == nil {
 		return nil
 	}
 
-	slice := make([]*big.Int, 0, queue.length)
+	slice := make([]big.Int, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}
@@ -835,11 +964,58 @@ func (queue *P2BigIntQueue) FlatMap(f func(*big.Int) []*big.Int) *P2BigIntQueue 
 	return queue.doClone(slice)
 }
 
-// CountBy gives the number elements of P2BigIntQueue that return true for the predicate p.
-func (queue *P2BigIntQueue) CountBy(p func(*big.Int) bool) (result int) {
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *X1IntegerQueue) FlatMapToString(f func(big.Int) []string) []string {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]string, 0, 32)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	for _, v := range queue.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt returns a new []int by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the queue.
+// The queue is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (queue *X1IntegerQueue) FlatMapToInt(f func(big.Int) []int) []int {
+	if queue == nil {
+		return nil
+	}
+
+	result := make([]int, 0, 32)
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	for _, v := range queue.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// CountBy gives the number elements of X1IntegerQueue that return true for the predicate p.
+func (queue *X1IntegerQueue) CountBy(p func(big.Int) bool) (result int) {
 	if queue == nil {
 		return 0
 	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	front, back := queue.frontAndBack()
 	for _, v := range front {
@@ -855,10 +1031,12 @@ func (queue *P2BigIntQueue) CountBy(p func(*big.Int) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of P2BigIntQueue containing the minimum value, when compared to other elements
+// MinBy returns an element of X1IntegerQueue containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (queue *P2BigIntQueue) MinBy(less func(*big.Int, *big.Int) bool) *big.Int {
+func (queue *X1IntegerQueue) MinBy(less func(big.Int, big.Int) bool) big.Int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		panic("Cannot determine the minimum of an empty queue.")
@@ -880,10 +1058,12 @@ func (queue *P2BigIntQueue) MinBy(less func(*big.Int, *big.Int) bool) *big.Int {
 	return queue.m[m]
 }
 
-// MaxBy returns an element of P2BigIntQueue containing the maximum value, when compared to other elements
+// MaxBy returns an element of X1IntegerQueue containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (queue *P2BigIntQueue) MaxBy(less func(*big.Int, *big.Int) bool) *big.Int {
+func (queue *X1IntegerQueue) MaxBy(less func(big.Int, big.Int) bool) big.Int {
+	queue.s.RLock()
+	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
 		panic("Cannot determine the maximum of an empty queue.")

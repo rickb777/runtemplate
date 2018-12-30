@@ -134,7 +134,7 @@ func readFile(path string) (string, error) {
 }
 
 func Generate(templateFile, outputFile string, force bool, deps []string, types Tuples, others Pairs, builtins []packr.Box, appVersion string) {
-	Debug("generate %s %s %v %+v %+v\n", templateFile, outputFile, force, deps, types)
+	Debug("generate %s %q %v %+v %#v\n", templateFile, outputFile, force, deps, types)
 
 	foundTemplate := findTemplateFileFromPath(templateFile, builtins)
 	than := templateFile

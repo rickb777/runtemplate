@@ -2,27 +2,45 @@
 # The builtin/threadsafe templates provide the primary 'source of truth'.
 # This script creates the builtin/fast templates automatically.
 # Then manually verify that the immutable and simple templates are consistent.
+#
+# A similar approach is also used to create sample-generation files (gen1.go & gen2.go)
+# for the fast, simple and immutable categories.
 
-sed 's#threadsafe#fast#' < builtintest/threadsafe/gen1.go > builtintest/fast/gen1.go
-sed 's#threadsafe#fast#' < builtintest/threadsafe/gen2.go > builtintest/fast/gen2.go
+# 1. Deal with the sample code generators
+#-----------------------------------------
+
+for tree in fast simple immutable; do
+  echo -e '// Generated code - do not alter\n' > builtintest/$tree/gen1.go
+done
+
+for tree in fast simple; do
+  echo -e '// Generated code - do not alter\n' > builtintest/$tree/gen2.go
+done
+
+sed 's#threadsafe#fast#' < builtintest/threadsafe/gen1.go >> builtintest/fast/gen1.go
+sed 's#threadsafe#fast#' < builtintest/threadsafe/gen2.go >> builtintest/fast/gen2.go
 
 sed 's#threadsafe#simple#'  < builtintest/threadsafe/gen1.go | \
   sed 's# Mutable:true##'   | \
   sed 's# Append:true##'    | \
   sed 's# GobEncode:true##' | \
-  fgrep -iv queue > builtintest/simple/gen1.go
+  fgrep -iv queue >> builtintest/simple/gen1.go
 
 sed 's#threadsafe#simple#'  < builtintest/threadsafe/gen2.go | \
   sed 's# Mutable:true##'   | \
   sed 's# Append:true##'    | \
   sed 's# GobEncode:true##' | \
-  fgrep -iv queue > builtintest/simple/gen2.go
+  fgrep -iv queue >> builtintest/simple/gen2.go
 
 sed 's#threadsafe#immutable#' < builtintest/threadsafe/gen1.go | \
   sed 's# Mutable:true##' | \
   sed 's# Append:true##'  | \
   fgrep -v plumbing | \
-  fgrep -iv queue > builtintest/immutable/gen1.go
+  fgrep -iv queue >> builtintest/immutable/gen1.go
+
+
+# 2. Deal with the collections templates
+#----------------------------------------
 
 cd builtin
 

@@ -69,7 +69,7 @@ func NewType(s string) Type {
 	case 2:
 		return Type{s: ss[0], ident: RichString(ss[1]).NoDots()}
 	}
-	return Type{s: ss[0], ident: RichString(ss[1]), zero: ss[2]}
+	return Type{s: ss[0], ident: RichString(ss[1]).NoDots(), zero: ss[2]}
 }
 
 func (t Type) NonBlank() bool {

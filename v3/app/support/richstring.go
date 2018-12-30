@@ -51,7 +51,7 @@ func (rs RichString) ToTitle() RichString {
 	return RichString(strings.ToTitle(string(rs)))
 }
 
-// UL is an alias for FirstUpper.
+// U is an alias for FirstUpper.
 func (rs RichString) U() RichString {
 	return rs.FirstUpper()
 }

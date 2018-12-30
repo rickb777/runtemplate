@@ -50,6 +50,12 @@ type P1StringCollection interface {
 	// IsSet returns false for lists and queues.
 	IsSet() bool
 
+	// ToList returns a shallow copy as a list.
+	ToList() *P1StringList
+
+	// ToSet returns a shallow copy as a set.
+	ToSet() *P1StringSet
+
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []*string
 
@@ -82,8 +88,8 @@ type P1StringCollection interface {
 	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...*string) bool
 
-    // Clear the entire collection.
-    Clear()
+	// Clear the entire collection.
+	Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...*string)

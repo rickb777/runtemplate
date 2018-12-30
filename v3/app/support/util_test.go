@@ -39,3 +39,13 @@ func TestSplitKeyValArgs2(t *testing.T) {
 	g.Expect(others).To(Equal(Pairs([]Pair{NewPair("a:v1"), NewPair("b:v2"), NewPair("c:a\n\tb"), NewPair("q:")})))
 	g.Expect(left).To(Equal([]string{"foo", ""}))
 }
+
+func TestSplitKeyValArgs3(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	types, others, left := SplitKeyValArgs([]string{"Type=date.PeriodOfDays/PeriodOfDays/0", "Comparable:true", "Ordered:true", "Numeric:true", `Import:"github.com/rickb777/date"`})
+
+	g.Expect(types).To(Equal(Tuples([]Tuple{Tuple{Key: "Type", Type: Type{s: "date.PeriodOfDays", ident: "PeriodOfDays", zero: "0"}}})))
+	g.Expect(others).To(Equal(Pairs([]Pair{NewPair("Comparable:true"), NewPair("Ordered:true"), NewPair("Numeric:true"), NewPair(`Import:"github.com/rickb777/date"`)})))
+	g.Expect(left).To(BeNil())
+}

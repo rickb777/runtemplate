@@ -3,7 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=*string
 // options: Comparable:true Numeric:false Ordered:false Stringer:true
-// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
+// GobEncode:<no value> Mutable:always ToList:always ToSet:true
 // by runtemplate v3.1.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -45,9 +45,9 @@ func ConvertP1StringList(values ...interface{}) (P1StringList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case string:
+		case string:
 			list = append(list, &j)
-        case *string:
+		case *string:
 			list = append(list, j)
 		}
 	}
@@ -85,6 +85,16 @@ func (list P1StringList) slice() []*string {
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
 func (list P1StringList) ToList() P1StringList {
 	return list
+}
+
+// ToSet returns the elements of the list as a set. The returned set is a shallow
+// copy; the list is not altered.
+func (list P1StringList) ToSet() P1StringSet {
+	if list == nil {
+		return nil
+	}
+
+	return NewP1StringSet(list...)
 }
 
 // ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
@@ -360,7 +370,7 @@ func (list P1StringList) DropLast(n int) P1StringList {
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new P1StringList containing the leading elements of the source list. Whilst the
@@ -614,7 +624,7 @@ func (list P1StringList) Equals(other P1StringList) bool {
 
 type sortableP1StringList struct {
 	less func(i, j *string) bool
-	m []*string
+	m    []*string
 }
 
 func (sl sortableP1StringList) Less(i, j int) bool {

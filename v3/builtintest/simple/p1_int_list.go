@@ -3,7 +3,7 @@
 //
 // Generated from simple/list.tpl with Type=*int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
-// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
+// GobEncode:<no value> Mutable:always ToList:always ToSet:true
 // by runtemplate v3.1.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -117,6 +117,16 @@ func (list P1IntList) slice() []*int {
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
 func (list P1IntList) ToList() P1IntList {
 	return list
+}
+
+// ToSet returns the elements of the list as a set. The returned set is a shallow
+// copy; the list is not altered.
+func (list P1IntList) ToSet() P1IntSet {
+	if list == nil {
+		return nil
+	}
+
+	return NewP1IntSet(list...)
 }
 
 // ToSlice returns the elements of the list as a slice, which is an identity operation in this case,
@@ -392,7 +402,7 @@ func (list P1IntList) DropLast(n int) P1IntList {
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new P1IntList containing the leading elements of the source list. Whilst the
@@ -646,7 +656,7 @@ func (list P1IntList) Equals(other P1IntList) bool {
 
 type sortableP1IntList struct {
 	less func(i, j *int) bool
-	m []*int
+	m    []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {

@@ -10,7 +10,7 @@
 //
 // Generated from fast/queue.tpl with Type=*string
 // options: Comparable:true Numeric:false Ordered:false Sorted:<no value> Stringer:true
-// ToList:true ToSet:<no value>
+// ToList:true ToSet:true
 // by runtemplate v3.1.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -18,7 +18,7 @@ package fast
 
 import (
 	"bytes"
-//
+	//
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -158,6 +158,17 @@ func (queue *P1StringQueue) ToList() *P1StringList {
 	return list
 }
 
+// ToSet returns the elements of the queue as a set. The returned set is a shallow
+// copy; the queue is not altered.
+func (queue *P1StringQueue) ToSet() *P1StringSet {
+	if queue == nil {
+		return nil
+	}
+
+	slice := queue.toSlice(make([]*string, queue.length))
+	return NewP1StringSet(slice...)
+}
+
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
 func (queue *P1StringQueue) ToSlice() []*string {
 	if queue == nil {
@@ -207,10 +218,10 @@ func (queue *P1StringQueue) Clone() *P1StringQueue {
 }
 
 func (queue *P1StringQueue) doClone(buffer []*string) *P1StringQueue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &P1StringQueue{
 		m:         buffer,
 		read:      0,
@@ -393,10 +404,10 @@ func (queue *P1StringQueue) indexes() []int {
 // Clear the entire queue.
 func (queue *P1StringQueue) Clear() {
 	if queue != nil {
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -421,7 +432,7 @@ func (queue *P1StringQueue) Push(items ...*string) *P1StringQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -468,7 +479,7 @@ func (queue *P1StringQueue) doPush(items ...*string) []*string {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity
@@ -663,7 +674,7 @@ func (queue *P1StringQueue) doKeepWhere(p func(*string) bool) *P1StringQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -674,9 +685,9 @@ func (queue *P1StringQueue) doKeepWhere(p func(*string) bool) *P1StringQueue {
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -686,8 +697,8 @@ func (queue *P1StringQueue) doKeepWhere(p func(*string) bool) *P1StringQueue {
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -696,9 +707,9 @@ func (queue *P1StringQueue) doKeepWhere(p func(*string) bool) *P1StringQueue {
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -848,7 +859,7 @@ func (queue *P1StringQueue) FlatMap(f func(*string) []*string) *P1StringQueue {
 
 	slice := make([]*string, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}

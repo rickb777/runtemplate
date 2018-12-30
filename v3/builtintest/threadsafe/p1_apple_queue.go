@@ -10,14 +10,14 @@
 //
 // Generated from threadsafe/queue.tpl with Type=*Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:false
-// ToList:true ToSet:<no value>
+// ToList:true ToSet:true
 // by runtemplate v3.1.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
 
 import (
-//
+	//
 	"sort"
 	"sync"
 )
@@ -165,6 +165,20 @@ func (queue *P1AppleQueue) ToList() *P1AppleList {
 	return list
 }
 
+// ToSet returns the elements of the queue as a set. The returned set is a shallow
+// copy; the queue is not altered.
+func (queue *P1AppleQueue) ToSet() *P1AppleSet {
+	if queue == nil {
+		return nil
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	slice := queue.toSlice(make([]*Apple, queue.length))
+	return NewP1AppleSet(slice...)
+}
+
 // ToSlice returns the elements of the queue as a slice. The queue is not altered.
 func (queue *P1AppleQueue) ToSlice() []*Apple {
 	if queue == nil {
@@ -223,10 +237,10 @@ func (queue *P1AppleQueue) Clone() *P1AppleQueue {
 }
 
 func (queue *P1AppleQueue) doClone(buffer []*Apple) *P1AppleQueue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &P1AppleQueue{
 		m:         buffer,
 		read:      0,
@@ -259,7 +273,6 @@ func (queue *P1AppleQueue) Head() *Apple {
 
 	return queue.m[queue.read]
 }
-
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns nil instead.
@@ -433,12 +446,12 @@ func (queue *P1AppleQueue) indexes() []int {
 // Clear the entire queue.
 func (queue *P1AppleQueue) Clear() {
 	if queue != nil {
-    	queue.s.Lock()
-	    defer queue.s.Unlock()
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.s.Lock()
+		defer queue.s.Unlock()
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -465,7 +478,7 @@ func (queue *P1AppleQueue) Push(items ...*Apple) *P1AppleQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -514,7 +527,7 @@ func (queue *P1AppleQueue) doPush(items ...*Apple) []*Apple {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity
@@ -729,7 +742,7 @@ func (queue *P1AppleQueue) doKeepWhere(p func(*Apple) bool) *P1AppleQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -740,9 +753,9 @@ func (queue *P1AppleQueue) doKeepWhere(p func(*Apple) bool) *P1AppleQueue {
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -752,8 +765,8 @@ func (queue *P1AppleQueue) doKeepWhere(p func(*Apple) bool) *P1AppleQueue {
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -762,9 +775,9 @@ func (queue *P1AppleQueue) doKeepWhere(p func(*Apple) bool) *P1AppleQueue {
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -926,7 +939,7 @@ func (queue *P1AppleQueue) FlatMap(f func(*Apple) []*Apple) *P1AppleQueue {
 
 	slice := make([]*Apple, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}

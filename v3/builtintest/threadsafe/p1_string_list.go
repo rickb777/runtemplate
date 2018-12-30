@@ -3,7 +3,7 @@
 //
 // Generated from threadsafe/list.tpl with Type=*string
 // options: Comparable:true Numeric:false Ordered:false Stringer:true
-// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:<no value>
+// GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
 // by runtemplate v3.1.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -53,9 +53,9 @@ func ConvertP1StringList(values ...interface{}) (*P1StringList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case string:
+		case string:
 			list.m = append(list.m, &j)
-        case *string:
+		case *string:
 			list.m = append(list.m, j)
 		}
 	}
@@ -96,6 +96,19 @@ func (list *P1StringList) slice() []*string {
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
 func (list *P1StringList) ToList() *P1StringList {
 	return list
+}
+
+// ToSet returns the elements of the list as a set. The returned set is a shallow
+// copy; the list is not altered.
+func (list *P1StringList) ToSet() *P1StringSet {
+	if list == nil {
+		return nil
+	}
+
+	list.s.RLock()
+	defer list.s.RUnlock()
+
+	return NewP1StringSet(list.m...)
 }
 
 // ToSlice returns the elements of the current list as a slice.
@@ -442,10 +455,10 @@ func (list *P1StringList) doShuffle() *P1StringList {
 // Clear the entire collection.
 func (list *P1StringList) Clear() {
 	if list != nil {
-    	list.s.Lock()
-	    defer list.s.Unlock()
-	    list.m = list.m[:]
-    }
+		list.s.Lock()
+		defer list.s.Unlock()
+		list.m = list.m[:]
+	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.
@@ -1022,7 +1035,7 @@ func (list *P1StringList) Equals(other *P1StringList) bool {
 
 type sortableP1StringList struct {
 	less func(i, j *string) bool
-	m []*string
+	m    []*string
 }
 
 func (sl sortableP1StringList) Less(i, j int) bool {
