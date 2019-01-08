@@ -4,6 +4,8 @@
 
 A selection of built-in templates is included with `runtemplate`. These provide type-safe collection types. Their API style has been loosely influenced by the excellent Scala collection classes.
 
+ * **There is a newer version: please see [v3](https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md).**
+
 There are several main categories:
 
  * simple types using Go's slices and maps

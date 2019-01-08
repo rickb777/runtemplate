@@ -7,6 +7,8 @@
 
 This application provides a simple way of executing standard Go templates from the command line. The obvious use-case is for source code generation, amongst many others.
 
+ * **There is a newer version: please see [v3](https://github.com/rickb777/runtemplate/blob/master/v3/README.md).**
+
 You can install it with:
 
 ```
