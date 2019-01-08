@@ -25,12 +25,13 @@ The built-in collections support flags that allow you to control the generated n
  * `Prefix=X` - use this to prefix the name of the generated type
  * `Key=K` - use this to specify the name of the generated key type (for maps only, see below)
 
-The built-in collections support a small number of flags that allow you to control whether extra methods are generated or not.
+The built-in collections support a small number of flags that allow you to control what extra methods are generated.
 
  * `Comparable:true` - use this for types that are comparable (== and !=), such as strings, ints, floats and structs.
  * `Ordered:true` - use this for types that are ordered (<, <=, >=, >), such as strings, ints and floats (but not structs).
  * `Numeric:true` - use this for types that support arithmetic operations, such as ints and floats (but not structs).
  * `Stringer:true` - use this to include the `String()` method (and related); omit this if you prefer to provide your own.
+ * `MapTo:<type>` - adds two transformation methods (a.k.a. `map` and `flatmap`) to return a collection of the specified type via a function that transforms a single element of type `T`. This flag can appear multiple times, allowing as many transformation methods as required. See the examples.
  * `KeyList:<type>` - for maps only, this provides a slice type for the keys in this map. This is returned from the `Keys()` method. It is also used for sorting the output of the stringer methods by the keys, which affects `MkString3(...)`, `MkString()` and `String()`.
  * `ValueList:<type>` - for maps only, this provides a slice type for the values in this map. This is returned from the `Values()` method.
  * `ToList:true`, `ToSet:true` - use these if you are generating both set and list types.
@@ -38,6 +39,8 @@ The built-in collections support a small number of flags that allow you to contr
 
 The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators). If you set a flag that is impossible for the chosen data type, the generated code won't compile, but no other bad thing will happen; so it will soon become obvious.
+
+There are examples of these flags in use, in various combinations, in [examples/gen.go](https://github.com/rickb777/runtemplate/blob/master/v3/examples/gen.go), along with the resulting collection types.
 
 
 ## 1. Direct Use of Go Slices and Maps
