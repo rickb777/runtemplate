@@ -44,9 +44,9 @@ func ConvertP2IntegerList(values ...interface{}) (P2IntegerList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case big.Int:
+		case big.Int:
 			list = append(list, &j)
-        case *big.Int:
+		case *big.Int:
 			list = append(list, j)
 		}
 	}
@@ -341,7 +341,7 @@ func (list P2IntegerList) DropLast(n int) P2IntegerList {
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0:l-n]
 }
 
 // TakeWhile returns a new P2IntegerList containing the leading elements of the source list. Whilst the

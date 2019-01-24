@@ -36,9 +36,9 @@ func ConvertX2UrlURLSet(values ...interface{}) (X2UrlURLSet, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case url.URL:
+		case url.URL:
 			set[j] = struct{}{}
-        case *url.URL:
+		case *url.URL:
 			set[*j] = struct{}{}
 		}
 	}
@@ -347,7 +347,7 @@ func (set X2UrlURLSet) Map(f func(url.URL) url.URL) X2UrlURLSet {
 	result := NewX2UrlURLSet()
 
 	for v := range set {
-	    k := f(v)
+		k := f(v)
 		result[k] = struct{}{}
 	}
 

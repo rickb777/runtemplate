@@ -41,9 +41,9 @@ func ConvertX2TesttypesEmailSet(values ...interface{}) (*X2TesttypesEmailSet, bo
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case testtypes.Email:
+		case testtypes.Email:
 			set.m[j] = struct{}{}
-        case *testtypes.Email:
+		case *testtypes.Email:
 			set.m[*j] = struct{}{}
 		}
 	}
@@ -495,7 +495,7 @@ func (set *X2TesttypesEmailSet) Map(f func(testtypes.Email) testtypes.Email) *X2
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-	    k := f(v)
+		k := f(v)
 		result.m[k] = struct{}{}
 	}
 

@@ -72,23 +72,23 @@ type X1IntCollection interface {
 	// False is returned if none match.
 	Find(p func(int) bool) (int, bool)
 
-    // MapToString returns a new []string by transforming every element with function f.
-    // The resulting slice is the same size as the collection. The collection is not modified.
-    MapToString(f func(int) string) []string
+	// MapToString returns a new []string by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapToString(f func(int) string) []string
 
-    // MapToInt64 returns a new []int64 by transforming every element with function f.
-    // The resulting slice is the same size as the collection. The collection is not modified.
-    MapToInt64(f func(int) int64) []int64
+	// MapToInt64 returns a new []int64 by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapToInt64(f func(int) int64) []int64
 
-    // FlatMapString returns a new []string by transforming every element with function f
-    // that returns zero or more items in a slice. The resulting list may have a different size to the
-    // collection. The collection is not modified.
-    FlatMapToString(f func(int) []string) []string
+	// FlatMapString returns a new []string by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapToString(f func(int) []string) []string
 
-    // FlatMapInt64 returns a new []int64 by transforming every element with function f
-    // that returns zero or more items in a slice. The resulting list may have a different size to the
-    // collection. The collection is not modified.
-    FlatMapToInt64(f func(int) []int64) []int64
+	// FlatMapInt64 returns a new []int64 by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapToInt64(f func(int) []int64) []int64
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed
@@ -103,8 +103,8 @@ type X1IntCollection interface {
 	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...int) bool
 
-    // Clear the entire collection.
-    Clear()
+	// Clear the entire collection.
+	Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...int)

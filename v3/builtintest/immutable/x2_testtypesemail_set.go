@@ -38,9 +38,9 @@ func ConvertX2TesttypesEmailSet(values ...interface{}) (*X2TesttypesEmailSet, bo
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case testtypes.Email:
+		case testtypes.Email:
 			set.m[j] = struct{}{}
-        case *testtypes.Email:
+		case *testtypes.Email:
 			set.m[*j] = struct{}{}
 		}
 	}

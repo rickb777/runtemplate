@@ -39,9 +39,9 @@ func ConvertP1StringSet(values ...interface{}) (*P1StringSet, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case string:
+		case string:
 			set.m[j] = struct{}{}
-        case *string:
+		case *string:
 			set.m[*j] = struct{}{}
 		}
 	}
@@ -445,7 +445,7 @@ func (set *P1StringSet) Map(f func(*string) *string) *P1StringSet {
 	result := NewP1StringSet()
 
 	for v := range set.m {
-	    k := f(&v)
+		k := f(&v)
 		result.m[*k] = struct{}{}
 	}
 

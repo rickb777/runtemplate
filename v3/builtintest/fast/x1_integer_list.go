@@ -48,9 +48,9 @@ func ConvertX1IntegerList(values ...interface{}) (*X1IntegerList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case big.Int:
+		case big.Int:
 			list.m = append(list.m, j)
-        case *big.Int:
+		case *big.Int:
 			list.m = append(list.m, *j)
 		}
 	}
@@ -363,8 +363,8 @@ func (list *X1IntegerList) doShuffle() *X1IntegerList {
 // Clear the entire collection.
 func (list *X1IntegerList) Clear() {
 	if list != nil {
-	    list.m = list.m[:]
-    }
+		list.m = list.m[:]
+	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.

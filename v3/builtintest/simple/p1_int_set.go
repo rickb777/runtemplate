@@ -422,7 +422,7 @@ func (set P1IntSet) Map(f func(*int) *int) P1IntSet {
 	result := NewP1IntSet()
 
 	for v := range set {
-	    k := f(&v)
+		k := f(&v)
 		result[*k] = struct{}{}
 	}
 

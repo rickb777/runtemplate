@@ -423,7 +423,7 @@ func (set X1IntSet) Map(f func(int) int) X1IntSet {
 	result := NewX1IntSet()
 
 	for v := range set {
-	    k := f(v)
+		k := f(v)
 		result[k] = struct{}{}
 	}
 

@@ -217,10 +217,10 @@ func (queue *X1IntQueue) Clone() *X1IntQueue {
 }
 
 func (queue *X1IntQueue) doClone(buffer []int) *X1IntQueue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &X1IntQueue{
 		m:         buffer,
 		read:      0,
@@ -403,10 +403,10 @@ func (queue *X1IntQueue) indexes() []int {
 // Clear the entire queue.
 func (queue *X1IntQueue) Clear() {
 	if queue != nil {
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -673,7 +673,7 @@ func (queue *X1IntQueue) doKeepWhere(p func(int) bool) *X1IntQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -684,9 +684,9 @@ func (queue *X1IntQueue) doKeepWhere(p func(int) bool) *X1IntQueue {
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -696,8 +696,8 @@ func (queue *X1IntQueue) doKeepWhere(p func(int) bool) *X1IntQueue {
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -706,9 +706,9 @@ func (queue *X1IntQueue) doKeepWhere(p func(int) bool) *X1IntQueue {
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -858,7 +858,7 @@ func (queue *X1IntQueue) MapToString(f func(int) string) []string {
 
 	result := make([]string, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}
@@ -882,7 +882,7 @@ func (queue *X1IntQueue) MapToInt64(f func(int) int64) []int64 {
 
 	result := make([]int64, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}
@@ -906,7 +906,7 @@ func (queue *X1IntQueue) FlatMap(f func(int) []int) *X1IntQueue {
 
 	slice := make([]int, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}

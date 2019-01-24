@@ -580,7 +580,7 @@ func (set *P1IntSet) Map(f func(*int) *int) *P1IntSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-	    k := f(&v)
+		k := f(&v)
 		result.m[*k] = struct{}{}
 	}
 

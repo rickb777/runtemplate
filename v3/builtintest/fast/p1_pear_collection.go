@@ -53,8 +53,8 @@ type P1PearCollection interface {
 	// CountBy gives the number elements of P1PearCollection that return true for the predicate p.
 	CountBy(p func(*Pear) bool) int
 
-    // Clear the entire collection.
-    Clear()
+	// Clear the entire collection.
+	Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...*Pear)

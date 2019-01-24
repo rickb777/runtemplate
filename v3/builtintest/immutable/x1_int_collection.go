@@ -47,8 +47,8 @@ type X1IntCollection interface {
 	// IsSet returns false for lists and queues.
 	IsSet() bool
 
-    // ToSet returns a shallow copy as a set.
-    ToSet() *X1IntSet
+	// ToSet returns a shallow copy as a set.
+	ToSet() *X1IntSet
 
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []int

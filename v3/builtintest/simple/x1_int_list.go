@@ -390,7 +390,7 @@ func (list X1IntList) DropLast(n int) X1IntList {
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0:l-n]
 }
 
 // TakeWhile returns a new X1IntList containing the leading elements of the source list. Whilst the

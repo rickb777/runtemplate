@@ -51,9 +51,9 @@ func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case string:
+		case string:
 			list.m = append(list.m, j)
-        case *string:
+		case *string:
 			list.m = append(list.m, *j)
 		}
 	}
@@ -147,7 +147,7 @@ func (list *X1StringList) Head() string {
 // Otherwise returns the zero value.
 func (list *X1StringList) HeadOption() string {
 	if list == nil || len(list.m) == 0 {
-	    var v string
+		var v string
 		return v
 	}
 	return list.m[0]
@@ -163,7 +163,7 @@ func (list *X1StringList) Last() string {
 // Otherwise returns the zero value.
 func (list *X1StringList) LastOption() string {
 	if list == nil || len(list.m) == 0 {
-	    var v string
+		var v string
 		return v
 	}
 	return list.m[len(list.m)-1]

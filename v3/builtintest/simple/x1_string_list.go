@@ -45,9 +45,9 @@ func ConvertX1StringList(values ...interface{}) (X1StringList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case string:
+		case string:
 			list = append(list, j)
-        case *string:
+		case *string:
 			list = append(list, *j)
 		}
 	}
@@ -370,7 +370,7 @@ func (list X1StringList) DropLast(n int) X1StringList {
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0:l-n]
 }
 
 // TakeWhile returns a new X1StringList containing the leading elements of the source list. Whilst the

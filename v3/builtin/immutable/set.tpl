@@ -127,9 +127,9 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 			k := {{.Type.Name}}(*j)
 			set.m[k] = struct{}{}
 {{- else}}
-        case {{.Type.Name}}:
+		case {{.Type.Name}}:
 			set.m[j] = struct{}{}
-        case *{{.Type.Name}}:
+		case *{{.Type.Name}}:
 			set.m[*j] = struct{}{}
 {{- end}}
 		}

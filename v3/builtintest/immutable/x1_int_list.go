@@ -216,7 +216,7 @@ func (list *X1IntList) Head() int {
 // Otherwise returns the zero value.
 func (list *X1IntList) HeadOption() int {
 	if list == nil || len(list.m) == 0 {
-	    var v int
+		var v int
 		return v
 	}
 	return list.m[0]
@@ -232,7 +232,7 @@ func (list *X1IntList) Last() int {
 // Otherwise returns the zero value.
 func (list *X1IntList) LastOption() int {
 	if list == nil || len(list.m) == 0 {
-	    var v int
+		var v int
 		return v
 	}
 	return list.m[len(list.m)-1]

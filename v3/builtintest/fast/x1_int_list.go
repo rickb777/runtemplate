@@ -466,8 +466,8 @@ func (list *X1IntList) doShuffle() *X1IntList {
 // Clear the entire collection.
 func (list *X1IntList) Clear() {
 	if list != nil {
-	    list.m = list.m[:]
-    }
+		list.m = list.m[:]
+	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.

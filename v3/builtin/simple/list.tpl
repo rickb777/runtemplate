@@ -121,14 +121,14 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) ({{.Prefix.U}}{{
 		{{- end}}
 {{- else}}
 		{{- if .Type.IsPtr}}
-        case {{.Type.Name}}:
+		case {{.Type.Name}}:
 			list = append(list, &j)
-        case {{.Type}}:
+		case {{.Type}}:
 			list = append(list, j)
 		{{- else}}
-        case {{.Type}}:
+		case {{.Type}}:
 			list = append(list, j)
-        case *{{.Type}}:
+		case *{{.Type}}:
 			list = append(list, *j)
 		{{- end}}
 {{- end}}
@@ -457,7 +457,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) DropLast(n int) {{.Prefix.U}}{{.Type.U}
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0:l-n]
 }
 
 // TakeWhile returns a new {{.Prefix.U}}{{.Type.U}}List containing the leading elements of the source list. Whilst the

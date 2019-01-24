@@ -28,9 +28,9 @@ func ConvertP1AppleSet(values ...interface{}) (P1AppleSet, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			set[j] = struct{}{}
-        case *Apple:
+		case *Apple:
 			set[*j] = struct{}{}
 		}
 	}
@@ -348,7 +348,7 @@ func (set P1AppleSet) Map(f func(*Apple) *Apple) P1AppleSet {
 	result := NewP1AppleSet()
 
 	for v := range set {
-	    k := f(&v)
+		k := f(&v)
 		result[*k] = struct{}{}
 	}
 

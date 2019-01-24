@@ -47,8 +47,8 @@ type X1StringCollection interface {
 	// IsSet returns false for lists and queues.
 	IsSet() bool
 
-    // ToSet returns a shallow copy as a set.
-    ToSet() *X1StringSet
+	// ToSet returns a shallow copy as a set.
+	ToSet() *X1StringSet
 
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []string

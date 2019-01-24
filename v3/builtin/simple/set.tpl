@@ -115,9 +115,9 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) ({{.Prefix.U}}{{.
 			k := {{.Type.Name}}(*j)
 			set[k] = struct{}{}
 {{- else}}
-        case {{.Type.Name}}:
+		case {{.Type.Name}}:
 			set[j] = struct{}{}
-        case *{{.Type.Name}}:
+		case *{{.Type.Name}}:
 			set[*j] = struct{}{}
 {{- end}}
 		}
@@ -445,7 +445,7 @@ func (set {{.Prefix.U}}{{.Type.U}}Set) Map(f func({{.Type}}) {{.Type}}) {{.Prefi
 	result := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for v := range set {
-	    k := f({{.Type.Amp}}v)
+		k := f({{.Type.Amp}}v)
 		result[{{.Type.Star}}k] = struct{}{}
 	}
 

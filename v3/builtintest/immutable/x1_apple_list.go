@@ -48,9 +48,9 @@ func ConvertX1AppleList(values ...interface{}) (*X1AppleList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			list.m = append(list.m, j)
-        case *Apple:
+		case *Apple:
 			list.m = append(list.m, *j)
 		}
 	}
@@ -144,7 +144,7 @@ func (list *X1AppleList) Head() Apple {
 // Otherwise returns the zero value.
 func (list *X1AppleList) HeadOption() Apple {
 	if list == nil || len(list.m) == 0 {
-	    var v Apple
+		var v Apple
 		return v
 	}
 	return list.m[0]
@@ -160,7 +160,7 @@ func (list *X1AppleList) Last() Apple {
 // Otherwise returns the zero value.
 func (list *X1AppleList) LastOption() Apple {
 	if list == nil || len(list.m) == 0 {
-	    var v Apple
+		var v Apple
 		return v
 	}
 	return list.m[len(list.m)-1]

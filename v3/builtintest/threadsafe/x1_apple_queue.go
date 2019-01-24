@@ -236,10 +236,10 @@ func (queue *X1AppleQueue) Clone() *X1AppleQueue {
 }
 
 func (queue *X1AppleQueue) doClone(buffer []Apple) *X1AppleQueue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &X1AppleQueue{
 		m:         buffer,
 		read:      0,
@@ -446,12 +446,12 @@ func (queue *X1AppleQueue) indexes() []int {
 // Clear the entire queue.
 func (queue *X1AppleQueue) Clear() {
 	if queue != nil {
-    	queue.s.Lock()
-	    defer queue.s.Unlock()
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.s.Lock()
+		defer queue.s.Unlock()
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -742,7 +742,7 @@ func (queue *X1AppleQueue) doKeepWhere(p func(Apple) bool) *X1AppleQueue {
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -753,9 +753,9 @@ func (queue *X1AppleQueue) doKeepWhere(p func(Apple) bool) *X1AppleQueue {
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -765,8 +765,8 @@ func (queue *X1AppleQueue) doKeepWhere(p func(Apple) bool) *X1AppleQueue {
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -775,9 +775,9 @@ func (queue *X1AppleQueue) doKeepWhere(p func(Apple) bool) *X1AppleQueue {
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -939,7 +939,7 @@ func (queue *X1AppleQueue) FlatMap(f func(Apple) []Apple) *X1AppleQueue {
 
 	slice := make([]Apple, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}

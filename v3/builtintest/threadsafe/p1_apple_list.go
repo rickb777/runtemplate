@@ -50,9 +50,9 @@ func ConvertP1AppleList(values ...interface{}) (*P1AppleList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			list.m = append(list.m, &j)
-        case *Apple:
+		case *Apple:
 			list.m = append(list.m, j)
 		}
 	}
@@ -452,10 +452,10 @@ func (list *P1AppleList) doShuffle() *P1AppleList {
 // Clear the entire collection.
 func (list *P1AppleList) Clear() {
 	if list != nil {
-    	list.s.Lock()
-	    defer list.s.Unlock()
-	    list.m = list.m[:]
-    }
+		list.s.Lock()
+		defer list.s.Unlock()
+		list.m = list.m[:]
+	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.

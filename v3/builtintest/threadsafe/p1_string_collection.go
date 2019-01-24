@@ -88,8 +88,8 @@ type P1StringCollection interface {
 	// ContainsAll determines whether the given items are all in the collection, returning true if so.
 	ContainsAll(v ...*string) bool
 
-    // Clear the entire collection.
-    Clear()
+	// Clear the entire collection.
+	Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...*string)

@@ -137,9 +137,9 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 			k := {{.Type.Name}}(*j)
 			list.m = append(list.m, {{.Type.Amp}}k)
 {{- else}}
-        case {{.Type.Name}}:
+		case {{.Type.Name}}:
 			list.m = append(list.m, j)
-        case *{{.Type.Name}}:
+		case *{{.Type.Name}}:
 			list.m = append(list.m, *j)
 {{- end}}
 		}
@@ -236,7 +236,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Head() {{.Type.Name}} {
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.Prefix.U}}{{.Type.U}}List) HeadOption() {{.Type.Name}} {
 	if list == nil || len(list.m) == 0 {
-	    var v {{.Type.Name}}
+		var v {{.Type.Name}}
 		return v
 	}
 	return list.m[0]
@@ -252,7 +252,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Last() {{.Type.Name}} {
 // Otherwise returns {{if .TypeIsPtr}}nil{{else}}the zero value{{end}}.
 func (list *{{.Prefix.U}}{{.Type.U}}List) LastOption() {{.Type.Name}} {
 	if list == nil || len(list.m) == 0 {
-	    var v {{.Type.Name}}
+		var v {{.Type.Name}}
 		return v
 	}
 	return list.m[len(list.m)-1]

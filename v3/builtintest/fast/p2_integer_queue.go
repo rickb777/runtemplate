@@ -204,10 +204,10 @@ func (queue *P2IntegerQueue) Clone() *P2IntegerQueue {
 }
 
 func (queue *P2IntegerQueue) doClone(buffer []*big.Int) *P2IntegerQueue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &P2IntegerQueue{
 		m:         buffer,
 		read:      0,
@@ -390,10 +390,10 @@ func (queue *P2IntegerQueue) indexes() []int {
 // Clear the entire queue.
 func (queue *P2IntegerQueue) Clear() {
 	if queue != nil {
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -638,7 +638,7 @@ func (queue *P2IntegerQueue) doKeepWhere(p func(*big.Int) bool) *P2IntegerQueue 
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -649,9 +649,9 @@ func (queue *P2IntegerQueue) doKeepWhere(p func(*big.Int) bool) *P2IntegerQueue 
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -661,8 +661,8 @@ func (queue *P2IntegerQueue) doKeepWhere(p func(*big.Int) bool) *P2IntegerQueue 
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -671,9 +671,9 @@ func (queue *P2IntegerQueue) doKeepWhere(p func(*big.Int) bool) *P2IntegerQueue 
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -823,7 +823,7 @@ func (queue *P2IntegerQueue) FlatMap(f func(*big.Int) []*big.Int) *P2IntegerQueu
 
 	slice := make([]*big.Int, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}

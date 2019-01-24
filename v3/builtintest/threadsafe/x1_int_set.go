@@ -581,7 +581,7 @@ func (set *X1IntSet) Map(f func(int) int) *X1IntSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-	    k := f(v)
+		k := f(v)
 		result.m[k] = struct{}{}
 	}
 

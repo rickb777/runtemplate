@@ -33,9 +33,9 @@ func ConvertX1AppleSet(values ...interface{}) (*X1AppleSet, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			set.m[j] = struct{}{}
-        case *Apple:
+		case *Apple:
 			set.m[*j] = struct{}{}
 		}
 	}

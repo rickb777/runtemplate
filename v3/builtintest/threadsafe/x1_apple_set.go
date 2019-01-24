@@ -39,9 +39,9 @@ func ConvertX1AppleSet(values ...interface{}) (*X1AppleSet, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			set.m[j] = struct{}{}
-        case *Apple:
+		case *Apple:
 			set.m[*j] = struct{}{}
 		}
 	}
@@ -509,7 +509,7 @@ func (set *X1AppleSet) Map(f func(Apple) Apple) *X1AppleSet {
 	defer set.s.RUnlock()
 
 	for v := range set.m {
-	    k := f(v)
+		k := f(v)
 		result.m[k] = struct{}{}
 	}
 

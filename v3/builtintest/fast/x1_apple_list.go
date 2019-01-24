@@ -47,9 +47,9 @@ func ConvertX1AppleList(values ...interface{}) (*X1AppleList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			list.m = append(list.m, j)
-        case *Apple:
+		case *Apple:
 			list.m = append(list.m, *j)
 		}
 	}
@@ -394,8 +394,8 @@ func (list *X1AppleList) doShuffle() *X1AppleList {
 // Clear the entire collection.
 func (list *X1AppleList) Clear() {
 	if list != nil {
-	    list.m = list.m[:]
-    }
+		list.m = list.m[:]
+	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.

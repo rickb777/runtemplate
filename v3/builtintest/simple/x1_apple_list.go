@@ -43,9 +43,9 @@ func ConvertX1AppleList(values ...interface{}) (X1AppleList, bool) {
 
 	for _, i := range values {
 		switch j := i.(type) {
-        case Apple:
+		case Apple:
 			list = append(list, j)
-        case *Apple:
+		case *Apple:
 			list = append(list, *j)
 		}
 	}
@@ -368,7 +368,7 @@ func (list X1AppleList) DropLast(n int) X1AppleList {
 	if n > l {
 		return list[l:]
 	}
-    return list[0:l-n]
+	return list[0:l-n]
 }
 
 // TakeWhile returns a new X1AppleList containing the leading elements of the source list. Whilst the
