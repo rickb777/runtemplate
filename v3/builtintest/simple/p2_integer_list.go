@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v3.1.2
+// by runtemplate v3.2.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple

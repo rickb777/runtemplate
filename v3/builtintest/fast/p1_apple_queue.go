@@ -11,7 +11,7 @@
 // Generated from fast/queue.tpl with Type=*Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:false
 // ToList:true ToSet:true
-// by runtemplate v3.1.2
+// by runtemplate v3.2.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

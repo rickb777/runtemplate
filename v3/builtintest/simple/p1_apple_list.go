@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=*Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.1.2
+// by runtemplate v3.2.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple

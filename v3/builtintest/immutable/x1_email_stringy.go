@@ -2,7 +2,7 @@
 //
 // Generated from types/stringy.tpl with Type=Email
 // options: SortableSlice:true
-// by runtemplate v3.1.2
+// by runtemplate v3.2.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable

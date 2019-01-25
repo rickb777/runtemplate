@@ -11,7 +11,7 @@
 // Generated from threadsafe/queue.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:true ToSet:false
-// by runtemplate v3.1.2
+// by runtemplate v3.2.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
