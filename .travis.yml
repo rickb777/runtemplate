@@ -4,8 +4,7 @@ go:
   - "1.11"
 
 env:
-  - GO111MODULE=on
-  - GOMOD=$PWD/v3/go.mod
+  - GO111MODULE=off
 
 script:
   - ./v3/build
