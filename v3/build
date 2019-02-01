@@ -1,0 +1,56 @@
+#!/bin/bash -e
+cd $(dirname $0)
+
+PATH=$HOME/go/bin:$PATH
+unset GOPATH
+
+go mod download
+
+rm -f builtin/*.txt
+
+./builtintest/clean
+
+./copy-threadsafe-builtins
+
+# we need the 'packr' tool
+if [ -z "$(type -p packr)" ]; then
+  mkdir -pv $HOME/go/src
+  go get github.com/gobuffalo/packr/packr
+fi
+
+go generate .
+
+echo
+echo App Testing...
+go test ./app/...
+
+echo
+echo Installing...
+go install .
+
+type runtemplate
+
+./info ||:
+
+echo
+echo Generating tests...
+go generate -v ./builtintest/...
+
+rm -f examples/*_*.go
+go generate ./examples
+
+echo
+echo Go Fmt...
+gofmt -l -w *.go app/*.go examples/*.go
+
+echo
+echo Template Testing...
+RACE=
+[ "$CGO_ENABLED" != "1" ] || RACE=-race
+go test $RACE ./...
+
+echo
+echo Code vetting...
+go vet ./...
+
+echo ok.
