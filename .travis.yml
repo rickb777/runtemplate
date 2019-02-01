@@ -6,6 +6,9 @@ go:
 env:
   - GO111MODULE=off
 
+install:
+  - unset GOPATH
+
 script:
   - ./v3/build
   - ./build
