@@ -1,10 +1,24 @@
 #!/bin/bash -e
 cd $(dirname $0)
+D=$PWD
 
 PATH=$HOME/go/bin:$PATH
-unset GOPATH
+export GOPATH=$HOME/go
+export GO111MODULE=off
 
-go mod download
+mkdir -p $GOPATH
+
+if [ ! -d $GOPATH/src/github.com/rickb777/runtemplate ]; then
+  cd $GOPATH
+  mkdir -p src/github.com/rickb777
+  cd       src/github.com/rickb777
+  ln -vs $D .
+  cd $D
+fi
+
+go get -x github.com/go-playground/statics/static
+go get -x github.com/benmoss/matchers
+go get -x golang.org/x/net/html/charset
 
 ./builtintest/clean
 
@@ -23,7 +37,9 @@ go test ./app/...
 
 echo
 echo Installing...
-go install .
+cd $GOPATH
+go install github.com/rickb777/runtemplate
+cd $D
 
 type runtemplate
 
@@ -42,10 +58,10 @@ echo
 echo Template Testing...
 RACE=
 [ "$CGO_ENABLED" != "1" ] || RACE=-race
-go test $RACE ./...
+go test $RACE ./app/... ./builtintest/...
 
 echo
 echo Code vetting...
-go vet ./...
+go vet . ./app/... ./builtintest/... ./examples/...
 
 echo ok.

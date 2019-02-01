@@ -3,11 +3,8 @@ language: go
 go:
   - "1.11"
 
-install:
-  - unset GOPATH
-  - go mod download
-
 script:
   - ./build
+  - ./v3/build
 
 
