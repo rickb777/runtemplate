@@ -3,12 +3,11 @@ language: go
 go:
   - "1.11"
 
-env:
-  - GO111MODULE=off
-
+# install is needed because it overrides the default behaviour (which doesn't work)
 install:
   - unset GOPATH
 
+# build both the current (v3) and previous versions
 script:
   - ./v3/build
   - ./build
