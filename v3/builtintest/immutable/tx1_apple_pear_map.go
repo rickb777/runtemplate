@@ -142,6 +142,22 @@ func (mm *TX1ApplePearMap) Get(k Apple) (Pear, bool) {
 	return v, found
 }
 
+// Put adds an item to a clone of the map, replacing any prior value and returning the cloned map.
+func (mm *TX1ApplePearMap) Put(k Apple, v Pear) *TX1ApplePearMap {
+	if mm == nil {
+		return NewTX1ApplePearMap1(k, v)
+	}
+
+	result := NewTX1ApplePearMap()
+
+	for k, v := range mm.m {
+		result.m[k] = v
+	}
+	result.m[k] = v
+
+	return result
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *TX1ApplePearMap) ContainsKey(k Apple) bool {
 	if mm == nil {

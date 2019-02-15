@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Mutable:{{.Mutable}} M:{{.M}}
+// options: Mutable:{{.Mutable}} Immutable:{{.Immutable}} M:{{.M}}
 
 package {{.Package}}
 
@@ -12,7 +12,6 @@ import (
     "encoding/json"
 	"strings"
 {{- end}}
-	"reflect"
 	"sort"
 	"testing"
 	. "github.com/onsi/gomega"
@@ -61,13 +60,13 @@ func TestIm{{.Key.U}}{{.Type.U}}MapSize(t *testing.T) {
 }
 
 func Test{{.Key.U}}{{.Type.U}}Keys(t *testing.T) {
+    g := NewGomegaWithT(t)
+
 	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4, 2).Values(4, 0, 5)...)
 
     k := a.Keys()
     sort.Ints(k)
-	if !reflect.DeepEqual(k, []int{2, 4, 8}) {
-		t.Errorf("Expected [2,4,8] but got %v", k)
-	}
+	g.Expect(k).To(Equal([]int{2, 4, 8}))
 
     // check correct nil handling
     a = nil
@@ -75,18 +74,35 @@ func Test{{.Key.U}}{{.Type.U}}Keys(t *testing.T) {
 }
 
 func Test{{.Key.U}}{{.Type.U}}Values(t *testing.T) {
+    g := NewGomegaWithT(t)
+
 	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4, 2).Values(4, 0, 5)...)
 
     v := a.Values()
     sort.Ints(v)
-	if !reflect.DeepEqual(v, []int{0, 4, 5}) {
-		t.Errorf("Expected [0,4,5] but got %v", v)
-	}
+	g.Expect(v).To(Equal([]int{0, 4, 5}))
 
     // check correct nil handling
     a = nil
     a.Values()
 }
+{{- if .Immutable}}
+
+func Test{{.Key.U}}{{.Type.U}}Put(t *testing.T) {
+    g := NewGomegaWithT(t)
+
+	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Zip(8, 4, 2).Values(4, 0, 5)...)
+
+    b := a.Put(7, 9)
+    g.Expect(b.Size()).To(Equal(4))
+    g.Expect(b.ContainsKey(7)).To(BeTrue())
+
+    // check correct nil handling
+    a = nil
+    c := a.Put(7, 9)
+    g.Expect(c.Size()).To(Equal(1))
+}
+{{- end}}
 
 func TestIm{{.Key.U}}{{.Type.U}}MapContainsAllKeys(t *testing.T) {
 	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{8, 6}, TX1{{.Key.U}}{{.Type.U}}Tuple{1, 10}, TX1{{.Key.U}}{{.Type.U}}Tuple{2, 11})

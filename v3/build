@@ -46,6 +46,7 @@ gofmt -l -w *.go app/*.go examples/*.go
 
 echo
 echo Template Testing...
+go clean -testcache
 RACE=
 [ "$CGO_ENABLED" != "1" ] || RACE=-race
 go test $RACE ./...

@@ -143,6 +143,22 @@ func (mm *TX1StringStringMap) Get(k string) (string, bool) {
 	return v, found
 }
 
+// Put adds an item to a clone of the map, replacing any prior value and returning the cloned map.
+func (mm *TX1StringStringMap) Put(k string, v string) *TX1StringStringMap {
+	if mm == nil {
+		return NewTX1StringStringMap1(k, v)
+	}
+
+	result := NewTX1StringStringMap()
+
+	for k, v := range mm.m {
+		result.m[k] = v
+	}
+	result.m[k] = v
+
+	return result
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *TX1StringStringMap) ContainsKey(k string) bool {
 	if mm == nil {

@@ -9,6 +9,7 @@ func (mm *KeyTypeMap) Keys() []*Key
 func (mm *KeyTypeMap) Values() []*Type
 func (mm *KeyTypeMap) ToSlice() []KeyTypeTuple
 func (mm *KeyTypeMap) Get(k *Key) (*Type, bool)
+func (mm *KeyTypeMap) Put(k *Key, v *Type) *KeyTypeMap
 func (mm *KeyTypeMap) ContainsKey(k *Key) bool
 func (mm *KeyTypeMap) ContainsAllKeys(kk ...*Key) bool
 func (mm *KeyTypeMap) Size() int

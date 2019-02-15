@@ -143,6 +143,22 @@ func (mm *TX1IntIntMap) Get(k int) (int, bool) {
 	return v, found
 }
 
+// Put adds an item to a clone of the map, replacing any prior value and returning the cloned map.
+func (mm *TX1IntIntMap) Put(k int, v int) *TX1IntIntMap {
+	if mm == nil {
+		return NewTX1IntIntMap1(k, v)
+	}
+
+	result := NewTX1IntIntMap()
+
+	for k, v := range mm.m {
+		result.m[k] = v
+	}
+	result.m[k] = v
+
+	return result
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *TX1IntIntMap) ContainsKey(k int) bool {
 	if mm == nil {

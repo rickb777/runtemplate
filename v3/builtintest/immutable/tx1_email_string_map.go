@@ -142,6 +142,22 @@ func (mm *TX1EmailStringMap) Get(k Email) (string, bool) {
 	return v, found
 }
 
+// Put adds an item to a clone of the map, replacing any prior value and returning the cloned map.
+func (mm *TX1EmailStringMap) Put(k Email, v string) *TX1EmailStringMap {
+	if mm == nil {
+		return NewTX1EmailStringMap1(k, v)
+	}
+
+	result := NewTX1EmailStringMap()
+
+	for k, v := range mm.m {
+		result.m[k] = v
+	}
+	result.m[k] = v
+
+	return result
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *TX1EmailStringMap) ContainsKey(k Email) bool {
 	if mm == nil {

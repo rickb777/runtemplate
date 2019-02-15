@@ -1,15 +1,14 @@
 // Generated from ../map_test.tpl with Type=int
-// options: Mutable:true M:.slice()
+// options: Mutable:true Immutable:<no value> M:.slice()
 
 package fast
 
 import (
-    "bytes"
-    "encoding/gob"
-	"reflect"
+	"bytes"
+	"encoding/gob"
+	. "github.com/onsi/gomega"
 	"sort"
 	"testing"
-	. "github.com/onsi/gomega"
 )
 
 func TestImIntIntMapGet(t *testing.T) {
@@ -35,9 +34,9 @@ func TestImIntIntMapToSlice(t *testing.T) {
 	g.Expect(a.Size()).To(Equal(1))
 	g.Expect(len(s)).To(Equal(1))
 
-    // check correct nil handling
-    a = nil
-    a.ToSlice()
+	// check correct nil handling
+	a = nil
+	a.ToSlice()
 }
 
 func TestImIntIntMapSize(t *testing.T) {
@@ -49,37 +48,37 @@ func TestImIntIntMapSize(t *testing.T) {
 	g.Expect(a1.Size()).To(Equal(0))
 	g.Expect(a2.Size()).To(Equal(1))
 
-    // check correct nil handling
-    a1 = nil
-    a1.Size()
+	// check correct nil handling
+	a1 = nil
+	a1.Size()
 }
 
 func TestIntIntKeys(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a := NewTX1IntIntMap(TX1IntIntZip(8, 4, 2).Values(4, 0, 5)...)
 
-    k := a.Keys()
-    sort.Ints(k)
-	if !reflect.DeepEqual(k, []int{2, 4, 8}) {
-		t.Errorf("Expected [2,4,8] but got %v", k)
-	}
+	k := a.Keys()
+	sort.Ints(k)
+	g.Expect(k).To(Equal([]int{2, 4, 8}))
 
-    // check correct nil handling
-    a = nil
-    a.Keys()
+	// check correct nil handling
+	a = nil
+	a.Keys()
 }
 
 func TestIntIntValues(t *testing.T) {
+	g := NewGomegaWithT(t)
+
 	a := NewTX1IntIntMap(TX1IntIntZip(8, 4, 2).Values(4, 0, 5)...)
 
-    v := a.Values()
-    sort.Ints(v)
-	if !reflect.DeepEqual(v, []int{0, 4, 5}) {
-		t.Errorf("Expected [0,4,5] but got %v", v)
-	}
+	v := a.Values()
+	sort.Ints(v)
+	g.Expect(v).To(Equal([]int{0, 4, 5}))
 
-    // check correct nil handling
-    a = nil
-    a.Values()
+	// check correct nil handling
+	a = nil
+	a.Values()
 }
 
 func TestImIntIntMapContainsAllKeys(t *testing.T) {
@@ -93,9 +92,9 @@ func TestImIntIntMapContainsAllKeys(t *testing.T) {
 		t.Errorf("Got %+v", a)
 	}
 
-    // check correct nil handling
-    a = nil
-    a.ContainsAllKeys()
+	// check correct nil handling
+	a = nil
+	a.ContainsAllKeys()
 }
 
 func TestImIntIntMapEquals(t *testing.T) {
@@ -115,10 +114,10 @@ func TestImIntIntMapEquals(t *testing.T) {
 	g.Expect(a3.Equals(b3)).To(BeTrue())
 	g.Expect(b3.Equals(a3)).To(BeTrue())
 
-    // check correct nil handling
-    a1 = nil
-    a1.Equals(b1)
-    b1.Equals(a1)
+	// check correct nil handling
+	a1 = nil
+	a1.Equals(b1)
+	b1.Equals(a1)
 }
 
 //func TestImIntIntMapSend(t *testing.T) {
@@ -153,8 +152,8 @@ func TestIntMapForall(t *testing.T) {
 		t.Errorf("Expected not to find.")
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	found = a.Forall(func(k, v int) bool {
 		return v > 0
 	})
@@ -163,8 +162,8 @@ func TestIntMapForall(t *testing.T) {
 		t.Errorf("Expected to find.")
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Forall(func(k, v int) bool {
 		return v > 0
 	})
@@ -189,8 +188,8 @@ func TestIntMapExists(t *testing.T) {
 		t.Errorf("Expected not to find.")
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	found = a.Exists(func(k, v int) bool {
 		return v > 0
 	})
@@ -199,8 +198,8 @@ func TestIntMapExists(t *testing.T) {
 		t.Errorf("Expected not to find.")
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Exists(func(k, v int) bool {
 		return v > 2
 	})
@@ -218,8 +217,8 @@ func TestIntMapForeach(t *testing.T) {
 		t.Errorf("Got %d", s)
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Foreach(func(k, v int) {
 		s += v
 	})
@@ -228,15 +227,15 @@ func TestIntMapForeach(t *testing.T) {
 		t.Errorf("Got %d", s)
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Foreach(func(k, v int) {
 		s += v
 	})
 }
 
 func TestIntMapFind(t *testing.T) {
-    g := NewGomegaWithT(t)
+	g := NewGomegaWithT(t)
 
 	a := NewTX1IntIntMap(TX1IntIntZip(1, 8, 2).Values(1, 2, 3)...)
 
@@ -254,15 +253,15 @@ func TestIntMapFind(t *testing.T) {
 
 	g.Expect(found).To(BeFalse())
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Find(func(k, v int) bool {
 		return v > 2
 	})
 }
 
 func TestIntMapFilter(t *testing.T) {
-    g := NewGomegaWithT(t)
+	g := NewGomegaWithT(t)
 
 	a := NewTX1IntIntMap(TX1IntIntZip(1, 8, 2).Values(1, 2, 3)...)
 
@@ -273,8 +272,8 @@ func TestIntMapFilter(t *testing.T) {
 	exp := NewTX1IntIntMap(TX1IntIntTuple{2, 3})
 	g.Expect(b.Equals(exp)).To(BeTrue())
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Filter(func(k, v int) bool {
 		return v > 2
 	})
@@ -297,8 +296,8 @@ func TestIntMapPartition(t *testing.T) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp2.slice(), c.slice())
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Partition(func(k, v int) bool {
 		return v > 2
 	})
@@ -316,8 +315,8 @@ func TestIntMapTransform(t *testing.T) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp.slice(), b.slice())
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Map(func(k, v int) (int, int) {
 		return k + 1, v * v
 	})
@@ -327,25 +326,25 @@ func TestIntMapFlatMap(t *testing.T) {
 	a := NewTX1IntIntMap(TX1IntIntZip(2, 1, 18).Values(6, 10, 5)...)
 
 	b := a.FlatMap(func(k int, v int) []TX1IntIntTuple {
-	    if k > 3 {
-	        return nil
-	    }
+		if k > 3 {
+			return nil
+		}
 		return []TX1IntIntTuple{
-		    {k-1, v+1},
-		    {k+1, v+2},
+			{k - 1, v + 1},
+			{k + 1, v + 2},
 		}
 	})
 
 	exp := NewTX1IntIntMap(TX1IntIntTuple{1, 7}, TX1IntIntTuple{3, 8},
-	    TX1IntIntTuple{0, 11}, TX1IntIntTuple{2, 12})
+		TX1IntIntTuple{0, 11}, TX1IntIntTuple{2, 12})
 	if !b.Equals(exp) {
 		t.Errorf("Expected '%+v' but got '%+v'", exp.slice(), b.slice())
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.FlatMap(func(k int, v int) []TX1IntIntTuple {
-        return nil
+		return nil
 	})
 }
 
@@ -384,7 +383,7 @@ func TestMuIntIntMapPop(t *testing.T) {
 		t.Errorf("Got %+v", a)
 	}
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	_, y = a.Pop(1)
 	if y {
@@ -412,7 +411,7 @@ func TestMuIntIntMapRemove(t *testing.T) {
 		t.Errorf("Got %+v", a)
 	}
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.Remove(1)
 }
@@ -438,8 +437,8 @@ func TestMuIntIntMapContainsKey(t *testing.T) {
 		t.Errorf("Got %+v", a)
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	if a.ContainsKey(71) {
 		t.Error("should not contain 71")
 	}
@@ -454,9 +453,9 @@ func TestMuIntIntMapClear(t *testing.T) {
 		t.Errorf("Got %+v", a)
 	}
 
-    // check correct nil handling
-    a = nil
-    a.Clear()
+	// check correct nil handling
+	a = nil
+	a.Clear()
 }
 
 func TestMuIntIntMapClone(t *testing.T) {
@@ -482,9 +481,9 @@ func TestMuIntIntMapClone(t *testing.T) {
 		t.Errorf("Expected '%+v' not to equal '%+v'", a2, c)
 	}
 
-    // check correct nil handling
-    a1 = nil
-    a1.Clone()
+	// check correct nil handling
+	a1 = nil
+	a1.Clone()
 }
 
 func TestIntMapMkString(t *testing.T) {
@@ -496,8 +495,8 @@ func TestIntMapMkString(t *testing.T) {
 		t.Errorf("Expected '8:4|4:0' but got %q", c)
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.MkString("|")
 }
 
@@ -510,8 +509,8 @@ func TestIntMapMkString3(t *testing.T) {
 		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
 	}
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.MkString3("<", ",", ">")
 }
 
@@ -519,14 +518,14 @@ func TestIntMapGobEncode(t *testing.T) {
 	a := NewTX1IntIntMap(TX1IntIntZip(1, 9, -2, 8, 3, 3).Values(-5, 10, 13, 17, 19, 23)...)
 	b := NewTX1IntIntMap()
 
-    buf := &bytes.Buffer{}
-    err := gob.NewEncoder(buf).Encode(a)
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(a)
 
 	if err != nil {
 		t.Errorf("%v", err)
 	}
 
-    err = gob.NewDecoder(buf).Decode(&b)
+	err = gob.NewDecoder(buf).Decode(&b)
 
 	if err != nil {
 		t.Errorf("%v", err)
