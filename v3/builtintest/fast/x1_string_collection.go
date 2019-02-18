@@ -1,6 +1,6 @@
 // Generated from fast/collection.tpl with Type=string
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:true Mutable:always
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

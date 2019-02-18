@@ -4,7 +4,7 @@
 //
 // Generated from immutable/list.tpl with Type=string
 // options: Comparable:true Numeric:false Ordered:false Stringer:true GobEncode:<no value> Mutable:disabled
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable

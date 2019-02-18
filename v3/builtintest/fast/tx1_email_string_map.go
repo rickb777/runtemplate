@@ -4,7 +4,7 @@
 //
 // Generated from fast/map.tpl with Key=Email Type=string
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

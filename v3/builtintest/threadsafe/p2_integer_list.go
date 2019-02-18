@@ -4,7 +4,7 @@
 // Generated from threadsafe/list.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:<no value>
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe

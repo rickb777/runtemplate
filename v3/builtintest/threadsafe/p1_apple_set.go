@@ -4,7 +4,7 @@
 //
 // Generated from threadsafe/set.tpl with Type=*Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false ToList:true
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe

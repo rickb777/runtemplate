@@ -30,6 +30,7 @@ package immutable
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=Apple           Type=string
 //go:generate runtemplate -tpl immutable/map.tpl        Prefix=TX1 Key=Apple           Type=Pear                    Stringer:true
 
+
 //go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email SortableSlice:true
 
 //go:generate runtemplate -tpl ../collection_test.tpl    Type=int Immutable:true Numeric:true Comparable:true
@@ -50,6 +51,7 @@ type Pear struct {
 var _ X1StringCollection = NewX1StringList()
 var _ X1IntCollection = NewX1IntList()
 var _ X1AppleCollection = NewX1AppleList()
+
 
 var _ X1StringCollection = NewX1StringSet()
 var _ X1IntCollection = NewX1IntSet()

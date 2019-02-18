@@ -4,7 +4,7 @@
 //
 // Generated from fast/set.tpl with Type=url.URL
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:true ToList:false
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

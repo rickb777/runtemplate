@@ -4,7 +4,7 @@
 //
 // Generated from fast/set.tpl with Type=int
 // options: Comparable:always Numeric:true Ordered:true Stringer:true ToList:<no value>
-// by runtemplate v3.2.1
+// by runtemplate v3.3.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
