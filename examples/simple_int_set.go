@@ -4,7 +4,7 @@
 //
 // Generated from simple/set.tpl with Type=int
 // options: Numeric:true Stringer:true Mutable:always
-// by runtemplate v3.3.1
+// by runtemplate v3.3.2
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
