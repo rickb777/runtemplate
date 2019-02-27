@@ -457,7 +457,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) DropLast(n int) {{.Prefix.U}}{{.Type.U}
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new {{.Prefix.U}}{{.Type.U}}List containing the leading elements of the source list. Whilst the
@@ -592,7 +592,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) CountBy(p func({{.Type}}) bool) (result
 			result++
 		}
 	}
-	return
+	return result
 }
 
 // MinBy returns an element of {{.Prefix.U}}{{.Type.U}}List containing the minimum value, when compared to other elements
@@ -719,7 +719,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) Equals(other {{.Prefix.U}}{{.Type.U}}Li
 
 type sortable{{.Prefix.U}}{{.Type.U}}List struct {
 	less func(i, j {{.Type}}) bool
-	m []{{.Type}}
+	m    []{{.Type}}
 }
 
 func (sl sortable{{.Prefix.U}}{{.Type.U}}List) Less(i, j int) bool {
