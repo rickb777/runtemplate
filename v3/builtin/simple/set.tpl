@@ -519,7 +519,7 @@ func (set {{.Prefix.U}}{{.Type.U}}Set) CountBy(p func({{.Type}}) bool) (result i
 			result++
 		}
 	}
-	return
+	return result
 }
 {{- if .Ordered}}
 

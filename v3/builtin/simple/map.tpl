@@ -275,7 +275,7 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Partition(p func({{.Key}}, {{.Ty
 			others[k] = v
 		}
 	}
-	return
+	return matching, others
 }
 
 // Map returns a new {{.Prefix.U}}{{.Type.U}}Map by transforming every element with the function f.
