@@ -7,7 +7,7 @@
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 

@@ -8,8 +8,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rickb777/runtemplate/app"
-	"github.com/rickb777/runtemplate/app/support"
+	"github.com/johanbrandhorst/runtemplate/app"
+	"github.com/johanbrandhorst/runtemplate/app/support"
 	"os"
 	"strings"
 )
@@ -40,8 +40,8 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "  %s [options] [template] [Type=Name ...] [Flag:Value ...]\n", os.Args[0])
 	fmt.Fprintln(os.Stderr, "\nOptions:")
 	flag.PrintDefaults()
-	fmt.Fprintln(os.Stderr, "\nSee https://github.com/rickb777/runtemplate/blob/master/README.md")
-	fmt.Fprintln(os.Stderr, "and https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md")
+	fmt.Fprintln(os.Stderr, "\nSee https://github.com/johanbrandhorst/runtemplate/blob/master/README.md")
+	fmt.Fprintln(os.Stderr, "and https://github.com/johanbrandhorst/runtemplate/blob/master/BUILTIN.md")
 	fmt.Fprintln(os.Stderr, "Version", appVersion)
 	os.Exit(1)
 }

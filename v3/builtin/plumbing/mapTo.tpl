@@ -1,6 +1,6 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}} ToType={{.ToType}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/v3/BUILTIN.md
 
 package {{.Package}}
 

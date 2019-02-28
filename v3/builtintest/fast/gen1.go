@@ -21,7 +21,7 @@ package fast
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=int             ToList:true  Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true                MapTo:string MapTo:int64
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=Apple           ToList:true  Stringer:false
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=url.URL         ToList:false Stringer:true  Comparable:true Import:"net/url"
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/rickb777/runtemplate/v3/builtintest/testtypes"
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/johanbrandhorst/runtemplate/v3/builtintest/testtypes"
 
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=int             Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl fast/map.tpl        Prefix=TX1 Key=string          Type=string  Comparable:true Stringer:true

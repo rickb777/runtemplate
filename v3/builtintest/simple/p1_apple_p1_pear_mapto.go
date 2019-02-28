@@ -1,6 +1,6 @@
 // Generated from plumbing/mapTo.tpl with Type=*Apple ToType=*Pear
 // by runtemplate v3.3.3
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 

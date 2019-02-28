@@ -1,7 +1,7 @@
 // Generated from immutable/collection.tpl with Type=string
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:true Mutable:disabled
 // by runtemplate v3.3.3
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
 

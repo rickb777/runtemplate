@@ -20,7 +20,7 @@ package threadsafe
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=int     ToList:true  Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true                MapTo:string MapTo:int64
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X1 Type=Apple   ToList:true  Stringer:false
 //go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=url.URL ToList:false Stringer:true  Comparable:true Import:"net/url"
-//go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/rickb777/runtemplate/builtintest/testtypes"
+//go:generate runtemplate -tpl threadsafe/set.tpl        Prefix=X2 Type=testtypes.Email Import:"github.com/johanbrandhorst/runtemplate/builtintest/testtypes"
 
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=int     Type=int     Comparable:true Stringer:true Numeric:true GobEncode:true JsonEncode:true
 //go:generate runtemplate -tpl threadsafe/map.tpl        Prefix=TX1 Key=string  Type=string  Comparable:true Stringer:true

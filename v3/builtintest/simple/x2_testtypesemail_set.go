@@ -5,13 +5,13 @@
 // Generated from simple/set.tpl with Type=testtypes.Email
 // options: Numeric:<no value> Stringer:<no value> Mutable:always
 // by runtemplate v3.3.3
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 
 import (
-	"github.com/rickb777/runtemplate/v3/builtintest/testtypes"
+	"github.com/johanbrandhorst/runtemplate/v3/builtintest/testtypes"
 )
 
 // X2TesttypesEmailSet is the primary type that represents a set

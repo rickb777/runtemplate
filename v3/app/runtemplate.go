@@ -2,13 +2,13 @@
 // This application provides a simple way of exxecuting standard Go templates from the command line. The obvious
 // use-case is for source code generation.
 //
-// Please see the [README](https://github.com/rickb777/runtemplate/blob/master/README.md).
+// Please see the [README](https://github.com/johanbrandhorst/runtemplate/blob/master/README.md).
 
 package app
 
 import (
 	"github.com/gobuffalo/packr"
-	. "github.com/rickb777/runtemplate/v3/app/support"
+	. "github.com/johanbrandhorst/runtemplate/v3/app/support"
 	"io"
 	"io/ioutil"
 	"os"

@@ -5,7 +5,7 @@
 // Generated from immutable/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:disabled
 // by runtemplate v3.3.2
-// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/BUILTIN.md
 
 package examples
 

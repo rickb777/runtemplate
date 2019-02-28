@@ -2,7 +2,7 @@
 //
 // See
 //
-// - Overview and usage: https://github.com/rickb777/runtemplate/blob/master/README.md
+// - Overview and usage: https://github.com/johanbrandhorst/runtemplate/blob/master/README.md
 //
-// - Suite of built-in templates for type-safe collections in Go: https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
+// - Suite of built-in templates for type-safe collections in Go: https://github.com/johanbrandhorst/runtemplate/blob/master/BUILTIN.md
 package main

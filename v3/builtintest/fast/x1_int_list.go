@@ -5,7 +5,7 @@
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:true Mutable:always ToList:always ToSet:true MapTo:string,int64
 // by runtemplate v3.3.3
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
 

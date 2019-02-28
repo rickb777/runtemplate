@@ -8,10 +8,10 @@ export GO111MODULE=off
 
 mkdir -p $GOPATH
 
-if [ ! -d $GOPATH/src/github.com/rickb777/runtemplate ]; then
+if [ ! -d $GOPATH/src/github.com/johanbrandhorst/runtemplate ]; then
   cd $GOPATH
-  mkdir -p src/github.com/rickb777
-  cd       src/github.com/rickb777
+  mkdir -p src/github.com/johanbrandhorst
+  cd       src/github.com/johanbrandhorst
   ln -vs $D .
   cd $D
 fi
@@ -38,7 +38,7 @@ go test ./app/...
 echo
 echo Installing...
 cd $GOPATH
-go install github.com/rickb777/runtemplate
+go install github.com/johanbrandhorst/runtemplate
 cd $D
 
 type runtemplate

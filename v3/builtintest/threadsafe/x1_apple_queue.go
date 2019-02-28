@@ -12,7 +12,7 @@
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:false
 // ToList:true ToSet:true
 // by runtemplate v3.3.3
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/johanbrandhorst/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
 
