@@ -143,6 +143,22 @@ func (mm *ImmutableStringAppleMap) Get(k string) (Apple, bool) {
 	return v, found
 }
 
+// Put adds an item to a clone of the map, replacing any prior value and returning the cloned map.
+func (mm *ImmutableStringAppleMap) Put(k string, v Apple) *ImmutableStringAppleMap {
+	if mm == nil {
+		return NewImmutableStringAppleMap1(k, v)
+	}
+
+	result := NewImmutableStringAppleMap()
+
+	for k, v := range mm.m {
+		result.m[k] = v
+	}
+	result.m[k] = v
+
+	return result
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *ImmutableStringAppleMap) ContainsKey(k string) bool {
 	if mm == nil {

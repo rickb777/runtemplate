@@ -80,7 +80,7 @@ func {{.Prefix.U}}{{.Type.U}}Zip2(in1, in2 <-chan {{.Type}}, out chan<- {{.Type}
 	closed2 := false
 	for v := range in1 {
 		out <- v
-		v, ok := <- in2
+		v, ok := <-in2
 		if ok {
 			out <- v
 		} else {
@@ -106,11 +106,11 @@ func {{.Prefix.U}}{{.Type.U}}Mux2(in1, in2 <-chan {{.Type}}, closer <-chan bool,
 	running := true
 	for running {
 		select {
-		case v := <- in1:
+		case v := <-in1:
 			out <- v
-		case v := <- in2:
+		case v := <-in2:
 			out <- v
-		case _ = <- closer:
+		case _ = <-closer:
 			running = false
 		}
 	}

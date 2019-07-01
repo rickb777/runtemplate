@@ -121,14 +121,14 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) ({{.Prefix.U}}{{
 		{{- end}}
 {{- else}}
 		{{- if .Type.IsPtr}}
-        case {{.Type.Name}}:
+		case {{.Type.Name}}:
 			list = append(list, &j)
-        case {{.Type}}:
+		case {{.Type}}:
 			list = append(list, j)
 		{{- else}}
-        case {{.Type}}:
+		case {{.Type}}:
 			list = append(list, j)
-        case *{{.Type}}:
+		case *{{.Type}}:
 			list = append(list, *j)
 		{{- end}}
 {{- end}}

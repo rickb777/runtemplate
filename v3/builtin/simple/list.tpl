@@ -457,7 +457,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) DropLast(n int) {{.Prefix.U}}{{.Type.U}
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new {{.Prefix.U}}{{.Type.U}}List containing the leading elements of the source list. Whilst the
@@ -719,7 +719,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) Equals(other {{.Prefix.U}}{{.Type.U}}Li
 
 type sortable{{.Prefix.U}}{{.Type.U}}List struct {
 	less func(i, j {{.Type}}) bool
-	m []{{.Type}}
+	m    []{{.Type}}
 }
 
 func (sl sortable{{.Prefix.U}}{{.Type.U}}List) Less(i, j int) bool {
@@ -737,7 +737,6 @@ func (sl sortable{{.Prefix.U}}{{.Type.U}}List) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list {{.Prefix.U}}{{.Type.U}}List) SortBy(less func(i, j {{.Type}}) bool) {{.Prefix.U}}{{.Type.U}}List {
-
 	sort.Sort(sortable{{.Prefix.U}}{{.Type.U}}List{less, list})
 	return list
 }
@@ -746,7 +745,6 @@ func (list {{.Prefix.U}}{{.Type.U}}List) SortBy(less func(i, j {{.Type}}) bool) 
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list {{.Prefix.U}}{{.Type.U}}List) StableSortBy(less func(i, j {{.Type}}) bool) {{.Prefix.U}}{{.Type.U}}List {
-
 	sort.Stable(sortable{{.Prefix.U}}{{.Type.U}}List{less, list})
 	return list
 }

@@ -43,7 +43,7 @@ type {{.Prefix.U}}{{.Type.U}}List struct {
 //-------------------------------------------------------------------------------------------------
 
 func new{{.Prefix.U}}{{.Type.U}}List(length, capacity int) *{{.Prefix.U}}{{.Type.U}}List {
-	return &{{.Prefix.U}}{{.Type.U}}List {
+	return &{{.Prefix.U}}{{.Type.U}}List{
 		m: make([]{{.Type.Name}}, length, capacity),
 	}
 }

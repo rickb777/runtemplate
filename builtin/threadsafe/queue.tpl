@@ -251,10 +251,10 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Clone() *{{.Prefix.U}}{{.Type.U}}Que
 }
 
 func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doClone(buffer []{{.Type}}) *{{.Prefix.U}}{{.Type.U}}Queue {
-    w := 0
-    if len(buffer) < cap(buffer) {
-        w = len(buffer)
-    }
+	w := 0
+	if len(buffer) < cap(buffer) {
+		w = len(buffer)
+	}
 	return &{{.Prefix.U}}{{.Type.U}}Queue{
 		m:         buffer,
 		read:      0,
@@ -461,12 +461,12 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) indexes() []int {
 // Clear the entire queue.
 func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Clear() {
 	if queue != nil {
-    	queue.s.Lock()
-	    defer queue.s.Unlock()
-    	queue.read = 0
-	    queue.write = 0
-	    queue.length = 0
-    }
+		queue.s.Lock()
+		defer queue.s.Unlock()
+		queue.read = 0
+		queue.write = 0
+		queue.length = 0
+	}
 }
 
 // Add adds items to the queue. This is a synonym for Push.
@@ -759,7 +759,7 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doKeepWhere(p func({{.Type}}) bool) 
 	last := queue.capacity
 
 	if queue.write > queue.read {
-	    // only need to process the front of the queue
+		// only need to process the front of the queue
 		last = queue.write
 	}
 
@@ -770,9 +770,9 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doKeepWhere(p func({{.Type}}) bool) 
 	// 1st loop: front of queue (from queue.read)
 	for r < last {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w++
 			n++
 		}
@@ -782,8 +782,8 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doKeepWhere(p func({{.Type}}) bool) 
 	w = w % queue.capacity
 
 	if queue.write > queue.read {
-	    // only needed to process the front of the queue
-    	queue.write = w
+		// only needed to process the front of the queue
+		queue.write = w
 		queue.length = n
 		return queue
 	}
@@ -792,9 +792,9 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) doKeepWhere(p func({{.Type}}) bool) 
 	r = 0
 	for r < queue.write {
 		if p(queue.m[r]) {
-    		if w != r {
-		    	queue.m[w] = queue.m[r]
-	    	}
+			if w != r {
+				queue.m[w] = queue.m[r]
+			}
 			w = (w + 1) % queue.capacity
 			n++
 		}
@@ -964,7 +964,7 @@ func (queue *{{$.Prefix.U}}{{$.Type.U}}Queue) MapTo{{.U}}(f func({{$.Type}}) {{.
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		result = append(result, f(v))
 	}
@@ -989,7 +989,7 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) FlatMap(f func({{.Type}}) []{{.Type}
 
 	slice := make([]{{.Type}}, 0, queue.length)
 
-    front, back := queue.frontAndBack()
+	front, back := queue.frontAndBack()
 	for _, v := range front {
 		slice = append(slice, f(v)...)
 	}
@@ -1315,28 +1315,3 @@ func (queue {{.Prefix.U}}{{.Type.U}}Queue) MarshalJSON() ([]byte, error) {
 	return buf, err
 }
 {{- end}}
-{{- if .GobEncode}}
-
-//-------------------------------------------------------------------------------------------------
-
-//// GobDecode implements 'gob' decoding for this queue type.
-//// You must register {{.Type.Name}} with the 'gob' package before this method is used.
-//func (queue *{{.Prefix.U}}{{.Type.U}}Queue) GobDecode(b []byte) error {
-//	queue.s.Lock()
-//	defer queue.s.Unlock()
-//
-//	buf := bytes.NewBuffer(b)
-//	return gob.NewDecoder(buf).Decode(&queue.m)
-//}
-//
-// GobEncode implements 'gob' encoding for this list type.
-// You must register {{.Type.Name}} with the 'gob' package before this method is used.
-//func (queue {{.Prefix.U}}{{.Type.U}}Queue) GobEncode() ([]byte, error) {
-//	queue.s.RLock()
-//	defer queue.s.RUnlock()
-//
-//	buf := &bytes.Buffer{}
-//	err := gob.NewEncoder(buf).Encode(queue.m)
-//	return buf.Bytes(), err
-//}
-//{{- end}}

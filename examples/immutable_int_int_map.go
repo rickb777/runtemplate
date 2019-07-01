@@ -142,6 +142,22 @@ func (mm *ImmutableIntIntMap) Get(k int) (int, bool) {
 	return v, found
 }
 
+// Put adds an item to a clone of the map, replacing any prior value and returning the cloned map.
+func (mm *ImmutableIntIntMap) Put(k int, v int) *ImmutableIntIntMap {
+	if mm == nil {
+		return NewImmutableIntIntMap1(k, v)
+	}
+
+	result := NewImmutableIntIntMap()
+
+	for k, v := range mm.m {
+		result.m[k] = v
+	}
+	result.m[k] = v
+
+	return result
+}
+
 // ContainsKey determines if a given item is already in the map.
 func (mm *ImmutableIntIntMap) ContainsKey(k int) bool {
 	if mm == nil {

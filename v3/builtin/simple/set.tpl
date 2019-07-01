@@ -9,7 +9,7 @@
 
 package {{.Package}}
 
-{{if or .Stringer .HasImport}}
+{{if or .Stringer .HasImport -}}
 import (
 {{- if .Stringer}}
 	"bytes"
@@ -18,7 +18,7 @@ import (
 {{- end}}
 {{- if .HasImport}}
 	{{.Import}}
-{{end -}}
+{{- end}}
 )
 
 {{end -}}

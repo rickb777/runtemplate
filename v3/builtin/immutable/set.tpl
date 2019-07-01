@@ -25,7 +25,7 @@ import (
 {{- end}}
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 {{end -}}
