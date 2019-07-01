@@ -90,16 +90,16 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 	Find(p func({{.Type}}) bool) ({{.Type}}, bool)
 {{- range .MapTo}}
 
-    // MapTo{{.U}} returns a new []{{.}} by transforming every element with function f.
-    // The resulting slice is the same size as the collection. The collection is not modified.
-    MapTo{{.U}}(f func({{$.Type}}) {{.}}) []{{.}}
+	// MapTo{{.U}} returns a new []{{.}} by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapTo{{.U}}(f func({{$.Type}}) {{.}}) []{{.}}
 {{- end}}
 {{- range .MapTo}}
 
-    // FlatMap{{.U}} returns a new []{{.}} by transforming every element with function f
-    // that returns zero or more items in a slice. The resulting list may have a different size to the
-    // collection. The collection is not modified.
-    FlatMapTo{{.U}}(f func({{$.Type}}) []{{.}}) []{{.}}
+	// FlatMap{{.U}} returns a new []{{.}} by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapTo{{.U}}(f func({{$.Type}}) []{{.}}) []{{.}}
 {{- end}}
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
@@ -117,8 +117,8 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 	ContainsAll(v ...{{.Type}}) bool
 {{- end}}
 
-    // Clear the entire collection.
-    Clear()
+	// Clear the entire collection.
+	Clear()
 
 	// Add adds items to the current collection.
 	Add(more ...{{.Type}})

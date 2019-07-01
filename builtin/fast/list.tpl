@@ -135,14 +135,14 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 			list.m = append(list.m, {{.Type.Amp}}k)
 {{- else}}
 		{{- if .Type.IsPtr}}
-        case {{.Type.Name}}:
+		case {{.Type.Name}}:
 			list.m = append(list.m, &j)
-        case *{{.Type.Name}}:
+		case *{{.Type.Name}}:
 			list.m = append(list.m, j)
 		{{- else}}
-        case {{.Type}}:
+		case {{.Type}}:
 			list.m = append(list.m, j)
-        case *{{.Type}}:
+		case *{{.Type}}:
 			list.m = append(list.m, *j)
 		{{- end}}
 {{- end}}
@@ -493,8 +493,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) doShuffle() *{{.Prefix.U}}{{.Type.U}}L
 // Clear the entire collection.
 func (list *{{.Prefix.U}}{{.Type.U}}List) Clear() {
 	if list != nil {
-	    list.m = list.m[:]
-    }
+		list.m = list.m[:]
+	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.

@@ -653,7 +653,6 @@ func (sl sortableSimpleIntList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list SimpleIntList) SortBy(less func(i, j int) bool) SimpleIntList {
-
 	sort.Sort(sortableSimpleIntList{less, list})
 	return list
 }
@@ -662,7 +661,6 @@ func (list SimpleIntList) SortBy(less func(i, j int) bool) SimpleIntList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list SimpleIntList) StableSortBy(less func(i, j int) bool) SimpleIntList {
-
 	sort.Stable(sortableSimpleIntList{less, list})
 	return list
 }

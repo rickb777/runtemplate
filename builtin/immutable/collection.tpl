@@ -58,13 +58,13 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 	IsSet() bool
 {{- if .ToList}}
 
-    // ToList returns a shallow copy as a list.
-    ToList() *{{.Prefix.U}}{{.Type.U}}List
+	// ToList returns a shallow copy as a list.
+	ToList() *{{.Prefix.U}}{{.Type.U}}List
 {{- end}}
 {{- if .ToSet}}
 
-    // ToSet returns a shallow copy as a set.
-    ToSet() *{{.Prefix.U}}{{.Type.U}}Set
+	// ToSet returns a shallow copy as a set.
+	ToSet() *{{.Prefix.U}}{{.Type.U}}Set
 {{- end}}
 
 	// ToSlice returns a shallow copy as a plain slice.

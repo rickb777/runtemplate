@@ -20,9 +20,6 @@ import (
 {{- if or .Stringer .GobEncode}}
 	"bytes"
 {{- end}}
-//{{- if .GobEncode}}
-//	"encoding/gob"
-//{{- end}}
 {{- if .Stringer}}
 	"encoding/json"
 	"fmt"

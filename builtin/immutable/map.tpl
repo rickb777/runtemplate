@@ -24,7 +24,7 @@ import (
 	"fmt"
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 // {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map is the primary type that represents a thread-safe map

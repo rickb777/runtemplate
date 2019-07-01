@@ -631,7 +631,6 @@ func (sl sortableSimpleAppleList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list SimpleAppleList) SortBy(less func(i, j Apple) bool) SimpleAppleList {
-
 	sort.Sort(sortableSimpleAppleList{less, list})
 	return list
 }
@@ -640,7 +639,6 @@ func (list SimpleAppleList) SortBy(less func(i, j Apple) bool) SimpleAppleList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list SimpleAppleList) StableSortBy(less func(i, j Apple) bool) SimpleAppleList {
-
 	sort.Stable(sortableSimpleAppleList{less, list})
 	return list
 }
