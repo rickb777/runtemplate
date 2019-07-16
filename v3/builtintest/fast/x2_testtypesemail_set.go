@@ -4,14 +4,13 @@
 //
 // Generated from fast/set.tpl with Type=testtypes.Email
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:<no value> ToList:<no value>
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
 
 import (
 	"github.com/rickb777/runtemplate/v3/builtintest/testtypes"
-
 )
 
 // X2TesttypesEmailSet is the primary type that represents a set.

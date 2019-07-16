@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -390,7 +390,7 @@ func (list X1IntList) DropLast(n int) X1IntList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new X1IntList containing the leading elements of the source list. Whilst the
@@ -497,6 +497,44 @@ func (list X1IntList) Map(f func(int) int) X1IntList {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1IntList) MapToString(f func(int) string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, len(list))
+	for i, v := range list {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
+// MapToInt64 returns a new []int64 by transforming every element with function f.
+// The resulting slice is the same size as the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1IntList) MapToInt64(f func(int) int64) []int64 {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int64, len(list))
+	for i, v := range list {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
 // FlatMap returns a new X1IntList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
@@ -506,6 +544,44 @@ func (list X1IntList) Map(f func(int) int) X1IntList {
 func (list X1IntList) FlatMap(f func(int) []int) X1IntList {
 	result := MakeX1IntList(0, len(list))
 
+	for _, v := range list {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1IntList) FlatMapToString(f func(int) []string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(list))
+	for _, v := range list {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+// The list is not modified.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list X1IntList) FlatMapToInt64(f func(int) []int64) []int64 {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(list))
 	for _, v := range list {
 		result = append(result, f(v)...)
 	}
@@ -645,7 +721,7 @@ func (list X1IntList) Equals(other X1IntList) bool {
 
 type sortableX1IntList struct {
 	less func(i, j int) bool
-	m []int
+	m    []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {
@@ -663,7 +739,6 @@ func (sl sortableX1IntList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list X1IntList) SortBy(less func(i, j int) bool) X1IntList {
-
 	sort.Sort(sortableX1IntList{less, list})
 	return list
 }
@@ -672,7 +747,6 @@ func (list X1IntList) SortBy(less func(i, j int) bool) X1IntList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list X1IntList) StableSortBy(less func(i, j int) bool) X1IntList {
-
 	sort.Stable(sortableX1IntList{less, list})
 	return list
 }

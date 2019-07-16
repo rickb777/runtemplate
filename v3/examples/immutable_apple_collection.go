@@ -1,6 +1,6 @@
 // Generated from immutable/collection.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -45,6 +45,15 @@ type ImmutableAppleCollection interface {
 	// Find returns the first Apple that returns true for the predicate p.
 	// False is returned if none match.
 	Find(p func(Apple) bool) (Apple, bool)
+
+	// MapToString returns a new []string by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapToString(f func(Apple) string) []string
+
+	// FlatMapString returns a new []string by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapToString(f func(Apple) []string) []string
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

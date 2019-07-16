@@ -4,7 +4,7 @@
 //
 // Generated from immutable/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:true Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
@@ -32,7 +32,7 @@ type X1IntList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newX1IntList(length, capacity int) *X1IntList {
-	return &X1IntList {
+	return &X1IntList{
 		m: make([]int, length, capacity),
 	}
 }
@@ -532,7 +532,6 @@ func (list *X1IntList) Find(p func(int) bool) (int, bool) {
 		}
 	}
 
-
 	var empty int
 	return empty, false
 }
@@ -596,6 +595,42 @@ func (list *X1IntList) Map(f func(int) int) *X1IntList {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntList) MapToString(f func(int) string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
+// MapToInt64 returns a new []int64 by transforming every element with function f.
+// The resulting slice is the same size as the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntList) MapToInt64(f func(int) int64) []int64 {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int64, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
 // FlatMap returns a new X1IntList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 //
@@ -610,6 +645,42 @@ func (list *X1IntList) FlatMap(f func(int) []int) *X1IntList {
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntList) FlatMapToString(f func(int) []string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntList) FlatMapToInt64(f func(int) []int64) []int64 {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int64, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
 	}
 
 	return result
@@ -756,7 +827,7 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 
 type sortableX1IntList struct {
 	less func(i, j int) bool
-	m []int
+	m    []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {
@@ -899,7 +970,6 @@ func (list X1IntList) mkString3Bytes(before, between, after string) *bytes.Buffe
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for _, v := range list.m {
 		b.WriteString(sep)

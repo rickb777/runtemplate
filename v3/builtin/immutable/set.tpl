@@ -540,6 +540,27 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Map(f func({{.Type.Name}}) {{.Type.Name}
 
 	return result
 }
+{{- range .MapTo}}
+
+// MapTo{{.U}} returns a new []{{.}} by transforming every element with function f.
+// The resulting slice is the same size as the set.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *{{$.Prefix.U}}{{$.Type.U}}Set) MapTo{{.U}}(f func({{$.Type.Name}}) {{.}}) []{{.}} {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f({{$.Type.Amp}}v))
+	}
+
+	return result
+}
+{{- end}}
 
 // FlatMap returns a new {{.Prefix.U}}{{.Type.U}}Set by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
@@ -561,6 +582,27 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) FlatMap(f func({{.Type.Name}}) []{{.Type
 
 	return result
 }
+{{- range .MapTo}}
+
+// FlatMapTo{{.U}} returns a new []{{.}} by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *{{$.Prefix.U}}{{$.Type.U}}Set) FlatMapTo{{.U}}(f func({{$.Type.Name}}) []{{.}}) []{{.}} {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f({{$.Type.Amp}}v)...)
+	}
+
+	return result
+}
+{{- end}}
 
 // CountBy gives the number elements of {{.Prefix.U}}{{.Type.U}}Set that return true for the predicate p.
 func (set *{{.Prefix.U}}{{.Type.U}}Set) CountBy(p func({{.Type.Name}}) bool) (result int) {

@@ -1,6 +1,6 @@
 // Generated from plumbing/plumbing.tpl with Type=Apple
 // No other options are available.
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
@@ -74,7 +74,7 @@ func X1AppleZip2(in1, in2 <-chan Apple, out chan<- Apple) {
 	closed2 := false
 	for v := range in1 {
 		out <- v
-		v, ok := <- in2
+		v, ok := <-in2
 		if ok {
 			out <- v
 		} else {
@@ -100,11 +100,11 @@ func X1AppleMux2(in1, in2 <-chan Apple, closer <-chan bool, out chan<- Apple) {
 	running := true
 	for running {
 		select {
-		case v := <- in1:
+		case v := <-in1:
 			out <- v
-		case v := <- in2:
+		case v := <-in2:
 			out <- v
-		case _ = <- closer:
+		case _ = <-closer:
 			running = false
 		}
 	}

@@ -4,7 +4,7 @@
 //
 // Generated from immutable/list.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -493,6 +493,24 @@ func (list *ImmutableAppleList) Map(f func(Apple) Apple) *ImmutableAppleList {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *ImmutableAppleList) MapToString(f func(Apple) string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
 // FlatMap returns a new ImmutableAppleList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 //
@@ -507,6 +525,24 @@ func (list *ImmutableAppleList) FlatMap(f func(Apple) []Apple) *ImmutableAppleLi
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *ImmutableAppleList) FlatMapToString(f func(Apple) []string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
 	}
 
 	return result

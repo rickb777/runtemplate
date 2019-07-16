@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=string
 // options: Comparable:true Numeric:false Ordered:false Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -370,7 +370,7 @@ func (list X1StringList) DropLast(n int) X1StringList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new X1StringList containing the leading elements of the source list. Whilst the
@@ -625,7 +625,7 @@ func (list X1StringList) Equals(other X1StringList) bool {
 
 type sortableX1StringList struct {
 	less func(i, j string) bool
-	m []string
+	m    []string
 }
 
 func (sl sortableX1StringList) Less(i, j int) bool {
@@ -643,7 +643,6 @@ func (sl sortableX1StringList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list X1StringList) SortBy(less func(i, j string) bool) X1StringList {
-
 	sort.Sort(sortableX1StringList{less, list})
 	return list
 }
@@ -652,7 +651,6 @@ func (list X1StringList) SortBy(less func(i, j string) bool) X1StringList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list X1StringList) StableSortBy(less func(i, j string) bool) X1StringList {
-
 	sort.Stable(sortableX1StringList{less, list})
 	return list
 }

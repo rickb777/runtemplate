@@ -4,7 +4,7 @@
 //
 // Generated from immutable/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:<no value> Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
@@ -28,7 +28,7 @@ type X1AppleList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newX1AppleList(length, capacity int) *X1AppleList {
-	return &X1AppleList {
+	return &X1AppleList{
 		m: make([]Apple, length, capacity),
 	}
 }
@@ -460,7 +460,6 @@ func (list *X1AppleList) Find(p func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
 	var empty Apple
 	return empty, false
 }
@@ -684,7 +683,7 @@ func (list *X1AppleList) Equals(other *X1AppleList) bool {
 
 type sortableX1AppleList struct {
 	less func(i, j Apple) bool
-	m []Apple
+	m    []Apple
 }
 
 func (sl sortableX1AppleList) Less(i, j int) bool {

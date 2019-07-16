@@ -85,6 +85,19 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 	// Find returns the first {{.Type.Name}} that returns true for the predicate p.
 	// False is returned if none match.
 	Find(p func({{.Type.Name}}) bool) ({{.Type.Name}}, bool)
+{{- range .MapTo}}
+
+	// MapTo{{.U}} returns a new []{{.}} by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapTo{{.U}}(f func({{$.Type.Name}}) {{.}}) []{{.}}
+{{- end}}
+{{- range .MapTo}}
+
+	// FlatMap{{.U}} returns a new []{{.}} by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapTo{{.U}}(f func({{$.Type.Name}}) []{{.}}) []{{.}}
+{{- end}}
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

@@ -4,7 +4,7 @@
 // Generated from threadsafe/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:true Mutable:always ToList:always ToSet:true MapTo:string,int64
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -1193,7 +1193,7 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 
 type sortableX1IntList struct {
 	less func(i, j int) bool
-	m []int
+	m    []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {

@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=*int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -402,7 +402,7 @@ func (list P1IntList) DropLast(n int) P1IntList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new P1IntList containing the leading elements of the source list. Whilst the
@@ -656,7 +656,7 @@ func (list P1IntList) Equals(other P1IntList) bool {
 
 type sortableP1IntList struct {
 	less func(i, j *int) bool
-	m []*int
+	m    []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {
@@ -674,7 +674,6 @@ func (sl sortableP1IntList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list P1IntList) SortBy(less func(i, j *int) bool) P1IntList {
-
 	sort.Sort(sortableP1IntList{less, list})
 	return list
 }
@@ -683,7 +682,6 @@ func (list P1IntList) SortBy(less func(i, j *int) bool) P1IntList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list P1IntList) StableSortBy(less func(i, j *int) bool) P1IntList {
-
 	sort.Stable(sortableP1IntList{less, list})
 	return list
 }

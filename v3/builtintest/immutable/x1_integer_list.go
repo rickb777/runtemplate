@@ -4,15 +4,15 @@
 //
 // Generated from immutable/list.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> GobEncode:<no value> Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
 
 import (
+	"math/big"
 	"math/rand"
 	"sort"
-	"math/big"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -29,7 +29,7 @@ type X1IntegerList struct {
 //-------------------------------------------------------------------------------------------------
 
 func newX1IntegerList(length, capacity int) *X1IntegerList {
-	return &X1IntegerList {
+	return &X1IntegerList{
 		m: make([]big.Int, length, capacity),
 	}
 }
@@ -429,7 +429,6 @@ func (list *X1IntegerList) Find(p func(big.Int) bool) (big.Int, bool) {
 		}
 	}
 
-
 	var empty big.Int
 	return empty, false
 }
@@ -493,6 +492,42 @@ func (list *X1IntegerList) Map(f func(big.Int) big.Int) *X1IntegerList {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntegerList) MapToString(f func(big.Int) string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
+// MapToInt returns a new []int by transforming every element with function f.
+// The resulting slice is the same size as the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntegerList) MapToInt(f func(big.Int) int) []int {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
 // FlatMap returns a new X1IntegerList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 //
@@ -507,6 +542,42 @@ func (list *X1IntegerList) FlatMap(f func(big.Int) []big.Int) *X1IntegerList {
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntegerList) FlatMapToString(f func(big.Int) []string) []string {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// FlatMapToInt returns a new []int by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *X1IntegerList) FlatMapToInt(f func(big.Int) []int) []int {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
 	}
 
 	return result
@@ -624,7 +695,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m []big.Int
+	m    []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {

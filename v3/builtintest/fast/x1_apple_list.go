@@ -4,7 +4,7 @@
 // Generated from fast/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
@@ -907,7 +907,7 @@ func (list *X1AppleList) Equals(other *X1AppleList) bool {
 
 type sortableX1AppleList struct {
 	less func(i, j Apple) bool
-	m []Apple
+	m    []Apple
 }
 
 func (sl sortableX1AppleList) Less(i, j int) bool {

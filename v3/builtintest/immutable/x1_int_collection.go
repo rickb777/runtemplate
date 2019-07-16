@@ -1,6 +1,6 @@
 // Generated from immutable/collection.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
@@ -68,6 +68,24 @@ type X1IntCollection interface {
 	// Find returns the first int that returns true for the predicate p.
 	// False is returned if none match.
 	Find(p func(int) bool) (int, bool)
+
+	// MapToString returns a new []string by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapToString(f func(int) string) []string
+
+	// MapToInt64 returns a new []int64 by transforming every element with function f.
+	// The resulting slice is the same size as the collection. The collection is not modified.
+	MapToInt64(f func(int) int64) []int64
+
+	// FlatMapString returns a new []string by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapToString(f func(int) []string) []string
+
+	// FlatMapInt64 returns a new []int64 by transforming every element with function f
+	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// collection. The collection is not modified.
+	FlatMapToInt64(f func(int) []int64) []int64
 
 	// Send returns a channel that will send all the elements in order. Can be used with the plumbing code, for example.
 	// A goroutine is created to send the elements; this only terminates when all the elements have been consumed

@@ -4,15 +4,15 @@
 // Generated from simple/list.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
+	"math/big"
 	"math/rand"
 	"sort"
-	"math/big"
 )
 
 // P2IntegerList is a slice of type *big.Int. Use it where you would use []*big.Int.
@@ -341,7 +341,7 @@ func (list P2IntegerList) DropLast(n int) P2IntegerList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new P2IntegerList containing the leading elements of the source list. Whilst the
@@ -567,7 +567,7 @@ func (list P2IntegerList) LastIndexWhere2(p func(*big.Int) bool, before int) int
 
 type sortableP2IntegerList struct {
 	less func(i, j *big.Int) bool
-	m []*big.Int
+	m    []*big.Int
 }
 
 func (sl sortableP2IntegerList) Less(i, j int) bool {
@@ -585,7 +585,6 @@ func (sl sortableP2IntegerList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list P2IntegerList) SortBy(less func(i, j *big.Int) bool) P2IntegerList {
-
 	sort.Sort(sortableP2IntegerList{less, list})
 	return list
 }
@@ -594,7 +593,6 @@ func (list P2IntegerList) SortBy(less func(i, j *big.Int) bool) P2IntegerList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list P2IntegerList) StableSortBy(less func(i, j *big.Int) bool) P2IntegerList {
-
 	sort.Stable(sortableP2IntegerList{less, list})
 	return list
 }

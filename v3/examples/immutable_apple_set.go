@@ -4,7 +4,7 @@
 //
 // Generated from immutable/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -432,6 +432,25 @@ func (set *ImmutableAppleSet) Map(f func(Apple) Apple) *ImmutableAppleSet {
 	return result
 }
 
+// MapToString returns a new []string by transforming every element with function f.
+// The resulting slice is the same size as the set.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *ImmutableAppleSet) MapToString(f func(Apple) string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f(v))
+	}
+
+	return result
+}
+
 // FlatMap returns a new ImmutableAppleSet by transforming every element with a function f that
 // returns zero or more items in a slice. The resulting set may have a different size to the original set.
 //
@@ -448,6 +467,25 @@ func (set *ImmutableAppleSet) FlatMap(f func(Apple) []Apple) *ImmutableAppleSet 
 		for _, x := range f(v) {
 			result.m[x] = struct{}{}
 		}
+	}
+
+	return result
+}
+
+// FlatMapToString returns a new []string by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the set.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (set *ImmutableAppleSet) FlatMapToString(f func(Apple) []string) []string {
+	if set == nil {
+		return nil
+	}
+
+	result := make([]string, 0, len(set.m))
+
+	for v := range set.m {
+		result = append(result, f(v)...)
 	}
 
 	return result

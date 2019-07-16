@@ -11,7 +11,7 @@
 // Generated from fast/queue.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Sorted:<no value> Stringer:true
 // ToList:true ToSet:true
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
@@ -431,7 +431,7 @@ func (queue *X1IntQueue) Push(items ...int) *X1IntQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -478,7 +478,7 @@ func (queue *X1IntQueue) doPush(items ...int) []int {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

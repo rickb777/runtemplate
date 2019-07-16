@@ -4,7 +4,7 @@
 //
 // Generated from immutable/set.tpl with Type=url.URL
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:true Mutable:disabled
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
@@ -14,7 +14,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-
 )
 
 // X2UrlURLSet is the primary type that represents a set.

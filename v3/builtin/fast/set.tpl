@@ -22,7 +22,7 @@ import (
 {{- end}}
 {{- if .HasImport}}
 	{{.Import}}
-{{end}}
+{{- end}}
 )
 
 // {{.Prefix.U}}{{.Type.U}}Set is the primary type that represents a set.

@@ -11,7 +11,7 @@
 // Generated from threadsafe/queue.tpl with Type=*string
 // options: Comparable:true Numeric:false Ordered:false Sorted:<no value> Stringer:true
 // ToList:true ToSet:true
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -276,7 +276,6 @@ func (queue *P1StringQueue) Head() *string {
 	return queue.m[queue.read]
 }
 
-
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns nil instead.
 func (queue *P1StringQueue) HeadOption() *string {
@@ -481,7 +480,7 @@ func (queue *P1StringQueue) Push(items ...*string) *P1StringQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -530,7 +529,7 @@ func (queue *P1StringQueue) doPush(items ...*string) []*string {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

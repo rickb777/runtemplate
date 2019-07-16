@@ -4,16 +4,16 @@
 //
 // Generated from simple/set.tpl with Type=string
 // options: Numeric:false Stringer:true Mutable:always
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
-
 import (
 	"bytes"
 	"encoding/json"
-	"fmt")
+	"fmt"
+)
 
 // P1StringSet is the primary type that represents a set
 type P1StringSet map[string]struct{}

@@ -4,11 +4,10 @@
 //
 // Generated from simple/set.tpl with Type=url.URL
 // options: Numeric:<no value> Stringer:true Mutable:always
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
-
 
 import (
 	"bytes"

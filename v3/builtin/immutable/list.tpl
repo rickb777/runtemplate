@@ -621,6 +621,26 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Map(f func({{.Type.Name}}) {{.Type.Nam
 
 	return result
 }
+{{- range .MapTo}}
+
+// MapTo{{.U}} returns a new []{{.}} by transforming every element with function f.
+// The resulting slice is the same size as the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *{{$.Prefix.U}}{{$.Type.U}}List) MapTo{{.U}}(f func({{$.Type.Name}}) {{.}}) []{{.}} {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+{{- end}}
 
 // FlatMap returns a new {{.Prefix.U}}{{.Type.U}}List by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
@@ -640,6 +660,26 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) FlatMap(f func({{.Type.Name}}) []{{.Ty
 
 	return result
 }
+{{- range .MapTo}}
+
+// FlatMapTo{{.U}} returns a new []{{.}} by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *{{$.Prefix.U}}{{$.Type.U}}List) FlatMapTo{{.U}}(f func({{$.Type.Name}}) []{{.}}) []{{.}} {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]{{.}}, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+{{- end}}
 
 // CountBy gives the number elements of {{.Prefix.U}}{{.Type.U}}List that return true for the predicate p.
 func (list *{{.Prefix.U}}{{.Type.U}}List) CountBy(p func({{.Type.Name}}) bool) (result int) {

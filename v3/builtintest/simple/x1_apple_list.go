@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true
-// by runtemplate v3.3.3
+// by runtemplate v3.5.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -368,7 +368,7 @@ func (list X1AppleList) DropLast(n int) X1AppleList {
 	if n > l {
 		return list[l:]
 	}
-	return list[0:l-n]
+	return list[0 : l-n]
 }
 
 // TakeWhile returns a new X1AppleList containing the leading elements of the source list. Whilst the
@@ -623,7 +623,7 @@ func (list X1AppleList) Equals(other X1AppleList) bool {
 
 type sortableX1AppleList struct {
 	less func(i, j Apple) bool
-	m []Apple
+	m    []Apple
 }
 
 func (sl sortableX1AppleList) Less(i, j int) bool {
@@ -641,7 +641,6 @@ func (sl sortableX1AppleList) Swap(i, j int) {
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 func (list X1AppleList) SortBy(less func(i, j Apple) bool) X1AppleList {
-
 	sort.Sort(sortableX1AppleList{less, list})
 	return list
 }
@@ -650,7 +649,6 @@ func (list X1AppleList) SortBy(less func(i, j Apple) bool) X1AppleList {
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
 func (list X1AppleList) StableSortBy(less func(i, j Apple) bool) X1AppleList {
-
 	sort.Stable(sortableX1AppleList{less, list})
 	return list
 }
