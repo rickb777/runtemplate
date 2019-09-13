@@ -4,12 +4,13 @@
 //
 // Generated from fast/set.tpl with Type=*Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false ToList:true
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
 
-import ()
+import (
+)
 
 // P1AppleSet is the primary type that represents a set.
 type P1AppleSet struct {

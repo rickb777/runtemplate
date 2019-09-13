@@ -4,7 +4,7 @@
 //
 // Generated from threadsafe/set.tpl with Type=url.URL
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:true ToList:false
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -13,8 +13,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"sync"
+	"net/url"
 )
 
 // X2UrlURLSet is the primary type that represents a set.

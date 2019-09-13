@@ -4,7 +4,7 @@
 // Generated from threadsafe/list.tpl with Type=*Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -1032,7 +1032,7 @@ func (list *P1AppleList) Equals(other *P1AppleList) bool {
 
 type sortableP1AppleList struct {
 	less func(i, j *Apple) bool
-	m    []*Apple
+	m []*Apple
 }
 
 func (sl sortableP1AppleList) Less(i, j int) bool {

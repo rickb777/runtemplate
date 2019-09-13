@@ -2,17 +2,17 @@
 //
 // Generated from types/stringy.tpl with Type=Email
 // options: SortableSlice:true
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
-	"database/sql/driver"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
+	"database/sql/driver"
+	"fmt"
 )
 
 // Email is a specialised kind of string.
@@ -96,3 +96,4 @@ func (p EmailSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // SortedN is a convenience method.
 func (p EmailSlice) Sorted() { sort.Sort(p) }
+

@@ -11,7 +11,7 @@
 // Generated from threadsafe/queue.tpl with Type=Apple
 // options: Comparable:true Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:false
 // ToList:true ToSet:true
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -273,6 +273,7 @@ func (queue *X1AppleQueue) Head() Apple {
 	return queue.m[queue.read]
 }
 
+
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns the zero value instead.
 func (queue *X1AppleQueue) HeadOption() Apple {
@@ -477,7 +478,7 @@ func (queue *X1AppleQueue) Push(items ...Apple) *X1AppleQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -526,7 +527,7 @@ func (queue *X1AppleQueue) doPush(items ...Apple) []Apple {
 		return surplus
 	}
 
-	if n <= queue.capacity-queue.write {
+	if n <= queue.capacity - queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

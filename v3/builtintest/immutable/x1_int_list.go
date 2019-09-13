@@ -4,7 +4,7 @@
 //
 // Generated from immutable/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:true Mutable:disabled
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
@@ -532,6 +532,7 @@ func (list *X1IntList) Find(p func(int) bool) (int, bool) {
 		}
 	}
 
+
 	var empty int
 	return empty, false
 }
@@ -827,7 +828,7 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 
 type sortableX1IntList struct {
 	less func(i, j int) bool
-	m    []int
+	m []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {
@@ -970,6 +971,7 @@ func (list X1IntList) mkString3Bytes(before, between, after string) *bytes.Buffe
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
+
 
 	for _, v := range list.m {
 		b.WriteString(sep)

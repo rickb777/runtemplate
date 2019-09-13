@@ -4,15 +4,15 @@
 //
 // Generated from immutable/list.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> GobEncode:<no value> Mutable:disabled
-// by runtemplate v3.5.0
+// by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
 
 import (
-	"math/big"
 	"math/rand"
 	"sort"
+	"math/big"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -429,6 +429,7 @@ func (list *X1IntegerList) Find(p func(big.Int) bool) (big.Int, bool) {
 		}
 	}
 
+
 	var empty big.Int
 	return empty, false
 }
@@ -695,7 +696,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m    []big.Int
+	m []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {

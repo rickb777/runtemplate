@@ -129,6 +129,8 @@ This table shows two examples of context symbols defined for Type=big.Int and Ty
 
 Be aware that your shell might expand `*` so you may need suitable quote marks, such as `'Type=*Foo'`. This is not needed when using go:generate comment lines.
 
+It is possible to give aliases for types. The common use-case is for `interface{}`, for example it is valid to use `Type=interface{}/Any/nil`; here, the three parts represent the type itself, the alias, and the expression used for the zero value.
+
 ### Prefix
 
 If you need to generate code for several generated types and they need to co-exist within the same package, you can easily define a prefix to differentiate their names.
