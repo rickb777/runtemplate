@@ -100,36 +100,49 @@ The values `true` and `false` are converted to booleans.
 
 ### Keys for Types
 
-The key=value syntax (using equals) does more and is intended for identifiers in the programming language of the generated code (usually Go).
+The `key=value` syntax (using equals) does more and is intended for identifiers in the programming language of the generated code (usually Go).
+
+#### Type Details
+
+Unlike most of *runtemplate* behaviour, the type definition can become quite specific to *Go* (in other contexts, what follows may not be wholly relevant).
+
+It is possible to give aliases for types. Specifically, the string following `Type=` contains one, two or three slash-separated parts. The simple case is like `Type=string`, i.e. one part; this becomes the alias `String` when composing identifiers. When required, the zero value for the type is computed: specifically, for built-in types the zero value is well defined; for other types, the zero value is obtained using the `new` built-in. 
+
+For types such as `interface{}`, this doesn't work because it cannot form any part of an identifier due to the braces. So there is a common use-case; for example it is valid to use `Type=interface{}/Any/nil`; here, the three parts represent the **type** itself (`interface{}`), the **alias** (`Any`), and the expression used for the **zero value** (`nil`).
+
+If only two parts are present, e.g. `Type=foo/Bar`, the type and alias are defined but the absent zero value follows the default rule described above.
+
+#### Using Types in Templates
 
 The values are supplemented by additional entries in the template's context. For example, given `Type=SomeValue` or `Type=*SomeValue`, these are:
 
- * `.Type`  - the type name (without any '*' prefix)
- * `.PType` - the type name (prefixed by '*' if supplied)
- * `.UType` - the type name having its first character converted to uppercase - useful for exported identifiers; dots are removed.
- * `.LType` - the type name having its first character converted to lowercase - useful for internal identifiers; dots are removed.
- * `.TypeStar` - a '*' if the type is a pointer type, otherwise blank
- * `.TypeAmp` - a '&' if the type is a pointer type, otherwise blank
- * `.TypeZero` - `nil` if the type is a pointer type, otherwise the zero value for the type
+ * `.Type` - the type name (prefixed by '*' if supplied)
+ * `.Type.String` - same as above (because this is simply a `string`, it may be used in '==' comparisons)
+ * `.Type.Name` - the type name (without any '*' prefix)
+ * `.Type.U` - the type alias having its first character converted to uppercase - useful for exported identifiers; dots are removed.
+ * `.Type.L` - the type alias having its first character converted to lowercase - useful for internal identifiers; dots are removed.
+ * `.Type.IsPtr` - boolean indicating whether '*' is supplide
+ * `.Type.Star` - a '*' if the type is a pointer type, otherwise blank
+ * `.Type.Amp` - a '&' if the type is a pointer type, otherwise blank
+ * `.Type.Zero` - `nil` if the type is a pointer type, otherwise the zero value for the type
+ * `.Type.Ident` - the type alias as a `RichString` that has several extra methods (`ToUpper`, `ToLower` etc)
  * `.HasType` - set to `true` to allow conditional expressions (it defaults to false if undefined)
 
-This table shows two examples of context symbols defined for Type=big.Int and Type=*big.Int.
+This table shows two examples of context symbols defined for `Type=big.Int` and `Type=*big.Int`.
 
-|              |  `Type=big.Int`   |  `Type=*big.Int`  |
-| ------------ | ----------------- | ----------------- |
-| `.Type`      |  `big.Int`        |  `big.Int`        |
-| `.PType`     |  `big.Int`        |  `*big.Int`       |
-| `.UType`     |  `BigInt`         |  `BigInt`         |
-| `.LType`     |  `bigInt`         |  `bigInt`         |
-| `.TypeIsPtr` |  false            |  true             |
-| `.TypeStar`  |  blank            |  `*`              |
-| `.TypeAmp`   |  blank            |  `&`              |
-| `.TypeZero`  | `*(new(big.Int))` |  `nil`            |
-| `.HasType`   |  `true`           |  `true`           |
+|               |  `Type=big.Int`   |  `Type=*big.Int`  |
+| ------------- | ----------------- | ----------------- |
+| `.Type`       |  `big.Int`        |  `*big.Int`       |
+| `.Type.Name`  |  `big.Int`        |  `big.Int`        |
+| `.Type.U`     |  `BigInt`         |  `BigInt`         |
+| `.Type.L`     |  `bigInt`         |  `bigInt`         |
+| `.Type.IsPtr` |  false            |  true             |
+| `.Type.Star`  |  blank            |  `*`              |
+| `.Type.Amp`   |  blank            |  `&`              |
+| `.Type.Zero`  | `*(new(big.Int))` |  `nil`            |
+| `.HasType`    |  `true`           |  `true`           |
 
-Be aware that your shell might expand `*` so you may need suitable quote marks, such as `'Type=*Foo'`. This is not needed when using go:generate comment lines.
-
-It is possible to give aliases for types. The common use-case is for `interface{}`, for example it is valid to use `Type=interface{}/Any/nil`; here, the three parts represent the type itself, the alias, and the expression used for the zero value.
+Be aware that your shell might expand `*` so you may need suitable quote marks, such as `'Type=*Foo'`. This is not needed when using `go:generate` comment lines.
 
 ### Prefix
 
