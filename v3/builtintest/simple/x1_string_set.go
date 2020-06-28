@@ -3,7 +3,7 @@
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=string
-// options: Numeric:false Stringer:true Mutable:always
+// options: Numeric:<no value> Stringer:true Mutable:always
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -388,6 +388,27 @@ func (set X1StringSet) CountBy(p func(string) bool) (result int) {
 		}
 	}
 	return
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when string is ordered.
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (set X1StringSet) Min() string {
+	v := set.MinBy(func(a string, b string) bool {
+		return a < b
+	})
+	return v
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (set X1StringSet) Max() string {
+	v := set.MaxBy(func(a string, b string) bool {
+		return a < b
+	})
+	return v
 }
 
 // MinBy returns an element of X1StringSet containing the minimum value, when compared to other elements

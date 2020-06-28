@@ -2,8 +2,8 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}}
-// GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}}
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} StringLike:{{.StringLike}} Stringer:{{.Stringer}}
+// GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}} MapTo:{{.MapTo}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -132,6 +132,12 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) ({{.Prefix.U}}{{
 			list = append(list, *j)
 		{{- end}}
 {{- end}}
+		{{- if .StringLike}}
+        default:
+		    if s, ok := i.(fmt.Stringer); ok {
+			    list = append(list, {{.Type.Name}}(s.String()))
+		    }
+		{{- end}}
 		}
 	}
 

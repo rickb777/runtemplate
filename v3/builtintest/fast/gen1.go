@@ -1,6 +1,6 @@
 // Generated code - do not alter
 
-// This package contains example collection types using the fast templates.
+// This package contains example collection types using the fast templates`.
 // Encapsulation of the underlying data is a feature.
 package fast
 
@@ -12,12 +12,14 @@ package fast
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=Apple           ToSet:true Stringer:false
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=X1 Type=Pear
 
-//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=string          ToSet:true  Stringer:true  Comparable:true Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=string          ToSet:true  Stringer:true  Comparable:true Ordered:true  StringLike:false`
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=Name            ToSet:true  Stringer:true  Comparable:true Ordered:true  StringLike:true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=int             ToSet:true  Stringer:true  Comparable:true Ordered:true  Numeric:true GobEncode:true JsonEncode:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=Apple           ToSet:true  Stringer:false Comparable:true
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=X1 Type=big.Int/Integer ToSet:false Import:"math/big"                                          MapTo:string MapTo:int
 
-//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=string          ToList:true  Stringer:true  Ordered:false Numeric:false
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=string          ToList:true  Stringer:true  Ordered:true  StringLike:false
+//go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=Name            ToList:true  Stringer:true  Ordered:true  StringLike:true
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=int             ToList:true  Stringer:true  Ordered:true  Numeric:true GobEncode:true JsonEncode:true                MapTo:string MapTo:int64
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X1 Type=Apple           ToList:true  Stringer:false
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=X2 Type=url.URL         ToList:false Stringer:true  Comparable:true Import:"net/url"
@@ -54,6 +56,8 @@ type Apple struct {
 type Pear struct {
 	K int
 }
+
+type Name string
 
 var _ X1StringCollection = NewX1StringList()
 var _ X1IntCollection = NewX1IntList()

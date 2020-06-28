@@ -7,7 +7,7 @@
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
-package immutable
+package examples
 
 import (
 	"bytes"
@@ -17,37 +17,37 @@ import (
 	"sort"
 )
 
-// X1StringList contains a slice of type string. It is designed
+// ImmutableStringList contains a slice of type string. It is designed
 // to be immutable - ideal for race-free reference lists etc.
 // It encapsulates the slice and provides methods to access it.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 //
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type X1StringList struct {
+type ImmutableStringList struct {
 	m []string
 }
 
 //-------------------------------------------------------------------------------------------------
 
-func newX1StringList(length, capacity int) *X1StringList {
-	return &X1StringList{
+func newImmutableStringList(length, capacity int) *ImmutableStringList {
+	return &ImmutableStringList{
 		m: make([]string, length, capacity),
 	}
 }
 
-// NewX1StringList constructs a new list containing the supplied values, if any.
-func NewX1StringList(values ...string) *X1StringList {
-	list := newX1StringList(len(values), len(values))
+// NewImmutableStringList constructs a new list containing the supplied values, if any.
+func NewImmutableStringList(values ...string) *ImmutableStringList {
+	list := newImmutableStringList(len(values), len(values))
 	copy(list.m, values)
 	return list
 }
 
-// ConvertX1StringList constructs a new list containing the supplied values, if any.
+// ConvertImmutableStringList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
-func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
-	list := newX1StringList(0, len(values))
+func ConvertImmutableStringList(values ...interface{}) (*ImmutableStringList, bool) {
+	list := newImmutableStringList(0, len(values))
 
 	for _, i := range values {
 		switch j := i.(type) {
@@ -61,10 +61,10 @@ func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
 	return list, len(list.m) == len(values)
 }
 
-// BuildX1StringListFromChan constructs a new X1StringList from a channel that supplies
+// BuildImmutableStringListFromChan constructs a new ImmutableStringList from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func BuildX1StringListFromChan(source <-chan string) *X1StringList {
-	list := newX1StringList(0, 0)
+func BuildImmutableStringListFromChan(source <-chan string) *ImmutableStringList {
+	list := newImmutableStringList(0, 0)
 	for v := range source {
 		list.m = append(list.m, v)
 	}
@@ -74,17 +74,17 @@ func BuildX1StringListFromChan(source <-chan string) *X1StringList {
 //-------------------------------------------------------------------------------------------------
 
 // IsSequence returns true for lists and queues.
-func (list *X1StringList) IsSequence() bool {
+func (list *ImmutableStringList) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists or queues.
-func (list *X1StringList) IsSet() bool {
+func (list *ImmutableStringList) IsSet() bool {
 	return false
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
-func (list *X1StringList) slice() []string {
+func (list *ImmutableStringList) slice() []string {
 	if list == nil {
 		return nil
 	}
@@ -92,22 +92,12 @@ func (list *X1StringList) slice() []string {
 }
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
-func (list *X1StringList) ToList() *X1StringList {
+func (list *ImmutableStringList) ToList() *ImmutableStringList {
 	return list
 }
 
-// ToSet returns the elements of the list as a set. The returned set is a shallow
-// copy; the list is not altered.
-func (list *X1StringList) ToSet() *X1StringSet {
-	if list == nil {
-		return nil
-	}
-
-	return NewX1StringSet(list.m...)
-}
-
 // ToSlice returns the elements of the current list as a slice.
-func (list *X1StringList) ToSlice() []string {
+func (list *ImmutableStringList) ToSlice() []string {
 
 	s := make([]string, len(list.m), len(list.m))
 	copy(s, list.m)
@@ -115,7 +105,7 @@ func (list *X1StringList) ToSlice() []string {
 }
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
-func (list *X1StringList) ToInterfaceSlice() []interface{} {
+func (list *ImmutableStringList) ToInterfaceSlice() []interface{} {
 
 	s := make([]interface{}, 0, len(list.m))
 	for _, v := range list.m {
@@ -125,7 +115,7 @@ func (list *X1StringList) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns the same list, which is immutable.
-func (list *X1StringList) Clone() *X1StringList {
+func (list *ImmutableStringList) Clone() *ImmutableStringList {
 	return list
 }
 
@@ -133,19 +123,19 @@ func (list *X1StringList) Clone() *X1StringList {
 
 // Get gets the specified element in the list.
 // Panics if the index is out of range or the list is nil.
-func (list *X1StringList) Get(i int) string {
+func (list *ImmutableStringList) Get(i int) string {
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty or nil.
-func (list *X1StringList) Head() string {
+func (list *ImmutableStringList) Head() string {
 	return list.m[0]
 }
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1StringList) HeadOption() string {
+func (list *ImmutableStringList) HeadOption() string {
 	if list == nil || len(list.m) == 0 {
 		var v string
 		return v
@@ -155,13 +145,13 @@ func (list *X1StringList) HeadOption() string {
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty or nil.
-func (list *X1StringList) Last() string {
+func (list *ImmutableStringList) Last() string {
 	return list.m[len(list.m)-1]
 }
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1StringList) LastOption() string {
+func (list *ImmutableStringList) LastOption() string {
 	if list == nil || len(list.m) == 0 {
 		var v string
 		return v
@@ -171,34 +161,34 @@ func (list *X1StringList) LastOption() string {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty or nil.
-func (list *X1StringList) Tail() *X1StringList {
-	result := newX1StringList(0, 0)
+func (list *ImmutableStringList) Tail() *ImmutableStringList {
+	result := newImmutableStringList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty or nil.
-func (list *X1StringList) Init() *X1StringList {
-	result := newX1StringList(0, 0)
+func (list *ImmutableStringList) Init() *ImmutableStringList {
+	result := newImmutableStringList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
 
-// IsEmpty tests whether X1StringList is empty.
-func (list *X1StringList) IsEmpty() bool {
+// IsEmpty tests whether ImmutableStringList is empty.
+func (list *ImmutableStringList) IsEmpty() bool {
 	return list.Size() == 0
 }
 
-// NonEmpty tests whether X1StringList is empty.
-func (list *X1StringList) NonEmpty() bool {
+// NonEmpty tests whether ImmutableStringList is empty.
+func (list *ImmutableStringList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
-func (list *X1StringList) Size() int {
+func (list *ImmutableStringList) Size() int {
 	if list == nil {
 		return 0
 	}
@@ -207,14 +197,14 @@ func (list *X1StringList) Size() int {
 }
 
 // Len returns the number of items in the list - an alias of Size().
-func (list *X1StringList) Len() int {
+func (list *ImmutableStringList) Len() int {
 	return list.Size()
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Contains determines whether a given item is already in the list, returning true if so.
-func (list *X1StringList) Contains(v string) bool {
+func (list *ImmutableStringList) Contains(v string) bool {
 	return list.Exists(func(x string) bool {
 		return x == v
 	})
@@ -222,7 +212,7 @@ func (list *X1StringList) Contains(v string) bool {
 
 // ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
-func (list *X1StringList) ContainsAll(i ...string) bool {
+func (list *ImmutableStringList) ContainsAll(i ...string) bool {
 	if list == nil {
 		return len(i) == 0
 	}
@@ -235,8 +225,8 @@ func (list *X1StringList) ContainsAll(i ...string) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of X1StringList return true for the predicate p.
-func (list *X1StringList) Exists(p func(string) bool) bool {
+// Exists verifies that one or more elements of ImmutableStringList return true for the predicate p.
+func (list *ImmutableStringList) Exists(p func(string) bool) bool {
 	if list == nil {
 		return false
 	}
@@ -249,8 +239,8 @@ func (list *X1StringList) Exists(p func(string) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of X1StringList return true for the predicate p.
-func (list *X1StringList) Forall(p func(string) bool) bool {
+// Forall verifies that all elements of ImmutableStringList return true for the predicate p.
+func (list *ImmutableStringList) Forall(p func(string) bool) bool {
 	if list == nil {
 		return true
 	}
@@ -263,9 +253,9 @@ func (list *X1StringList) Forall(p func(string) bool) bool {
 	return true
 }
 
-// Foreach iterates over X1StringList and executes function f against each element.
+// Foreach iterates over ImmutableStringList and executes function f against each element.
 // The function receives copies that do not alter the list elements when they are changed.
-func (list *X1StringList) Foreach(f func(string)) {
+func (list *ImmutableStringList) Foreach(f func(string)) {
 	if list == nil {
 		return
 	}
@@ -278,7 +268,7 @@ func (list *X1StringList) Foreach(f func(string)) {
 // Send returns a channel that will send all the elements in order. A goroutine is created to
 // send the elements; this only terminates when all the elements have been consumed. The
 // channel will be closed when all the elements have been sent.
-func (list *X1StringList) Send() <-chan string {
+func (list *ImmutableStringList) Send() <-chan string {
 	ch := make(chan string)
 	go func() {
 		if list != nil {
@@ -293,14 +283,14 @@ func (list *X1StringList) Send() <-chan string {
 
 //-------------------------------------------------------------------------------------------------
 
-// Reverse returns a copy of X1StringList with all elements in the reverse order.
-func (list *X1StringList) Reverse() *X1StringList {
+// Reverse returns a copy of ImmutableStringList with all elements in the reverse order.
+func (list *ImmutableStringList) Reverse() *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
 	n := len(list.m)
-	result := newX1StringList(n, n)
+	result := newImmutableStringList(n, n)
 	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
@@ -310,13 +300,13 @@ func (list *X1StringList) Reverse() *X1StringList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Shuffle returns a shuffled copy of X1StringList, using a version of the Fisher-Yates shuffle.
-func (list *X1StringList) Shuffle() *X1StringList {
+// Shuffle returns a shuffled copy of ImmutableStringList, using a version of the Fisher-Yates shuffle.
+func (list *ImmutableStringList) Shuffle() *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := NewX1StringList(list.m...)
+	result := NewImmutableStringList(list.m...)
 	n := len(result.m)
 	for i := 0; i < n; i++ {
 		r := i + rand.Intn(n-i)
@@ -327,40 +317,40 @@ func (list *X1StringList) Shuffle() *X1StringList {
 
 // Append returns a new list with all original items and all in `more`; they retain their order.
 // The original list is not altered.
-func (list *X1StringList) Append(more ...string) *X1StringList {
+func (list *ImmutableStringList) Append(more ...string) *ImmutableStringList {
 	if list == nil {
 		if len(more) == 0 {
 			return nil
 		}
-		return NewX1StringList(more...)
+		return NewImmutableStringList(more...)
 	}
 
-	newList := NewX1StringList(list.m...)
+	newList := NewImmutableStringList(list.m...)
 	newList.doAppend(more...)
 	return newList
 }
 
-func (list *X1StringList) doAppend(more ...string) {
+func (list *ImmutableStringList) doAppend(more ...string) {
 	list.m = append(list.m, more...)
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// Take returns a slice of X1StringList containing the leading n elements of the source list.
+// Take returns a slice of ImmutableStringList containing the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, the whole original list is returned.
-func (list *X1StringList) Take(n int) *X1StringList {
+func (list *ImmutableStringList) Take(n int) *ImmutableStringList {
 	if list == nil || n >= len(list.m) {
 		return list
 	}
 
-	result := newX1StringList(0, 0)
+	result := newImmutableStringList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
 
-// Drop returns a slice of X1StringList without the leading n elements of the source list.
+// Drop returns a slice of ImmutableStringList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X1StringList) Drop(n int) *X1StringList {
+func (list *ImmutableStringList) Drop(n int) *ImmutableStringList {
 	if list == nil || n == 0 {
 		return list
 	}
@@ -369,14 +359,14 @@ func (list *X1StringList) Drop(n int) *X1StringList {
 		return nil
 	}
 
-	result := newX1StringList(0, 0)
+	result := newImmutableStringList(0, 0)
 	result.m = list.m[n:]
 	return result
 }
 
-// TakeLast returns a slice of X1StringList containing the trailing n elements of the source list.
+// TakeLast returns a slice of ImmutableStringList containing the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, the whole original list is returned.
-func (list *X1StringList) TakeLast(n int) *X1StringList {
+func (list *ImmutableStringList) TakeLast(n int) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
@@ -386,14 +376,14 @@ func (list *X1StringList) TakeLast(n int) *X1StringList {
 		return list
 	}
 
-	result := newX1StringList(0, 0)
+	result := newImmutableStringList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
 
-// DropLast returns a slice of X1StringList without the trailing n elements of the source list.
+// DropLast returns a slice of ImmutableStringList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
-func (list *X1StringList) DropLast(n int) *X1StringList {
+func (list *ImmutableStringList) DropLast(n int) *ImmutableStringList {
 	if list == nil || n == 0 {
 		return list
 	}
@@ -403,20 +393,20 @@ func (list *X1StringList) DropLast(n int) *X1StringList {
 		return nil
 	}
 
-	result := newX1StringList(0, 0)
+	result := newImmutableStringList(0, 0)
 	result.m = list.m[:l-n]
 	return result
 }
 
-// TakeWhile returns a new X1StringList containing the leading elements of the source list. Whilst the
+// TakeWhile returns a new ImmutableStringList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
-func (list *X1StringList) TakeWhile(p func(string) bool) *X1StringList {
+func (list *ImmutableStringList) TakeWhile(p func(string) bool) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := newX1StringList(0, 0)
+	result := newImmutableStringList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -427,15 +417,15 @@ func (list *X1StringList) TakeWhile(p func(string) bool) *X1StringList {
 	return result
 }
 
-// DropWhile returns a new X1StringList containing the trailing elements of the source list. Whilst the
+// DropWhile returns a new ImmutableStringList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
-func (list *X1StringList) DropWhile(p func(string) bool) *X1StringList {
+func (list *ImmutableStringList) DropWhile(p func(string) bool) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := newX1StringList(0, 0)
+	result := newImmutableStringList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -452,7 +442,7 @@ func (list *X1StringList) DropWhile(p func(string) bool) *X1StringList {
 
 // Find returns the first string that returns true for predicate p.
 // False is returned if none match.
-func (list *X1StringList) Find(p func(string) bool) (string, bool) {
+func (list *ImmutableStringList) Find(p func(string) bool) (string, bool) {
 	if list == nil {
 		return "", false
 	}
@@ -467,13 +457,13 @@ func (list *X1StringList) Find(p func(string) bool) (string, bool) {
 	return empty, false
 }
 
-// Filter returns a new X1StringList whose elements return true for predicate p.
-func (list *X1StringList) Filter(p func(string) bool) *X1StringList {
+// Filter returns a new ImmutableStringList whose elements return true for predicate p.
+func (list *ImmutableStringList) Filter(p func(string) bool) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := newX1StringList(0, len(list.m)/2)
+	result := newImmutableStringList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -488,13 +478,13 @@ func (list *X1StringList) Filter(p func(string) bool) *X1StringList {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list *X1StringList) Partition(p func(string) bool) (*X1StringList, *X1StringList) {
+func (list *ImmutableStringList) Partition(p func(string) bool) (*ImmutableStringList, *ImmutableStringList) {
 	if list == nil {
 		return nil, nil
 	}
 
-	matching := newX1StringList(0, len(list.m)/2)
-	others := newX1StringList(0, len(list.m)/2)
+	matching := newImmutableStringList(0, len(list.m)/2)
+	others := newImmutableStringList(0, len(list.m)/2)
 
 	for _, v := range list.m {
 		if p(v) {
@@ -507,17 +497,17 @@ func (list *X1StringList) Partition(p func(string) bool) (*X1StringList, *X1Stri
 	return matching, others
 }
 
-// Map returns a new X1StringList by transforming every element with function f.
+// Map returns a new ImmutableStringList by transforming every element with function f.
 // The resulting list is the same size as the original list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X1StringList) Map(f func(string) string) *X1StringList {
+func (list *ImmutableStringList) Map(f func(string) string) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := newX1StringList(len(list.m), len(list.m))
+	result := newImmutableStringList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
 		result.m[i] = f(v)
@@ -526,17 +516,35 @@ func (list *X1StringList) Map(f func(string) string) *X1StringList {
 	return result
 }
 
-// FlatMap returns a new X1StringList by transforming every element with function f that
-// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+// MapToInt returns a new []int by transforming every element with function f.
+// The resulting slice is the same size as the list.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X1StringList) FlatMap(f func(string) []string) *X1StringList {
+func (list *ImmutableStringList) MapToInt(f func(string) int) []int {
 	if list == nil {
 		return nil
 	}
 
-	result := newX1StringList(0, len(list.m))
+	result := make([]int, len(list.m))
+	for i, v := range list.m {
+		result[i] = f(v)
+	}
+
+	return result
+}
+
+// FlatMap returns a new ImmutableStringList by transforming every element with function f that
+// returns zero or more items in a slice. The resulting list may have a different size to the original list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *ImmutableStringList) FlatMap(f func(string) []string) *ImmutableStringList {
+	if list == nil {
+		return nil
+	}
+
+	result := newImmutableStringList(0, len(list.m))
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
@@ -545,8 +553,26 @@ func (list *X1StringList) FlatMap(f func(string) []string) *X1StringList {
 	return result
 }
 
-// CountBy gives the number elements of X1StringList that return true for the predicate p.
-func (list *X1StringList) CountBy(p func(string) bool) (result int) {
+// FlatMapToInt returns a new []int by transforming every element with function f that
+// returns zero or more items in a slice. The resulting slice may have a different size to the list.
+//
+// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
+// this method appropriately.
+func (list *ImmutableStringList) FlatMapToInt(f func(string) []int) []int {
+	if list == nil {
+		return nil
+	}
+
+	result := make([]int, 0, len(list.m))
+	for _, v := range list.m {
+		result = append(result, f(v)...)
+	}
+
+	return result
+}
+
+// CountBy gives the number elements of ImmutableStringList that return true for the predicate p.
+func (list *ImmutableStringList) CountBy(p func(string) bool) (result int) {
 	if list == nil {
 		return 0
 	}
@@ -559,10 +585,10 @@ func (list *X1StringList) CountBy(p func(string) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of X1StringList containing the minimum value, when compared to other elements
+// MinBy returns an element of ImmutableStringList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (list *X1StringList) MinBy(less func(string, string) bool) string {
+func (list *ImmutableStringList) MinBy(less func(string, string) bool) string {
 	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the minimum of an empty list.")
@@ -577,10 +603,10 @@ func (list *X1StringList) MinBy(less func(string, string) bool) string {
 	return list.m[m]
 }
 
-// MaxBy returns an element of X1StringList containing the maximum value, when compared to other elements
+// MaxBy returns an element of ImmutableStringList containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (list *X1StringList) MaxBy(less func(string, string) bool) string {
+func (list *ImmutableStringList) MaxBy(less func(string, string) bool) string {
 	l := len(list.m)
 	if l == 0 {
 		panic("Cannot determine the maximum of an empty list.")
@@ -595,13 +621,13 @@ func (list *X1StringList) MaxBy(less func(string, string) bool) string {
 	return list.m[m]
 }
 
-// DistinctBy returns a new X1StringList whose elements are unique, where equality is defined by the equal function.
-func (list *X1StringList) DistinctBy(equal func(string, string) bool) *X1StringList {
+// DistinctBy returns a new ImmutableStringList whose elements are unique, where equality is defined by the equal function.
+func (list *ImmutableStringList) DistinctBy(equal func(string, string) bool) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := newX1StringList(0, len(list.m))
+	result := newImmutableStringList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -615,13 +641,13 @@ Outer:
 }
 
 // IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
-func (list *X1StringList) IndexWhere(p func(string) bool) int {
+func (list *ImmutableStringList) IndexWhere(p func(string) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
 // IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
-func (list *X1StringList) IndexWhere2(p func(string) bool, from int) int {
+func (list *ImmutableStringList) IndexWhere2(p func(string) bool, from int) int {
 
 	for i, v := range list.m {
 		if i >= from && p(v) {
@@ -633,13 +659,13 @@ func (list *X1StringList) IndexWhere2(p func(string) bool, from int) int {
 
 // LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
-func (list *X1StringList) LastIndexWhere(p func(string) bool) int {
+func (list *ImmutableStringList) LastIndexWhere(p func(string) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
-func (list *X1StringList) LastIndexWhere2(p func(string) bool, before int) int {
+func (list *ImmutableStringList) LastIndexWhere2(p func(string) bool, before int) int {
 
 	if before < 0 {
 		before = len(list.m)
@@ -660,7 +686,7 @@ func (list *X1StringList) LastIndexWhere2(p func(string) bool, before int) int {
 // If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
-func (list *X1StringList) Equals(other *X1StringList) bool {
+func (list *ImmutableStringList) Equals(other *ImmutableStringList) bool {
 	if list == nil {
 		return other == nil || len(other.m) == 0
 	}
@@ -684,43 +710,43 @@ func (list *X1StringList) Equals(other *X1StringList) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-type sortableX1StringList struct {
+type sortableImmutableStringList struct {
 	less func(i, j string) bool
 	m    []string
 }
 
-func (sl sortableX1StringList) Less(i, j int) bool {
+func (sl sortableImmutableStringList) Less(i, j int) bool {
 	return sl.less(sl.m[i], sl.m[j])
 }
 
-func (sl sortableX1StringList) Len() int {
+func (sl sortableImmutableStringList) Len() int {
 	return len(sl.m)
 }
 
-func (sl sortableX1StringList) Swap(i, j int) {
+func (sl sortableImmutableStringList) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
 // SortBy returns a new list in which the elements are sorted by a specified ordering.
-func (list *X1StringList) SortBy(less func(i, j string) bool) *X1StringList {
+func (list *ImmutableStringList) SortBy(less func(i, j string) bool) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := NewX1StringList(list.m...)
-	sort.Sort(sortableX1StringList{less, result.m})
+	result := NewImmutableStringList(list.m...)
+	sort.Sort(sortableImmutableStringList{less, result.m})
 	return result
 }
 
 // StableSortBy returns a new list in which the elements are sorted by a specified ordering.
 // The algorithm keeps the original order of equal elements.
-func (list *X1StringList) StableSortBy(less func(i, j string) bool) *X1StringList {
+func (list *ImmutableStringList) StableSortBy(less func(i, j string) bool) *ImmutableStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := NewX1StringList(list.m...)
-	sort.Stable(sortableX1StringList{less, result.m})
+	result := NewImmutableStringList(list.m...)
+	sort.Stable(sortableImmutableStringList{less, result.m})
 	return result
 }
 
@@ -728,14 +754,14 @@ func (list *X1StringList) StableSortBy(less func(i, j string) bool) *X1StringLis
 // These methods are included when string is ordered.
 
 // Sorted returns a new list in which the elements are sorted by their natural ordering.
-func (list *X1StringList) Sorted() *X1StringList {
+func (list *ImmutableStringList) Sorted() *ImmutableStringList {
 	return list.SortBy(func(a, b string) bool {
 		return a < b
 	})
 }
 
 // StableSorted returns a new list in which the elements are sorted by their natural ordering.
-func (list *X1StringList) StableSorted() *X1StringList {
+func (list *ImmutableStringList) StableSorted() *ImmutableStringList {
 	return list.StableSortBy(func(a, b string) bool {
 		return a < b
 	})
@@ -743,7 +769,7 @@ func (list *X1StringList) StableSorted() *X1StringList {
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list *X1StringList) Min() string {
+func (list *ImmutableStringList) Min() string {
 
 	l := len(list.m)
 	if l == 0 {
@@ -763,7 +789,7 @@ func (list *X1StringList) Min() string {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list *X1StringList) Max() (result string) {
+func (list *ImmutableStringList) Max() (result string) {
 
 	l := len(list.m)
 	if l == 0 {
@@ -784,7 +810,7 @@ func (list *X1StringList) Max() (result string) {
 //-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list *X1StringList) StringList() []string {
+func (list *ImmutableStringList) StringList() []string {
 
 	strings := make([]string, len(list.m))
 	for i, v := range list.m {
@@ -794,17 +820,17 @@ func (list *X1StringList) StringList() []string {
 }
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (list *X1StringList) String() string {
+func (list *ImmutableStringList) String() string {
 	return list.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (list *X1StringList) MkString(sep string) string {
+func (list *ImmutableStringList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list *X1StringList) MkString3(before, between, after string) string {
+func (list *ImmutableStringList) MkString3(before, between, after string) string {
 	if list == nil {
 		return ""
 	}
@@ -812,7 +838,7 @@ func (list *X1StringList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list X1StringList) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (list ImmutableStringList) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -829,12 +855,12 @@ func (list X1StringList) mkString3Bytes(before, between, after string) *bytes.Bu
 //-------------------------------------------------------------------------------------------------
 
 // UnmarshalJSON implements JSON decoding for this list type.
-func (list *X1StringList) UnmarshalJSON(b []byte) error {
+func (list *ImmutableStringList) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
-func (list X1StringList) MarshalJSON() ([]byte, error) {
+func (list ImmutableStringList) MarshalJSON() ([]byte, error) {
 	buf, err := json.Marshal(list.m)
 	return buf, err
 }

@@ -1,138 +1,69 @@
-// An encapsulated []int.
+// An encapsulated []string.
 // Not thread-safe.
 //
-// Generated from fast/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true StringLike:<no value> Stringer:true
-// GobEncode:true Mutable:always ToList:always ToSet:true MapTo:string,int64
+// Generated from fast/list.tpl with Type=string
+// options: Comparable:true Numeric:<no value> Ordered:true StringLike:<no value> Stringer:true
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:int
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
-package fast
+package examples
 
 import (
 	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sort"
 )
 
-// X1IntList contains a slice of type int.
+// FastStringList contains a slice of type string.
 // It encapsulates the slice and provides methods to access or mutate it.
 //
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-type X1IntList struct {
-	m []int
+type FastStringList struct {
+	m []string
 }
 
 //-------------------------------------------------------------------------------------------------
 
-// MakeX1IntList makes an empty list with both length and capacity initialised.
-func MakeX1IntList(length, capacity int) *X1IntList {
-	return &X1IntList{
-		m: make([]int, length, capacity),
+// MakeFastStringList makes an empty list with both length and capacity initialised.
+func MakeFastStringList(length, capacity int) *FastStringList {
+	return &FastStringList{
+		m: make([]string, length, capacity),
 	}
 }
 
-// NewX1IntList constructs a new list containing the supplied values, if any.
-func NewX1IntList(values ...int) *X1IntList {
-	list := MakeX1IntList(len(values), len(values))
+// NewFastStringList constructs a new list containing the supplied values, if any.
+func NewFastStringList(values ...string) *FastStringList {
+	list := MakeFastStringList(len(values), len(values))
 	copy(list.m, values)
 	return list
 }
 
-// ConvertX1IntList constructs a new list containing the supplied values, if any.
+// ConvertFastStringList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
-func ConvertX1IntList(values ...interface{}) (*X1IntList, bool) {
-	list := MakeX1IntList(0, len(values))
+func ConvertFastStringList(values ...interface{}) (*FastStringList, bool) {
+	list := MakeFastStringList(0, len(values))
 
 	for _, i := range values {
 		switch j := i.(type) {
-		case int:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *int:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case int8:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *int8:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case int16:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *int16:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case int32:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *int32:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case int64:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *int64:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case uint:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *uint:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case uint8:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *uint8:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case uint16:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *uint16:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case uint32:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *uint32:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case uint64:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *uint64:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case float32:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *float32:
-			k := int(*j)
-			list.m = append(list.m, k)
-		case float64:
-			k := int(j)
-			list.m = append(list.m, k)
-		case *float64:
-			k := int(*j)
-			list.m = append(list.m, k)
+		case string:
+			list.m = append(list.m, j)
+		case *string:
+			list.m = append(list.m, *j)
 		}
 	}
 
 	return list, len(list.m) == len(values)
 }
 
-// BuildX1IntListFromChan constructs a new X1IntList from a channel that supplies
+// BuildFastStringListFromChan constructs a new FastStringList from a channel that supplies
 // a sequence of values until it is closed. The function doesn't return until then.
-func BuildX1IntListFromChan(source <-chan int) *X1IntList {
-	list := MakeX1IntList(0, 0)
+func BuildFastStringListFromChan(source <-chan string) *FastStringList {
+	list := MakeFastStringList(0, 0)
 	for v := range source {
 		list.m = append(list.m, v)
 	}
@@ -142,17 +73,17 @@ func BuildX1IntListFromChan(source <-chan int) *X1IntList {
 //-------------------------------------------------------------------------------------------------
 
 // IsSequence returns true for lists and queues.
-func (list *X1IntList) IsSequence() bool {
+func (list *FastStringList) IsSequence() bool {
 	return true
 }
 
 // IsSet returns false for lists or queues.
-func (list *X1IntList) IsSet() bool {
+func (list *FastStringList) IsSet() bool {
 	return false
 }
 
 // slice returns the internal elements of the current list. This is a seam for testing etc.
-func (list *X1IntList) slice() []int {
+func (list *FastStringList) slice() []string {
 	if list == nil {
 		return nil
 	}
@@ -160,33 +91,23 @@ func (list *X1IntList) slice() []int {
 }
 
 // ToList returns the elements of the list as a list, which is an identity operation in this case.
-func (list *X1IntList) ToList() *X1IntList {
+func (list *FastStringList) ToList() *FastStringList {
 	return list
 }
 
-// ToSet returns the elements of the list as a set. The returned set is a shallow
-// copy; the list is not altered.
-func (list *X1IntList) ToSet() *X1IntSet {
-	if list == nil {
-		return nil
-	}
-
-	return NewX1IntSet(list.m...)
-}
-
 // ToSlice returns the elements of the current list as a slice.
-func (list *X1IntList) ToSlice() []int {
+func (list *FastStringList) ToSlice() []string {
 	if list == nil {
 		return nil
 	}
 
-	s := make([]int, len(list.m), len(list.m))
+	s := make([]string, len(list.m), len(list.m))
 	copy(s, list.m)
 	return s
 }
 
 // ToInterfaceSlice returns the elements of the current list as a slice of arbitrary type.
-func (list *X1IntList) ToInterfaceSlice() []interface{} {
+func (list *FastStringList) ToInterfaceSlice() []interface{} {
 	if list == nil {
 		return nil
 	}
@@ -199,95 +120,95 @@ func (list *X1IntList) ToInterfaceSlice() []interface{} {
 }
 
 // Clone returns a shallow copy of the list. It does not clone the underlying elements.
-func (list *X1IntList) Clone() *X1IntList {
+func (list *FastStringList) Clone() *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	return NewX1IntList(list.m...)
+	return NewFastStringList(list.m...)
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Get gets the specified element in the list.
 // Panics if the index is out of range or the list is nil.
-func (list *X1IntList) Get(i int) int {
+func (list *FastStringList) Get(i int) string {
 
 	return list.m[i]
 }
 
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // Panics if list is empty or nil.
-func (list *X1IntList) Head() int {
+func (list *FastStringList) Head() string {
 
 	return list.m[0]
 }
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntList) HeadOption() int {
+func (list *FastStringList) HeadOption() string {
 	if list == nil {
-		return 0
+		return ""
 	}
 
 	if len(list.m) == 0 {
-		return 0
+		return ""
 	}
 	return list.m[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
 // Panics if list is empty or nil.
-func (list *X1IntList) Last() int {
+func (list *FastStringList) Last() string {
 
 	return list.m[len(list.m)-1]
 }
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntList) LastOption() int {
+func (list *FastStringList) LastOption() string {
 	if list == nil {
-		return 0
+		return ""
 	}
 
 	if len(list.m) == 0 {
-		return 0
+		return ""
 	}
 	return list.m[len(list.m)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // Panics if list is empty or nil.
-func (list *X1IntList) Tail() *X1IntList {
+func (list *FastStringList) Tail() *FastStringList {
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	result.m = list.m[1:]
 	return result
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // Panics if list is empty or nil.
-func (list *X1IntList) Init() *X1IntList {
+func (list *FastStringList) Init() *FastStringList {
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	result.m = list.m[:len(list.m)-1]
 	return result
 }
 
-// IsEmpty tests whether X1IntList is empty.
-func (list *X1IntList) IsEmpty() bool {
+// IsEmpty tests whether FastStringList is empty.
+func (list *FastStringList) IsEmpty() bool {
 	return list.Size() == 0
 }
 
-// NonEmpty tests whether X1IntList is empty.
-func (list *X1IntList) NonEmpty() bool {
+// NonEmpty tests whether FastStringList is empty.
+func (list *FastStringList) NonEmpty() bool {
 	return list.Size() > 0
 }
 
 //-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
-func (list *X1IntList) Size() int {
+func (list *FastStringList) Size() int {
 	if list == nil {
 		return 0
 	}
@@ -297,13 +218,13 @@ func (list *X1IntList) Size() int {
 
 // Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
-func (list *X1IntList) Len() int {
+func (list *FastStringList) Len() int {
 	return list.Size()
 }
 
 // Swap exchanges two elements, which is necessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
-func (list *X1IntList) Swap(i, j int) {
+func (list *FastStringList) Swap(i, j int) {
 
 	list.m[i], list.m[j] = list.m[j], list.m[i]
 }
@@ -311,15 +232,15 @@ func (list *X1IntList) Swap(i, j int) {
 //-------------------------------------------------------------------------------------------------
 
 // Contains determines whether a given item is already in the list, returning true if so.
-func (list *X1IntList) Contains(v int) bool {
-	return list.Exists(func(x int) bool {
+func (list *FastStringList) Contains(v string) bool {
+	return list.Exists(func(x string) bool {
 		return v == x
 	})
 }
 
 // ContainsAll determines whether the given items are all in the list, returning true if so.
 // This is potentially a slow method and should only be used rarely.
-func (list *X1IntList) ContainsAll(i ...int) bool {
+func (list *FastStringList) ContainsAll(i ...string) bool {
 	if list == nil {
 		return len(i) == 0
 	}
@@ -332,8 +253,8 @@ func (list *X1IntList) ContainsAll(i ...int) bool {
 	return true
 }
 
-// Exists verifies that one or more elements of X1IntList return true for the predicate p.
-func (list *X1IntList) Exists(p func(int) bool) bool {
+// Exists verifies that one or more elements of FastStringList return true for the predicate p.
+func (list *FastStringList) Exists(p func(string) bool) bool {
 	if list == nil {
 		return false
 	}
@@ -346,8 +267,8 @@ func (list *X1IntList) Exists(p func(int) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of X1IntList return true for the predicate p.
-func (list *X1IntList) Forall(p func(int) bool) bool {
+// Forall verifies that all elements of FastStringList return true for the predicate p.
+func (list *FastStringList) Forall(p func(string) bool) bool {
 	if list == nil {
 		return true
 	}
@@ -360,9 +281,9 @@ func (list *X1IntList) Forall(p func(int) bool) bool {
 	return true
 }
 
-// Foreach iterates over X1IntList and executes function f against each element.
+// Foreach iterates over FastStringList and executes function f against each element.
 // The function can safely alter the values via side-effects.
-func (list *X1IntList) Foreach(f func(int)) {
+func (list *FastStringList) Foreach(f func(string)) {
 	if list == nil {
 		return
 	}
@@ -375,8 +296,8 @@ func (list *X1IntList) Foreach(f func(int)) {
 // Send returns a channel that will send all the elements in order.
 // A goroutine is created to send the elements; this only terminates when all the elements
 // have been consumed. The channel will be closed when all the elements have been sent.
-func (list *X1IntList) Send() <-chan int {
-	ch := make(chan int)
+func (list *FastStringList) Send() <-chan string {
+	ch := make(chan string)
 	go func() {
 		if list != nil {
 
@@ -391,16 +312,16 @@ func (list *X1IntList) Send() <-chan int {
 
 //-------------------------------------------------------------------------------------------------
 
-// Reverse returns a copy of X1IntList with all elements in the reverse order.
+// Reverse returns a copy of FastStringList with all elements in the reverse order.
 //
 // The original list is not modified.
-func (list *X1IntList) Reverse() *X1IntList {
+func (list *FastStringList) Reverse() *FastStringList {
 	if list == nil {
 		return nil
 	}
 
 	n := len(list.m)
-	result := MakeX1IntList(n, n)
+	result := MakeFastStringList(n, n)
 	last := n - 1
 	for i, v := range list.m {
 		result.m[last-i] = v
@@ -408,11 +329,11 @@ func (list *X1IntList) Reverse() *X1IntList {
 	return result
 }
 
-// DoReverse alters a X1IntList with all elements in the reverse order.
+// DoReverse alters a FastStringList with all elements in the reverse order.
 // Unlike Reverse, it does not allocate new memory.
 //
 // The list is modified and the modified list is returned.
-func (list *X1IntList) DoReverse() *X1IntList {
+func (list *FastStringList) DoReverse() *FastStringList {
 	if list == nil {
 		return nil
 	}
@@ -430,10 +351,10 @@ func (list *X1IntList) DoReverse() *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Shuffle returns a shuffled copy of X1IntList, using a version of the Fisher-Yates shuffle.
+// Shuffle returns a shuffled copy of FastStringList, using a version of the Fisher-Yates shuffle.
 //
 // The original list is not modified.
-func (list *X1IntList) Shuffle() *X1IntList {
+func (list *FastStringList) Shuffle() *FastStringList {
 	if list == nil {
 		return nil
 	}
@@ -441,10 +362,10 @@ func (list *X1IntList) Shuffle() *X1IntList {
 	return list.Clone().doShuffle()
 }
 
-// DoShuffle returns a shuffled X1IntList, using a version of the Fisher-Yates shuffle.
+// DoShuffle returns a shuffled FastStringList, using a version of the Fisher-Yates shuffle.
 //
 // The list is modified and the modified list is returned.
-func (list *X1IntList) DoShuffle() *X1IntList {
+func (list *FastStringList) DoShuffle() *FastStringList {
 	if list == nil {
 		return nil
 	}
@@ -452,7 +373,7 @@ func (list *X1IntList) DoShuffle() *X1IntList {
 	return list.doShuffle()
 }
 
-func (list *X1IntList) doShuffle() *X1IntList {
+func (list *FastStringList) doShuffle() *FastStringList {
 	n := len(list.m)
 	for i := 0; i < n; i++ {
 		r := i + rand.Intn(n-i)
@@ -464,53 +385,53 @@ func (list *X1IntList) doShuffle() *X1IntList {
 //-------------------------------------------------------------------------------------------------
 
 // Clear the entire collection.
-func (list *X1IntList) Clear() {
+func (list *FastStringList) Clear() {
 	if list != nil {
 		list.m = list.m[:]
 	}
 }
 
 // Add adds items to the current list. This is a synonym for Append.
-func (list *X1IntList) Add(more ...int) {
+func (list *FastStringList) Add(more ...string) {
 	list.Append(more...)
 }
 
 // Append adds items to the current list.
 // If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
-func (list *X1IntList) Append(more ...int) *X1IntList {
+func (list *FastStringList) Append(more ...string) *FastStringList {
 	if list == nil {
 		if len(more) == 0 {
 			return nil
 		}
-		list = MakeX1IntList(0, len(more))
+		list = MakeFastStringList(0, len(more))
 	}
 
 	return list.doAppend(more...)
 }
 
-func (list *X1IntList) doAppend(more ...int) *X1IntList {
+func (list *FastStringList) doAppend(more ...string) *FastStringList {
 	list.m = append(list.m, more...)
 	return list
 }
 
-// DoInsertAt modifies a X1IntList by inserting elements at a given index.
+// DoInsertAt modifies a FastStringList by inserting elements at a given index.
 // This is a generalised version of Append.
 //
 // If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if the index is out of range.
-func (list *X1IntList) DoInsertAt(index int, more ...int) *X1IntList {
+func (list *FastStringList) DoInsertAt(index int, more ...string) *FastStringList {
 	if list == nil {
 		if len(more) == 0 {
 			return nil
 		}
-		list = MakeX1IntList(0, len(more))
+		list = MakeFastStringList(0, len(more))
 		return list.doInsertAt(index, more...)
 	}
 
 	return list.doInsertAt(index, more...)
 }
 
-func (list *X1IntList) doInsertAt(index int, more ...int) *X1IntList {
+func (list *FastStringList) doInsertAt(index int, more ...string) *FastStringList {
 	if len(more) == 0 {
 		return list
 	}
@@ -520,7 +441,7 @@ func (list *X1IntList) doInsertAt(index int, more ...int) *X1IntList {
 		return list.doAppend(more...)
 	}
 
-	newlist := make([]int, 0, len(list.m)+len(more))
+	newlist := make([]string, 0, len(list.m)+len(more))
 
 	if index != 0 {
 		newlist = append(newlist, list.m[:index]...)
@@ -536,38 +457,38 @@ func (list *X1IntList) doInsertAt(index int, more ...int) *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// DoDeleteFirst modifies a X1IntList by deleting n elements from the start of
+// DoDeleteFirst modifies a FastStringList by deleting n elements from the start of
 // the list.
 //
 // If the list is nil, a new list is allocated and returned. Otherwise the modified list is returned.
 // Panics if n is large enough to take the index out of range.
-func (list *X1IntList) DoDeleteFirst(n int) *X1IntList {
+func (list *FastStringList) DoDeleteFirst(n int) *FastStringList {
 	return list.doDeleteAt(0, n)
 }
 
-// DoDeleteLast modifies a X1IntList by deleting n elements from the end of
+// DoDeleteLast modifies a FastStringList by deleting n elements from the end of
 // the list.
 //
 // The list is modified and the modified list is returned.
 // Panics if n is large enough to take the index out of range.
-func (list *X1IntList) DoDeleteLast(n int) *X1IntList {
+func (list *FastStringList) DoDeleteLast(n int) *FastStringList {
 	return list.doDeleteAt(len(list.m)-n, n)
 }
 
-// DoDeleteAt modifies a X1IntList by deleting n elements from a given index.
+// DoDeleteAt modifies a FastStringList by deleting n elements from a given index.
 //
 // The list is modified and the modified list is returned.
 // Panics if the index is out of range or n is large enough to take the index out of range.
-func (list *X1IntList) DoDeleteAt(index, n int) *X1IntList {
+func (list *FastStringList) DoDeleteAt(index, n int) *FastStringList {
 	return list.doDeleteAt(index, n)
 }
 
-func (list *X1IntList) doDeleteAt(index, n int) *X1IntList {
+func (list *FastStringList) doDeleteAt(index, n int) *FastStringList {
 	if n == 0 {
 		return list
 	}
 
-	newlist := make([]int, 0, len(list.m)-n)
+	newlist := make([]string, 0, len(list.m)-n)
 
 	if index != 0 {
 		newlist = append(newlist, list.m[:index]...)
@@ -585,11 +506,11 @@ func (list *X1IntList) doDeleteAt(index, n int) *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// DoKeepWhere modifies a X1IntList by retaining only those elements that match
+// DoKeepWhere modifies a FastStringList by retaining only those elements that match
 // the predicate p. This is very similar to Filter but alters the list in place.
 //
 // The list is modified and the modified list is returned.
-func (list *X1IntList) DoKeepWhere(p func(int) bool) *X1IntList {
+func (list *FastStringList) DoKeepWhere(p func(string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
@@ -597,8 +518,8 @@ func (list *X1IntList) DoKeepWhere(p func(int) bool) *X1IntList {
 	return list.doKeepWhere(p)
 }
 
-func (list *X1IntList) doKeepWhere(p func(int) bool) *X1IntList {
-	result := make([]int, 0, len(list.m))
+func (list *FastStringList) doKeepWhere(p func(string) bool) *FastStringList {
+	result := make([]string, 0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -612,9 +533,9 @@ func (list *X1IntList) doKeepWhere(p func(int) bool) *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Take returns a slice of X1IntList containing the leading n elements of the source list.
+// Take returns a slice of FastStringList containing the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, the whole original list is returned.
-func (list *X1IntList) Take(n int) *X1IntList {
+func (list *FastStringList) Take(n int) *FastStringList {
 	if list == nil {
 		return nil
 	}
@@ -623,16 +544,16 @@ func (list *X1IntList) Take(n int) *X1IntList {
 		return list
 	}
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	result.m = list.m[0:n]
 	return result
 }
 
-// Drop returns a slice of X1IntList without the leading n elements of the source list.
+// Drop returns a slice of FastStringList without the leading n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 //
 // The original list is not modified.
-func (list *X1IntList) Drop(n int) *X1IntList {
+func (list *FastStringList) Drop(n int) *FastStringList {
 	if list == nil || n == 0 {
 		return list
 	}
@@ -641,16 +562,16 @@ func (list *X1IntList) Drop(n int) *X1IntList {
 		return nil
 	}
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	result.m = list.m[n:]
 	return result
 }
 
-// TakeLast returns a slice of X1IntList containing the trailing n elements of the source list.
+// TakeLast returns a slice of FastStringList containing the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, the whole original list is returned.
 //
 // The original list is not modified.
-func (list *X1IntList) TakeLast(n int) *X1IntList {
+func (list *FastStringList) TakeLast(n int) *FastStringList {
 	if list == nil {
 		return nil
 	}
@@ -660,16 +581,16 @@ func (list *X1IntList) TakeLast(n int) *X1IntList {
 		return list
 	}
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	result.m = list.m[l-n:]
 	return result
 }
 
-// DropLast returns a slice of X1IntList without the trailing n elements of the source list.
+// DropLast returns a slice of FastStringList without the trailing n elements of the source list.
 // If n is greater than or equal to the size of the list, an empty list is returned.
 //
 // The original list is not modified.
-func (list *X1IntList) DropLast(n int) *X1IntList {
+func (list *FastStringList) DropLast(n int) *FastStringList {
 	if list == nil || n == 0 {
 		return list
 	}
@@ -679,22 +600,22 @@ func (list *X1IntList) DropLast(n int) *X1IntList {
 		return nil
 	}
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	result.m = list.m[:l-n]
 	return result
 }
 
-// TakeWhile returns a new X1IntList containing the leading elements of the source list. Whilst the
+// TakeWhile returns a new FastStringList containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elements are excluded.
 //
 // The original list is not modified.
-func (list *X1IntList) TakeWhile(p func(int) bool) *X1IntList {
+func (list *FastStringList) TakeWhile(p func(string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	for _, v := range list.m {
 		if p(v) {
 			result.m = append(result.m, v)
@@ -705,17 +626,17 @@ func (list *X1IntList) TakeWhile(p func(int) bool) *X1IntList {
 	return result
 }
 
-// DropWhile returns a new X1IntList containing the trailing elements of the source list. Whilst the
+// DropWhile returns a new FastStringList containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elements are added.
 //
 // The original list is not modified.
-func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
+func (list *FastStringList) DropWhile(p func(string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := MakeX1IntList(0, 0)
+	result := MakeFastStringList(0, 0)
 	adding := false
 
 	for _, v := range list.m {
@@ -730,11 +651,11 @@ func (list *X1IntList) DropWhile(p func(int) bool) *X1IntList {
 
 //-------------------------------------------------------------------------------------------------
 
-// Find returns the first int that returns true for predicate p.
+// Find returns the first string that returns true for predicate p.
 // False is returned if none match.
-func (list *X1IntList) Find(p func(int) bool) (int, bool) {
+func (list *FastStringList) Find(p func(string) bool) (string, bool) {
 	if list == nil {
-		return 0, false
+		return "", false
 	}
 
 	for _, v := range list.m {
@@ -743,19 +664,19 @@ func (list *X1IntList) Find(p func(int) bool) (int, bool) {
 		}
 	}
 
-	var empty int
+	var empty string
 	return empty, false
 }
 
-// Filter returns a new X1IntList whose elements return true for predicate p.
+// Filter returns a new FastStringList whose elements return true for predicate p.
 //
 // The original list is not modified. See also DoKeepWhere (which does modify the original list).
-func (list *X1IntList) Filter(p func(int) bool) *X1IntList {
+func (list *FastStringList) Filter(p func(string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := MakeX1IntList(0, len(list.m))
+	result := MakeFastStringList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -766,19 +687,19 @@ func (list *X1IntList) Filter(p func(int) bool) *X1IntList {
 	return result
 }
 
-// Partition returns two new X1IntLists whose elements return true or false for the predicate, p.
+// Partition returns two new FastStringLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
 //
 // The original list is not modified
-func (list *X1IntList) Partition(p func(int) bool) (*X1IntList, *X1IntList) {
+func (list *FastStringList) Partition(p func(string) bool) (*FastStringList, *FastStringList) {
 	if list == nil {
 		return nil, nil
 	}
 
-	matching := MakeX1IntList(0, len(list.m))
-	others := MakeX1IntList(0, len(list.m))
+	matching := MakeFastStringList(0, len(list.m))
+	others := MakeFastStringList(0, len(list.m))
 
 	for _, v := range list.m {
 		if p(v) {
@@ -791,18 +712,18 @@ func (list *X1IntList) Partition(p func(int) bool) (*X1IntList, *X1IntList) {
 	return matching, others
 }
 
-// Map returns a new X1IntList by transforming every element with function f.
+// Map returns a new FastStringList by transforming every element with function f.
 // The resulting list is the same size as the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X1IntList) Map(f func(int) int) *X1IntList {
+func (list *FastStringList) Map(f func(string) string) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := MakeX1IntList(len(list.m), len(list.m))
+	result := MakeFastStringList(len(list.m), len(list.m))
 
 	for i, v := range list.m {
 		result.m[i] = f(v)
@@ -811,18 +732,18 @@ func (list *X1IntList) Map(f func(int) int) *X1IntList {
 	return result
 }
 
-// MapToString returns a new []string by transforming every element with function f.
+// MapToInt returns a new []int by transforming every element with function f.
 // The resulting slice is the same size as the list.
 // The list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X1IntList) MapToString(f func(int) string) []string {
+func (list *FastStringList) MapToInt(f func(string) int) []int {
 	if list == nil {
 		return nil
 	}
 
-	result := make([]string, len(list.m))
+	result := make([]int, len(list.m))
 
 	for i, v := range list.m {
 		result[i] = f(v)
@@ -831,38 +752,18 @@ func (list *X1IntList) MapToString(f func(int) string) []string {
 	return result
 }
 
-// MapToInt64 returns a new []int64 by transforming every element with function f.
-// The resulting slice is the same size as the list.
-// The list is not modified.
-//
-// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
-// this method appropriately.
-func (list *X1IntList) MapToInt64(f func(int) int64) []int64 {
-	if list == nil {
-		return nil
-	}
-
-	result := make([]int64, len(list.m))
-
-	for i, v := range list.m {
-		result[i] = f(v)
-	}
-
-	return result
-}
-
-// FlatMap returns a new X1IntList by transforming every element with function f that
+// FlatMap returns a new FastStringList by transforming every element with function f that
 // returns zero or more items in a slice. The resulting list may have a different size to the original list.
 // The original list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X1IntList) FlatMap(f func(int) []int) *X1IntList {
+func (list *FastStringList) FlatMap(f func(string) []string) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := MakeX1IntList(0, len(list.m))
+	result := MakeFastStringList(0, len(list.m))
 
 	for _, v := range list.m {
 		result.m = append(result.m, f(v)...)
@@ -871,18 +772,18 @@ func (list *X1IntList) FlatMap(f func(int) []int) *X1IntList {
 	return result
 }
 
-// FlatMapToString returns a new []string by transforming every element with function f that
+// FlatMapToInt returns a new []int by transforming every element with function f that
 // returns zero or more items in a slice. The resulting slice may have a different size to the list.
 // The list is not modified.
 //
 // This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
 // this method appropriately.
-func (list *X1IntList) FlatMapToString(f func(int) []string) []string {
+func (list *FastStringList) FlatMapToInt(f func(string) []int) []int {
 	if list == nil {
 		return nil
 	}
 
-	result := make([]string, 0, len(list.m))
+	result := make([]int, 0, len(list.m))
 
 	for _, v := range list.m {
 		result = append(result, f(v)...)
@@ -891,28 +792,8 @@ func (list *X1IntList) FlatMapToString(f func(int) []string) []string {
 	return result
 }
 
-// FlatMapToInt64 returns a new []int64 by transforming every element with function f that
-// returns zero or more items in a slice. The resulting slice may have a different size to the list.
-// The list is not modified.
-//
-// This is a domain-to-range mapping function. For bespoke transformations to other types, copy and modify
-// this method appropriately.
-func (list *X1IntList) FlatMapToInt64(f func(int) []int64) []int64 {
-	if list == nil {
-		return nil
-	}
-
-	result := make([]int64, 0, len(list.m))
-
-	for _, v := range list.m {
-		result = append(result, f(v)...)
-	}
-
-	return result
-}
-
-// CountBy gives the number elements of X1IntList that return true for the predicate p.
-func (list *X1IntList) CountBy(p func(int) bool) (result int) {
+// CountBy gives the number elements of FastStringList that return true for the predicate p.
+func (list *FastStringList) CountBy(p func(string) bool) (result int) {
 	if list == nil {
 		return 0
 	}
@@ -925,10 +806,10 @@ func (list *X1IntList) CountBy(p func(int) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of X1IntList containing the minimum value, when compared to other elements
+// MinBy returns an element of FastStringList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
-func (list *X1IntList) MinBy(less func(int, int) bool) int {
+func (list *FastStringList) MinBy(less func(string, string) bool) string {
 
 	l := len(list.m)
 	if l == 0 {
@@ -945,10 +826,10 @@ func (list *X1IntList) MinBy(less func(int, int) bool) int {
 	return list.m[m]
 }
 
-// MaxBy returns an element of X1IntList containing the maximum value, when compared to other elements
+// MaxBy returns an element of FastStringList containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
-func (list *X1IntList) MaxBy(less func(int, int) bool) int {
+func (list *FastStringList) MaxBy(less func(string, string) bool) string {
 
 	l := len(list.m)
 	if l == 0 {
@@ -965,13 +846,13 @@ func (list *X1IntList) MaxBy(less func(int, int) bool) int {
 	return list.m[m]
 }
 
-// DistinctBy returns a new X1IntList whose elements are unique, where equality is defined by the equal function.
-func (list *X1IntList) DistinctBy(equal func(int, int) bool) *X1IntList {
+// DistinctBy returns a new FastStringList whose elements are unique, where equality is defined by the equal function.
+func (list *FastStringList) DistinctBy(equal func(string, string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	result := MakeX1IntList(0, len(list.m))
+	result := MakeFastStringList(0, len(list.m))
 Outer:
 	for _, v := range list.m {
 		for _, r := range result.m {
@@ -985,13 +866,13 @@ Outer:
 }
 
 // IndexWhere finds the index of the first element satisfying predicate p. If none exists, -1 is returned.
-func (list *X1IntList) IndexWhere(p func(int) bool) int {
+func (list *FastStringList) IndexWhere(p func(string) bool) int {
 	return list.IndexWhere2(p, 0)
 }
 
 // IndexWhere2 finds the index of the first element satisfying predicate p at or after some start index.
 // If none exists, -1 is returned.
-func (list *X1IntList) IndexWhere2(p func(int) bool, from int) int {
+func (list *FastStringList) IndexWhere2(p func(string) bool, from int) int {
 
 	for i, v := range list.m {
 		if i >= from && p(v) {
@@ -1003,13 +884,13 @@ func (list *X1IntList) IndexWhere2(p func(int) bool, from int) int {
 
 // LastIndexWhere finds the index of the last element satisfying predicate p.
 // If none exists, -1 is returned.
-func (list *X1IntList) LastIndexWhere(p func(int) bool) int {
+func (list *FastStringList) LastIndexWhere(p func(string) bool) int {
 	return list.LastIndexWhere2(p, -1)
 }
 
 // LastIndexWhere2 finds the index of the last element satisfying predicate p at or before some start index.
 // If none exists, -1 is returned.
-func (list *X1IntList) LastIndexWhere2(p func(int) bool, before int) int {
+func (list *FastStringList) LastIndexWhere2(p func(string) bool, before int) int {
 
 	if before < 0 {
 		before = len(list.m)
@@ -1024,13 +905,13 @@ func (list *X1IntList) LastIndexWhere2(p func(int) bool, before int) int {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int is comparable.
+// These methods are included when string is comparable.
 
 // Equals determines if two lists are equal to each other.
 // If they both are the same size and have the same items in the same order, they are considered equal.
 // Order of items is not relevent for sets to be equal.
 // Nil lists are considered to be empty.
-func (list *X1IntList) Equals(other *X1IntList) bool {
+func (list *FastStringList) Equals(other *FastStringList) bool {
 	if list == nil {
 		if other == nil {
 			return true
@@ -1057,68 +938,68 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 
 //-------------------------------------------------------------------------------------------------
 
-type sortableX1IntList struct {
-	less func(i, j int) bool
-	m    []int
+type sortableFastStringList struct {
+	less func(i, j string) bool
+	m    []string
 }
 
-func (sl sortableX1IntList) Less(i, j int) bool {
+func (sl sortableFastStringList) Less(i, j int) bool {
 	return sl.less(sl.m[i], sl.m[j])
 }
 
-func (sl sortableX1IntList) Len() int {
+func (sl sortableFastStringList) Len() int {
 	return len(sl.m)
 }
 
-func (sl sortableX1IntList) Swap(i, j int) {
+func (sl sortableFastStringList) Swap(i, j int) {
 	sl.m[i], sl.m[j] = sl.m[j], sl.m[i]
 }
 
 // SortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list *X1IntList) SortBy(less func(i, j int) bool) *X1IntList {
+func (list *FastStringList) SortBy(less func(i, j string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	sort.Sort(sortableX1IntList{less, list.m})
+	sort.Sort(sortableFastStringList{less, list.m})
 	return list
 }
 
 // StableSortBy alters the list so that the elements are sorted by a specified ordering.
 // Sorting happens in-place; the modified list is returned.
 // The algorithm keeps the original order of equal elements.
-func (list *X1IntList) StableSortBy(less func(i, j int) bool) *X1IntList {
+func (list *FastStringList) StableSortBy(less func(i, j string) bool) *FastStringList {
 	if list == nil {
 		return nil
 	}
 
-	sort.Stable(sortableX1IntList{less, list.m})
+	sort.Stable(sortableFastStringList{less, list.m})
 	return list
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int is ordered.
+// These methods are included when string is ordered.
 
 // Sorted alters the list so that the elements are sorted by their natural ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list *X1IntList) Sorted() *X1IntList {
-	return list.SortBy(func(a, b int) bool {
+func (list *FastStringList) Sorted() *FastStringList {
+	return list.SortBy(func(a, b string) bool {
 		return a < b
 	})
 }
 
 // StableSorted alters the list so that the elements are sorted by their natural ordering.
 // Sorting happens in-place; the modified list is returned.
-func (list *X1IntList) StableSorted() *X1IntList {
-	return list.StableSortBy(func(a, b int) bool {
+func (list *FastStringList) StableSorted() *FastStringList {
+	return list.StableSortBy(func(a, b string) bool {
 		return a < b
 	})
 }
 
 // Min returns the first element containing the minimum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list *X1IntList) Min() int {
+func (list *FastStringList) Min() string {
 
 	l := len(list.m)
 	if l == 0 {
@@ -1138,7 +1019,7 @@ func (list *X1IntList) Min() int {
 
 // Max returns the first element containing the maximum value, when compared to other elements.
 // Panics if the collection is empty.
-func (list *X1IntList) Max() (result int) {
+func (list *FastStringList) Max() (result string) {
 
 	l := len(list.m)
 	if l == 0 {
@@ -1157,45 +1038,24 @@ func (list *X1IntList) Max() (result int) {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods are included when int is numeric.
-
-// Sum returns the sum of all the elements in the list.
-func (list *X1IntList) Sum() int {
-
-	sum := int(0)
-	for _, v := range list.m {
-		sum = sum + v
-	}
-	return sum
-}
-
-//-------------------------------------------------------------------------------------------------
 
 // StringList gets a list of strings that depicts all the elements.
-func (list *X1IntList) StringList() []string {
-	if list == nil {
-		return nil
-	}
-
-	strings := make([]string, len(list.m))
-	for i, v := range list.m {
-		strings[i] = fmt.Sprintf("%v", v)
-	}
-	return strings
+func (list *FastStringList) StringList() []string {
+	return list.ToSlice()
 }
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
-func (list *X1IntList) String() string {
+func (list *FastStringList) String() string {
 	return list.MkString3("[", ", ", "]")
 }
 
 // MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
-func (list *X1IntList) MkString(sep string) string {
+func (list *FastStringList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
-func (list *X1IntList) MkString3(before, between, after string) string {
+func (list *FastStringList) MkString3(before, between, after string) string {
 	if list == nil {
 		return ""
 	}
@@ -1203,7 +1063,7 @@ func (list *X1IntList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list X1IntList) mkString3Bytes(before, between, after string) *bytes.Buffer {
+func (list FastStringList) mkString3Bytes(before, between, after string) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	b.WriteString(before)
 	sep := ""
@@ -1220,33 +1080,14 @@ func (list X1IntList) mkString3Bytes(before, between, after string) *bytes.Buffe
 //-------------------------------------------------------------------------------------------------
 
 // UnmarshalJSON implements JSON decoding for this list type.
-func (list *X1IntList) UnmarshalJSON(b []byte) error {
+func (list *FastStringList) UnmarshalJSON(b []byte) error {
 
 	return json.Unmarshal(b, &list.m)
 }
 
 // MarshalJSON implements JSON encoding for this list type.
-func (list X1IntList) MarshalJSON() ([]byte, error) {
+func (list FastStringList) MarshalJSON() ([]byte, error) {
 
 	buf, err := json.Marshal(list.m)
 	return buf, err
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// GobDecode implements 'gob' decoding for this list type.
-// You must register int with the 'gob' package before this method is used.
-func (list *X1IntList) GobDecode(b []byte) error {
-
-	buf := bytes.NewBuffer(b)
-	return gob.NewDecoder(buf).Decode(&list.m)
-}
-
-// GobEncode implements 'gob' encoding for this list type.
-// You must register int with the 'gob' package before this method is used.
-func (list X1IntList) GobEncode() ([]byte, error) {
-
-	buf := &bytes.Buffer{}
-	err := gob.NewEncoder(buf).Encode(list.m)
-	return buf.Bytes(), err
 }

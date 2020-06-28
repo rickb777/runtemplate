@@ -2,17 +2,17 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=*big.Int
-// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value>
-// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value>
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> StringLike:<no value> Stringer:<no value>
+// GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:<no value>
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
+	"math/big"
 	"math/rand"
 	"sort"
-	"math/big"
 )
 
 // P2IntegerList is a slice of type *big.Int. Use it where you would use []*big.Int.

@@ -2,8 +2,8 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=string
-// options: Comparable:true Numeric:false Ordered:false Stringer:true
-// GobEncode:<no value> Mutable:always ToList:always ToSet:true
+// options: Comparable:true Numeric:<no value> Ordered:true StringLike:false` Stringer:true
+// GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -49,6 +49,10 @@ func ConvertX1StringList(values ...interface{}) (X1StringList, bool) {
 			list = append(list, j)
 		case *string:
 			list = append(list, *j)
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
+				list = append(list, string(s.String()))
+			}
 		}
 	}
 
@@ -653,6 +657,43 @@ func (list X1StringList) SortBy(less func(i, j string) bool) X1StringList {
 func (list X1StringList) StableSortBy(less func(i, j string) bool) X1StringList {
 	sort.Stable(sortableX1StringList{less, list})
 	return list
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when string is ordered.
+
+// Sorted alters the list so that the elements are sorted by their natural ordering.
+// Sorting happens in-place; the modified list is returned.
+func (list X1StringList) Sorted() X1StringList {
+	return list.SortBy(func(a, b string) bool {
+		return a < b
+	})
+}
+
+// StableSorted alters the list so that the elements are sorted by their natural ordering.
+// Sorting happens in-place; the modified list is returned.
+func (list X1StringList) StableSorted() X1StringList {
+	return list.StableSortBy(func(a, b string) bool {
+		return a < b
+	})
+}
+
+// Min returns the first element containing the minimum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list X1StringList) Min() string {
+	m := list.MinBy(func(a string, b string) bool {
+		return a < b
+	})
+	return m
+}
+
+// Max returns the first element containing the maximum value, when compared to other elements.
+// Panics if the collection is empty.
+func (list X1StringList) Max() (result string) {
+	m := list.MaxBy(func(a string, b string) bool {
+		return a < b
+	})
+	return m
 }
 
 //-------------------------------------------------------------------------------------------------

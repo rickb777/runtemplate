@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=*int
-// options: Comparable:true Numeric:true Ordered:true Stringer:true
+// options: Comparable:true Numeric:true Ordered:true StringLike:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
@@ -1103,7 +1103,7 @@ func (list *P1IntList) Equals(other *P1IntList) bool {
 
 type sortableP1IntList struct {
 	less func(i, j *int) bool
-	m []*int
+	m    []*int
 }
 
 func (sl sortableP1IntList) Less(i, j int) bool {

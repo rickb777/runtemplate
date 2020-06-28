@@ -2,8 +2,8 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value> Stringer:false
-// GobEncode:<no value> Mutable:always ToList:always ToSet:true
+// options: Comparable:true Numeric:<no value> Ordered:<no value> StringLike:<no value> Stringer:false
+// GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 

@@ -15,6 +15,7 @@ package examples
 
 // Simple Examples
 //go:generate runtemplate -tpl simple/list.tpl       Prefix=Simple Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true MapTo:string MapTo:int64
+//go:generate runtemplate -tpl simple/list.tpl       Prefix=Simple Type=string Stringer:true  Comparable:true Ordered:true  String:true  MapTo:int
 //go:generate runtemplate -tpl simple/list.tpl       Prefix=Simple Type=Apple  Stringer:false Comparable:true                            MapTo:string
 //go:generate runtemplate -tpl simple/set.tpl        Prefix=Simple Type=int    Stringer:true  Ordered:true  Numeric:true                 MapTo:string MapTo:int64
 //go:generate runtemplate -tpl simple/set.tpl        Prefix=Simple Type=Apple  Stringer:false                                            MapTo:string
@@ -25,6 +26,7 @@ package examples
 //go:generate runtemplate -tpl immutable/collection.tpl Prefix=Immutable Type=int    Stringer:true  Comparable:true Ordered:true Numeric:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl immutable/collection.tpl Prefix=Immutable Type=Apple  Stringer:false                                           MapTo:string
 //go:generate runtemplate -tpl immutable/list.tpl       Prefix=Immutable Type=int    Stringer:true  Comparable:true Ordered:true Numeric:true MapTo:string MapTo:int64
+//go:generate runtemplate -tpl immutable/list.tpl       Prefix=Immutable Type=string Stringer:true  Comparable:true Ordered:true String:true  MapTo:int
 //go:generate runtemplate -tpl immutable/list.tpl       Prefix=Immutable Type=Apple  Stringer:false GobEncode:true                            MapTo:string
 //go:generate runtemplate -tpl immutable/set.tpl        Prefix=Immutable Type=int    Stringer:true                  Ordered:true Numeric:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl immutable/set.tpl        Prefix=Immutable Type=Apple  Stringer:false GobEncode:true                            MapTo:string
@@ -35,6 +37,7 @@ package examples
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=Fast Type=int    Stringer:true Comparable:true Ordered:true Numeric:true
 //go:generate runtemplate -tpl fast/collection.tpl Prefix=Fast Type=Apple  Stringer:false
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=Fast Type=int    Stringer:true  Comparable:true Ordered:true  Numeric:true MapTo:string MapTo:int64
+//go:generate runtemplate -tpl fast/list.tpl       Prefix=Fast Type=string Stringer:true  Comparable:true Ordered:true  String:true  MapTo:int
 //go:generate runtemplate -tpl fast/list.tpl       Prefix=Fast Type=Apple  Stringer:false Comparable:true GobEncode:true
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=Fast Type=int    Stringer:true                  Ordered:true  Numeric:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl fast/set.tpl        Prefix=Fast Type=Apple  Stringer:false  GobEncode:true
@@ -47,6 +50,7 @@ package examples
 //go:generate runtemplate -tpl threadsafe/collection.tpl Type=int    Stringer:true  Comparable:true Ordered:true Numeric:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl threadsafe/collection.tpl Type=Apple  Stringer:false                                           MapTo:string
 //go:generate runtemplate -tpl threadsafe/list.tpl       Type=int    Stringer:true  Comparable:true Ordered:true Numeric:true MapTo:string MapTo:int64
+//go:generate runtemplate -tpl threadsafe/list.tpl       Type=string Stringer:true  Comparable:true Ordered:true  String:true  MapTo:int
 //go:generate runtemplate -tpl threadsafe/list.tpl       Type=Apple  Stringer:false Comparable:true GobEncode:true            MapTo:string
 //go:generate runtemplate -tpl threadsafe/set.tpl        Type=int    Stringer:true                  Ordered:true Numeric:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl threadsafe/set.tpl        Type=Apple  Stringer:false GobEncode:true
