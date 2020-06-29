@@ -52,9 +52,11 @@ func ConvertImmutableStringList(values ...interface{}) (*ImmutableStringList, bo
 	for _, i := range values {
 		switch j := i.(type) {
 		case string:
-			list.m = append(list.m, j)
+			k := string(j)
+			list.m = append(list.m, k)
 		case *string:
-			list.m = append(list.m, *j)
+			k := string(*j)
+			list.m = append(list.m, k)
 		}
 	}
 

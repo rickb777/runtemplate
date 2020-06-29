@@ -53,8 +53,8 @@ func ConvertP1AppleList(values ...interface{}) (P1AppleList, bool) {
 	return list, len(list) == len(values)
 }
 
-// BuildP1AppleListFromChan constructs a new P1AppleList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildP1AppleListFromChan constructs a new P1AppleList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildP1AppleListFromChan(source <-chan *Apple) P1AppleList {
 	list := MakeP1AppleList(0, 0)
 	for v := range source {

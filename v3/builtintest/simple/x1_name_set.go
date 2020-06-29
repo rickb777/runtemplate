@@ -35,9 +35,16 @@ func ConvertX1NameSet(values ...interface{}) (X1NameSet, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case Name:
-			set[j] = struct{}{}
+			k := Name(j)
+			set[k] = struct{}{}
 		case *Name:
-			set[*j] = struct{}{}
+			k := Name(*j)
+			set[k] = struct{}{}
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
+				k := Name(s.String())
+				set[k] = struct{}{}
+			}
 		}
 	}
 

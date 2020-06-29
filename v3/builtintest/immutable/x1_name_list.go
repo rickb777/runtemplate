@@ -52,9 +52,15 @@ func ConvertX1NameList(values ...interface{}) (*X1NameList, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case Name:
-			list.m = append(list.m, j)
+			k := Name(j)
+			list.m = append(list.m, k)
 		case *Name:
-			list.m = append(list.m, *j)
+			k := Name(*j)
+			list.m = append(list.m, k)
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
+				list.m = append(list.m, Name(s.String()))
+			}
 		}
 	}
 

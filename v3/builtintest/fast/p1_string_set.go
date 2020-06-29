@@ -3,7 +3,7 @@
 // Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=*string
-// options: Comparable:always Numeric:false Ordered:false Stringer:true ToList:true
+// options: Comparable:always Numeric:<no value> Ordered:false Stringer:true ToList:true
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
@@ -40,9 +40,11 @@ func ConvertP1StringSet(values ...interface{}) (*P1StringSet, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case string:
-			set.m[j] = struct{}{}
+			k := string(j)
+			set.m[k] = struct{}{}
 		case *string:
-			set.m[*j] = struct{}{}
+			k := string(*j)
+			set.m[k] = struct{}{}
 		}
 	}
 

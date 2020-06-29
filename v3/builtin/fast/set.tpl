@@ -124,10 +124,27 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 			set.m[k] = struct{}{}
 {{- else}}
 		case {{.Type.Name}}:
-			set.m[j] = struct{}{}
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
 		case *{{.Type.Name}}:
-			set.m[*j] = struct{}{}
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
+		{{- if and .StringLike .ne .Type.Name "string"}}
+		case string:
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *string:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
+		{{- end}}
 {{- end}}
+		{{- if .StringLike}}
+        default:
+		    if s, ok := i.(fmt.Stringer); ok {
+				k := {{.Type.Name}}(s.String())
+			    set.m[k] = struct{}{}
+		    }
+		{{- end}}
 		}
 	}
 

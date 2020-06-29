@@ -56,7 +56,8 @@ func ConvertX1StringList(values ...interface{}) (*X1StringList, bool) {
 			list.m = append(list.m, *j)
 		default:
 			if s, ok := i.(fmt.Stringer); ok {
-				list.m = append(list.m, string(s.String()))
+				k := string(s.String())
+				list.m = append(list.m, k)
 			}
 		}
 	}

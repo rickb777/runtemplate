@@ -49,9 +49,11 @@ func ConvertX1AppleList(values ...interface{}) (*X1AppleList, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case Apple:
-			list.m = append(list.m, j)
+			k := Apple(j)
+			list.m = append(list.m, k)
 		case *Apple:
-			list.m = append(list.m, *j)
+			k := Apple(*j)
+			list.m = append(list.m, k)
 		}
 	}
 
@@ -460,7 +462,6 @@ func (list *X1AppleList) Find(p func(Apple) bool) (Apple, bool) {
 		}
 	}
 
-
 	var empty Apple
 	return empty, false
 }
@@ -684,7 +685,7 @@ func (list *X1AppleList) Equals(other *X1AppleList) bool {
 
 type sortableX1AppleList struct {
 	less func(i, j Apple) bool
-	m []Apple
+	m    []Apple
 }
 
 func (sl sortableX1AppleList) Less(i, j int) bool {

@@ -9,8 +9,7 @@
 
 package fast
 
-import (
-)
+import ()
 
 // P1AppleSet is the primary type that represents a set.
 type P1AppleSet struct {
@@ -37,9 +36,11 @@ func ConvertP1AppleSet(values ...interface{}) (*P1AppleSet, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case Apple:
-			set.m[j] = struct{}{}
+			k := Apple(j)
+			set.m[k] = struct{}{}
 		case *Apple:
-			set.m[*j] = struct{}{}
+			k := Apple(*j)
+			set.m[k] = struct{}{}
 		}
 	}
 

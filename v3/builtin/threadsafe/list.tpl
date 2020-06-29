@@ -136,25 +136,32 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 		case *float64:
 			k := {{.Type.Name}}(*j)
 			list.m = append(list.m, {{.Type.Amp}}k)
-{{- else}}
-		{{- if .Type.IsPtr}}
+{{- else if .Type.IsPtr}}
 		case {{.Type.Name}}:
 			list.m = append(list.m, &j)
 		case *{{.Type.Name}}:
 			list.m = append(list.m, j)
-		{{- else}}
-		case {{.Type}}:
+{{- else}}
+		case {{.Type.Name}}:
 			list.m = append(list.m, j)
-		case *{{.Type}}:
+		case *{{.Type.Name}}:
 			list.m = append(list.m, *j)
-		{{- end}}
 {{- end}}
-		{{- if .StringLike}}
+{{- if and .StringLike .ne .Type.Name "string"}}
+		case string:
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		case *string:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+{{- end}}
+{{- if .StringLike}}
         default:
 		    if s, ok := i.(fmt.Stringer); ok {
-			    list.m = append(list.m, {{.Type.Name}}(s.String()))
+				k := {{.Type.Name}}(s.String())
+				list.m = append(list.m, {{.Type.Amp}}k)
 		    }
-		{{- end}}
+{{- end}}
 		}
 	}
 

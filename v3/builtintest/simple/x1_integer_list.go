@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=big.Int
-// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> StringLike:<no value> Stringer:<no value>
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> StringLike:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:false MapTo:string,int
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
@@ -10,6 +10,8 @@
 package simple
 
 import (
+	"bytes"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"sort"
@@ -54,8 +56,8 @@ func ConvertX1IntegerList(values ...interface{}) (X1IntegerList, bool) {
 	return list, len(list) == len(values)
 }
 
-// BuildX1IntegerListFromChan constructs a new X1IntegerList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildX1IntegerListFromChan constructs a new X1IntegerList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildX1IntegerListFromChan(source <-chan big.Int) X1IntegerList {
 	list := MakeX1IntegerList(0, 0)
 	for v := range source {
@@ -673,3 +675,48 @@ func (list X1IntegerList) StableSortBy(less func(i, j big.Int) bool) X1IntegerLi
 	sort.Stable(sortableX1IntegerList{less, list})
 	return list
 }
+
+//-------------------------------------------------------------------------------------------------
+
+// StringList gets a list of strings that depicts all the elements.
+func (list X1IntegerList) StringList() []string {
+	strings := make([]string, len(list))
+	for i, v := range list {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
+}
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
+func (list X1IntegerList) String() string {
+	return list.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+func (list X1IntegerList) MkString(sep string) string {
+	return list.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+func (list X1IntegerList) MkString3(before, between, after string) string {
+	if list == nil {
+		return ""
+	}
+
+	return list.mkString3Bytes(before, between, after).String()
+}
+
+func (list X1IntegerList) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, v := range list {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v", v))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------

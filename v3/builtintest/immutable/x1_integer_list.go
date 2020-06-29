@@ -3,16 +3,19 @@
 //
 //
 // Generated from immutable/list.tpl with Type=big.Int
-// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> GobEncode:<no value> Mutable:disabled
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:true GobEncode:<no value> Mutable:disabled
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"math/big"
 	"math/rand"
 	"sort"
-	"math/big"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -50,9 +53,11 @@ func ConvertX1IntegerList(values ...interface{}) (*X1IntegerList, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case big.Int:
-			list.m = append(list.m, j)
+			k := big.Int(j)
+			list.m = append(list.m, k)
 		case *big.Int:
-			list.m = append(list.m, *j)
+			k := big.Int(*j)
+			list.m = append(list.m, k)
 		}
 	}
 
@@ -429,7 +434,6 @@ func (list *X1IntegerList) Find(p func(big.Int) bool) (big.Int, bool) {
 		}
 	}
 
-
 	var empty big.Int
 	return empty, false
 }
@@ -696,7 +700,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m []big.Int
+	m    []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {
@@ -732,4 +736,62 @@ func (list *X1IntegerList) StableSortBy(less func(i, j big.Int) bool) *X1Integer
 	result := NewX1IntegerList(list.m...)
 	sort.Stable(sortableX1IntegerList{less, result.m})
 	return result
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// StringList gets a list of strings that depicts all the elements.
+func (list *X1IntegerList) StringList() []string {
+
+	strings := make([]string, len(list.m))
+	for i, v := range list.m {
+		strings[i] = fmt.Sprintf("%v", v)
+	}
+	return strings
+}
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
+func (list *X1IntegerList) String() string {
+	return list.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+func (list *X1IntegerList) MkString(sep string) string {
+	return list.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+func (list *X1IntegerList) MkString3(before, between, after string) string {
+	if list == nil {
+		return ""
+	}
+
+	return list.mkString3Bytes(before, between, after).String()
+}
+
+func (list X1IntegerList) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+
+	for _, v := range list.m {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v", v))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this list type.
+func (list *X1IntegerList) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, &list.m)
+}
+
+// MarshalJSON implements JSON encoding for this list type.
+func (list X1IntegerList) MarshalJSON() ([]byte, error) {
+	buf, err := json.Marshal(list.m)
+	return buf, err
 }

@@ -27,6 +27,9 @@ type X1AppleCollection interface {
 	// IsSet returns false for lists and queues.
 	IsSet() bool
 
+	// ToList returns a shallow copy as a list.
+	ToList() *X1AppleList
+
 	// ToSet returns a shallow copy as a set.
 	ToSet() *X1AppleSet
 

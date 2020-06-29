@@ -35,9 +35,11 @@ func ConvertX1StringSet(values ...interface{}) (X1StringSet, bool) {
 	for _, i := range values {
 		switch j := i.(type) {
 		case string:
-			set[j] = struct{}{}
+			k := string(j)
+			set[k] = struct{}{}
 		case *string:
-			set[*j] = struct{}{}
+			k := string(*j)
+			set[k] = struct{}{}
 		}
 	}
 

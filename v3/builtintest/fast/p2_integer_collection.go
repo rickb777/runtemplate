@@ -1,10 +1,9 @@
 // Generated from fast/collection.tpl with Type=*big.Int
-// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:<no value> Mutable:always
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:true Mutable:always
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
-
 
 import (
 	"math/big"
@@ -22,15 +21,41 @@ type P2IntegerSizer interface {
 	Size() int
 }
 
+// P2IntegerMkStringer defines an interface for stringer methods on *big.Int collections.
+type P2IntegerMkStringer interface {
+	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// in square brackets.
+	String() string
+
+	// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
+	MkString(sep string) string
+
+	// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
+	MkString3(before, between, after string) string
+
+	// implements json.Marshaler interface {
+	MarshalJSON() ([]byte, error)
+
+	// implements json.Unmarshaler interface {
+	UnmarshalJSON(b []byte) error
+
+	// StringList gets a list of strings that depicts all the elements.
+	StringList() []string
+}
+
 // P2IntegerCollection defines an interface for common collection methods on *big.Int.
 type P2IntegerCollection interface {
 	P2IntegerSizer
+	P2IntegerMkStringer
 
 	// IsSequence returns true for lists and queues.
 	IsSequence() bool
 
 	// IsSet returns false for lists and queues.
 	IsSet() bool
+
+	// ToList returns a shallow copy as a list.
+	ToList() *P2IntegerList
 
 	// ToSlice returns a shallow copy as a plain slice.
 	ToSlice() []*big.Int

@@ -53,8 +53,8 @@ func ConvertSimpleAppleList(values ...interface{}) (SimpleAppleList, bool) {
 	return list, len(list) == len(values)
 }
 
-// BuildSimpleAppleListFromChan constructs a new SimpleAppleList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildSimpleAppleListFromChan constructs a new SimpleAppleList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildSimpleAppleListFromChan(source <-chan Apple) SimpleAppleList {
 	list := MakeSimpleAppleList(0, 0)
 	for v := range source {

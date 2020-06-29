@@ -138,10 +138,26 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 			list.m = append(list.m, {{.Type.Amp}}k)
 {{- else}}
 		case {{.Type.Name}}:
-			list.m = append(list.m, j)
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Amp}}k)
 		case *{{.Type.Name}}:
-			list.m = append(list.m, *j)
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Amp}}k)
+		{{- if and .StringLike .ne .Type.Name "string"}}
+		case string:
+			k := {{.Type.Name}}(j)
+			list.m = append(list.m, {{.Type.Name}}(k))
+		case *string:
+			k := {{.Type.Name}}(*j)
+			list.m = append(list.m, {{.Type.Name}}(k))
+		{{- end}}
 {{- end}}
+		{{- if .StringLike}}
+        default:
+		    if s, ok := i.(fmt.Stringer); ok {
+			    list.m = append(list.m, {{.Type.Name}}(s.String()))
+		    }
+		{{- end}}
 		}
 	}
 

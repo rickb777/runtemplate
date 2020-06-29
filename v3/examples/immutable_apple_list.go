@@ -51,9 +51,11 @@ func ConvertImmutableAppleList(values ...interface{}) (*ImmutableAppleList, bool
 	for _, i := range values {
 		switch j := i.(type) {
 		case Apple:
-			list.m = append(list.m, j)
+			k := Apple(j)
+			list.m = append(list.m, k)
 		case *Apple:
-			list.m = append(list.m, *j)
+			k := Apple(*j)
+			list.m = append(list.m, k)
 		}
 	}
 

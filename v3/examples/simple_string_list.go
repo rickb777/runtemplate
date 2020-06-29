@@ -55,8 +55,8 @@ func ConvertSimpleStringList(values ...interface{}) (SimpleStringList, bool) {
 	return list, len(list) == len(values)
 }
 
-// BuildSimpleStringListFromChan constructs a new SimpleStringList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildSimpleStringListFromChan constructs a new SimpleStringList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildSimpleStringListFromChan(source <-chan string) SimpleStringList {
 	list := MakeSimpleStringList(0, 0)
 	for v := range source {

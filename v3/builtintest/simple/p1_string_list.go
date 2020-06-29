@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=*string
-// options: Comparable:true Numeric:false Ordered:false StringLike:<no value> Stringer:true
+// options: Comparable:true Numeric:<no value> Ordered:false StringLike:false Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
 // by runtemplate v3.5.3
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
@@ -55,8 +55,8 @@ func ConvertP1StringList(values ...interface{}) (P1StringList, bool) {
 	return list, len(list) == len(values)
 }
 
-// BuildP1StringListFromChan constructs a new P1StringList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildP1StringListFromChan constructs a new P1StringList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildP1StringListFromChan(source <-chan *string) P1StringList {
 	list := MakeP1StringList(0, 0)
 	for v := range source {

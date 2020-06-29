@@ -51,7 +51,8 @@ func ConvertX1NameList(values ...interface{}) (X1NameList, bool) {
 			list = append(list, *j)
 		default:
 			if s, ok := i.(fmt.Stringer); ok {
-				list = append(list, Name(s.String()))
+				k := Name(s.String())
+				list = append(list, k)
 			}
 		}
 	}
@@ -59,8 +60,8 @@ func ConvertX1NameList(values ...interface{}) (X1NameList, bool) {
 	return list, len(list) == len(values)
 }
 
-// BuildX1NameListFromChan constructs a new X1NameList from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildX1NameListFromChan constructs a new X1NameList from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildX1NameListFromChan(source <-chan Name) X1NameList {
 	list := MakeX1NameList(0, 0)
 	for v := range source {
