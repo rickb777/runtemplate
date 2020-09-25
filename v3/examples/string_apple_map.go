@@ -3,8 +3,8 @@
 // Thread-safe.
 //
 // Generated from threadsafe/map.tpl with Key=string Type=Apple
-// options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -12,6 +12,7 @@ package examples
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -66,6 +67,11 @@ func (ts StringAppleTuples) Values(values ...Apple) StringAppleTuples {
 		ts[i].Val = v
 	}
 	return ts
+}
+
+// ToMap converts the tuples to a map.
+func (ts StringAppleTuples) ToMap() *StringAppleMap {
+	return NewStringAppleMap(ts...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -128,12 +134,12 @@ func (mm *StringAppleMap) Values() []Apple {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *StringAppleMap) slice() []StringAppleTuple {
+func (mm *StringAppleMap) slice() StringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]StringAppleTuple, 0, len(mm.m))
+	s := make(StringAppleTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, StringAppleTuple{(k), v})
 	}
@@ -142,7 +148,7 @@ func (mm *StringAppleMap) slice() []StringAppleTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *StringAppleMap) ToSlice() []StringAppleTuple {
+func (mm *StringAppleMap) ToSlice() StringAppleTuples {
 	if mm == nil {
 		return nil
 	}
@@ -151,6 +157,25 @@ func (mm *StringAppleMap) ToSlice() []StringAppleTuple {
 	defer mm.s.RUnlock()
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *StringAppleMap) OrderedSlice(keys []string) StringAppleTuples {
+	if mm == nil {
+		return nil
+	}
+
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	s := make(StringAppleTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[k]
+		if found {
+			s = append(s, StringAppleTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -444,6 +469,31 @@ func (mm *StringAppleMap) FlatMap(f func(string, Apple) []StringAppleTuple) *Str
 	return result
 }
 
+// Equals determines if two maps are equal to each other.
+// If they both are the same size and have the same items they are considered equal.
+// Order of items is not relevent for maps to be equal.
+func (mm *StringAppleMap) Equals(other *StringAppleMap) bool {
+	if mm == nil || other == nil {
+		return mm.IsEmpty() && other.IsEmpty()
+	}
+
+	mm.s.RLock()
+	other.s.RLock()
+	defer mm.s.RUnlock()
+	defer other.s.RUnlock()
+
+	if mm.Size() != other.Size() {
+		return false
+	}
+	for k, v1 := range mm.m {
+		v2, found := other.m[k]
+		if !found || v1 != v2 {
+			return false
+		}
+	}
+	return true
+}
+
 // Clone returns a shallow copy of the map. It does not clone the underlying elements.
 func (mm *StringAppleMap) Clone() *StringAppleMap {
 	if mm == nil {
@@ -462,6 +512,66 @@ func (mm *StringAppleMap) Clone() *StringAppleMap {
 
 //-------------------------------------------------------------------------------------------------
 
+func (mm *StringAppleMap) String() string {
+	return mm.MkString3("[", ", ", "]")
+}
+
+// implements encoding.Marshaler interface {
+//func (mm *StringAppleMap) MarshalJSON() ([]byte, error) {
+//	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
+//}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (mm *StringAppleMap) MkString(sep string) string {
+	return mm.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (mm *StringAppleMap) MkString3(before, between, after string) string {
+	if mm == nil {
+		return ""
+	}
+	return mm.mkString3Bytes(before, between, after).String()
+}
+
+func (mm *StringAppleMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	for k, v := range mm.m {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", k, v))
+		sep = between
+	}
+
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this map type.
+func (mm *StringAppleMap) UnmarshalJSON(b []byte) error {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&mm.m)
+}
+
+// MarshalJSON implements JSON encoding for this map type.
+func (mm *StringAppleMap) MarshalJSON() ([]byte, error) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	return json.Marshal(mm.m)
+}
+
+//-------------------------------------------------------------------------------------------------
+
 // GobDecode implements 'gob' decoding for this map type.
 // You must register Apple with the 'gob' package before this method is used.
 func (mm *StringAppleMap) GobDecode(b []byte) error {
@@ -472,7 +582,7 @@ func (mm *StringAppleMap) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobEncode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this map type.
 // You must register Apple with the 'gob' package before this method is used.
 func (mm *StringAppleMap) GobEncode() ([]byte, error) {
 	mm.s.RLock()
@@ -481,4 +591,49 @@ func (mm *StringAppleMap) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := gob.NewEncoder(buf).Encode(mm.m)
 	return buf.Bytes(), err
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts StringAppleTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts StringAppleTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (ts StringAppleTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts StringAppleTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t StringAppleTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t StringAppleTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

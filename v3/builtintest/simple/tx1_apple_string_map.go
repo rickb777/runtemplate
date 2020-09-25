@@ -4,7 +4,7 @@
 //
 // Generated from simple/map.tpl with Key=Apple Type=string
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -62,6 +62,11 @@ func (ts TX1AppleStringTuples) Values(values ...string) TX1AppleStringTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TX1AppleStringTuples) ToMap() TX1AppleStringMap {
+	return NewTX1AppleStringMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTX1AppleStringMap() TX1AppleStringMap {
@@ -86,6 +91,10 @@ func NewTX1AppleStringMap(kv ...TX1AppleStringTuple) TX1AppleStringMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TX1AppleStringMap) Keys() []Apple {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]Apple, 0, len(mm))
 	for k := range mm {
 		s = append(s, k)
@@ -95,6 +104,10 @@ func (mm TX1AppleStringMap) Keys() []Apple {
 
 // Values returns the values of the current map as a slice.
 func (mm TX1AppleStringMap) Values() []string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]string, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -103,17 +116,29 @@ func (mm TX1AppleStringMap) Values() []string {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm TX1AppleStringMap) slice() []TX1AppleStringTuple {
-	s := make([]TX1AppleStringTuple, 0, len(mm))
+func (mm TX1AppleStringMap) slice() TX1AppleStringTuples {
+	s := make(TX1AppleStringTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, TX1AppleStringTuple{(k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm TX1AppleStringMap) ToSlice() []TX1AppleStringTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm TX1AppleStringMap) ToSlice() TX1AppleStringTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm TX1AppleStringMap) OrderedSlice(keys []Apple) TX1AppleStringTuples {
+	s := make(TX1AppleStringTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[k]
+		if found {
+			s = append(s, TX1AppleStringTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

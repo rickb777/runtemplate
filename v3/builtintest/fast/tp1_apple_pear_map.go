@@ -4,7 +4,7 @@
 //
 // Generated from fast/map.tpl with Key=*Apple Type=*Pear
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
@@ -64,6 +64,11 @@ func (ts TP1ApplePearTuples) Values(values ...*Pear) TP1ApplePearTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TP1ApplePearTuples) ToMap() *TP1ApplePearMap {
+	return NewTP1ApplePearMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTP1ApplePearMap() *TP1ApplePearMap {
@@ -117,12 +122,12 @@ func (mm *TP1ApplePearMap) Values() []*Pear {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *TP1ApplePearMap) slice() []TP1ApplePearTuple {
+func (mm *TP1ApplePearMap) slice() TP1ApplePearTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]TP1ApplePearTuple, 0, len(mm.m))
+	s := make(TP1ApplePearTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, TP1ApplePearTuple{(&k), v})
 	}
@@ -131,12 +136,28 @@ func (mm *TP1ApplePearMap) slice() []TP1ApplePearTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TP1ApplePearMap) ToSlice() []TP1ApplePearTuple {
+func (mm *TP1ApplePearMap) ToSlice() TP1ApplePearTuples {
 	if mm == nil {
 		return nil
 	}
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *TP1ApplePearMap) OrderedSlice(keys []*Apple) TP1ApplePearTuples {
+	if mm == nil {
+		return nil
+	}
+
+	s := make(TP1ApplePearTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[*k]
+		if found {
+			s = append(s, TP1ApplePearTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

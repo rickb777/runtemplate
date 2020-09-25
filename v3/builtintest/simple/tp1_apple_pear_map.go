@@ -4,7 +4,7 @@
 //
 // Generated from simple/map.tpl with Key=*Apple Type=*Pear
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -62,6 +62,11 @@ func (ts TP1ApplePearTuples) Values(values ...*Pear) TP1ApplePearTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TP1ApplePearTuples) ToMap() TP1ApplePearMap {
+	return NewTP1ApplePearMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTP1ApplePearMap() TP1ApplePearMap {
@@ -86,6 +91,10 @@ func NewTP1ApplePearMap(kv ...TP1ApplePearTuple) TP1ApplePearMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TP1ApplePearMap) Keys() []*Apple {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]*Apple, 0, len(mm))
 	for k := range mm {
 		s = append(s, &k)
@@ -95,6 +104,10 @@ func (mm TP1ApplePearMap) Keys() []*Apple {
 
 // Values returns the values of the current map as a slice.
 func (mm TP1ApplePearMap) Values() []*Pear {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]*Pear, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -103,17 +116,29 @@ func (mm TP1ApplePearMap) Values() []*Pear {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm TP1ApplePearMap) slice() []TP1ApplePearTuple {
-	s := make([]TP1ApplePearTuple, 0, len(mm))
+func (mm TP1ApplePearMap) slice() TP1ApplePearTuples {
+	s := make(TP1ApplePearTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, TP1ApplePearTuple{(&k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm TP1ApplePearMap) ToSlice() []TP1ApplePearTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm TP1ApplePearMap) ToSlice() TP1ApplePearTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm TP1ApplePearMap) OrderedSlice(keys []*Apple) TP1ApplePearTuples {
+	s := make(TP1ApplePearTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[*k]
+		if found {
+			s = append(s, TP1ApplePearTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

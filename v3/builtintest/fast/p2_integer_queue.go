@@ -11,14 +11,14 @@
 // Generated from fast/queue.tpl with Type=*big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:true ToSet:false
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
 
 import (
-	"sort"
 	"math/big"
+	"sort"
 )
 
 // P2IntegerQueue is a ring buffer containing a slice of type *big.Int. It is optimised
@@ -418,7 +418,7 @@ func (queue *P2IntegerQueue) Push(items ...*big.Int) *P2IntegerQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -465,7 +465,7 @@ func (queue *P2IntegerQueue) doPush(items ...*big.Int) []*big.Int {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

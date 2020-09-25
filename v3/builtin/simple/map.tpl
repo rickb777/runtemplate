@@ -12,6 +12,7 @@ package {{.Package}}
 import (
 {{- if .Stringer}}
 	"bytes"
+	"encoding/json"
 {{- end}}
 	"fmt"
 {{- if .HasImport}}
@@ -68,6 +69,11 @@ func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) Values(values ...{{.Type}}) {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) ToMap() {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
+	return New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func new{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map() {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map {
@@ -92,6 +98,10 @@ func New{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map(kv ...{{.Prefix.U}}{{.Key.U}}{{.Ty
 
 // Keys returns the keys of the current map as a slice.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Keys() {{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}} {
+	if mm == nil {
+		return nil
+	}
+
 	s := make({{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}}, 0, len(mm))
 	for k := range mm {
 		s = append(s, {{.Key.Amp}}k)
@@ -101,6 +111,10 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Keys() {{if .KeyList}}{{.KeyList
 
 // Values returns the values of the current map as a slice.
 func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Values() {{if .ValueList}}{{.ValueList}}{{else}}[]{{.Type}}{{end}} {
+	if mm == nil {
+		return nil
+	}
+
 	s := make({{if .ValueList}}{{.ValueList}}{{else}}[]{{.Type}}{{end}}, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -109,17 +123,29 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Values() {{if .ValueList}}{{.Val
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) slice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
-	s := make([]{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple, 0, len(mm))
+func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) slice() {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
+	s := make({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{({{.Key.Amp}}k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ToSlice() []{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) ToSlice() {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) OrderedSlice(keys {{if .KeyList}}{{.KeyList}}{{else}}[]{{.Key}}{{end}}) {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples {
+	s := make({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples, 0, len(mm))
+	for _, k := range keys {
+	    v, found := mm[{{.Key.Star}}k]
+	    if found {
+    		s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
+	    }
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -391,5 +417,54 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString3Bytes(before, between, 
 {{end}}
 	b.WriteString(after)
 	return b
+}
+{{- end}}
+{{- if .Stringer}}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+{{- if .HasKeySlice}}
+// The map entries are sorted by their keys.{{- end}}
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }
 {{- end}}

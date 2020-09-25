@@ -4,13 +4,14 @@
 //
 // Generated from simple/map.tpl with Key=string Type=string
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -63,6 +64,11 @@ func (ts TX1StringStringTuples) Values(values ...string) TX1StringStringTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TX1StringStringTuples) ToMap() TX1StringStringMap {
+	return NewTX1StringStringMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTX1StringStringMap() TX1StringStringMap {
@@ -87,6 +93,10 @@ func NewTX1StringStringMap(kv ...TX1StringStringTuple) TX1StringStringMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TX1StringStringMap) Keys() []string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]string, 0, len(mm))
 	for k := range mm {
 		s = append(s, k)
@@ -96,6 +106,10 @@ func (mm TX1StringStringMap) Keys() []string {
 
 // Values returns the values of the current map as a slice.
 func (mm TX1StringStringMap) Values() []string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]string, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -104,17 +118,29 @@ func (mm TX1StringStringMap) Values() []string {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm TX1StringStringMap) slice() []TX1StringStringTuple {
-	s := make([]TX1StringStringTuple, 0, len(mm))
+func (mm TX1StringStringMap) slice() TX1StringStringTuples {
+	s := make(TX1StringStringTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, TX1StringStringTuple{(k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm TX1StringStringMap) ToSlice() []TX1StringStringTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm TX1StringStringMap) ToSlice() TX1StringStringTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm TX1StringStringMap) OrderedSlice(keys []string) TX1StringStringTuples {
+	s := make(TX1StringStringTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[k]
+		if found {
+			s = append(s, TX1StringStringTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -368,4 +394,49 @@ func (mm TX1StringStringMap) mkString3Bytes(before, between, after string) *byte
 
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts TX1StringStringTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts TX1StringStringTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (ts TX1StringStringTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts TX1StringStringTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t TX1StringStringTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t TX1StringStringTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

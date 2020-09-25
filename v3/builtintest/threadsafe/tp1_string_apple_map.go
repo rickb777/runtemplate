@@ -4,7 +4,7 @@
 //
 // Generated from threadsafe/map.tpl with Key=*string Type=*Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
@@ -64,6 +64,11 @@ func (ts TP1StringAppleTuples) Values(values ...*Apple) TP1StringAppleTuples {
 		ts[i].Val = v
 	}
 	return ts
+}
+
+// ToMap converts the tuples to a map.
+func (ts TP1StringAppleTuples) ToMap() *TP1StringAppleMap {
+	return NewTP1StringAppleMap(ts...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -126,12 +131,12 @@ func (mm *TP1StringAppleMap) Values() []*Apple {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *TP1StringAppleMap) slice() []TP1StringAppleTuple {
+func (mm *TP1StringAppleMap) slice() TP1StringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]TP1StringAppleTuple, 0, len(mm.m))
+	s := make(TP1StringAppleTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, TP1StringAppleTuple{(&k), v})
 	}
@@ -140,7 +145,7 @@ func (mm *TP1StringAppleMap) slice() []TP1StringAppleTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TP1StringAppleMap) ToSlice() []TP1StringAppleTuple {
+func (mm *TP1StringAppleMap) ToSlice() TP1StringAppleTuples {
 	if mm == nil {
 		return nil
 	}
@@ -149,6 +154,25 @@ func (mm *TP1StringAppleMap) ToSlice() []TP1StringAppleTuple {
 	defer mm.s.RUnlock()
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *TP1StringAppleMap) OrderedSlice(keys []*string) TP1StringAppleTuples {
+	if mm == nil {
+		return nil
+	}
+
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	s := make(TP1StringAppleTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[*k]
+		if found {
+			s = append(s, TP1StringAppleTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

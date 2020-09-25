@@ -3,11 +3,13 @@ func (ts KeyTypeTuples) Append2(k1 *Key, v1 *Type, k2 *Key, v2 *Type) KeyTypeTup
 func (ts KeyTypeTuples) Append3(k1 *Key, v1 *Type, k2 *Key, v2 *Type, k3 *Key, v3 *Type) KeyTypeTuples
 func KeyTypeZip(keys ...*Key) KeyTypeTuples
 func (ts KeyTypeTuples) Values(values ...*Type) KeyTypeTuples
+func (ts KeyTypeTuples) ToMap() *KeyTypeMap
 func NewKeyTypeMap1(k *Key, v *Type) *KeyTypeMap
 func NewKeyTypeMap(kv ...KeyTypeTuple) *KeyTypeMap
 func (mm *KeyTypeMap) Keys() []*Key
 func (mm *KeyTypeMap) Values() []*Type
-func (mm *KeyTypeMap) ToSlice() []KeyTypeTuple
+func (mm *KeyTypeMap) ToSlice() KeyTypeTuples
+func (mm *KeyTypeMap) OrderedSlice(keys []*Key) KeyTypeTuples
 func (mm *KeyTypeMap) Get(k *Key) (*Type, bool)
 func (mm *KeyTypeMap) Put(k *Key, v *Type) *KeyTypeMap
 func (mm *KeyTypeMap) ContainsKey(k *Key) bool
@@ -31,3 +33,9 @@ func (mm *KeyTypeMap) UnmarshalJSON(b []byte) error
 func (mm *KeyTypeMap) MarshalJSON() ([]byte, error)
 func (mm *KeyTypeMap) GobDecode(b []byte) error
 func (mm *KeyTypeMap) GobEncode() ([]byte, error)
+func (ts KeyTypeTuples) String() string
+func (ts KeyTypeTuples) MkString(sep string) string
+func (ts KeyTypeTuples) MkString3(before, between, after string) string
+func (ts KeyTypeTuples) mkString3Bytes(before, between, after string) *bytes.Buffer
+func (t KeyTypeTuple) UnmarshalJSON(b []byte) error
+func (t KeyTypeTuple) MarshalJSON() ([]byte, error)

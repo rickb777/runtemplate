@@ -4,7 +4,7 @@
 //
 // Generated from simple/map.tpl with Key=*string Type=*big.Int
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -63,6 +63,11 @@ func (ts TP1StringIntegerTuples) Values(values ...*big.Int) TP1StringIntegerTupl
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TP1StringIntegerTuples) ToMap() TP1StringIntegerMap {
+	return NewTP1StringIntegerMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTP1StringIntegerMap() TP1StringIntegerMap {
@@ -87,6 +92,10 @@ func NewTP1StringIntegerMap(kv ...TP1StringIntegerTuple) TP1StringIntegerMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TP1StringIntegerMap) Keys() []*string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]*string, 0, len(mm))
 	for k := range mm {
 		s = append(s, &k)
@@ -96,6 +105,10 @@ func (mm TP1StringIntegerMap) Keys() []*string {
 
 // Values returns the values of the current map as a slice.
 func (mm TP1StringIntegerMap) Values() []*big.Int {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]*big.Int, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -104,17 +117,29 @@ func (mm TP1StringIntegerMap) Values() []*big.Int {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm TP1StringIntegerMap) slice() []TP1StringIntegerTuple {
-	s := make([]TP1StringIntegerTuple, 0, len(mm))
+func (mm TP1StringIntegerMap) slice() TP1StringIntegerTuples {
+	s := make(TP1StringIntegerTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, TP1StringIntegerTuple{(&k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm TP1StringIntegerMap) ToSlice() []TP1StringIntegerTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm TP1StringIntegerMap) ToSlice() TP1StringIntegerTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm TP1StringIntegerMap) OrderedSlice(keys []*string) TP1StringIntegerTuples {
+	s := make(TP1StringIntegerTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[*k]
+		if found {
+			s = append(s, TP1StringIntegerTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

@@ -1,5 +1,5 @@
 // Generated from plumbing/mapTo.tpl with Type=Apple ToType=Pear
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe

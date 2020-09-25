@@ -4,7 +4,7 @@
 //
 // Generated from fast/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -66,6 +66,11 @@ func (ts FastStringAppleTuples) Values(values ...Apple) FastStringAppleTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts FastStringAppleTuples) ToMap() *FastStringAppleMap {
+	return NewFastStringAppleMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newFastStringAppleMap() *FastStringAppleMap {
@@ -119,12 +124,12 @@ func (mm *FastStringAppleMap) Values() []Apple {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *FastStringAppleMap) slice() []FastStringAppleTuple {
+func (mm *FastStringAppleMap) slice() FastStringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]FastStringAppleTuple, 0, len(mm.m))
+	s := make(FastStringAppleTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, FastStringAppleTuple{(k), v})
 	}
@@ -133,12 +138,28 @@ func (mm *FastStringAppleMap) slice() []FastStringAppleTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *FastStringAppleMap) ToSlice() []FastStringAppleTuple {
+func (mm *FastStringAppleMap) ToSlice() FastStringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *FastStringAppleMap) OrderedSlice(keys []string) FastStringAppleTuples {
+	if mm == nil {
+		return nil
+	}
+
+	s := make(FastStringAppleTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[k]
+		if found {
+			s = append(s, FastStringAppleTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -415,7 +436,7 @@ func (mm *FastStringAppleMap) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobEncode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this map type.
 // You must register Apple with the 'gob' package before this method is used.
 func (mm *FastStringAppleMap) GobEncode() ([]byte, error) {
 

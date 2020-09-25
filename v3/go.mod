@@ -2,14 +2,15 @@ module github.com/rickb777/runtemplate/v3
 
 require (
 	github.com/benmoss/matchers v0.0.0-20181101202349-c279145bd967
-	github.com/gobuffalo/envy v1.7.1 // indirect
+	github.com/gobuffalo/envy v1.9.0 // indirect
+	github.com/gobuffalo/packd v1.0.0 // indirect
 	github.com/gobuffalo/packr v1.30.1
-	github.com/juju/loggo v0.0.0-20180524022052-584905176618 // indirect
-	github.com/juju/testing v0.0.0-20180920084828-472a3e8b2073 // indirect
-	github.com/onsi/ginkgo v1.7.0 // indirect
-	github.com/onsi/gomega v1.4.3
-	golang.org/x/text v0.3.2 // indirect
-	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
+	github.com/juju/testing v0.0.0-20200923013621-75df6121fbb0 // indirect
+	github.com/onsi/gomega v1.10.2
+	github.com/rogpeppe/go-internal v1.6.2 // indirect
+	golang.org/x/net v0.0.0-20200925080053-05aa5d4ee321 // indirect
+	golang.org/x/text v0.3.3 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
 
 go 1.13

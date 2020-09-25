@@ -4,13 +4,15 @@
 //
 // Generated from threadsafe/map.tpl with Key=int Type=int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
 
 import (
 	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -65,6 +67,11 @@ func (ts IntIntTuples) Values(values ...int) IntIntTuples {
 		ts[i].Val = v
 	}
 	return ts
+}
+
+// ToMap converts the tuples to a map.
+func (ts IntIntTuples) ToMap() *IntIntMap {
+	return NewIntIntMap(ts...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -127,12 +134,12 @@ func (mm *IntIntMap) Values() []int {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *IntIntMap) slice() []IntIntTuple {
+func (mm *IntIntMap) slice() IntIntTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]IntIntTuple, 0, len(mm.m))
+	s := make(IntIntTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, IntIntTuple{(k), v})
 	}
@@ -141,7 +148,7 @@ func (mm *IntIntMap) slice() []IntIntTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *IntIntMap) ToSlice() []IntIntTuple {
+func (mm *IntIntMap) ToSlice() IntIntTuples {
 	if mm == nil {
 		return nil
 	}
@@ -150,6 +157,25 @@ func (mm *IntIntMap) ToSlice() []IntIntTuple {
 	defer mm.s.RUnlock()
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *IntIntMap) OrderedSlice(keys []int) IntIntTuples {
+	if mm == nil {
+		return nil
+	}
+
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	s := make(IntIntTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[k]
+		if found {
+			s = append(s, IntIntTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -523,4 +549,72 @@ func (mm *IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buffer
 
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// GobDecode implements 'gob' decoding for this map type.
+// You must register int with the 'gob' package before this method is used.
+func (mm *IntIntMap) GobDecode(b []byte) error {
+	mm.s.Lock()
+	defer mm.s.Unlock()
+
+	buf := bytes.NewBuffer(b)
+	return gob.NewDecoder(buf).Decode(&mm.m)
+}
+
+// GobEncode implements 'gob' encoding for this map type.
+// You must register int with the 'gob' package before this method is used.
+func (mm *IntIntMap) GobEncode() ([]byte, error) {
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(mm.m)
+	return buf.Bytes(), err
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts IntIntTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts IntIntTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (ts IntIntTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts IntIntTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t IntIntTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t IntIntTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

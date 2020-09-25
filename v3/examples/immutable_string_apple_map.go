@@ -4,7 +4,7 @@
 //
 // Generated from immutable/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:disabled
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -66,6 +66,11 @@ func (ts ImmutableStringAppleTuples) Values(values ...Apple) ImmutableStringAppl
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts ImmutableStringAppleTuples) ToMap() *ImmutableStringAppleMap {
+	return NewImmutableStringAppleMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newImmutableStringAppleMap() *ImmutableStringAppleMap {
@@ -119,22 +124,38 @@ func (mm *ImmutableStringAppleMap) Values() []Apple {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *ImmutableStringAppleMap) slice() []ImmutableStringAppleTuple {
+func (mm *ImmutableStringAppleMap) slice() ImmutableStringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]ImmutableStringAppleTuple, 0, len(mm.m))
+	s := make(ImmutableStringAppleTuples, 0, len(mm.m))
 	for k, v := range mm.m {
-		s = append(s, ImmutableStringAppleTuple{k, v})
+		s = append(s, ImmutableStringAppleTuple{(k), v})
 	}
 
 	return s
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *ImmutableStringAppleMap) ToSlice() []ImmutableStringAppleTuple {
+func (mm *ImmutableStringAppleMap) ToSlice() ImmutableStringAppleTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *ImmutableStringAppleMap) OrderedSlice(keys []string) ImmutableStringAppleTuples {
+	if mm == nil {
+		return nil
+	}
+
+	s := make(ImmutableStringAppleTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[k]
+		if found {
+			s = append(s, ImmutableStringAppleTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

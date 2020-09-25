@@ -4,13 +4,14 @@
 //
 // Generated from threadsafe/map.tpl with Key=Apple Type=Pear
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -65,6 +66,11 @@ func (ts TX1ApplePearTuples) Values(values ...Pear) TX1ApplePearTuples {
 		ts[i].Val = v
 	}
 	return ts
+}
+
+// ToMap converts the tuples to a map.
+func (ts TX1ApplePearTuples) ToMap() *TX1ApplePearMap {
+	return NewTX1ApplePearMap(ts...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -127,12 +133,12 @@ func (mm *TX1ApplePearMap) Values() []Pear {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *TX1ApplePearMap) slice() []TX1ApplePearTuple {
+func (mm *TX1ApplePearMap) slice() TX1ApplePearTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]TX1ApplePearTuple, 0, len(mm.m))
+	s := make(TX1ApplePearTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, TX1ApplePearTuple{(k), v})
 	}
@@ -141,7 +147,7 @@ func (mm *TX1ApplePearMap) slice() []TX1ApplePearTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TX1ApplePearMap) ToSlice() []TX1ApplePearTuple {
+func (mm *TX1ApplePearMap) ToSlice() TX1ApplePearTuples {
 	if mm == nil {
 		return nil
 	}
@@ -150,6 +156,25 @@ func (mm *TX1ApplePearMap) ToSlice() []TX1ApplePearTuple {
 	defer mm.s.RUnlock()
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *TX1ApplePearMap) OrderedSlice(keys []Apple) TX1ApplePearTuples {
+	if mm == nil {
+		return nil
+	}
+
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	s := make(TX1ApplePearTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[k]
+		if found {
+			s = append(s, TX1ApplePearTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -498,4 +523,49 @@ func (mm *TX1ApplePearMap) mkString3Bytes(before, between, after string) *bytes.
 
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts TX1ApplePearTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts TX1ApplePearTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (ts TX1ApplePearTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts TX1ApplePearTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t TX1ApplePearTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t TX1ApplePearTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

@@ -54,8 +54,8 @@ package examples
 //go:generate runtemplate -tpl threadsafe/list.tpl       Type=Apple  Stringer:false Comparable:true GobEncode:true            MapTo:string
 //go:generate runtemplate -tpl threadsafe/set.tpl        Type=int    Stringer:true                  Ordered:true Numeric:true MapTo:string MapTo:int64
 //go:generate runtemplate -tpl threadsafe/set.tpl        Type=Apple  Stringer:false GobEncode:true
-//go:generate runtemplate -tpl threadsafe/map.tpl        Key=int    Type=int     Comparable:true Stringer:true
-//go:generate runtemplate -tpl threadsafe/map.tpl        Key=string Type=Apple   GobEncode:true
+//go:generate runtemplate -tpl threadsafe/map.tpl        Key=int    Type=int     Stringer:true Comparable:true GobEncode:true
+//go:generate runtemplate -tpl threadsafe/map.tpl        Key=string Type=Apple   Stringer:true Comparable:true GobEncode:true
 //go:generate runtemplate -tpl threadsafe/queue.tpl      Type=int                                                             MapTo:string MapTo:int64
 //go:generate runtemplate -tpl threadsafe/queue.tpl      Type=Apple                                                           MapTo:string
 

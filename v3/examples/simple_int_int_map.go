@@ -4,13 +4,14 @@
 //
 // Generated from simple/map.tpl with Key=int Type=int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -63,6 +64,11 @@ func (ts SimpleIntIntTuples) Values(values ...int) SimpleIntIntTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts SimpleIntIntTuples) ToMap() SimpleIntIntMap {
+	return NewSimpleIntIntMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newSimpleIntIntMap() SimpleIntIntMap {
@@ -87,6 +93,10 @@ func NewSimpleIntIntMap(kv ...SimpleIntIntTuple) SimpleIntIntMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm SimpleIntIntMap) Keys() []int {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]int, 0, len(mm))
 	for k := range mm {
 		s = append(s, k)
@@ -96,6 +106,10 @@ func (mm SimpleIntIntMap) Keys() []int {
 
 // Values returns the values of the current map as a slice.
 func (mm SimpleIntIntMap) Values() []int {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]int, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -104,17 +118,29 @@ func (mm SimpleIntIntMap) Values() []int {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm SimpleIntIntMap) slice() []SimpleIntIntTuple {
-	s := make([]SimpleIntIntTuple, 0, len(mm))
+func (mm SimpleIntIntMap) slice() SimpleIntIntTuples {
+	s := make(SimpleIntIntTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, SimpleIntIntTuple{(k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm SimpleIntIntMap) ToSlice() []SimpleIntIntTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm SimpleIntIntMap) ToSlice() SimpleIntIntTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm SimpleIntIntMap) OrderedSlice(keys []int) SimpleIntIntTuples {
+	s := make(SimpleIntIntTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[k]
+		if found {
+			s = append(s, SimpleIntIntTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -368,4 +394,49 @@ func (mm SimpleIntIntMap) mkString3Bytes(before, between, after string) *bytes.B
 
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts SimpleIntIntTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts SimpleIntIntTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (ts SimpleIntIntTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts SimpleIntIntTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t SimpleIntIntTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t SimpleIntIntTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

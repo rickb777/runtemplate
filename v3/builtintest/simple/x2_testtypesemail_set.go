@@ -4,7 +4,7 @@
 //
 // Generated from simple/set.tpl with Type=testtypes.Email
 // options: Numeric:<no value> Stringer:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple

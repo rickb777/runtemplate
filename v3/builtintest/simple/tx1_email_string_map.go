@@ -4,13 +4,14 @@
 //
 // Generated from simple/map.tpl with Key=Email Type=string
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -63,6 +64,11 @@ func (ts TX1EmailStringTuples) Values(values ...string) TX1EmailStringTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TX1EmailStringTuples) ToMap() TX1EmailStringMap {
+	return NewTX1EmailStringMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTX1EmailStringMap() TX1EmailStringMap {
@@ -87,6 +93,10 @@ func NewTX1EmailStringMap(kv ...TX1EmailStringTuple) TX1EmailStringMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TX1EmailStringMap) Keys() []Email {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]Email, 0, len(mm))
 	for k := range mm {
 		s = append(s, k)
@@ -96,6 +106,10 @@ func (mm TX1EmailStringMap) Keys() []Email {
 
 // Values returns the values of the current map as a slice.
 func (mm TX1EmailStringMap) Values() []string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]string, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -104,17 +118,29 @@ func (mm TX1EmailStringMap) Values() []string {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm TX1EmailStringMap) slice() []TX1EmailStringTuple {
-	s := make([]TX1EmailStringTuple, 0, len(mm))
+func (mm TX1EmailStringMap) slice() TX1EmailStringTuples {
+	s := make(TX1EmailStringTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, TX1EmailStringTuple{(k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm TX1EmailStringMap) ToSlice() []TX1EmailStringTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm TX1EmailStringMap) ToSlice() TX1EmailStringTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm TX1EmailStringMap) OrderedSlice(keys []Email) TX1EmailStringTuples {
+	s := make(TX1EmailStringTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[k]
+		if found {
+			s = append(s, TX1EmailStringTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -353,4 +379,50 @@ func (mm TX1EmailStringMap) mkString3Bytes(before, between, after string) *bytes
 
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts TX1EmailStringTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts TX1EmailStringTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// The map entries are sorted by their keys.
+func (ts TX1EmailStringTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts TX1EmailStringTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t TX1EmailStringTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t TX1EmailStringTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

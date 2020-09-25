@@ -4,7 +4,7 @@
 //
 // Generated from fast/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
@@ -66,6 +66,11 @@ func (ts TX1StringAppleTuples) Values(values ...Apple) TX1StringAppleTuples {
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TX1StringAppleTuples) ToMap() *TX1StringAppleMap {
+	return NewTX1StringAppleMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTX1StringAppleMap() *TX1StringAppleMap {
@@ -119,12 +124,12 @@ func (mm *TX1StringAppleMap) Values() []Apple {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *TX1StringAppleMap) slice() []TX1StringAppleTuple {
+func (mm *TX1StringAppleMap) slice() TX1StringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]TX1StringAppleTuple, 0, len(mm.m))
+	s := make(TX1StringAppleTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, TX1StringAppleTuple{(k), v})
 	}
@@ -133,12 +138,28 @@ func (mm *TX1StringAppleMap) slice() []TX1StringAppleTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TX1StringAppleMap) ToSlice() []TX1StringAppleTuple {
+func (mm *TX1StringAppleMap) ToSlice() TX1StringAppleTuples {
 	if mm == nil {
 		return nil
 	}
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *TX1StringAppleMap) OrderedSlice(keys []string) TX1StringAppleTuples {
+	if mm == nil {
+		return nil
+	}
+
+	s := make(TX1StringAppleTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[k]
+		if found {
+			s = append(s, TX1StringAppleTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -458,4 +479,50 @@ func (mm *TX1StringAppleMap) UnmarshalJSON(b []byte) error {
 func (mm *TX1StringAppleMap) MarshalJSON() ([]byte, error) {
 
 	return json.Marshal(mm.m)
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts TX1StringAppleTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts TX1StringAppleTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// The map entries are sorted by their keys.
+func (ts TX1StringAppleTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts TX1StringAppleTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t TX1StringAppleTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t TX1StringAppleTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

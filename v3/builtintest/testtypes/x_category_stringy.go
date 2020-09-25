@@ -2,16 +2,16 @@
 //
 // Generated from types/stringy.tpl with Type=Category
 // options: SortableSlice:<no value>
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package testtypes
 
 import (
-	"errors"
-	"strings"
 	"database/sql/driver"
+	"errors"
 	"fmt"
+	"strings"
 )
 
 // Category is a specialised kind of string.
@@ -85,4 +85,3 @@ func (category *Category) UnmarshalText(text []byte) error {
 }
 
 //-------------------------------------------------------------------------------------------------
-

@@ -4,13 +4,14 @@
 //
 // Generated from threadsafe/map.tpl with Key=*int Type=*int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package threadsafe
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -65,6 +66,11 @@ func (ts TP1IntIntTuples) Values(values ...*int) TP1IntIntTuples {
 		ts[i].Val = v
 	}
 	return ts
+}
+
+// ToMap converts the tuples to a map.
+func (ts TP1IntIntTuples) ToMap() *TP1IntIntMap {
+	return NewTP1IntIntMap(ts...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -127,12 +133,12 @@ func (mm *TP1IntIntMap) Values() []*int {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm *TP1IntIntMap) slice() []TP1IntIntTuple {
+func (mm *TP1IntIntMap) slice() TP1IntIntTuples {
 	if mm == nil {
 		return nil
 	}
 
-	s := make([]TP1IntIntTuple, 0, len(mm.m))
+	s := make(TP1IntIntTuples, 0, len(mm.m))
 	for k, v := range mm.m {
 		s = append(s, TP1IntIntTuple{(&k), v})
 	}
@@ -141,7 +147,7 @@ func (mm *TP1IntIntMap) slice() []TP1IntIntTuple {
 }
 
 // ToSlice returns the key/value pairs as a slice
-func (mm *TP1IntIntMap) ToSlice() []TP1IntIntTuple {
+func (mm *TP1IntIntMap) ToSlice() TP1IntIntTuples {
 	if mm == nil {
 		return nil
 	}
@@ -150,6 +156,25 @@ func (mm *TP1IntIntMap) ToSlice() []TP1IntIntTuple {
 	defer mm.s.RUnlock()
 
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm *TP1IntIntMap) OrderedSlice(keys []*int) TP1IntIntTuples {
+	if mm == nil {
+		return nil
+	}
+
+	mm.s.RLock()
+	defer mm.s.RUnlock()
+
+	s := make(TP1IntIntTuples, 0, len(mm.m))
+	for _, k := range keys {
+		v, found := mm.m[*k]
+		if found {
+			s = append(s, TP1IntIntTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.
@@ -523,4 +548,49 @@ func (mm *TP1IntIntMap) mkString3Bytes(before, between, after string) *bytes.Buf
 
 	b.WriteString(after)
 	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (ts TP1IntIntTuples) String() string {
+	return ts.MkString3("[", ", ", "]")
+}
+
+// MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
+func (ts TP1IntIntTuples) MkString(sep string) string {
+	return ts.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+func (ts TP1IntIntTuples) MkString3(before, between, after string) string {
+	if ts == nil {
+		return ""
+	}
+	return ts.mkString3Bytes(before, between, after).String()
+}
+
+func (ts TP1IntIntTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
+	b := &bytes.Buffer{}
+	b.WriteString(before)
+	sep := ""
+	for _, t := range ts {
+		b.WriteString(sep)
+		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		sep = between
+	}
+	b.WriteString(after)
+	return b
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// UnmarshalJSON implements JSON decoding for this tuple type.
+func (t TP1IntIntTuple) UnmarshalJSON(b []byte) error {
+	buf := bytes.NewBuffer(b)
+	return json.NewDecoder(buf).Decode(&t)
+}
+
+// MarshalJSON implements encoding.Marshaler interface.
+func (t TP1IntIntTuple) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"key":"%v", "val":"%v"}`, t.Key, t.Val)), nil
 }

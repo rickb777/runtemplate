@@ -4,7 +4,7 @@
 //
 // Generated from simple/map.tpl with Key=*string Type=*string
 // options: Comparable:true Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package simple
@@ -62,6 +62,11 @@ func (ts TP1StringStringTuples) Values(values ...*string) TP1StringStringTuples 
 	return ts
 }
 
+// ToMap converts the tuples to a map.
+func (ts TP1StringStringTuples) ToMap() TP1StringStringMap {
+	return NewTP1StringStringMap(ts...)
+}
+
 //-------------------------------------------------------------------------------------------------
 
 func newTP1StringStringMap() TP1StringStringMap {
@@ -86,6 +91,10 @@ func NewTP1StringStringMap(kv ...TP1StringStringTuple) TP1StringStringMap {
 
 // Keys returns the keys of the current map as a slice.
 func (mm TP1StringStringMap) Keys() []*string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]*string, 0, len(mm))
 	for k := range mm {
 		s = append(s, &k)
@@ -95,6 +104,10 @@ func (mm TP1StringStringMap) Keys() []*string {
 
 // Values returns the values of the current map as a slice.
 func (mm TP1StringStringMap) Values() []*string {
+	if mm == nil {
+		return nil
+	}
+
 	s := make([]*string, 0, len(mm))
 	for _, v := range mm {
 		s = append(s, v)
@@ -103,17 +116,29 @@ func (mm TP1StringStringMap) Values() []*string {
 }
 
 // slice returns the internal elements of the map. This is a seam for testing etc.
-func (mm TP1StringStringMap) slice() []TP1StringStringTuple {
-	s := make([]TP1StringStringTuple, 0, len(mm))
+func (mm TP1StringStringMap) slice() TP1StringStringTuples {
+	s := make(TP1StringStringTuples, 0, len(mm))
 	for k, v := range mm {
 		s = append(s, TP1StringStringTuple{(&k), v})
 	}
 	return s
 }
 
-// ToSlice returns the key/value pairs as a slice
-func (mm TP1StringStringMap) ToSlice() []TP1StringStringTuple {
+// ToSlice returns the key/value pairs as a slice.
+func (mm TP1StringStringMap) ToSlice() TP1StringStringTuples {
 	return mm.slice()
+}
+
+// OrderedSlice returns the key/value pairs as a slice in the order specified by keys.
+func (mm TP1StringStringMap) OrderedSlice(keys []*string) TP1StringStringTuples {
+	s := make(TP1StringStringTuples, 0, len(mm))
+	for _, k := range keys {
+		v, found := mm[*k]
+		if found {
+			s = append(s, TP1StringStringTuple{k, v})
+		}
+	}
+	return s
 }
 
 // Get returns one of the items in the map, if present.

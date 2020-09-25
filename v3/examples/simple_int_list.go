@@ -4,7 +4,7 @@
 // Generated from simple/list.tpl with Type=int
 // options: Comparable:true Numeric:true Ordered:true StringLike:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:string,int64
-// by runtemplate v3.5.3
+// by runtemplate v3.6.0
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
