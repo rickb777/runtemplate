@@ -36,6 +36,6 @@ func (mm *KeyTypeMap) GobEncode() ([]byte, error)
 func (ts KeyTypeTuples) String() string
 func (ts KeyTypeTuples) MkString(sep string) string
 func (ts KeyTypeTuples) MkString3(before, between, after string) string
-func (ts KeyTypeTuples) mkString3Bytes(before, between, after string) *bytes.Buffer
+func (ts KeyTypeTuples) mkString3Bytes(before, between, after string) *strings.Builder
 func (t KeyTypeTuple) UnmarshalJSON(b []byte) error
 func (t KeyTypeTuple) MarshalJSON() ([]byte, error)

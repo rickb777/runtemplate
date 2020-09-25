@@ -10,9 +10,9 @@
 package examples
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // FastIntSet is the primary type that represents a set.
@@ -773,8 +773,8 @@ func (set *FastIntSet) MkString3(before, between, after string) string {
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set *FastIntSet) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (set *FastIntSet) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

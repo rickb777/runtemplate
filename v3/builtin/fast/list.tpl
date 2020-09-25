@@ -10,15 +10,16 @@
 package {{.Package}}
 
 import (
-{{- if or .Stringer .GobEncode}}
-	"bytes"
-{{- end}}
 {{- if .GobEncode}}
+    "bytes"
 	"encoding/gob"
 {{- end}}
 {{- if .Stringer}}
 	"encoding/json"
 	"fmt"
+{{- end}}
+{{- if .Stringer}}
+	"strings"
 {{- end}}
 	"math/rand"
 	"sort"
@@ -1196,11 +1197,11 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) StringList() []string {
 		return nil
 	}
 
-	strings := make([]string, len(list.m))
+	ss := make([]string, len(list.m))
 	for i, v := range list.m {
-		strings[i] = fmt.Sprintf("%v", v)
+		ss[i] = fmt.Sprintf("%v", v)
 	}
-	return strings
+	return ss
 {{- end}}
 }
 
@@ -1223,8 +1224,8 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) MkString3(before, between, after strin
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list {{.Prefix.U}}{{.Type.U}}List) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list {{.Prefix.U}}{{.Type.U}}List) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

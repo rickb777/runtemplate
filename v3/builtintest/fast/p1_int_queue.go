@@ -17,10 +17,10 @@
 package fast
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 )
 
 // P1IntQueue is a ring buffer containing a slice of type *int. It is optimised
@@ -1082,8 +1082,8 @@ func (queue *P1IntQueue) MkString3(before, between, after string) string {
 	return queue.mkString3Bytes(before, between, after).String()
 }
 
-func (queue P1IntQueue) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (queue P1IntQueue) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

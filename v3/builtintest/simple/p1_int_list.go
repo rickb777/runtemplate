@@ -10,10 +10,10 @@
 package simple
 
 import (
-	"bytes"
 	"fmt"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // P1IntList is a slice of type *int. Use it where you would use []*int.
@@ -801,8 +801,8 @@ func (list P1IntList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list P1IntList) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list P1IntList) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 	for _, v := range list {

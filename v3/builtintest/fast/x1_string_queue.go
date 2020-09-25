@@ -17,10 +17,10 @@
 package fast
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 )
 
 // X1StringQueue is a ring buffer containing a slice of type string. It is optimised
@@ -999,8 +999,8 @@ func (queue *X1StringQueue) MkString3(before, between, after string) string {
 	return queue.mkString3Bytes(before, between, after).String()
 }
 
-func (queue X1StringQueue) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (queue X1StringQueue) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

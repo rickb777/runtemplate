@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // TX1StringStringMap is the primary type that represents a thread-safe map
@@ -415,8 +416,8 @@ func (mm *TX1StringStringMap) MkString3(before, between, after string) string {
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm *TX1StringStringMap) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (mm *TX1StringStringMap) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 
@@ -462,8 +463,8 @@ func (ts TX1StringStringTuples) MkString3(before, between, after string) string 
 	return ts.mkString3Bytes(before, between, after).String()
 }
 
-func (ts TX1StringStringTuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (ts TX1StringStringTuples) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 	for _, t := range ts {

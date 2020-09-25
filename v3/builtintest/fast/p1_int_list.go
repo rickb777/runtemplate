@@ -10,11 +10,11 @@
 package fast
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // P1IntList contains a slice of type *int.
@@ -1095,11 +1095,11 @@ func (list *P1IntList) StringList() []string {
 		return nil
 	}
 
-	strings := make([]string, len(list.m))
+	ss := make([]string, len(list.m))
 	for i, v := range list.m {
-		strings[i] = fmt.Sprintf("%v", v)
+		ss[i] = fmt.Sprintf("%v", v)
 	}
-	return strings
+	return ss
 }
 
 // String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
@@ -1121,8 +1121,8 @@ func (list *P1IntList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list P1IntList) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list P1IntList) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

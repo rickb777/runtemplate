@@ -10,11 +10,16 @@
 package {{.Package}}
 
 import (
-{{- if .Stringer}}
+{{- if or .GobEncode .Stringer}}
 	"bytes"
+{{- end}}
+{{- if .Stringer}}
 	"encoding/json"
 {{- end}}
 	"fmt"
+{{- if .Stringer}}
+	"strings"
+{{- end}}
 {{- if .HasImport}}
 	{{.Import}}
 {{- end}}
@@ -391,8 +396,8 @@ func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MkString3(before, between, after
 	return mm.mkString3Bytes(before, between, after).String()
 }
 
-func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (mm {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 {{if .HasKeyList}}
@@ -442,8 +447,8 @@ func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) MkString3(before, between, af
 	return ts.mkString3Bytes(before, between, after).String()
 }
 
-func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 	for _, t := range ts {

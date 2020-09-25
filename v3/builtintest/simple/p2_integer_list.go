@@ -10,11 +10,11 @@
 package simple
 
 import (
-	"bytes"
 	"fmt"
 	"math/big"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // P2IntegerList is a slice of type *big.Int. Use it where you would use []*big.Int.
@@ -629,8 +629,8 @@ func (list P2IntegerList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list P2IntegerList) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list P2IntegerList) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 	for _, v := range list {

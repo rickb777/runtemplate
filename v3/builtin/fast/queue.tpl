@@ -17,14 +17,14 @@
 package {{.Package}}
 
 import (
-{{- if or .Stringer .GobEncode}}
-	"bytes"
-{{- end}}
 {{- if .Stringer}}
 	"encoding/json"
 	"fmt"
 {{- end}}
 	"sort"
+{{- if or .Stringer .GobEncode}}
+	"strings"
+{{- end}}
 {{- if .HasImport}}
 	{{.Import}}
 {{- end}}
@@ -1160,8 +1160,8 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) MkString3(before, between, after str
 	return queue.mkString3Bytes(before, between, after).String()
 }
 
-func (queue {{.Prefix.U}}{{.Type.U}}Queue) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (queue {{.Prefix.U}}{{.Type.U}}Queue) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

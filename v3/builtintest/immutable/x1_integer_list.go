@@ -10,12 +10,12 @@
 package immutable
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/big"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -769,8 +769,8 @@ func (list *X1IntegerList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list X1IntegerList) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list X1IntegerList) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

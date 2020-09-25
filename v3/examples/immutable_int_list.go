@@ -10,11 +10,11 @@
 package examples
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // ImmutableIntList contains a slice of type int. It is designed
@@ -955,8 +955,8 @@ func (list *ImmutableIntList) MkString3(before, between, after string) string {
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list ImmutableIntList) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list ImmutableIntList) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 

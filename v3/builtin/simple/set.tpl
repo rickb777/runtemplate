@@ -11,10 +11,13 @@ package {{.Package}}
 
 {{if or .Stringer .HasImport -}}
 import (
-{{- if .Stringer}}
+{{- if or .GobEncode .Stringer}}
 	"bytes"
+{{- end}}
+{{- if .Stringer}}
 	"encoding/json"
 	"fmt"
+	"strings"
 {{- end}}
 {{- if .HasImport}}
 	{{.Import}}
@@ -664,8 +667,8 @@ func (set {{.Prefix.U}}{{.Type.U}}Set) MkString3(before, between, after string) 
 	return set.mkString3Bytes(before, between, after).String()
 }
 
-func (set {{.Prefix.U}}{{.Type.U}}Set) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (set {{.Prefix.U}}{{.Type.U}}Set) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 	for v := range set {

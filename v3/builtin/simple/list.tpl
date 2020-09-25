@@ -10,7 +10,7 @@
 package {{.Package}}
 
 import (
-{{- if or .Stringer .GobEncode}}
+{{- if .GobEncode}}
 	"bytes"
 {{- end}}
 {{- if .GobEncode}}
@@ -21,6 +21,9 @@ import (
 {{- end}}
 	"math/rand"
 	"sort"
+{{- if .Stringer}}
+	"strings"
+{{- end}}
 {{- if .HasImport}}
 	{{.Import}}
 {{- end}}
@@ -901,8 +904,8 @@ func (list {{.Prefix.U}}{{.Type.U}}List) MkString3(before, between, after string
 	return list.mkString3Bytes(before, between, after).String()
 }
 
-func (list {{.Prefix.U}}{{.Type.U}}List) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (list {{.Prefix.U}}{{.Type.U}}List) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 	for _, v := range list {

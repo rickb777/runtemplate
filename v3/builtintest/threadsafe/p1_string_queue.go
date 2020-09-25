@@ -17,10 +17,10 @@
 package threadsafe
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -1116,8 +1116,8 @@ func (queue *P1StringQueue) MkString3(before, between, after string) string {
 	return queue.mkString3Bytes(before, between, after).String()
 }
 
-func (queue P1StringQueue) mkString3Bytes(before, between, after string) *bytes.Buffer {
-	b := &bytes.Buffer{}
+func (queue P1StringQueue) mkString3Bytes(before, between, after string) *strings.Builder {
+	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 
