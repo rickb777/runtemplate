@@ -32,14 +32,14 @@ func (mm *KeyTypeMap) FlatMap(f func(Key, Type) []KeyTypeTuple) *KeyTypeMap
 func (mm *KeyTypeMap) Clone() *KeyTypeMap
 func (mm *KeyTypeMap) String() string
 func (mm *KeyTypeMap) MkString(sep string) string
-func (mm *KeyTypeMap) MkString3(before, between, after string) string
+func (mm *KeyTypeMap) MkString4(before, between, after, equals string) string
 func (mm *KeyTypeMap) UnmarshalJSON(b []byte) error
 func (mm *KeyTypeMap) MarshalJSON() ([]byte, error)
 func (mm *KeyTypeMap) GobDecode(b []byte) error
 func (mm *KeyTypeMap) GobEncode() ([]byte, error)
 func (ts KeyTypeTuples) String() string
 func (ts KeyTypeTuples) MkString(sep string) string
-func (ts KeyTypeTuples) MkString3(before, between, after string) string
-func (ts KeyTypeTuples) mkString3Bytes(before, between, after string) *strings.Builder
+func (ts KeyTypeTuples) MkString4(before, between, after, equals string) string
+func (ts KeyTypeTuples) mkString4Bytes(before, between, after, equals string) *strings.Builder
 func (t KeyTypeTuple) UnmarshalJSON(b []byte) error
 func (t KeyTypeTuple) MarshalJSON() ([]byte, error)

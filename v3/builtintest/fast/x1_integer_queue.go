@@ -11,7 +11,7 @@
 // Generated from fast/queue.tpl with Type=big.Int
 // options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Sorted:<no value> Stringer:<no value>
 // ToList:true ToSet:false
-// by runtemplate v3.6.0
+// by runtemplate v3.6.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

@@ -4,7 +4,7 @@
 //
 // Generated from immutable/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:<no value> KeyList:<no value> ValueList:<no value> Mutable:disabled
-// by runtemplate v3.6.0
+// by runtemplate v3.6.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package examples
@@ -380,7 +380,7 @@ func (mm *ImmutableStringAppleMap) GobDecode(b []byte) error {
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobEncode implements 'gob' encoding for this list type.
+// GobEncode implements 'gob' encoding for this map type.
 // You must register Apple with the 'gob' package before this method is used.
 func (mm *ImmutableStringAppleMap) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}

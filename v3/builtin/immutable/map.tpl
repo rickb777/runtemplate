@@ -411,31 +411,27 @@ func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) Clone() *{{.Prefix.U}}{{.Key.U}
 
 //-------------------------------------------------------------------------------------------------
 
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) String() string {
-	return mm.MkString3("[", ", ", "]")
+	return mm.MkString4("[", ", ", "]", ":")
 }
-
-// implements encoding.Marshaler interface {
-//func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MarshalJSON() ([]byte, error) {
-//	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
-//}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
 func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MkString(sep string) string {
-	return mm.MkString3("", sep, "")
+	return mm.MkString4("", sep, "", ":")
 }
 
-// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// MkString4 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 {{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
-func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MkString3(before, between, after string) string {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MkString4(before, between, after, equals string) string {
 	if mm == nil {
 		return ""
 	}
-	return mm.mkString3Bytes(before, between, after).String()
+	return mm.mkString4Bytes(before, between, after, equals).String()
 }
 
-func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString3Bytes(before, between, after string) *strings.Builder {
+func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString4Bytes(before, between, after, equals string) *strings.Builder {
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
@@ -449,13 +445,13 @@ func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) mkString3Bytes(before, between,
 	for _, k := range keys {
 		v := mm.m[k]
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v:%v", k, v))
+		fmt.Fprintf(b, "%v%s%v", k, equals, v)
 		sep = between
 	}
 {{else}}
 	for k, v := range mm.m {
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v:%v", k, v))
+		fmt.Fprintf(b, "%v%s%v", k, equals, v)
 		sep = between
 	}
 {{end}}
@@ -483,14 +479,14 @@ func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) MarshalJSON() ([]byte, error) {
 //-------------------------------------------------------------------------------------------------
 
 // GobDecode implements 'gob' decoding for this map type.
-// You must register {{.Type}} with the 'gob' package before this method is used.
+// You must register {{.Type.Name}} with the 'gob' package before this method is used.
 func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) GobDecode(b []byte) error {
 	buf := bytes.NewBuffer(b)
 	return gob.NewDecoder(buf).Decode(&mm.m)
 }
 
-// GobEncode implements 'gob' encoding for this list type.
-// You must register {{.Type}} with the 'gob' package before this method is used.
+// GobEncode implements 'gob' encoding for this map type.
+// You must register {{.Type.Name}} with the 'gob' package before this method is used.
 func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) GobEncode() ([]byte, error) {
 	buf := &bytes.Buffer{}
 	err := gob.NewEncoder(buf).Encode(mm.m)
@@ -502,31 +498,30 @@ func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) GobEncode() ([]byte, error) {
 //-------------------------------------------------------------------------------------------------
 
 func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) String() string {
-	return ts.MkString3("[", ", ", "]")
+	return ts.MkString4("[", ", ", "]", ":")
 }
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
 func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) MkString(sep string) string {
-	return ts.MkString3("", sep, "")
+	return ts.MkString4("", sep, "", ":")
 }
 
-// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// MkString4 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 {{- if .HasKeySlice}}
 // The map entries are sorted by their keys.{{- end}}
-func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) MkString3(before, between, after string) string {
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) MkString4(before, between, after, equals string) string {
 	if ts == nil {
 		return ""
 	}
-	return ts.mkString3Bytes(before, between, after).String()
+	return ts.mkString4Bytes(before, between, after, equals).String()
 }
 
-func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) mkString3Bytes(before, between, after string) *strings.Builder {
+func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) mkString4Bytes(before, between, after, equals string) *strings.Builder {
 	b := &strings.Builder{}
-	b.WriteString(before)
-	sep := ""
+	sep := before
 	for _, t := range ts {
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+	    fmt.Fprintf(b, "%v%s%v", t.Key, equals, t.Val)
 		sep = between
 	}
 	b.WriteString(after)

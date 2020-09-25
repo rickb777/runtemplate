@@ -525,10 +525,10 @@ func Test{{.Type.U}}MapMkString(t *testing.T) {
 	a.MkString("|")
 }
 
-func Test{{.Type.U}}MapMkString3(t *testing.T) {
+func Test{{.Type.U}}MapMkString4(t *testing.T) {
 	a := NewTX1{{.Key.U}}{{.Type.U}}Map(TX1{{.Key.U}}{{.Type.U}}Tuple{8, 4}, TX1{{.Key.U}}{{.Type.U}}Tuple{4, 0})
 
-	c := a.MkString3("<", ",", ">")
+	c := a.MkString4("<", ",", ">", ":")
 
 	if c != "<8:4,4:0>" && c != "<4:0,8:4>" {
 		t.Errorf("Expected '<8:4,4:0>' but got %q", c)
@@ -536,7 +536,7 @@ func Test{{.Type.U}}MapMkString3(t *testing.T) {
 
     // check correct nil handling
     a = nil
-	a.MkString3("<", ",", ">")
+	a.MkString4("<", ",", ">", ":")
 }
 {{- if .GobEncode}}
 

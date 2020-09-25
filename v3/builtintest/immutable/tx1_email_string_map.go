@@ -4,7 +4,7 @@
 //
 // Generated from immutable/map.tpl with Key=Email Type=string
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:disabled
-// by runtemplate v3.6.0
+// by runtemplate v3.6.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable
@@ -374,37 +374,33 @@ func (mm *TX1EmailStringMap) Clone() *TX1EmailStringMap {
 
 //-------------------------------------------------------------------------------------------------
 
+// String implements the Stringer interface to render the set as a comma-separated string enclosed in square brackets.
 func (mm *TX1EmailStringMap) String() string {
-	return mm.MkString3("[", ", ", "]")
+	return mm.MkString4("[", ", ", "]", ":")
 }
-
-// implements encoding.Marshaler interface {
-//func (mm *TX1EmailStringMap) MarshalJSON() ([]byte, error) {
-//	return mm.mkString3Bytes("{\"", "\", \"", "\"}").Bytes(), nil
-//}
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
 func (mm *TX1EmailStringMap) MkString(sep string) string {
-	return mm.MkString3("", sep, "")
+	return mm.MkString4("", sep, "", ":")
 }
 
-// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// MkString4 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 // The map entries are sorted by their keys.
-func (mm *TX1EmailStringMap) MkString3(before, between, after string) string {
+func (mm *TX1EmailStringMap) MkString4(before, between, after, equals string) string {
 	if mm == nil {
 		return ""
 	}
-	return mm.mkString3Bytes(before, between, after).String()
+	return mm.mkString4Bytes(before, between, after, equals).String()
 }
 
-func (mm *TX1EmailStringMap) mkString3Bytes(before, between, after string) *strings.Builder {
+func (mm *TX1EmailStringMap) mkString4Bytes(before, between, after, equals string) *strings.Builder {
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
 
 	for k, v := range mm.m {
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v:%v", k, v))
+		fmt.Fprintf(b, "%v%s%v", k, equals, v)
 		sep = between
 	}
 
@@ -415,30 +411,29 @@ func (mm *TX1EmailStringMap) mkString3Bytes(before, between, after string) *stri
 //-------------------------------------------------------------------------------------------------
 
 func (ts TX1EmailStringTuples) String() string {
-	return ts.MkString3("[", ", ", "]")
+	return ts.MkString4("[", ", ", "]", ":")
 }
 
 // MkString concatenates the map key/values as a string using a supplied separator. No enclosing marks are added.
 func (ts TX1EmailStringTuples) MkString(sep string) string {
-	return ts.MkString3("", sep, "")
+	return ts.MkString4("", sep, "", ":")
 }
 
-// MkString3 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
+// MkString4 concatenates the map key/values as a string, using the prefix, separator and suffix supplied.
 // The map entries are sorted by their keys.
-func (ts TX1EmailStringTuples) MkString3(before, between, after string) string {
+func (ts TX1EmailStringTuples) MkString4(before, between, after, equals string) string {
 	if ts == nil {
 		return ""
 	}
-	return ts.mkString3Bytes(before, between, after).String()
+	return ts.mkString4Bytes(before, between, after, equals).String()
 }
 
-func (ts TX1EmailStringTuples) mkString3Bytes(before, between, after string) *strings.Builder {
+func (ts TX1EmailStringTuples) mkString4Bytes(before, between, after, equals string) *strings.Builder {
 	b := &strings.Builder{}
-	b.WriteString(before)
-	sep := ""
+	sep := before
 	for _, t := range ts {
 		b.WriteString(sep)
-		b.WriteString(fmt.Sprintf("%v:%v", t.Key, t.Val))
+		fmt.Fprintf(b, "%v%s%v", t.Key, equals, t.Val)
 		sep = between
 	}
 	b.WriteString(after)
