@@ -1,7 +1,0 @@
-#!/bin/bash -e
-cd $(dirname $0)
-rm -f */[px]_*.go
-rm -f */?[px]_*.go
-rm -f */[px][12]_*.go
-rm -f */?[px][12]_*.go
-rm -f */int_*_test.go

@@ -10,6 +10,5 @@ install:
 # build both the current (v3) and previous versions
 script:
   - ./v3/build
-  - ./build
 
 

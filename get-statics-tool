@@ -1,9 +1,0 @@
-#!/bin/bash -e
-# We need the 'statics' binary, but the use of 'go get' somewhat
-# conflicts with Go modules. This script gets the tool
-
-if [ -z "$(type -p statics)" ]; then
-  mkdir -pv $HOME/go/src
-  GOPATH=$HOME/go
-  go get github.com/go-playground/statics
-fi
