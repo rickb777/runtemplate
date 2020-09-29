@@ -41,11 +41,11 @@ func ConvertX1NameSet(values ...interface{}) (X1NameSet, bool) {
 		case *Name:
 			k := Name(*j)
 			set[k] = struct{}{}
-		default:
-			if s, ok := i.(fmt.Stringer); ok {
+        default:
+		    if s, ok := i.(fmt.Stringer); ok {
 				k := Name(s.String())
-				set[k] = struct{}{}
-			}
+			    set[k] = struct{}{}
+		    }
 		}
 	}
 

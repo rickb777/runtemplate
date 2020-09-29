@@ -12,9 +12,9 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
 )
 
 // X1StringList contains a slice of type string. It is designed
@@ -469,6 +469,7 @@ func (list *X1StringList) Find(p func(string) bool) (string, bool) {
 		}
 	}
 
+
 	var empty string
 	return empty, false
 }
@@ -692,7 +693,7 @@ func (list *X1StringList) Equals(other *X1StringList) bool {
 
 type sortableX1StringList struct {
 	less func(i, j string) bool
-	m    []string
+	m []string
 }
 
 func (sl sortableX1StringList) Less(i, j int) bool {
@@ -822,6 +823,7 @@ func (list X1StringList) mkString3Bytes(before, between, after string) *strings.
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
+
 
 	for _, v := range list.m {
 		b.WriteString(sep)

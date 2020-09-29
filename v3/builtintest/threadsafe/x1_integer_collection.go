@@ -5,6 +5,7 @@
 
 package threadsafe
 
+
 import (
 	"math/big"
 )

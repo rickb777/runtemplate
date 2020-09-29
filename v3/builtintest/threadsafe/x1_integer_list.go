@@ -12,11 +12,11 @@ package threadsafe
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
 	"sync"
+	"math/big"
 )
 
 // X1IntegerList contains a slice of type big.Int.
@@ -1046,7 +1046,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m    []big.Int
+	m []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {

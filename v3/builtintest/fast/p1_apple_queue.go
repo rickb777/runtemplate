@@ -428,7 +428,7 @@ func (queue *P1AppleQueue) Push(items ...*Apple) *P1AppleQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -475,7 +475,7 @@ func (queue *P1AppleQueue) doPush(items ...*Apple) []*Apple {
 		return surplus
 	}
 
-	if n <= queue.capacity-queue.write {
+	if n <= queue.capacity - queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

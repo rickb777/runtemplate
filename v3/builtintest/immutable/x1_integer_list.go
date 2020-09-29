@@ -12,10 +12,10 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
+	"math/big"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -434,6 +434,7 @@ func (list *X1IntegerList) Find(p func(big.Int) bool) (big.Int, bool) {
 		}
 	}
 
+
 	var empty big.Int
 	return empty, false
 }
@@ -700,7 +701,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m    []big.Int
+	m []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {
@@ -773,6 +774,7 @@ func (list X1IntegerList) mkString3Bytes(before, between, after string) *strings
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
+
 
 	for _, v := range list.m {
 		b.WriteString(sep)

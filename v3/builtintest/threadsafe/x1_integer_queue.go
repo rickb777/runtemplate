@@ -17,9 +17,9 @@
 package threadsafe
 
 import (
-	"math/big"
 	"sort"
 	"sync"
+	"math/big"
 )
 
 // X1IntegerQueue is a ring buffer containing a slice of type big.Int. It is optimised
@@ -260,6 +260,7 @@ func (queue *X1IntegerQueue) Head() big.Int {
 	return queue.m[queue.read]
 }
 
+
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns the zero value instead.
 func (queue *X1IntegerQueue) HeadOption() big.Int {
@@ -464,7 +465,7 @@ func (queue *X1IntegerQueue) Push(items ...big.Int) *X1IntegerQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -513,7 +514,7 @@ func (queue *X1IntegerQueue) doPush(items ...big.Int) []big.Int {
 		return surplus
 	}
 
-	if n <= queue.capacity-queue.write {
+	if n <= queue.capacity - queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

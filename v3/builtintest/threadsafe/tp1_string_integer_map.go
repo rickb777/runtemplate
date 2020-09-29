@@ -11,8 +11,8 @@ package threadsafe
 
 import (
 	"fmt"
-	"math/big"
 	"sync"
+	"math/big"
 )
 
 // TP1StringIntegerMap is the primary type that represents a thread-safe map

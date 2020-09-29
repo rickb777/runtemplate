@@ -33,6 +33,7 @@ package simple
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TX1 Key=Apple           Type=string
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TX1 Key=Apple           Type=Pear                    Stringer:true
 
+
 //go:generate runtemplate -tpl types/stringy.tpl         Prefix=X1 Type=Email SortableSlice:true
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=X1 Type=Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=X1 Type=Apple ToPrefix=X1 ToType=Pear
@@ -57,6 +58,7 @@ type Name string
 var _ X1StringCollection = NewX1StringList()
 var _ X1IntCollection = NewX1IntList()
 var _ X1AppleCollection = NewX1AppleList()
+
 
 var _ X1StringCollection = NewX1StringSet()
 var _ X1IntCollection = NewX1IntSet()

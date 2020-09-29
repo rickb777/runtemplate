@@ -10,8 +10,8 @@
 package threadsafe
 
 import (
-	"github.com/rickb777/runtemplate/v3/builtintest/testtypes"
 	"sync"
+	"github.com/rickb777/runtemplate/v3/builtintest/testtypes"
 )
 
 // X2TesttypesEmailSet is the primary type that represents a set.

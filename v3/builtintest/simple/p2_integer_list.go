@@ -11,10 +11,10 @@ package simple
 
 import (
 	"fmt"
-	"math/big"
 	"math/rand"
 	"sort"
 	"strings"
+	"math/big"
 )
 
 // P2IntegerList is a slice of type *big.Int. Use it where you would use []*big.Int.

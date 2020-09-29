@@ -12,9 +12,9 @@ package threadsafe
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
 	"sync"
 )
 
@@ -1040,7 +1040,7 @@ func (list *P1NameList) Equals(other *P1NameList) bool {
 
 type sortableP1NameList struct {
 	less func(i, j *Name) bool
-	m    []*Name
+	m []*Name
 }
 
 func (sl sortableP1NameList) Less(i, j int) bool {

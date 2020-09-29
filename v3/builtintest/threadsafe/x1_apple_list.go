@@ -1033,7 +1033,7 @@ func (list *X1AppleList) Equals(other *X1AppleList) bool {
 
 type sortableX1AppleList struct {
 	less func(i, j Apple) bool
-	m    []Apple
+	m []Apple
 }
 
 func (sl sortableX1AppleList) Less(i, j int) bool {

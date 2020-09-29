@@ -12,9 +12,9 @@ package threadsafe
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"strings"
 	"sync"
+	"net/url"
 )
 
 // X2UrlURLSet is the primary type that represents a set.

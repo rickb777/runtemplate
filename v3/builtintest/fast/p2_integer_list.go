@@ -12,10 +12,10 @@ package fast
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
+	"math/big"
 )
 
 // P2IntegerList contains a slice of type *big.Int.
@@ -846,7 +846,7 @@ func (list *P2IntegerList) LastIndexWhere2(p func(*big.Int) bool, before int) in
 
 type sortableP2IntegerList struct {
 	less func(i, j *big.Int) bool
-	m    []*big.Int
+	m []*big.Int
 }
 
 func (sl sortableP2IntegerList) Less(i, j int) bool {

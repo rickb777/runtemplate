@@ -12,9 +12,9 @@ package fast
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
 )
 
 // P1StringList contains a slice of type *string.
@@ -909,7 +909,7 @@ func (list *P1StringList) Equals(other *P1StringList) bool {
 
 type sortableP1StringList struct {
 	less func(i, j *string) bool
-	m    []*string
+	m []*string
 }
 
 func (sl sortableP1StringList) Less(i, j int) bool {

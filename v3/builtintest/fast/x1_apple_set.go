@@ -9,7 +9,8 @@
 
 package fast
 
-import ()
+import (
+)
 
 // X1AppleSet is the primary type that represents a set.
 type X1AppleSet struct {

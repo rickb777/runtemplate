@@ -5,6 +5,7 @@
 
 package fast
 
+
 import (
 	"math/big"
 )

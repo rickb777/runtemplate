@@ -12,8 +12,8 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"strings"
+	"net/url"
 )
 
 // X2UrlURLSet is the primary type that represents a set.

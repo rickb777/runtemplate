@@ -14,9 +14,9 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"math/rand"
 	"sort"
-	"strings"
 	"sync"
 )
 
@@ -1194,7 +1194,7 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 
 type sortableX1IntList struct {
 	less func(i, j int) bool
-	m    []int
+	m []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {

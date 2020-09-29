@@ -8,10 +8,10 @@
 package testtypes
 
 import (
-	"database/sql/driver"
 	"errors"
-	"fmt"
 	"strings"
+	"database/sql/driver"
+	"fmt"
 )
 
 // Category is a specialised kind of string.
@@ -85,3 +85,4 @@ func (category *Category) UnmarshalText(text []byte) error {
 }
 
 //-------------------------------------------------------------------------------------------------
+
