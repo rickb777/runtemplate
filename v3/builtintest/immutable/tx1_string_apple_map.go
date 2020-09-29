@@ -4,7 +4,7 @@
 //
 // Generated from immutable/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:disabled
-// by runtemplate v3.6.1
+// by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package immutable

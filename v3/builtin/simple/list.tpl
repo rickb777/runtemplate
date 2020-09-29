@@ -151,11 +151,11 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) ({{.Prefix.U}}{{
 			list = append(list, {{.Type.Amp}}k)
 {{- end}}
 {{- if .StringLike}}
-        default:
-		    if s, ok := i.(fmt.Stringer); ok {
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
 				k := {{.Type.Name}}(s.String())
 				list = append(list, {{.Type.Amp}}k)
-		    }
+			}
 {{- end}}
 		}
 	}

@@ -11,7 +11,7 @@
 // Generated from fast/queue.tpl with Type=*string
 // options: Comparable:true Numeric:false Ordered:false Sorted:<no value> Stringer:true
 // ToList:true ToSet:true
-// by runtemplate v3.6.1
+// by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

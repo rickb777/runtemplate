@@ -165,10 +165,10 @@ func (mm *{{.Prefix.U}}{{.Key.U}}{{.Type.U}}Map) OrderedSlice(keys {{if .KeyList
 
 	s := make({{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples, 0, len(mm.m))
 	for _, k := range keys {
-	    v, found := mm.m[{{.Key.Star}}k]
-	    if found {
-    		s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
-	    }
+		v, found := mm.m[{{.Key.Star}}k]
+		if found {
+			s = append(s, {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuple{k, v})
+		}
 	}
 	return s
 }
@@ -521,7 +521,7 @@ func (ts {{.Prefix.U}}{{.Key.U}}{{.Type.U}}Tuples) mkString4Bytes(before, betwee
 	sep := before
 	for _, t := range ts {
 		b.WriteString(sep)
-	    fmt.Fprintf(b, "%v%s%v", t.Key, equals, t.Val)
+		fmt.Fprintf(b, "%v%s%v", t.Key, equals, t.Val)
 		sep = between
 	}
 	b.WriteString(after)

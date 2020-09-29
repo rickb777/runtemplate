@@ -4,7 +4,7 @@
 //
 // Generated from fast/map.tpl with Key=*int Type=*int
 // options: Comparable:true Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.6.1
+// by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast

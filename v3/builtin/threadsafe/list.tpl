@@ -11,7 +11,7 @@ package {{.Package}}
 
 import (
 {{- if .GobEncode}}
-    "bytes"
+	"bytes"
 	"encoding/gob"
 {{- end}}
 {{- if .Stringer}}
@@ -157,11 +157,11 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 			list.m = append(list.m, {{.Type.Amp}}k)
 {{- end}}
 {{- if .StringLike}}
-        default:
-		    if s, ok := i.(fmt.Stringer); ok {
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
 				k := {{.Type.Name}}(s.String())
 				list.m = append(list.m, {{.Type.Amp}}k)
-		    }
+			}
 {{- end}}
 		}
 	}

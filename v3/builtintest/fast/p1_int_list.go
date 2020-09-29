@@ -4,7 +4,7 @@
 // Generated from fast/list.tpl with Type=*int
 // options: Comparable:true Numeric:true Ordered:true StringLike:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:true MapTo:<no value>
-// by runtemplate v3.6.1
+// by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
 
 package fast
