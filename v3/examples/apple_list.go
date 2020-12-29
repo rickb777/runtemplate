@@ -161,18 +161,18 @@ func (list *AppleList) Head() Apple {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *AppleList) HeadOption() Apple {
+func (list *AppleList) HeadOption() (Apple, bool) {
 	if list == nil {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if len(list.m) == 0 {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -186,18 +186,18 @@ func (list *AppleList) Last() Apple {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *AppleList) LastOption() Apple {
+func (list *AppleList) LastOption() (Apple, bool) {
 	if list == nil {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if len(list.m) == 0 {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

@@ -139,11 +139,11 @@ func (list X1NameList) Head() Name {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list X1NameList) HeadOption() Name {
+func (list X1NameList) HeadOption() (Name, bool) {
 	if list.IsEmpty() {
-		return *(new(Name))
+		return *(new(Name)), false
 	}
-	return list[0]
+	return list[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -154,11 +154,11 @@ func (list X1NameList) Last() Name {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list X1NameList) LastOption() Name {
+func (list X1NameList) LastOption() (Name, bool) {
 	if list.IsEmpty() {
-		return *(new(Name))
+		return *(new(Name)), false
 	}
-	return list[len(list)-1]
+	return list[len(list)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

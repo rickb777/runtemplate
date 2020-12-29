@@ -4,8 +4,8 @@
 package threadsafe
 
 import (
-	"testing"
 	. "github.com/onsi/gomega"
+	"testing"
 )
 
 func TestIntQueue_withEquals(t *testing.T) {
@@ -151,7 +151,7 @@ func TestIntRefusingQueuePush(t *testing.T) {
 func TestIntSortedQueue(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-	a := NewX1IntSortedQueue(10, false, func(i, j int) bool {return i < j})
+	a := NewX1IntSortedQueue(10, false, func(i, j int) bool { return i < j })
 
 	g.Expect(a.IsOverwriting()).To(BeFalse())
 	g.Expect(a.Cap()).To(Equal(10))
@@ -225,19 +225,19 @@ func TestIntQueuePop(t *testing.T) {
 
 func TestIntQueueGetHeadLast(t *testing.T) {
 	g := NewGomegaWithT(t)
+	gt := (*gtIntQueue)(g)
 
 	a := NewX1IntQueue(8, false)
 
-	g.Expect(a.HeadOption()).To(Equal(0))
-	g.Expect(a.LastOption()).To(Equal(0))
+	gt.Expect(a.HeadOption()).ToEqual(0, false)
+	gt.Expect(a.LastOption()).ToEqual(0, false)
 
 	a.Offer(1)
 
 	g.Expect(a.Get(0)).To(Equal(1))
 	g.Expect(a.Head()).To(Equal(1))
-	g.Expect(a.HeadOption()).To(Equal(1))
 	g.Expect(a.Last()).To(Equal(1))
-	g.Expect(a.LastOption()).To(Equal(1))
+	gt.Expect(a.LastOption()).ToEqual(1, true)
 
 	a.Offer(2, 3, 4, 5, 6)
 	a.Pop(2)
@@ -245,9 +245,9 @@ func TestIntQueueGetHeadLast(t *testing.T) {
 	g.Expect(a.Get(0)).To(Equal(3))
 	g.Expect(a.Get(3)).To(Equal(6))
 	g.Expect(a.Head()).To(Equal(3))
-	g.Expect(a.HeadOption()).To(Equal(3))
 	g.Expect(a.Last()).To(Equal(6))
-	g.Expect(a.LastOption()).To(Equal(6))
+	gt.Expect(a.HeadOption()).ToEqual(3, true)
+	gt.Expect(a.LastOption()).ToEqual(6, true)
 
 	a.Offer(7, 8, 9, 10)
 	a.Pop(4)
@@ -255,15 +255,32 @@ func TestIntQueueGetHeadLast(t *testing.T) {
 	g.Expect(a.Get(0)).To(Equal(7))
 	g.Expect(a.Get(3)).To(Equal(10))
 	g.Expect(a.Head()).To(Equal(7))
-	g.Expect(a.HeadOption()).To(Equal(7))
 	g.Expect(a.Last()).To(Equal(10))
-	g.Expect(a.LastOption()).To(Equal(10))
+	gt.Expect(a.HeadOption()).ToEqual(7, true)
+	gt.Expect(a.LastOption()).ToEqual(10, true)
 
 	// check correct nil handling
 	a = nil
 
-	g.Expect(a.HeadOption()).To(Equal(0))
-	g.Expect(a.LastOption()).To(Equal(0))
+	gt.Expect(a.HeadOption()).ToEqual(0, false)
+	gt.Expect(a.LastOption()).ToEqual(0, false)
+}
+
+type gtIntQueue GomegaWithT
+
+type gtIntQueueOption struct {
+	g *GomegaWithT
+	v int
+	p bool
+}
+
+func (gt *gtIntQueue) Expect(v int, p bool) gtIntQueueOption {
+	return gtIntQueueOption{g: (*GomegaWithT)(gt), v: v, p: p}
+}
+
+func (gt gtIntQueueOption) ToEqual(v int, p bool) {
+	gt.g.Expect(gt.v).To(Equal(v))
+	gt.g.Expect(gt.p).To(Equal(p))
 }
 
 func TestIntQueueSend(t *testing.T) {
@@ -277,7 +294,7 @@ func TestIntQueueSend(t *testing.T) {
 	b = BuildX1IntQueueFromChan(a.Send())
 	g.Expect(a.Equals(b)).To(BeTrue())
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	b = BuildX1IntQueueFromChan(a.Send())
 
@@ -287,69 +304,69 @@ func TestIntQueueSend(t *testing.T) {
 func TestIntQueueDoKeepWhere(t *testing.T) {
 	g := NewGomegaWithT(t)
 
-    cases := []struct{
-        act, exp *X1IntQueue
-        m int
-    }{
-        {
-            act: nil,
-            exp: nil,
-        },
-        {
-            act: NewX1IntQueue(7, false).Push(1, 3, 5, 2, 4, 6),
-            exp: NewX1IntQueue(7, false).Push(5, 4, 6),
-            m: 1,
-        },
-        {
-            act: NewX1IntQueue(6, false).Push(1, 3, 5, 2, 4, 6),
-            exp: NewX1IntQueue(6, false).Push(5, 4, 6),
-            m: 1,
-        },
-        {
-            act: NewX1IntQueue(7, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(7, false).Push(4, 6, 5, 7),
-            m: 1,
-        },
-        {
-            act: NewX1IntQueue(6, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
-            m: 1,
-        },
-        {
-            act: NewX1IntQueue(7, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
-            m: 1,
-        },
-        {
-            act: NewX1IntQueue(7, false).Push(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(6, false).Push(),
-            m: 0,
-        },
-        {
-            act: interestingFullQueue(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
-            m: 1,
-        },
-        {
-            act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
-            m: 1,
-        },
-        {
-            act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
-            exp: NewX1IntQueue(6, false).Push(2, 4, 6, 3, 5, 7),
-            m: 3,
-        },
-    }
+	cases := []struct {
+		act, exp *X1IntQueue
+		m        int
+	}{
+		{
+			act: nil,
+			exp: nil,
+		},
+		{
+			act: NewX1IntQueue(7, false).Push(1, 3, 5, 2, 4, 6),
+			exp: NewX1IntQueue(7, false).Push(5, 4, 6),
+			m:   1,
+		},
+		{
+			act: NewX1IntQueue(6, false).Push(1, 3, 5, 2, 4, 6),
+			exp: NewX1IntQueue(6, false).Push(5, 4, 6),
+			m:   1,
+		},
+		{
+			act: NewX1IntQueue(7, false).Push(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(7, false).Push(4, 6, 5, 7),
+			m:   1,
+		},
+		{
+			act: NewX1IntQueue(6, false).Push(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
+			m:   1,
+		},
+		{
+			act: NewX1IntQueue(7, false).Push(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
+			m:   1,
+		},
+		{
+			act: NewX1IntQueue(7, false).Push(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(6, false).Push(),
+			m:   0,
+		},
+		{
+			act: interestingFullQueue(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
+			m:   1,
+		},
+		{
+			act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(6, false).Push(4, 6, 5, 7),
+			m:   1,
+		},
+		{
+			act: interestingPartialQueue(2, 4, 6, 3, 5, 7),
+			exp: NewX1IntQueue(6, false).Push(2, 4, 6, 3, 5, 7),
+			m:   3,
+		},
+	}
 
-    for i, c := range cases {
-        r := c.act.DoKeepWhere(func (v int) bool {
-            return (v * c.m) > 3
-        })
+	for i, c := range cases {
+		r := c.act.DoKeepWhere(func(v int) bool {
+			return (v * c.m) > 3
+		})
 
-        g.Expect(c.act.Equals(c.exp)).To(BeTrue(), "%d %v", i, c.act)
-        g.Expect(c.act.Equals(r)).To(BeTrue(), "%d %v", i, r)
-    }
+		g.Expect(c.act.Equals(c.exp)).To(BeTrue(), "%d %v", i, c.act)
+		g.Expect(c.act.Equals(r)).To(BeTrue(), "%d %v", i, r)
+	}
 }
 
 func TestIntQueueClone(t *testing.T) {
@@ -554,8 +571,8 @@ func TestIntQueueExists(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	a := interestingFullQueue(1, 2, 3, 4)
-    a.Pop(2)
-    a.Push(5, 6)
+	a.Pop(2)
+	a.Push(5, 6)
 
 	found := a.Exists(func(v int) bool {
 		return v > 3
@@ -700,6 +717,7 @@ func TestIntQueueMkString3(t *testing.T) {
 	a = nil
 	a.MkString3("<", ", ", ">")
 }
+
 //
 //
 //func TestIntQueueJsonEncode(t *testing.T) {
@@ -721,82 +739,82 @@ func TestIntQueueMkString3(t *testing.T) {
 //
 
 func BenchmarkIntQueuePopPush(b *testing.B) {
-    b.StopTimer()
-    a := fibonacciX1IntQueue(1000)
-    b.StartTimer()
+	b.StopTimer()
+	a := fibonacciX1IntQueue(1000)
+	b.StartTimer()
 
-    for i := 0; i < b.N; i++ {
-	    stuff := a.Pop(100)
-	    a.Push(stuff...)
-    }
+	for i := 0; i < b.N; i++ {
+		stuff := a.Pop(100)
+		a.Push(stuff...)
+	}
 }
 
 func BenchmarkIntQueueCountBy(b *testing.B) {
-    b.StopTimer()
-    a := fibonacciX1IntQueue(1000)
-    b.StartTimer()
+	b.StopTimer()
+	a := fibonacciX1IntQueue(1000)
+	b.StartTimer()
 
-    for i := 0; i < b.N; i++ {
-	    a.CountBy(func(v int) bool {
-		    return v > 100
-	    })
-    }
+	for i := 0; i < b.N; i++ {
+		a.CountBy(func(v int) bool {
+			return v > 100
+		})
+	}
 }
 
 func BenchmarkIntQueueFilter(b *testing.B) {
-    b.StopTimer()
-    a := fibonacciX1IntQueue(1000)
-    b.StartTimer()
+	b.StopTimer()
+	a := fibonacciX1IntQueue(1000)
+	b.StartTimer()
 
-    for i := 0; i < b.N; i++ {
-	    a.Filter(func(v int) bool {
-		    return v > 100
-	    })
-    }
+	for i := 0; i < b.N; i++ {
+		a.Filter(func(v int) bool {
+			return v > 100
+		})
+	}
 }
 
 func BenchmarkIntQueueDoKeepWhere(b *testing.B) {
-    b.StopTimer()
-    a := fibonacciX1IntQueue(1000)
-    b.StartTimer()
+	b.StopTimer()
+	a := fibonacciX1IntQueue(1000)
+	b.StartTimer()
 
-    for i := 0; i < b.N; i++ {
-	    a.DoKeepWhere(func(v int) bool {
-		    return v > 100
-	    })
-    }
+	for i := 0; i < b.N; i++ {
+		a.DoKeepWhere(func(v int) bool {
+			return v > 100
+		})
+	}
 }
 
 func BenchmarkIntQueueMap(b *testing.B) {
-    b.StopTimer()
-    a := fibonacciX1IntQueue(1000)
-    b.StartTimer()
+	b.StopTimer()
+	a := fibonacciX1IntQueue(1000)
+	b.StartTimer()
 
-    for i := 0; i < b.N; i++ {
-	    a.Map(func(v int) int {
-		    return v
-	    })
-    }
+	for i := 0; i < b.N; i++ {
+		a.Map(func(v int) int {
+			return v
+		})
+	}
 }
 
 func BenchmarkIntQueueSum(b *testing.B) {
-    b.StopTimer()
-    a := fibonacciX1IntQueue(1000)
-    b.StartTimer()
+	b.StopTimer()
+	a := fibonacciX1IntQueue(1000)
+	b.StartTimer()
 
-    for i := 0; i < b.N; i++ {
-	    a.Sum()
-    }
+	for i := 0; i < b.N; i++ {
+		a.Sum()
+	}
 }
 
 func fibonacciX1IntQueue(n int) *X1IntQueue {
-    a := NewX1IntQueue(n + 10, false)
-    i0 := 1
-    i1 := 1
-    for j := 0; j < n; j++ {
-        i2 := i0 + i1
-        a.Push(i2)
-        i1, i0 = i2, i1
-    }
-    return a
+	a := NewX1IntQueue(n+10, false)
+	i0 := 1
+	i1 := 1
+	for j := 0; j < n; j++ {
+		i2 := i0 + i1
+		a.Push(i2)
+		i1, i0 = i2, i1
+	}
+	return a
 }

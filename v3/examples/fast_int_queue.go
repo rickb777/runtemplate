@@ -225,16 +225,16 @@ func (queue *FastIntQueue) Head() int {
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns the zero value instead.
-func (queue *FastIntQueue) HeadOption() int {
+func (queue *FastIntQueue) HeadOption() (int, bool) {
 	if queue == nil {
-		return 0
+		return 0, false
 	}
 
 	if queue.length == 0 {
-		return 0
+		return 0, false
 	}
 
-	return queue.m[queue.read]
+	return queue.m[queue.read], true
 }
 
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
@@ -252,13 +252,13 @@ func (queue *FastIntQueue) Last() int {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns the zero value instead.
-func (queue *FastIntQueue) LastOption() int {
+func (queue *FastIntQueue) LastOption() (int, bool) {
 	if queue == nil {
-		return 0
+		return 0, false
 	}
 
 	if queue.length == 0 {
-		return 0
+		return 0, false
 	}
 
 	i := queue.write - 1
@@ -266,7 +266,7 @@ func (queue *FastIntQueue) LastOption() int {
 		i = queue.capacity - 1
 	}
 
-	return queue.m[i]
+	return queue.m[i], true
 }
 
 //-------------------------------------------------------------------------------------------------

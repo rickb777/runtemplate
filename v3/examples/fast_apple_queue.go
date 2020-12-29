@@ -225,16 +225,16 @@ func (queue *FastAppleQueue) Head() Apple {
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns the zero value instead.
-func (queue *FastAppleQueue) HeadOption() Apple {
+func (queue *FastAppleQueue) HeadOption() (Apple, bool) {
 	if queue == nil {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	if queue.length == 0 {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
-	return queue.m[queue.read]
+	return queue.m[queue.read], true
 }
 
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
@@ -252,13 +252,13 @@ func (queue *FastAppleQueue) Last() Apple {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns the zero value instead.
-func (queue *FastAppleQueue) LastOption() Apple {
+func (queue *FastAppleQueue) LastOption() (Apple, bool) {
 	if queue == nil {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	if queue.length == 0 {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	i := queue.write - 1
@@ -266,7 +266,7 @@ func (queue *FastAppleQueue) LastOption() Apple {
 		i = queue.capacity - 1
 	}
 
-	return queue.m[i]
+	return queue.m[i], true
 }
 
 //-------------------------------------------------------------------------------------------------

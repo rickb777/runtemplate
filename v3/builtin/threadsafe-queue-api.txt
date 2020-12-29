@@ -13,9 +13,9 @@ func (queue *TypeQueue) ToInterfaceSlice() []interface{}
 func (queue *TypeQueue) Clone() *TypeQueue
 func (queue *TypeQueue) Get(i int) Type
 func (queue *TypeQueue) Head() Type
-func (queue *TypeQueue) HeadOption() Type
+func (queue *TypeQueue) HeadOption() (Type, bool)
 func (queue *TypeQueue) Last() Type
-func (queue *TypeQueue) LastOption() Type
+func (queue *TypeQueue) LastOption() (Type, bool)
 func (queue *TypeQueue) IsOverwriting() bool
 func (queue *TypeQueue) IsFull() bool
 func (queue *TypeQueue) IsEmpty() bool

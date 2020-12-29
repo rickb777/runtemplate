@@ -12,9 +12,9 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // X1NameList contains a slice of type Name. It is designed
@@ -151,12 +151,12 @@ func (list *X1NameList) Head() Name {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1NameList) HeadOption() Name {
+func (list *X1NameList) HeadOption() (Name, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v Name
-		return v
+		return v, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -167,12 +167,12 @@ func (list *X1NameList) Last() Name {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1NameList) LastOption() Name {
+func (list *X1NameList) LastOption() (Name, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v Name
-		return v
+		return v, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -469,7 +469,6 @@ func (list *X1NameList) Find(p func(Name) bool) (Name, bool) {
 		}
 	}
 
-
 	var empty Name
 	return empty, false
 }
@@ -693,7 +692,7 @@ func (list *X1NameList) Equals(other *X1NameList) bool {
 
 type sortableX1NameList struct {
 	less func(i, j Name) bool
-	m []Name
+	m    []Name
 }
 
 func (sl sortableX1NameList) Less(i, j int) bool {
@@ -823,7 +822,6 @@ func (list X1NameList) mkString3Bytes(before, between, after string) *strings.Bu
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for _, v := range list.m {
 		b.WriteString(sep)

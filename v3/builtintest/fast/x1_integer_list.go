@@ -12,10 +12,10 @@ package fast
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
+	"math/big"
 	"math/rand"
 	"sort"
-	"math/big"
+	"strings"
 )
 
 // X1IntegerList contains a slice of type big.Int.
@@ -147,15 +147,15 @@ func (list *X1IntegerList) Head() big.Int {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntegerList) HeadOption() big.Int {
+func (list *X1IntegerList) HeadOption() (big.Int, bool) {
 	if list == nil {
-		return *(new(big.Int))
+		return *(new(big.Int)), false
 	}
 
 	if len(list.m) == 0 {
-		return *(new(big.Int))
+		return *(new(big.Int)), false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -167,15 +167,15 @@ func (list *X1IntegerList) Last() big.Int {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntegerList) LastOption() big.Int {
+func (list *X1IntegerList) LastOption() (big.Int, bool) {
 	if list == nil {
-		return *(new(big.Int))
+		return *(new(big.Int)), false
 	}
 
 	if len(list.m) == 0 {
-		return *(new(big.Int))
+		return *(new(big.Int)), false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -927,7 +927,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m []big.Int
+	m    []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {

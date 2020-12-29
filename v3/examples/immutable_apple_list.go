@@ -136,12 +136,12 @@ func (list *ImmutableAppleList) Head() Apple {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *ImmutableAppleList) HeadOption() Apple {
+func (list *ImmutableAppleList) HeadOption() (Apple, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v Apple
-		return v
+		return v, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -152,12 +152,12 @@ func (list *ImmutableAppleList) Last() Apple {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *ImmutableAppleList) LastOption() Apple {
+func (list *ImmutableAppleList) LastOption() (Apple, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v Apple
-		return v
+		return v, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

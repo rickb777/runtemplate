@@ -11,10 +11,10 @@ package simple
 
 import (
 	"fmt"
+	"math/big"
 	"math/rand"
 	"sort"
 	"strings"
-	"math/big"
 )
 
 // X1IntegerList is a slice of type big.Int. Use it where you would use []big.Int.
@@ -125,11 +125,11 @@ func (list X1IntegerList) Head() big.Int {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list X1IntegerList) HeadOption() big.Int {
+func (list X1IntegerList) HeadOption() (big.Int, bool) {
 	if list.IsEmpty() {
-		return *(new(big.Int))
+		return *(new(big.Int)), false
 	}
-	return list[0]
+	return list[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -140,11 +140,11 @@ func (list X1IntegerList) Last() big.Int {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list X1IntegerList) LastOption() big.Int {
+func (list X1IntegerList) LastOption() (big.Int, bool) {
 	if list.IsEmpty() {
-		return *(new(big.Int))
+		return *(new(big.Int)), false
 	}
-	return list[len(list)-1]
+	return list[len(list)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

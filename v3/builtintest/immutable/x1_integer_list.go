@@ -12,10 +12,10 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
+	"math/big"
 	"math/rand"
 	"sort"
-	"math/big"
+	"strings"
 )
 
 // X1IntegerList contains a slice of type big.Int. It is designed
@@ -138,12 +138,12 @@ func (list *X1IntegerList) Head() big.Int {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntegerList) HeadOption() big.Int {
+func (list *X1IntegerList) HeadOption() (big.Int, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v big.Int
-		return v
+		return v, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -154,12 +154,12 @@ func (list *X1IntegerList) Last() big.Int {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntegerList) LastOption() big.Int {
+func (list *X1IntegerList) LastOption() (big.Int, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v big.Int
-		return v
+		return v, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -434,7 +434,6 @@ func (list *X1IntegerList) Find(p func(big.Int) bool) (big.Int, bool) {
 		}
 	}
 
-
 	var empty big.Int
 	return empty, false
 }
@@ -701,7 +700,7 @@ func (list *X1IntegerList) LastIndexWhere2(p func(big.Int) bool, before int) int
 
 type sortableX1IntegerList struct {
 	less func(i, j big.Int) bool
-	m []big.Int
+	m    []big.Int
 }
 
 func (sl sortableX1IntegerList) Less(i, j int) bool {
@@ -774,7 +773,6 @@ func (list X1IntegerList) mkString3Bytes(before, between, after string) *strings
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for _, v := range list.m {
 		b.WriteString(sep)

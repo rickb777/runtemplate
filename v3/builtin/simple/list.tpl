@@ -244,11 +244,11 @@ func (list {{.Prefix.U}}{{.Type.U}}List) Head() {{.Type}} {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns {{if .Type.IsPtr}}nil{{else}}the zero value{{end}}.
-func (list {{.Prefix.U}}{{.Type.U}}List) HeadOption() {{.Type}} {
+func (list {{.Prefix.U}}{{.Type.U}}List) HeadOption() ({{.Type}}, bool) {
 	if list.IsEmpty() {
-		return {{.Type.Zero}}
+		return {{.Type.Zero}}, false
 	}
-	return list[0]
+	return list[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -259,11 +259,11 @@ func (list {{.Prefix.U}}{{.Type.U}}List) Last() {{.Type}} {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns {{if .Type.IsPtr}}nil{{else}}the zero value{{end}}.
-func (list {{.Prefix.U}}{{.Type.U}}List) LastOption() {{.Type}} {
+func (list {{.Prefix.U}}{{.Type.U}}List) LastOption() ({{.Type}}, bool) {
 	if list.IsEmpty() {
-		return {{.Type.Zero}}
+		return {{.Type.Zero}}, false
 	}
-	return list[len(list)-1]
+	return list[len(list)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

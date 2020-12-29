@@ -10,9 +10,9 @@ func (list *TypeList) ToInterfaceSlice() []interface{}
 func (list *TypeList) Clone() *TypeList
 func (list *TypeList) Get(i int) Type
 func (list *TypeList) Head() Type
-func (list *TypeList) HeadOption() Type
+func (list *TypeList) HeadOption() (Type, bool)
 func (list *TypeList) Last() Type
-func (list *TypeList) LastOption() Type
+func (list *TypeList) LastOption() (Type, bool)
 func (list *TypeList) Tail() *TypeList
 func (list *TypeList) Init() *TypeList
 func (list *TypeList) IsEmpty() bool

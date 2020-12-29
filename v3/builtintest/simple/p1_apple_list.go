@@ -132,11 +132,11 @@ func (list P1AppleList) Head() *Apple {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns nil.
-func (list P1AppleList) HeadOption() *Apple {
+func (list P1AppleList) HeadOption() (*Apple, bool) {
 	if list.IsEmpty() {
-		return nil
+		return nil, false
 	}
-	return list[0]
+	return list[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -147,11 +147,11 @@ func (list P1AppleList) Last() *Apple {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns nil.
-func (list P1AppleList) LastOption() *Apple {
+func (list P1AppleList) LastOption() (*Apple, bool) {
 	if list.IsEmpty() {
-		return nil
+		return nil, false
 	}
-	return list[len(list)-1]
+	return list[len(list)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

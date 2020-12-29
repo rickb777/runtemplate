@@ -251,16 +251,16 @@ func (queue *P1IntQueue) Head() *int {
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns nil instead.
-func (queue *P1IntQueue) HeadOption() *int {
+func (queue *P1IntQueue) HeadOption() (*int, bool) {
 	if queue == nil {
-		return nil
+		return nil, false
 	}
 
 	if queue.length == 0 {
-		return nil
+		return nil, false
 	}
 
-	return queue.m[queue.read]
+	return queue.m[queue.read], true
 }
 
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
@@ -278,13 +278,13 @@ func (queue *P1IntQueue) Last() *int {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns nil instead.
-func (queue *P1IntQueue) LastOption() *int {
+func (queue *P1IntQueue) LastOption() (*int, bool) {
 	if queue == nil {
-		return nil
+		return nil, false
 	}
 
 	if queue.length == 0 {
-		return nil
+		return nil, false
 	}
 
 	i := queue.write - 1
@@ -292,7 +292,7 @@ func (queue *P1IntQueue) LastOption() *int {
 		i = queue.capacity - 1
 	}
 
-	return queue.m[i]
+	return queue.m[i], true
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -431,7 +431,7 @@ func (queue *P1IntQueue) Push(items ...*int) *P1IntQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -478,7 +478,7 @@ func (queue *P1IntQueue) doPush(items ...*int) []*int {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

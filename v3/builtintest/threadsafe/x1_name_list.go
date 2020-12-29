@@ -12,9 +12,9 @@ package threadsafe
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"math/rand"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -180,18 +180,18 @@ func (list *X1NameList) Head() Name {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1NameList) HeadOption() Name {
+func (list *X1NameList) HeadOption() (Name, bool) {
 	if list == nil {
-		return *(new(Name))
+		return *(new(Name)), false
 	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if len(list.m) == 0 {
-		return *(new(Name))
+		return *(new(Name)), false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -205,18 +205,18 @@ func (list *X1NameList) Last() Name {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1NameList) LastOption() Name {
+func (list *X1NameList) LastOption() (Name, bool) {
 	if list == nil {
-		return *(new(Name))
+		return *(new(Name)), false
 	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if len(list.m) == 0 {
-		return *(new(Name))
+		return *(new(Name)), false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -1041,7 +1041,7 @@ func (list *X1NameList) Equals(other *X1NameList) bool {
 
 type sortableX1NameList struct {
 	less func(i, j Name) bool
-	m []Name
+	m    []Name
 }
 
 func (sl sortableX1NameList) Less(i, j int) bool {

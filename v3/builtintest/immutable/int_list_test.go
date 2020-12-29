@@ -4,11 +4,11 @@
 package immutable
 
 import (
-    "bytes"
-    "encoding/gob"
-    "encoding/json"
-	"testing"
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	. "github.com/onsi/gomega"
+	"testing"
 )
 
 func intRangeOf(from, to int) []int {
@@ -49,7 +49,7 @@ func TestConvertIntList(t *testing.T) {
 
 	g.Expect(a.Equals(NewX1IntList(1, 5, 2, 7, 3))).To(BeTrue(), "%v", a)
 
-    b, ok := ConvertX1IntList(a.ToInterfaceSlice()...)
+	b, ok := ConvertX1IntList(a.ToInterfaceSlice()...)
 
 	g.Expect(ok).To(BeTrue())
 	g.Expect(a).To(Equal(b))
@@ -79,6 +79,7 @@ func TestIntListSend(t *testing.T) {
 
 func TestIntListGetHeadTailLastInit(t *testing.T) {
 	g := NewGomegaWithT(t)
+	gt := (*gtIntList)(g)
 
 	a := NewX1IntList(1, 2, 3, 4)
 
@@ -86,8 +87,9 @@ func TestIntListGetHeadTailLastInit(t *testing.T) {
 	g.Expect(a.Get(3)).To(Equal(4))
 	g.Expect(a.Head()).To(Equal(1))
 	g.Expect(a.Last()).To(Equal(4))
-	g.Expect(a.HeadOption()).To(Equal(1))
-	g.Expect(a.LastOption()).To(Equal(4))
+
+	gt.Expect(a.HeadOption()).ToEqual(1, true)
+	gt.Expect(a.LastOption()).ToEqual(4, true)
 
 	tail := a.Tail()
 
@@ -97,11 +99,28 @@ func TestIntListGetHeadTailLastInit(t *testing.T) {
 
 	g.Expect(init.Equals(NewX1IntList(1, 2, 3))).To(BeTrue())
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 
-	g.Expect(a.HeadOption()).To(Equal(0))
-	g.Expect(a.LastOption()).To(Equal(0))
+	gt.Expect(a.HeadOption()).ToEqual(0, false)
+	gt.Expect(a.LastOption()).ToEqual(0, false)
+}
+
+type gtIntList GomegaWithT
+
+type gtIntListOption struct {
+	g *GomegaWithT
+	v int
+	p bool
+}
+
+func (gt *gtIntList) Expect(v int, p bool) gtIntListOption {
+	return gtIntListOption{g: (*GomegaWithT)(gt), v: v, p: p}
+}
+
+func (gt gtIntListOption) ToEqual(v int, p bool) {
+	gt.g.Expect(gt.v).To(Equal(v))
+	gt.g.Expect(gt.p).To(Equal(p))
 }
 
 func TestIntListContains(t *testing.T) {
@@ -117,9 +136,9 @@ func TestIntListContains(t *testing.T) {
 
 	g.Expect(found).To(BeFalse())
 
-    // check correct nil handling
-    a = nil
-    a.Contains(3)
+	// check correct nil handling
+	a = nil
+	a.Contains(3)
 }
 
 func TestIntListContainsAll(t *testing.T) {
@@ -135,9 +154,9 @@ func TestIntListContainsAll(t *testing.T) {
 
 	g.Expect(found).To(BeFalse())
 
-    // check correct nil handling
-    a = nil
-    a.ContainsAll(3)
+	// check correct nil handling
+	a = nil
+	a.ContainsAll(3)
 }
 
 func TestIntListFind(t *testing.T) {
@@ -158,8 +177,8 @@ func TestIntListFind(t *testing.T) {
 
 	g.Expect(found).To(BeFalse())
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	_, found = a.Find(func(v int) bool {
 		return v > 0
 	})
@@ -183,8 +202,8 @@ func TestIntListForall(t *testing.T) {
 
 	g.Expect(found).To(BeFalse())
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	found = a.Forall(func(v int) bool {
 		return v > 0
 	})
@@ -208,8 +227,8 @@ func TestIntListExists(t *testing.T) {
 
 	g.Expect(found).To(BeFalse())
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	found = a.Exists(func(v int) bool {
 		return v > 0
 	})
@@ -229,8 +248,8 @@ func TestIntListForeach(t *testing.T) {
 
 	g.Expect(s).To(Equal(10))
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.Foreach(func(v int) {
 		s += v
 	})
@@ -254,7 +273,7 @@ func TestIntListFilter(t *testing.T) {
 
 	g.Expect(b.IsEmpty()).To(BeTrue())
 
-    a = nil
+	a = nil
 	b = a.Filter(func(v int) bool {
 		return v > 0
 	})
@@ -290,7 +309,7 @@ func TestIntListTransform(t *testing.T) {
 		return v * v
 	})
 
-    exp := NewX1IntList(1, 4, 9, 16)
+	exp := NewX1IntList(1, 4, 9, 16)
 	g.Expect(b.Equals(exp)).To(BeTrue(), "%v %v", b, exp)
 
 	a = nil
@@ -306,22 +325,22 @@ func TestIntListFlatMap(t *testing.T) {
 
 	a := NewX1IntList(1, 2, 3, 4, 5)
 	b := a.FlatMap(func(v int) []int {
-	    if v > 3 {
-	        return nil
-	    }
+		if v > 3 {
+			return nil
+		}
 		return []int{v * 2, v * 3}
 	})
 
-    exp := NewX1IntList(2, 3, 4, 6, 6, 9)
+	exp := NewX1IntList(2, 3, 4, 6, 6, 9)
 
 	g.Expect(b.Equals(exp)).To(BeTrue(), "%v %v", b, exp)
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	b = a.FlatMap(func(v int) []int {
-	    if v > 3 {
-	        return nil
-	    }
+		if v > 3 {
+			return nil
+		}
 		return []int{v * 2, v * 3}
 	})
 
@@ -334,10 +353,9 @@ func TestIntListSorted(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
 	b := a.Sorted()
 
-
 	g.Expect(b.Equals(NewX1IntList(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", b)
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.Sorted()
 }
@@ -348,10 +366,9 @@ func TestIntListStableSorted(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
 	b := a.StableSorted()
 
-
 	g.Expect(b.Equals(NewX1IntList(-2, 4, 7, 9, 13))).To(BeTrue(), "%v", b)
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.StableSorted()
 }
@@ -369,7 +386,7 @@ func TestIntListReverseOdd(t *testing.T) {
 
 	g.Expect(c.Equals(a)).To(BeTrue(), "%v %v", a, c)
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.Reverse()
 }
@@ -402,7 +419,7 @@ func TestIntListShuffle(t *testing.T) {
 
 	g.Expect(c.Equals(a)).To(BeTrue(), "%v %v", a, c)
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.Shuffle()
 }
@@ -436,7 +453,7 @@ func TestIntListTake(t *testing.T) {
 	g.Expect(e.Head()).To(Equal(1))
 	g.Expect(e.Last()).To(Equal(100))
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.Take(0)
 	a.TakeLast(0)
@@ -467,7 +484,7 @@ func TestIntListDrop(t *testing.T) {
 
 	g.Expect(e.Size()).To(Equal(0))
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.Drop(0)
 	a.DropLast(0)
@@ -494,7 +511,7 @@ func TestIntListTakeWhile(t *testing.T) {
 	g.Expect(c.Head()).To(Equal(1))
 	g.Expect(c.Last()).To(Equal(100))
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.TakeWhile(func(v int) bool {
 		return v <= 20
@@ -520,7 +537,7 @@ func TestIntListDropWhile(t *testing.T) {
 
 	g.Expect(c.Size()).To(Equal(0))
 
-    // check correct nil handling
+	// check correct nil handling
 	a = nil
 	a.DropWhile(func(v int) bool {
 		return v <= 20
@@ -538,8 +555,8 @@ func TestIntListDistinctBy(t *testing.T) {
 
 	g.Expect(c.Equals(NewX1IntList(1, 2, 3, 4, 5))).To(BeTrue(), "%v", c)
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.DistinctBy(func(v1, v2 int) bool {
 		return v1 == v2
 	})
@@ -563,7 +580,7 @@ func TestIntListIndexWhere(t *testing.T) {
 	g.Expect(c).To(Equal(-1))
 
 	d := a.IndexWhere2(func(v int) bool {
-		return v % 3 == 0
+		return v%3 == 0
 	}, 10)
 
 	g.Expect(d).To(Equal(11))
@@ -587,7 +604,7 @@ func TestIntListLastIndexWhere(t *testing.T) {
 	g.Expect(c).To(Equal(-1))
 
 	d := a.LastIndexWhere2(func(v int) bool {
-		return v % 3 == 0
+		return v%3 == 0
 	}, 61)
 
 	g.Expect(d).To(Equal(59))
@@ -602,8 +619,8 @@ func TestIntListMkString(t *testing.T) {
 
 	g.Expect(c).To(Equal("13|4|7|-2|9"))
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.MkString("|")
 }
 
@@ -616,8 +633,8 @@ func TestIntListMkString3(t *testing.T) {
 
 	g.Expect(c).To(Equal("<13, 4, 7, -2, 9>"))
 
-    // check correct nil handling
-    a = nil
+	// check correct nil handling
+	a = nil
 	a.MkString3("<", ", ", ">")
 }
 
@@ -627,14 +644,14 @@ func TestIntListGobEncode(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
 	b := NewX1IntList()
 
-    buf := &bytes.Buffer{}
-    err := gob.NewEncoder(buf).Encode(a)
+	buf := &bytes.Buffer{}
+	err := gob.NewEncoder(buf).Encode(a)
 
-    g.Expect(err).NotTo(HaveOccurred())
+	g.Expect(err).NotTo(HaveOccurred())
 
-    err = gob.NewDecoder(buf).Decode(&b)
+	err = gob.NewDecoder(buf).Decode(&b)
 
-    g.Expect(err).NotTo(HaveOccurred())
+	g.Expect(err).NotTo(HaveOccurred())
 
 	g.Expect(a).To(Equal(b))
 }
@@ -645,13 +662,13 @@ func TestIntListJsonEncode(t *testing.T) {
 	a := NewX1IntList(13, 4, 7, -2, 9)
 	b := NewX1IntList()
 
-    buf, err := json.Marshal(a)
+	buf, err := json.Marshal(a)
 
-    g.Expect(err).NotTo(HaveOccurred())
+	g.Expect(err).NotTo(HaveOccurred())
 
-    err = json.Unmarshal(buf, &b)
+	err = json.Unmarshal(buf, &b)
 
-    g.Expect(err).NotTo(HaveOccurred())
+	g.Expect(err).NotTo(HaveOccurred())
 
 	g.Expect(a).To(Equal(b))
 }

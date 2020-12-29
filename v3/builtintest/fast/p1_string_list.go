@@ -12,9 +12,9 @@ package fast
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // P1StringList contains a slice of type *string.
@@ -156,15 +156,15 @@ func (list *P1StringList) Head() *string {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns nil.
-func (list *P1StringList) HeadOption() *string {
+func (list *P1StringList) HeadOption() (*string, bool) {
 	if list == nil {
-		return nil
+		return nil, false
 	}
 
 	if len(list.m) == 0 {
-		return nil
+		return nil, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -176,15 +176,15 @@ func (list *P1StringList) Last() *string {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns nil.
-func (list *P1StringList) LastOption() *string {
+func (list *P1StringList) LastOption() (*string, bool) {
 	if list == nil {
-		return nil
+		return nil, false
 	}
 
 	if len(list.m) == 0 {
-		return nil
+		return nil, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -909,7 +909,7 @@ func (list *P1StringList) Equals(other *P1StringList) bool {
 
 type sortableP1StringList struct {
 	less func(i, j *string) bool
-	m []*string
+	m    []*string
 }
 
 func (sl sortableP1StringList) Less(i, j int) bool {

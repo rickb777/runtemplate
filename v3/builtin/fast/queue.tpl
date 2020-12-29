@@ -263,16 +263,16 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Head() {{.Type}} {
 
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns {{if .Type.IsPtr}}nil{{else}}the zero value{{end}} instead.
-func (queue *{{.Prefix.U}}{{.Type.U}}Queue) HeadOption() {{.Type}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) HeadOption() ({{.Type}}, bool) {
 	if queue == nil {
-		return {{.Type.Zero}}
+		return {{.Type.Zero}}, false
 	}
 
 	if queue.length == 0 {
-		return {{.Type.Zero}}
+		return {{.Type.Zero}}, false
 	}
 
-	return queue.m[queue.read]
+	return queue.m[queue.read], true
 }
 
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
@@ -290,13 +290,13 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Last() {{.Type}} {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns {{if .Type.IsPtr}}nil{{else}}the zero value{{end}} instead.
-func (queue *{{.Prefix.U}}{{.Type.U}}Queue) LastOption() {{.Type}} {
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) LastOption() ({{.Type}}, bool) {
 	if queue == nil {
-		return {{.Type.Zero}}
+		return {{.Type.Zero}}, false
 	}
 
 	if queue.length == 0 {
-		return {{.Type.Zero}}
+		return {{.Type.Zero}}, false
 	}
 
 	i := queue.write - 1
@@ -304,7 +304,7 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) LastOption() {{.Type}} {
 		i = queue.capacity - 1
 	}
 
-	return queue.m[i]
+	return queue.m[i], true
 }
 
 //-------------------------------------------------------------------------------------------------

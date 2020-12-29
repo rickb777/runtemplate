@@ -146,15 +146,15 @@ func (list *FastStringList) Head() string {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *FastStringList) HeadOption() string {
+func (list *FastStringList) HeadOption() (string, bool) {
 	if list == nil {
-		return ""
+		return "", false
 	}
 
 	if len(list.m) == 0 {
-		return ""
+		return "", false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -166,15 +166,15 @@ func (list *FastStringList) Last() string {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *FastStringList) LastOption() string {
+func (list *FastStringList) LastOption() (string, bool) {
 	if list == nil {
-		return ""
+		return "", false
 	}
 
 	if len(list.m) == 0 {
-		return ""
+		return "", false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

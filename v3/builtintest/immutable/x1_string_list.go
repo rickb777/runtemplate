@@ -12,9 +12,9 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // X1StringList contains a slice of type string. It is designed
@@ -151,12 +151,12 @@ func (list *X1StringList) Head() string {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1StringList) HeadOption() string {
+func (list *X1StringList) HeadOption() (string, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v string
-		return v
+		return v, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -167,12 +167,12 @@ func (list *X1StringList) Last() string {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1StringList) LastOption() string {
+func (list *X1StringList) LastOption() (string, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v string
-		return v
+		return v, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -469,7 +469,6 @@ func (list *X1StringList) Find(p func(string) bool) (string, bool) {
 		}
 	}
 
-
 	var empty string
 	return empty, false
 }
@@ -693,7 +692,7 @@ func (list *X1StringList) Equals(other *X1StringList) bool {
 
 type sortableX1StringList struct {
 	less func(i, j string) bool
-	m []string
+	m    []string
 }
 
 func (sl sortableX1StringList) Less(i, j int) bool {
@@ -823,7 +822,6 @@ func (list X1StringList) mkString3Bytes(before, between, after string) *strings.
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for _, v := range list.m {
 		b.WriteString(sep)

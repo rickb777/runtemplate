@@ -12,11 +12,11 @@ package threadsafe
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
+	"math/big"
 	"math/rand"
 	"sort"
+	"strings"
 	"sync"
-	"math/big"
 )
 
 // P2IntegerList contains a slice of type *big.Int.
@@ -163,18 +163,18 @@ func (list *P2IntegerList) Head() *big.Int {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns nil.
-func (list *P2IntegerList) HeadOption() *big.Int {
+func (list *P2IntegerList) HeadOption() (*big.Int, bool) {
 	if list == nil {
-		return nil
+		return nil, false
 	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if len(list.m) == 0 {
-		return nil
+		return nil, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -188,18 +188,18 @@ func (list *P2IntegerList) Last() *big.Int {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns nil.
-func (list *P2IntegerList) LastOption() *big.Int {
+func (list *P2IntegerList) LastOption() (*big.Int, bool) {
 	if list == nil {
-		return nil
+		return nil, false
 	}
 
 	list.s.RLock()
 	defer list.s.RUnlock()
 
 	if len(list.m) == 0 {
-		return nil
+		return nil, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -957,7 +957,7 @@ func (list *P2IntegerList) LastIndexWhere2(p func(*big.Int) bool, before int) in
 
 type sortableP2IntegerList struct {
 	less func(i, j *big.Int) bool
-	m []*big.Int
+	m    []*big.Int
 }
 
 func (sl sortableP2IntegerList) Less(i, j int) bool {

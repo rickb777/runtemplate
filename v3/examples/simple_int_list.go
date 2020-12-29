@@ -192,11 +192,11 @@ func (list SimpleIntList) Head() int {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list SimpleIntList) HeadOption() int {
+func (list SimpleIntList) HeadOption() (int, bool) {
 	if list.IsEmpty() {
-		return 0
+		return 0, false
 	}
-	return list[0]
+	return list[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -207,11 +207,11 @@ func (list SimpleIntList) Last() int {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list SimpleIntList) LastOption() int {
+func (list SimpleIntList) LastOption() (int, bool) {
 	if list.IsEmpty() {
-		return 0
+		return 0, false
 	}
-	return list[len(list)-1]
+	return list[len(list)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.

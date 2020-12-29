@@ -342,6 +342,7 @@ func Test{{.Type.U}}ListSend(t *testing.T) {
 
 func Test{{.Type.U}}ListGetHeadTailLastInit(t *testing.T) {
 	g := NewGomegaWithT(t)
+	gt := (*gt{{.Type.U}}List)(g)
 
 	a := NewX1{{.Type.U}}List(1, 2, 3, 4)
 
@@ -349,8 +350,9 @@ func Test{{.Type.U}}ListGetHeadTailLastInit(t *testing.T) {
 	g.Expect(a.Get(3)).To(Equal(4))
 	g.Expect(a.Head()).To(Equal(1))
 	g.Expect(a.Last()).To(Equal(4))
-	g.Expect(a.HeadOption()).To(Equal(1))
-	g.Expect(a.LastOption()).To(Equal(4))
+
+	gt.Expect(a.HeadOption()).ToEqual(1, true)
+	gt.Expect(a.LastOption()).ToEqual(4, true)
 
 	tail := a.Tail()
 
@@ -363,8 +365,25 @@ func Test{{.Type.U}}ListGetHeadTailLastInit(t *testing.T) {
     // check correct nil handling
     a = nil
 
-	g.Expect(a.HeadOption()).To(Equal(0))
-	g.Expect(a.LastOption()).To(Equal(0))
+	gt.Expect(a.HeadOption()).ToEqual(0, false)
+	gt.Expect(a.LastOption()).ToEqual(0, false)
+}
+
+type gt{{.Type.U}}List GomegaWithT
+
+type gt{{.Type.U}}ListOption struct {
+    g *GomegaWithT
+    v {{.Type}}
+    p bool
+}
+
+func (gt *gt{{.Type.U}}List) Expect(v {{.Type}}, p bool) gt{{.Type.U}}ListOption {
+    return gt{{.Type.U}}ListOption{g: (*GomegaWithT)(gt), v: v, p: p}
+}
+
+func (gt gt{{.Type.U}}ListOption) ToEqual(v {{.Type}}, p bool) {
+    gt.g.Expect(gt.v).To(Equal(v))
+    gt.g.Expect(gt.p).To(Equal(p))
 }
 
 func Test{{.Type.U}}ListContains(t *testing.T) {

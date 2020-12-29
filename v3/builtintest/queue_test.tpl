@@ -225,19 +225,19 @@ func Test{{.Type.U}}QueuePop(t *testing.T) {
 
 func Test{{.Type.U}}QueueGetHeadLast(t *testing.T) {
 	g := NewGomegaWithT(t)
+	gt := (*gt{{.Type.U}}Queue)(g)
 
 	a := NewX1{{.Type.U}}Queue(8, false)
 
-	g.Expect(a.HeadOption()).To(Equal(0))
-	g.Expect(a.LastOption()).To(Equal(0))
+	gt.Expect(a.HeadOption()).ToEqual(0,false)
+	gt.Expect(a.LastOption()).ToEqual(0, false)
 
 	a.Offer(1)
 
 	g.Expect(a.Get(0)).To(Equal(1))
 	g.Expect(a.Head()).To(Equal(1))
-	g.Expect(a.HeadOption()).To(Equal(1))
 	g.Expect(a.Last()).To(Equal(1))
-	g.Expect(a.LastOption()).To(Equal(1))
+	gt.Expect(a.LastOption()).ToEqual(1, true)
 
 	a.Offer(2, 3, 4, 5, 6)
 	a.Pop(2)
@@ -245,9 +245,9 @@ func Test{{.Type.U}}QueueGetHeadLast(t *testing.T) {
 	g.Expect(a.Get(0)).To(Equal(3))
 	g.Expect(a.Get(3)).To(Equal(6))
 	g.Expect(a.Head()).To(Equal(3))
-	g.Expect(a.HeadOption()).To(Equal(3))
 	g.Expect(a.Last()).To(Equal(6))
-	g.Expect(a.LastOption()).To(Equal(6))
+	gt.Expect(a.HeadOption()).ToEqual(3, true)
+	gt.Expect(a.LastOption()).ToEqual(6, true)
 
 	a.Offer(7, 8, 9, 10)
 	a.Pop(4)
@@ -255,15 +255,32 @@ func Test{{.Type.U}}QueueGetHeadLast(t *testing.T) {
 	g.Expect(a.Get(0)).To(Equal(7))
 	g.Expect(a.Get(3)).To(Equal(10))
 	g.Expect(a.Head()).To(Equal(7))
-	g.Expect(a.HeadOption()).To(Equal(7))
 	g.Expect(a.Last()).To(Equal(10))
-	g.Expect(a.LastOption()).To(Equal(10))
+	gt.Expect(a.HeadOption()).ToEqual(7, true)
+	gt.Expect(a.LastOption()).ToEqual(10, true)
 
 	// check correct nil handling
 	a = nil
 
-	g.Expect(a.HeadOption()).To(Equal(0))
-	g.Expect(a.LastOption()).To(Equal(0))
+	gt.Expect(a.HeadOption()).ToEqual(0, false)
+	gt.Expect(a.LastOption()).ToEqual(0, false)
+}
+
+type gt{{.Type.U}}Queue GomegaWithT
+
+type gt{{.Type.U}}QueueOption struct {
+    g *GomegaWithT
+    v {{.Type}}
+    p bool
+}
+
+func (gt *gt{{.Type.U}}Queue) Expect(v {{.Type}}, p bool) gt{{.Type.U}}QueueOption {
+    return gt{{.Type.U}}QueueOption{g: (*GomegaWithT)(gt), v: v, p: p}
+}
+
+func (gt gt{{.Type.U}}QueueOption) ToEqual(v {{.Type}}, p bool) {
+    gt.g.Expect(gt.v).To(Equal(v))
+    gt.g.Expect(gt.p).To(Equal(p))
 }
 
 func Test{{.Type.U}}QueueSend(t *testing.T) {

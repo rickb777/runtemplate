@@ -273,22 +273,21 @@ func (queue *X1AppleQueue) Head() Apple {
 	return queue.m[queue.read]
 }
 
-
 // HeadOption returns the oldest item in the queue without removing it. If the queue
 // is nil or empty, it returns the zero value instead.
-func (queue *X1AppleQueue) HeadOption() Apple {
+func (queue *X1AppleQueue) HeadOption() (Apple, bool) {
 	if queue == nil {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
-	return queue.m[queue.read]
+	return queue.m[queue.read], true
 }
 
 // Last gets the the newest item in the queue (i.e. last element pushed) without removing it.
@@ -308,16 +307,16 @@ func (queue *X1AppleQueue) Last() Apple {
 
 // LastOption returns the newest item in the queue without removing it. If the queue
 // is nil empty, it returns the zero value instead.
-func (queue *X1AppleQueue) LastOption() Apple {
+func (queue *X1AppleQueue) LastOption() (Apple, bool) {
 	if queue == nil {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	queue.s.RLock()
 	defer queue.s.RUnlock()
 
 	if queue.length == 0 {
-		return *(new(Apple))
+		return *(new(Apple)), false
 	}
 
 	i := queue.write - 1
@@ -325,7 +324,7 @@ func (queue *X1AppleQueue) LastOption() Apple {
 		i = queue.capacity - 1
 	}
 
-	return queue.m[i]
+	return queue.m[i], true
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -478,7 +477,7 @@ func (queue *X1AppleQueue) Push(items ...Apple) *X1AppleQueue {
 		n = len(items)
 		// no rounding in this case because the old items are expected to be overwritten
 
-	} else if !queue.overwrite && len(items) > (queue.capacity - queue.length) {
+	} else if !queue.overwrite && len(items) > (queue.capacity-queue.length) {
 		n = len(items) + queue.length
 		// rounded up to multiple of 128 to reduce repeated reallocation
 		n = ((n + 127) / 128) * 128
@@ -527,7 +526,7 @@ func (queue *X1AppleQueue) doPush(items ...Apple) []Apple {
 		return surplus
 	}
 
-	if n <= queue.capacity - queue.write {
+	if n <= queue.capacity-queue.write {
 		// easy case: enough space at end for all items
 		copy(queue.m[queue.write:], items)
 		queue.write = (queue.write + n) % queue.capacity

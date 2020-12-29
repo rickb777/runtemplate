@@ -14,9 +14,9 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 // X1IntList contains a slice of type int. It is designed
@@ -215,12 +215,12 @@ func (list *X1IntList) Head() int {
 
 // HeadOption gets the first element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntList) HeadOption() int {
+func (list *X1IntList) HeadOption() (int, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v int
-		return v
+		return v, false
 	}
-	return list.m[0]
+	return list.m[0], true
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
@@ -231,12 +231,12 @@ func (list *X1IntList) Last() int {
 
 // LastOption gets the last element in the list, if possible.
 // Otherwise returns the zero value.
-func (list *X1IntList) LastOption() int {
+func (list *X1IntList) LastOption() (int, bool) {
 	if list == nil || len(list.m) == 0 {
 		var v int
-		return v
+		return v, false
 	}
-	return list.m[len(list.m)-1]
+	return list.m[len(list.m)-1], true
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
@@ -533,7 +533,6 @@ func (list *X1IntList) Find(p func(int) bool) (int, bool) {
 		}
 	}
 
-
 	var empty int
 	return empty, false
 }
@@ -829,7 +828,7 @@ func (list *X1IntList) Equals(other *X1IntList) bool {
 
 type sortableX1IntList struct {
 	less func(i, j int) bool
-	m []int
+	m    []int
 }
 
 func (sl sortableX1IntList) Less(i, j int) bool {
@@ -972,7 +971,6 @@ func (list X1IntList) mkString3Bytes(before, between, after string) *strings.Bui
 	b := &strings.Builder{}
 	b.WriteString(before)
 	sep := ""
-
 
 	for _, v := range list.m {
 		b.WriteString(sep)
