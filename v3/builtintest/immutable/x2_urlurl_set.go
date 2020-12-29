@@ -12,8 +12,8 @@ package immutable
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"net/url"
+	"strings"
 )
 
 // X2UrlURLSet is the primary type that represents a set.
@@ -464,6 +464,17 @@ func (set *X2UrlURLSet) CountBy(p func(url.URL) bool) (result int) {
 		}
 	}
 	return
+}
+
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set *X2UrlURLSet) Fold(initial url.URL, fn func(url.URL, url.URL) url.URL) url.URL {
+
+	m := initial
+	for v := range set.m {
+		m = fn(m, v)
+	}
+
+	return m
 }
 
 // MinBy returns an element of X2UrlURLSet containing the minimum value, when compared to other elements

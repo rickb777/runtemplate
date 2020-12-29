@@ -5,7 +5,6 @@
 
 package threadsafe
 
-
 import (
 	"math/big"
 )
@@ -18,13 +17,13 @@ type P2IntegerSizer interface {
 	// NonEmpty tests whether P2IntegerCollection is empty.
 	NonEmpty() bool
 
-	// Size returns the number of items in the list - an alias of Len().
+	// Size returns the number of items in the collection - an alias of Len().
 	Size() int
 }
 
 // P2IntegerMkStringer defines an interface for stringer methods on *big.Int collections.
 type P2IntegerMkStringer interface {
-	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// String implements the Stringer interface to render the collection as a comma-separated string enclosed
 	// in square brackets.
 	String() string
 
@@ -40,7 +39,7 @@ type P2IntegerMkStringer interface {
 	// implements json.Unmarshaler interface {
 	UnmarshalJSON(b []byte) error
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a collection of strings that depicts all the elements.
 	StringList() []string
 }
 
@@ -99,4 +98,24 @@ type P2IntegerCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*big.Int, *big.Int) bool) *big.Int
+
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial *big.Int, fn func(*big.Int, *big.Int) *big.Int) *big.Int
+}
+
+// P2IntegerSequence defines an interface for sequence methods on *big.Int.
+type P2IntegerSequence interface {
+	P2IntegerCollection
+
+	// Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+	Head() *big.Int
+
+	// HeadOption gets the first element in the sequence, if possible.
+	HeadOption() (*big.Int, bool)
+
+	// Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+	Last() *big.Int
+
+	// LastOption gets the last element in the sequence, if possible.
+	LastOption() (*big.Int, bool)
 }

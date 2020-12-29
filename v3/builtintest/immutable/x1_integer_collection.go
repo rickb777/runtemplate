@@ -5,7 +5,6 @@
 
 package immutable
 
-
 import (
 	"math/big"
 )
@@ -37,7 +36,7 @@ type X1IntegerMkStringer interface {
 	// implements json.Marshaler interface {
 	MarshalJSON() ([]byte, error)
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a slice of strings that depicts all the elements.
 	StringList() []string
 }
 
@@ -90,4 +89,24 @@ type X1IntegerCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(big.Int, big.Int) bool) big.Int
+
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial big.Int, fn func(big.Int, big.Int) big.Int) big.Int
+}
+
+// X1IntegerSequence defines an interface for sequence methods on big.Int.
+type X1IntegerSequence interface {
+	X1IntegerCollection
+
+	// Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+	Head() big.Int
+
+	// HeadOption gets the first element in the sequence, if possible.
+	HeadOption() (big.Int, bool)
+
+	// Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+	Last() big.Int
+
+	// LastOption gets the last element in the sequence, if possible.
+	LastOption() (big.Int, bool)
 }

@@ -45,6 +45,7 @@ func (queue *TypeQueue) Partition(p func(Type) bool) (*TypeQueue, *TypeQueue)
 func (queue *TypeQueue) Map(f func(Type) Type) *TypeQueue
 func (queue *TypeQueue) FlatMap(f func(Type) []Type) *TypeQueue
 func (queue *TypeQueue) CountBy(p func(Type) bool) (result int)
+func (queue *TypeQueue) Fold(initial Type, fn func(Type, Type) Type) Type
 func (queue *TypeQueue) MinBy(less func(Type, Type) bool) Type
 func (queue *TypeQueue) MaxBy(less func(Type, Type) bool) Type
 func (queue *TypeQueue) Min() Type

@@ -19,14 +19,14 @@ type {{.Prefix.U}}{{.Type.U}}Sizer interface {
 	// NonEmpty tests whether {{.Prefix.U}}{{.Type.U}}Collection is empty.
 	NonEmpty() bool
 
-	// Size returns the number of items in the list - an alias of Len().
+	// Size returns the number of items in the collection - an alias of Len().
 	Size() int
 }
 {{- if .Stringer}}
 
 // {{.Prefix.U}}{{.Type.U}}MkStringer defines an interface for stringer methods on {{.Type}} collections.
 type {{.Prefix.U}}{{.Type.U}}MkStringer interface {
-	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// String implements the Stringer interface to render the collection as a comma-separated string enclosed
 	// in square brackets.
 	String() string
 
@@ -42,7 +42,7 @@ type {{.Prefix.U}}{{.Type.U}}MkStringer interface {
 	// implements json.Unmarshaler interface {
 	//UnmarshalJSON(b []byte) error
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a collection of strings that depicts all the elements.
 	StringList() []string
 }
 {{- end}}
@@ -124,9 +124,29 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.Type}}, {{.Type}}) bool) {{.Type}}
+
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial {{.Type}}, fn func({{.Type}}, {{.Type}}) {{.Type}}) {{.Type}}
 {{- if .Numeric}}
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.Type.Name}}
 {{- end}}
+}
+
+// {{.Prefix.U}}{{.Type.U}}Sequence defines an interface for sequence methods on {{.Type}}.
+type {{.Prefix.U}}{{.Type.U}}Sequence interface {
+	{{.Prefix.U}}{{.Type.U}}Collection
+
+    // Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+    Head() {{.Type}}
+
+    // HeadOption gets the first element in the sequence, if possible.
+    HeadOption() ({{.Type}}, bool)
+
+    // Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+    Last() {{.Type}}
+
+    // LastOption gets the last element in the sequence, if possible.
+    LastOption() ({{.Type}}, bool)
 }

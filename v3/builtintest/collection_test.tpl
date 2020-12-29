@@ -183,6 +183,23 @@ func test{{.Type.U}}Contains(t *testing.T, a X1{{.Type.U}}Collection, kind strin
 	g.Expect(a.ContainsAll(1, 3, 5, 7, 9, 11, 13)).To(BeFalse())
 }
 
+func Test{{.Type.U}}Fold(t *testing.T) {
+	test{{.Type.U}}Fold(t, NewX1{{.Type.U}}Set(10, 71, 3, 7, 13), "Set")
+	test{{.Type.U}}Fold(t, NewX1{{.Type.U}}List(10, 71, 3, 7, 13), "List")
+{{- if .Mutable}}
+	test{{.Type.U}}Fold(t, interestingFullQueue(10, 71, 3, 7, 13), "Queue")
+	test{{.Type.U}}Fold(t, interestingPartialQueue(10, 13, 3, 7, 71), "Queue")
+	test{{.Type.U}}Fold(t, interestingPartialQueue(10, 71, 3, 7, 13), "Queue")
+{{- end}}
+}
+
+func test{{.Type.U}}Fold(t *testing.T, a X1{{.Type.U}}Collection, kind string) {
+	g := NewGomegaWithT(t)
+
+	g.Expect(a.Fold(10, func(a, b {{.Type}}) {{.Type}} {return a+b} )).To(Equal(114))
+	g.Expect(a.Fold(0, func(a, b {{.Type}}) {{.Type}} {return a+b} )).To(Equal(104))
+}
+
 func Test{{.Type.U}}MinMaxSum(t *testing.T) {
 	test{{.Type.U}}MinMaxSum(t, NewX1{{.Type.U}}Set(10, 71, 3, 7, 13), "Set")
 	test{{.Type.U}}MinMaxSum(t, NewX1{{.Type.U}}List(10, 71, 3, 7, 13), "List")

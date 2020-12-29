@@ -32,7 +32,7 @@ type X1StringMkStringer interface {
 	// implements json.Marshaler interface {
 	MarshalJSON() ([]byte, error)
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a slice of strings that depicts all the elements.
 	StringList() []string
 }
 
@@ -94,4 +94,24 @@ type X1StringCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(string, string) bool) string
+
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial string, fn func(string, string) string) string
+}
+
+// X1StringSequence defines an interface for sequence methods on string.
+type X1StringSequence interface {
+	X1StringCollection
+
+	// Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+	Head() string
+
+	// HeadOption gets the first element in the sequence, if possible.
+	HeadOption() (string, bool)
+
+	// Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+	Last() string
+
+	// LastOption gets the last element in the sequence, if possible.
+	LastOption() (string, bool)
 }

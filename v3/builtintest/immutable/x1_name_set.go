@@ -514,6 +514,17 @@ func (set *X1NameSet) Max() (result Name) {
 	return m
 }
 
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set *X1NameSet) Fold(initial Name, fn func(Name, Name) Name) Name {
+
+	m := initial
+	for v := range set.m {
+		m = fn(m, v)
+	}
+
+	return m
+}
+
 // MinBy returns an element of X1NameSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.

@@ -32,7 +32,7 @@ type X1IntMkStringer interface {
 	// implements json.Marshaler interface {
 	MarshalJSON() ([]byte, error)
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a slice of strings that depicts all the elements.
 	StringList() []string
 }
 
@@ -81,12 +81,12 @@ type X1IntCollection interface {
 	MapToInt64(f func(int) int64) []int64
 
 	// FlatMapString returns a new []string by transforming every element with function f
-	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// that returns zero or more items in a slice. The resulting slice may have a different size to the
 	// collection. The collection is not modified.
 	FlatMapToString(f func(int) []string) []string
 
 	// FlatMapInt64 returns a new []int64 by transforming every element with function f
-	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// that returns zero or more items in a slice. The resulting slice may have a different size to the
 	// collection. The collection is not modified.
 	FlatMapToInt64(f func(int) []int64) []int64
 
@@ -119,6 +119,26 @@ type X1IntCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(int, int) bool) int
 
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial int, fn func(int, int) int) int
+
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int
+}
+
+// X1IntSequence defines an interface for sequence methods on int.
+type X1IntSequence interface {
+	X1IntCollection
+
+	// Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+	Head() int
+
+	// HeadOption gets the first element in the sequence, if possible.
+	HeadOption() (int, bool)
+
+	// Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+	Last() int
+
+	// LastOption gets the last element in the sequence, if possible.
+	LastOption() (int, bool)
 }

@@ -502,6 +502,17 @@ func (set *ImmutableAppleSet) CountBy(p func(Apple) bool) (result int) {
 	return
 }
 
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set *ImmutableAppleSet) Fold(initial Apple, fn func(Apple, Apple) Apple) Apple {
+
+	m := initial
+	for v := range set.m {
+		m = fn(m, v)
+	}
+
+	return m
+}
+
 // MinBy returns an element of ImmutableAppleSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.

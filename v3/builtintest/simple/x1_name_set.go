@@ -41,11 +41,11 @@ func ConvertX1NameSet(values ...interface{}) (X1NameSet, bool) {
 		case *Name:
 			k := Name(*j)
 			set[k] = struct{}{}
-        default:
-		    if s, ok := i.(fmt.Stringer); ok {
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
 				k := Name(s.String())
-			    set[k] = struct{}{}
-		    }
+				set[k] = struct{}{}
+			}
 		}
 	}
 
@@ -417,6 +417,16 @@ func (set X1NameSet) Max() Name {
 		return a < b
 	})
 	return v
+}
+
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set X1NameSet) Fold(initial Name, fn func(Name, Name) Name) Name {
+	m := initial
+	for v := range set {
+		m = fn(m, v)
+	}
+
+	return m
 }
 
 // MinBy returns an element of X1NameSet containing the minimum value, when compared to other elements

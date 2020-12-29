@@ -956,6 +956,23 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) CountBy(p func({{.Type}}) bool) (res
 	return
 }
 
+// Fold aggregates all the values in the queue using a supplied function, starting from some initial value.
+func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Fold(initial {{.Type}}, fn func({{.Type}}, {{.Type}}) {{.Type}}) {{.Type}} {
+	if queue == nil {
+		return initial
+	}
+
+    m := initial
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		m = fn(m, v)
+	}
+	for _, v := range back {
+		m = fn(m, v)
+	}
+	return m
+}
+
 // MinBy returns an element of {{.Prefix.U}}{{.Type.U}}Queue containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.

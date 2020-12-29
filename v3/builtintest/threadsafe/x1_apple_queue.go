@@ -972,6 +972,26 @@ func (queue *X1AppleQueue) CountBy(p func(Apple) bool) (result int) {
 	return
 }
 
+// Fold aggregates all the values in the queue using a supplied function, starting from some initial value.
+func (queue *X1AppleQueue) Fold(initial Apple, fn func(Apple, Apple) Apple) Apple {
+	if queue == nil {
+		return initial
+	}
+
+	queue.s.RLock()
+	defer queue.s.RUnlock()
+
+	m := initial
+	front, back := queue.frontAndBack()
+	for _, v := range front {
+		m = fn(m, v)
+	}
+	for _, v := range back {
+		m = fn(m, v)
+	}
+	return m
+}
+
 // MinBy returns an element of X1AppleQueue containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.

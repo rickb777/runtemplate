@@ -4,9 +4,9 @@
 package simple
 
 import (
-	"testing"
-	"sort"
 	. "github.com/onsi/gomega"
+	"sort"
+	"testing"
 )
 
 type Sizer interface {
@@ -152,6 +152,18 @@ func testIntContains(t *testing.T, a X1IntCollection, kind string) {
 	g.Expect(a.ContainsAll(1, 3, 5, 7, 9, 11, 13)).To(BeFalse())
 }
 
+func TestIntFold(t *testing.T) {
+	testIntFold(t, NewX1IntSet(10, 71, 3, 7, 13), "Set")
+	testIntFold(t, NewX1IntList(10, 71, 3, 7, 13), "List")
+}
+
+func testIntFold(t *testing.T, a X1IntCollection, kind string) {
+	g := NewGomegaWithT(t)
+
+	g.Expect(a.Fold(10, func(a, b int) int { return a + b })).To(Equal(114))
+	g.Expect(a.Fold(0, func(a, b int) int { return a + b })).To(Equal(104))
+}
+
 func TestIntMinMaxSum(t *testing.T) {
 	testIntMinMaxSum(t, NewX1IntSet(10, 71, 3, 7, 13), "Set")
 	testIntMinMaxSum(t, NewX1IntList(10, 71, 3, 7, 13), "List")
@@ -181,10 +193,10 @@ func TestIntSend(t *testing.T) {
 func testIntSend(t *testing.T, a X1IntCollection, kind string) {
 	g := NewGomegaWithT(t)
 
-    s := make([]int, 0)
-    for v := range a.Send() {
-        s = append(s, v)
-    }
+	s := make([]int, 0)
+	for v := range a.Send() {
+		s = append(s, v)
+	}
 	g.Expect(s).To(Equal([]int{10, 71, 3, 7, 13}))
 }
 

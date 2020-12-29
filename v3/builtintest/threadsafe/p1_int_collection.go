@@ -13,13 +13,13 @@ type P1IntSizer interface {
 	// NonEmpty tests whether P1IntCollection is empty.
 	NonEmpty() bool
 
-	// Size returns the number of items in the list - an alias of Len().
+	// Size returns the number of items in the collection - an alias of Len().
 	Size() int
 }
 
 // P1IntMkStringer defines an interface for stringer methods on *int collections.
 type P1IntMkStringer interface {
-	// String implements the Stringer interface to render the list as a comma-separated string enclosed
+	// String implements the Stringer interface to render the collection as a comma-separated string enclosed
 	// in square brackets.
 	String() string
 
@@ -35,7 +35,7 @@ type P1IntMkStringer interface {
 	// implements json.Unmarshaler interface {
 	UnmarshalJSON(b []byte) error
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a collection of strings that depicts all the elements.
 	StringList() []string
 }
 
@@ -110,6 +110,26 @@ type P1IntCollection interface {
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*int, *int) bool) *int
 
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial *int, fn func(*int, *int) *int) *int
+
 	// Sum returns the sum of all the elements in the collection.
 	Sum() int
+}
+
+// P1IntSequence defines an interface for sequence methods on *int.
+type P1IntSequence interface {
+	P1IntCollection
+
+	// Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+	Head() *int
+
+	// HeadOption gets the first element in the sequence, if possible.
+	HeadOption() (*int, bool)
+
+	// Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+	Last() *int
+
+	// LastOption gets the last element in the sequence, if possible.
+	LastOption() (*int, bool)
 }

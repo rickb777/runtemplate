@@ -757,6 +757,19 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) Max() (result {{.Type.Name}}) {
 }
 {{- end}}
 
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set *{{.Prefix.U}}{{.Type.U}}Set) Fold(initial {{.Type}}, fn func({{.Type}}, {{.Type}}) {{.Type}}) {{.Type}} {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	m := initial
+	for v := range set.m {
+		m = fn(m, {{.Type.Amp}}v)
+	}
+
+	return m
+}
+
 // MinBy returns an element of {{.Prefix.U}}{{.Type.U}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.

@@ -40,6 +40,7 @@ func (list *TypeList) Partition(p func(Type) bool) (*TypeList, *TypeList)
 func (list *TypeList) Map(f func(Type) Type) *TypeList
 func (list *TypeList) FlatMap(f func(Type) []Type) *TypeList
 func (list *TypeList) CountBy(p func(Type) bool) (result int)
+func (list *TypeList) Fold(initial *Type, fn func(*Type, *Type) *Type) *Type
 func (list *TypeList) MinBy(less func(Type, Type) bool) Type
 func (list *TypeList) MaxBy(less func(Type, Type) bool) Type
 func (list *TypeList) DistinctBy(equal func(Type, Type) bool) *TypeList

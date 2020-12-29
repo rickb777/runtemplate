@@ -13,7 +13,7 @@ type P1AppleSizer interface {
 	// NonEmpty tests whether P1AppleCollection is empty.
 	NonEmpty() bool
 
-	// Size returns the number of items in the list - an alias of Len().
+	// Size returns the number of items in the collection - an alias of Len().
 	Size() int
 }
 
@@ -74,4 +74,24 @@ type P1AppleCollection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func(*Apple, *Apple) bool) *Apple
+
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial *Apple, fn func(*Apple, *Apple) *Apple) *Apple
+}
+
+// P1AppleSequence defines an interface for sequence methods on *Apple.
+type P1AppleSequence interface {
+	P1AppleCollection
+
+	// Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+	Head() *Apple
+
+	// HeadOption gets the first element in the sequence, if possible.
+	HeadOption() (*Apple, bool)
+
+	// Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+	Last() *Apple
+
+	// LastOption gets the last element in the sequence, if possible.
+	LastOption() (*Apple, bool)
 }

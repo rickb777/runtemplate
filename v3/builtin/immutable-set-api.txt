@@ -32,6 +32,7 @@ func (set *TypeSet) FlatMap(f func(Type) []Type) *TypeSet
 func (set *TypeSet) CountBy(p func(Type) bool) (result int)
 func (set *TypeSet) Min() Type
 func (set *TypeSet) Max() (result Type)
+func (set *TypeSet) Fold(initial Type, fn func(Type, Type) Type) Type
 func (set *TypeSet) MinBy(less func(Type, Type) bool) Type
 func (set *TypeSet) MaxBy(less func(Type, Type) bool) Type
 func (set *TypeSet) Sum() Type

@@ -9,8 +9,7 @@
 
 package fast
 
-import (
-)
+import ()
 
 // X1AppleSet is the primary type that represents a set.
 type X1AppleSet struct {
@@ -483,6 +482,17 @@ func (set *X1AppleSet) CountBy(p func(Apple) bool) (result int) {
 		}
 	}
 	return
+}
+
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set *X1AppleSet) Fold(initial Apple, fn func(Apple, Apple) Apple) Apple {
+
+	m := initial
+	for v := range set.m {
+		m = fn(m, v)
+	}
+
+	return m
 }
 
 // MinBy returns an element of X1AppleSet containing the minimum value, when compared to other elements

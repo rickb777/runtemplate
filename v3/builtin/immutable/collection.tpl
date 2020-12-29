@@ -39,7 +39,7 @@ type {{.Prefix.U}}{{.Type.U}}MkStringer interface {
 	// implements json.Marshaler interface {
 	MarshalJSON() ([]byte, error)
 
-	// StringList gets a list of strings that depicts all the elements.
+	// StringList gets a slice of strings that depicts all the elements.
 	StringList() []string
 }
 {{- end}}
@@ -94,7 +94,7 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 {{- range .MapTo}}
 
 	// FlatMap{{.U}} returns a new []{{.}} by transforming every element with function f
-	// that returns zero or more items in a slice. The resulting list may have a different size to the
+	// that returns zero or more items in a slice. The resulting slice may have a different size to the
 	// collection. The collection is not modified.
 	FlatMapTo{{.U}}(f func({{$.Type.Name}}) []{{.}}) []{{.}}
 {{- end}}
@@ -131,9 +131,29 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 	// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 	// element is returned. Panics if there are no elements.
 	MaxBy(less func({{.Type.Name}}, {{.Type.Name}}) bool) {{.Type.Name}}
+
+	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
+	Fold(initial {{.Type}}, fn func({{.Type}}, {{.Type}}) {{.Type}}) {{.Type}}
 {{- if .Numeric}}
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.Type.Name}}
 {{- end}}
+}
+
+// {{.Prefix.U}}{{.Type.U}}Sequence defines an interface for sequence methods on {{.Type}}.
+type {{.Prefix.U}}{{.Type.U}}Sequence interface {
+	{{.Prefix.U}}{{.Type.U}}Collection
+
+    // Head gets the first element in the sequence. Head plus Tail include the whole sequence. Head is the opposite of Last.
+    Head() {{.Type}}
+
+    // HeadOption gets the first element in the sequence, if possible.
+    HeadOption() ({{.Type}}, bool)
+
+    // Last gets the last element in the sequence. Init plus Last include the whole sequence. Last is the opposite of Head.
+    Last() {{.Type}}
+
+    // LastOption gets the last element in the sequence, if possible.
+    LastOption() ({{.Type}}, bool)
 }

@@ -914,6 +914,17 @@ func (list *FastIntList) CountBy(p func(int) bool) (result int) {
 	return
 }
 
+// Fold aggregates all the values in the list using a supplied function, starting from some initial value.
+func (list *FastIntList) Fold(initial int, fn func(int, int) int) int {
+
+	m := initial
+	for _, v := range list.m {
+		m = fn(m, v)
+	}
+
+	return m
+}
+
 // MinBy returns an element of FastIntList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.

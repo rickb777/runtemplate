@@ -754,6 +754,19 @@ func (set *P1IntSet) Max() (result int) {
 	return m
 }
 
+// Fold aggregates all the values in the set using a supplied function, starting from some initial value.
+func (set *P1IntSet) Fold(initial *int, fn func(*int, *int) *int) *int {
+	set.s.RLock()
+	defer set.s.RUnlock()
+
+	m := initial
+	for v := range set.m {
+		m = fn(m, &v)
+	}
+
+	return m
+}
+
 // MinBy returns an element of P1IntSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Panics if there are no elements.
