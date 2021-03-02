@@ -3,9 +3,10 @@
 //
 //
 // Generated from immutable/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true Stringer:true GobEncode:<no value> Mutable:disabled
+// options: Comparable:true Numeric:true Ordered:true
+//          StringLike:<no value> StringParser:<no value> Stringer:true
 // by runtemplate v3.7.1
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -46,6 +47,7 @@ func NewImmutableIntList(values ...int) *ImmutableIntList {
 // ConvertImmutableIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
+// Conversions are provided from all built-in numeric types.
 func ConvertImmutableIntList(values ...interface{}) (*ImmutableIntList, bool) {
 	list := newImmutableIntList(0, len(values))
 

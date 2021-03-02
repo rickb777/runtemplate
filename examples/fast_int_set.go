@@ -3,9 +3,10 @@
 // Not thread-safe.
 //
 // Generated from fast/set.tpl with Type=int
-// options: Comparable:always Numeric:true Ordered:true Stringer:true ToList:<no value>
+// options: Comparable:always Numeric:true Ordered:true ToList:<no value>
+//          StringLike:<no value> StringParser:<no value> Stringer:true
 // by runtemplate v3.7.1
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 

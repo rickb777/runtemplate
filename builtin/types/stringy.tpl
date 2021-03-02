@@ -3,7 +3,7 @@
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: SortableSlice:{{.SortableSlice}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 

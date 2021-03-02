@@ -5,7 +5,7 @@
 // Generated from immutable/set.tpl with Type=int
 // options: Comparable:always Numeric:true Ordered:true Stringer:true Mutable:disabled
 // by runtemplate v3.7.1
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -117,8 +117,8 @@ func ConvertImmutableIntSet(values ...interface{}) (*ImmutableIntSet, bool) {
 	return set, len(set.m) == len(values)
 }
 
-// BuildImmutableIntSetFromChan constructs a new ImmutableIntSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildImmutableIntSetFromChan constructs a new ImmutableIntSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildImmutableIntSetFromChan(source <-chan int) *ImmutableIntSet {
 	set := NewImmutableIntSet()
 	for v := range source {

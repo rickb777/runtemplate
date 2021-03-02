@@ -3,9 +3,13 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} ToList:{{.ToList}}
+// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} ToList:{{.ToList}}
+//          StringLike:{{.StringLike}} StringParser:{{.StringParser}} Stringer:{{.Stringer}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
+{{- if and .StringLike .StringParser}}
+Template error: don't define both StringLike and StringParser
+{{- end}}
 
 package {{.Package}}
 
@@ -49,6 +53,21 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 	set := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for _, i := range values {
+{{- if .StringParser}}
+		switch j := i.(type) {
+		case string:
+			k, e := {{.StringParser}}(j)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := {{.StringParser}}(*j)
+			if e == nil {
+			    i = k
+			}
+		}
+
+{{- end}}
 		switch j := i.(type) {
 {{- if .Numeric}}
 		case int:
@@ -130,22 +149,20 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 		case *{{.Type.Name}}:
 			k := {{.Type.Name}}(*j)
 			set.m[k] = struct{}{}
-		{{- if and .StringLike .ne .Type.Name "string"}}
+{{- end}}
+{{- if and .StringLike (ne .Type.Name "string")}}
 		case string:
 			k := {{.Type.Name}}(j)
 			set.m[k] = struct{}{}
 		case *string:
 			k := {{.Type.Name}}(*j)
 			set.m[k] = struct{}{}
-		{{- end}}
-{{- end}}
-		{{- if .StringLike}}
-        default:
-		    if s, ok := i.(fmt.Stringer); ok {
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
 				k := {{.Type.Name}}(s.String())
-			    set.m[k] = struct{}{}
-		    }
-		{{- end}}
+				set.m[k] = struct{}{}
+			}
+{{- end}}
 		}
 	}
 

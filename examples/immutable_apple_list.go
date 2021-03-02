@@ -3,9 +3,10 @@
 //
 //
 // Generated from immutable/list.tpl with Type=Apple
-// options: Comparable:<no value> Numeric:<no value> Ordered:<no value> Stringer:false GobEncode:true Mutable:disabled
+// options: Comparable:<no value> Numeric:<no value> Ordered:<no value>
+//          StringLike:<no value> StringParser:<no value> Stringer:false
 // by runtemplate v3.7.1
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 

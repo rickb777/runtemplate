@@ -7,7 +7,10 @@
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
 // options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:disabled
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
+{{- if and .StringLike .StringParser}}
+Template error: don't define both StringLike and StringParser
+{{- end}}
 
 package {{.Package}}
 
@@ -53,6 +56,21 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 	set := New{{.Prefix.U}}{{.Type.U}}Set()
 
 	for _, i := range values {
+{{- if .StringParser}}
+		switch j := i.(type) {
+		case string:
+			k, e := {{.StringParser}}(j)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := {{.StringParser}}(*j)
+			if e == nil {
+			    i = k
+			}
+		}
+
+{{- end}}
 		switch j := i.(type) {
 {{- if .Numeric}}
 		case int:
@@ -133,14 +151,27 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 		case *{{.Type.Name}}:
 			set.m[*j] = struct{}{}
 {{- end}}
+{{- if and .StringLike (ne .Type.Name "string")}}
+		case string:
+			k := {{.Type.Name}}(j)
+			set.m[k] = struct{}{}
+		case *string:
+			k := {{.Type.Name}}(*j)
+			set.m[k] = struct{}{}
+		default:
+			if s, ok := i.(fmt.Stringer); ok {
+				k := {{.Type.Name}}(s.String())
+				set.m[k] = struct{}{}
+			}
+{{- end}}
 		}
 	}
 
 	return set, len(set.m) == len(values)
 }
 
-// Build{{.Prefix.U}}{{.Type.U}}SetFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Set from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// Build{{.Prefix.U}}{{.Type.U}}SetFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Set from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func Build{{.Prefix.U}}{{.Type.U}}SetFromChan(source <-chan {{.Type.Name}}) *{{.Prefix.U}}{{.Type.U}}Set {
 	set := New{{.Prefix.U}}{{.Type.U}}Set()
 	for v := range source {

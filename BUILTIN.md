@@ -40,7 +40,7 @@ The built-in collections support a small number of flags that allow you to contr
 The choice of flags is up to you and needs to be done with the language specification in mind - see [Arithmetic operators](https://golang.org/ref/spec#Arithmetic_operators) and
 [Comparison operators](https://golang.org/ref/spec#Comparison_operators). If you set a flag that is impossible for the chosen data type, the generated code won't compile, but no other bad thing will happen; so it will soon become obvious.
 
-There are examples of these flags in use, in various combinations, in [examples/gen.go](https://github.com/rickb777/runtemplate/blob/master/v3/examples/gen.go), along with the resulting collection types.
+There are examples of these flags in use, in various combinations, in [examples/gen.go](https://github.com/rickb777/runtemplate/blob/master/gitv3/examples/gen.go), along with the resulting collection types.
 
 
 ## 1. Direct Use of Go Slices and Maps

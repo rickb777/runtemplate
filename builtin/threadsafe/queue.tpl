@@ -12,7 +12,7 @@
 // options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Sorted:{{.Sorted}} Stringer:{{.Stringer}}
 // ToList:{{.ToList}} ToSet:{{.ToSet}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package {{.Package}}
 

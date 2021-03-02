@@ -2,10 +2,11 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true StringLike:<no value> Stringer:true
+// options: Comparable:true Numeric:true Ordered:true
+//          StringLike:<no value> StringParser:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:string,int64
 // by runtemplate v3.7.1
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -40,6 +41,7 @@ func NewSimpleIntList(values ...int) SimpleIntList {
 // ConvertSimpleIntList constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
+// Conversions are provided from all built-in numeric types.
 func ConvertSimpleIntList(values ...interface{}) (SimpleIntList, bool) {
 	list := MakeSimpleIntList(0, len(values))
 

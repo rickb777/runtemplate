@@ -5,7 +5,7 @@
 // Generated from immutable/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
 // by runtemplate v3.7.1
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
 
@@ -48,8 +48,8 @@ func ConvertImmutableAppleSet(values ...interface{}) (*ImmutableAppleSet, bool) 
 	return set, len(set.m) == len(values)
 }
 
-// BuildImmutableAppleSetFromChan constructs a new ImmutableAppleSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildImmutableAppleSetFromChan constructs a new ImmutableAppleSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildImmutableAppleSetFromChan(source <-chan Apple) *ImmutableAppleSet {
 	set := NewImmutableAppleSet()
 	for v := range source {

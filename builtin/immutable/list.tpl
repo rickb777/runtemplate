@@ -5,9 +5,13 @@
 //{{end}}
 //
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} GobEncode:{{.GobEncode}} Mutable:disabled
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}}
+//          StringLike:{{.StringLike}} StringParser:{{.StringParser}} Stringer:{{.Stringer}}
 // by runtemplate {{.AppVersion}}
-// See https://github.com/rickb777/runtemplate/blob/master/v3/BUILTIN.md
+// See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
+{{- if and .StringLike .StringParser}}
+Template error: don't define both StringLike and StringParser
+{{- end}}
 
 package {{.Package}}
 
@@ -59,10 +63,31 @@ func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.
 // Convert{{.Prefix.U}}{{.Type.U}}List constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
+{{- if .Numeric}}
+// Conversions are provided from all built-in numeric types.
+{{- end}}
+{{- if .StringParser}}
+// String conversions are handled using the {{.StringParser}} function.
+{{- end}}
 func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{{.Type.U}}List, bool) {
 	list := new{{.Prefix.U}}{{.Type.U}}List(0, len(values))
 
 	for _, i := range values {
+{{- if .StringParser}}
+		switch j := i.(type) {
+		case string:
+			k, e := {{.StringParser}}(j)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := {{.StringParser}}(*j)
+			if e == nil {
+			    i = k
+			}
+		}
+
+{{- end}}
 		switch j := i.(type) {
 {{- if .Numeric}}
 		case int:
@@ -144,19 +169,18 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 		case *{{.Type.Name}}:
 			k := {{.Type.Name}}(*j)
 			list.m = append(list.m, {{.Type.Amp}}k)
-		{{- if and .StringLike .ne .Type.Name "string"}}
+{{- end}}
+{{- if and .StringLike .ne .Type.Name "string"}}
 		case string:
 			k := {{.Type.Name}}(j)
 			list.m = append(list.m, {{.Type.Name}}(k))
 		case *string:
 			k := {{.Type.Name}}(*j)
 			list.m = append(list.m, {{.Type.Name}}(k))
-		{{- end}}
-{{- end}}
-		{{- if .StringLike}}
 		default:
 			if s, ok := i.(fmt.Stringer); ok {
-				list.m = append(list.m, {{.Type.Name}}(s.String()))
+				k := {{.Type.Name}}(s.String())
+				list.m = append(list.m, {{.Type.Amp}}k)
 			}
 		{{- end}}
 		}
