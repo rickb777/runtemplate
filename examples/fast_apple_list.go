@@ -5,7 +5,7 @@
 // options: Comparable:true Numeric:<no value> Integer:<no value> Ordered:<no value>
 //          StringLike:<no value> StringParser:<no value> Stringer:false
 // GobEncode:true Mutable:always ToList:always ToSet:<no value> MapTo:<no value>
-// by runtemplate v3.7.1
+// by runtemplate v3.10.0
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
