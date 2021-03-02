@@ -3,7 +3,7 @@
 // Thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable:always Numeric:{{.Numeric}} Ordered:{{.Ordered}} ToList:{{.ToList}}
+// options: Comparable:always Numeric:{{.Numeric}} Integer:{{.Integer}} Ordered:{{.Ordered}} ToList:{{.ToList}}
 //          StringLike:{{.StringLike}} StringParser:{{.StringParser}} Stringer:{{.Stringer}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -21,6 +21,9 @@ import (
 {{- if .Stringer}}
 	"encoding/json"
 	"fmt"
+{{- end}}
+{{- if .Integer}}
+	"strconv"
 {{- end}}
 {{- if .Stringer}}
 	"strings"
@@ -57,22 +60,34 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) (*{{.Prefix.U}}{{
 
 	for _, i := range values {
 {{- if .StringParser}}
-		switch j := i.(type) {
+		switch s := i.(type) {
 		case string:
-			k, e := {{.StringParser}}(j)
+			k, e := {{.StringParser}}(s)
 			if e == nil {
 			    i = k
 			}
 		case *string:
-			k, e := {{.StringParser}}(*j)
+			k, e := {{.StringParser}}(*s)
 			if e == nil {
 			    i = k
 			}
 		}
-
+{{- else if .Integer}}
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		}
 {{- end}}
 		switch j := i.(type) {
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 		case int:
 			k := {{.Type.Name}}(j)
 			set.m[k] = struct{}{}
@@ -834,7 +849,7 @@ func (set *{{.Prefix.U}}{{.Type.U}}Set) MaxBy(less func({{.Type}}, {{.Type}}) bo
 	}
 	return {{.Type.Amp}}m
 }
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type.Name}} is numeric.

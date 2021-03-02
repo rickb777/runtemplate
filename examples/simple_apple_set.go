@@ -3,7 +3,7 @@
 // Not thread-safe.
 //
 // Generated from simple/set.tpl with Type=Apple
-// options: Numeric:<no value> Stringer:false Mutable:always
+// options: Numeric:<no value> Integer:<no value> Stringer:false Mutable:always
 // by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -23,6 +23,7 @@ func NewSimpleAppleSet(values ...Apple) SimpleAppleSet {
 
 // ConvertSimpleAppleSet constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
 func ConvertSimpleAppleSet(values ...interface{}) (SimpleAppleSet, bool) {
 	set := make(SimpleAppleSet)
 
@@ -40,8 +41,8 @@ func ConvertSimpleAppleSet(values ...interface{}) (SimpleAppleSet, bool) {
 	return set, len(set) == len(values)
 }
 
-// BuildSimpleAppleSetFromChan constructs a new SimpleAppleSet from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// BuildSimpleAppleSetFromChan constructs a new SimpleAppleSet from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func BuildSimpleAppleSetFromChan(source <-chan Apple) SimpleAppleSet {
 	set := make(SimpleAppleSet)
 	for v := range source {

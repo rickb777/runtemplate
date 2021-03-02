@@ -1111,7 +1111,7 @@ func (queue *{{.Prefix.U}}{{.Type.U}}Queue) Max() (result {{.Type.Name}}) {
 	return m
 }
 {{- end}}
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type.Name}} is numeric.

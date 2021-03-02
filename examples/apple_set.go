@@ -3,7 +3,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/set.tpl with Type=Apple
-// options: Comparable:always Numeric:<no value> Ordered:<no value> ToList:<no value>
+// options: Comparable:always Numeric:<no value> Integer:<no value> Ordered:<no value> ToList:<no value>
 //          StringLike:<no value> StringParser:<no value> Stringer:false
 // by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md

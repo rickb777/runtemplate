@@ -3,7 +3,7 @@
 //
 //
 // Generated from immutable/set.tpl with Type=int
-// options: Comparable:always Numeric:true Ordered:true Stringer:true Mutable:disabled
+// options: Comparable:always Numeric:<no value> Integer:true Ordered:true Stringer:true Mutable:disabled
 // by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -12,6 +12,7 @@ package examples
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -38,6 +39,18 @@ func ConvertImmutableIntSet(values ...interface{}) (*ImmutableIntSet, bool) {
 	set := NewImmutableIntSet()
 
 	for _, i := range values {
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+				i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+				i = k
+			}
+		}
 		switch j := i.(type) {
 		case int:
 			k := int(j)

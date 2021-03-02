@@ -3,7 +3,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
-// options: Numeric:{{.Numeric}} Stringer:{{.Stringer}} Mutable:always
+// options: Numeric:{{.Numeric}} Integer:{{.Integer}} Stringer:{{.Stringer}} Mutable:always
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 {{- if and .StringLike .StringParser}}
@@ -21,6 +21,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+{{- end}}
+{{- if .Integer}}
+	"strconv"
 {{- end}}
 {{- if .HasImport}}
 	{{.Import}}
@@ -42,27 +45,40 @@ func New{{.Prefix.U}}{{.Type.U}}Set(values ...{{.Type}}) {{.Prefix.U}}{{.Type.U}
 
 // Convert{{.Prefix.U}}{{.Type.U}}Set constructs a new set containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
+// The returned set will contain all the values that were correctly converted.
 func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) ({{.Prefix.U}}{{.Type.U}}Set, bool) {
 	set := make({{.Prefix.U}}{{.Type.U}}Set)
 
 	for _, i := range values {
 {{- if .StringParser}}
-		switch j := i.(type) {
+		switch s := i.(type) {
 		case string:
-			k, e := {{.StringParser}}(j)
+			k, e := {{.StringParser}}(s)
 			if e == nil {
 			    i = k
 			}
 		case *string:
-			k, e := {{.StringParser}}(*j)
+			k, e := {{.StringParser}}(*s)
 			if e == nil {
 			    i = k
 			}
 		}
-
+{{- else if .Integer}}
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		}
 {{- end}}
 		switch j := i.(type) {
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 		case int:
 			k := {{.Type.Name}}(j)
 			set[k] = struct{}{}
@@ -162,8 +178,8 @@ func Convert{{.Prefix.U}}{{.Type.U}}Set(values ...interface{}) ({{.Prefix.U}}{{.
 	return set, len(set) == len(values)
 }
 
-// Build{{.Prefix.U}}{{.Type.U}}SetFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Set from a channel that supplies a sequence
-// of values until it is closed. The function doesn't return until then.
+// Build{{.Prefix.U}}{{.Type.U}}SetFromChan constructs a new {{.Prefix.U}}{{.Type.U}}Set from a channel that supplies
+// a sequence of values until it is closed. The function doesn't return until then.
 func Build{{.Prefix.U}}{{.Type.U}}SetFromChan(source <-chan {{.Type}}) {{.Prefix.U}}{{.Type.U}}Set {
 	set := make({{.Prefix.U}}{{.Type.U}}Set)
 	for v := range source {
@@ -630,7 +646,7 @@ func (set {{.Prefix.U}}{{.Type.U}}Set) MaxBy(less func({{.Type}}, {{.Type}}) boo
 	}
 	return {{.Type.Amp}}m
 }
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type.Name}} is numeric.

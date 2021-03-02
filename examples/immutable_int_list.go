@@ -3,7 +3,7 @@
 //
 //
 // Generated from immutable/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true
+// options: Comparable:true Numeric:<no value> Integer:true Ordered:true
 //          StringLike:<no value> StringParser:<no value> Stringer:true
 // by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -52,6 +53,18 @@ func ConvertImmutableIntList(values ...interface{}) (*ImmutableIntList, bool) {
 	list := newImmutableIntList(0, len(values))
 
 	for _, i := range values {
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+				i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+				i = k
+			}
+		}
 		switch j := i.(type) {
 		case int:
 			k := int(j)

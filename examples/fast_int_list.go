@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from fast/list.tpl with Type=int
-// options: Comparable:true Numeric:true Ordered:true
+// options: Comparable:true Numeric:<no value> Integer:true Ordered:true
 //          StringLike:<no value> StringParser:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:string,int64
 // by runtemplate v3.7.1
@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -51,6 +52,18 @@ func ConvertFastIntList(values ...interface{}) (*FastIntList, bool) {
 	list := MakeFastIntList(0, len(values))
 
 	for _, i := range values {
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+				i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+				i = k
+			}
+		}
 		switch j := i.(type) {
 		case int:
 			k := int(j)

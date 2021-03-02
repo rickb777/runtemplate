@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from simple/list.tpl with Type=Apple
-// options: Comparable:true Numeric:<no value> Ordered:<no value>
+// options: Comparable:true Numeric:<no value> Integer:<no value> Ordered:<no value>
 //          StringLike:<no value> StringParser:<no value> Stringer:false
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:string
 // by runtemplate v3.7.1

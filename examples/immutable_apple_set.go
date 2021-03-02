@@ -3,7 +3,7 @@
 //
 //
 // Generated from immutable/set.tpl with Type=Apple
-// options: Comparable:always Numeric:<no value> Ordered:<no value> Stringer:false Mutable:disabled
+// options: Comparable:always Numeric:<no value> Integer:<no value> Ordered:<no value> Stringer:false Mutable:disabled
 // by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 

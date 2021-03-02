@@ -3,7 +3,7 @@
 //
 //
 // Generated from immutable/list.tpl with Type=string
-// options: Comparable:true Numeric:<no value> Ordered:true
+// options: Comparable:true Numeric:<no value> Integer:<no value> Ordered:true
 //          StringLike:<no value> StringParser:<no value> Stringer:true
 // by runtemplate v3.7.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md

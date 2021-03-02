@@ -5,7 +5,7 @@
 //{{end}}
 //
 // Generated from {{.TemplateFile}} with Type={{.Type.Name}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}}
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Integer:{{.Integer}} Ordered:{{.Ordered}}
 //          StringLike:{{.StringLike}} StringParser:{{.StringParser}} Stringer:{{.Stringer}}
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
@@ -23,6 +23,9 @@ import (
 {{- if .Stringer}}
 	"encoding/json"
 	"fmt"
+{{- end}}
+{{- if .Integer}}
+	"strconv"
 {{- end}}
 {{- if .Stringer}}
 	"strings"
@@ -63,7 +66,7 @@ func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type.Name}}) *{{.Prefix.U}}{{.
 // Convert{{.Prefix.U}}{{.Type.U}}List constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 // Conversions are provided from all built-in numeric types.
 {{- end}}
 {{- if .StringParser}}
@@ -74,22 +77,34 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 
 	for _, i := range values {
 {{- if .StringParser}}
-		switch j := i.(type) {
+		switch s := i.(type) {
 		case string:
-			k, e := {{.StringParser}}(j)
+			k, e := {{.StringParser}}(s)
 			if e == nil {
 			    i = k
 			}
 		case *string:
-			k, e := {{.StringParser}}(*j)
+			k, e := {{.StringParser}}(*s)
 			if e == nil {
 			    i = k
 			}
 		}
-
+{{- else if .Integer}}
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		}
 {{- end}}
 		switch j := i.(type) {
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 		case int:
 			k := {{.Type.Name}}(j)
 			list.m = append(list.m, {{.Type.Amp}}k)
@@ -170,7 +185,7 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 			k := {{.Type.Name}}(*j)
 			list.m = append(list.m, {{.Type.Amp}}k)
 {{- end}}
-{{- if and .StringLike .ne .Type.Name "string"}}
+{{- if and .StringLike (ne .Type.Name "string")}}
 		case string:
 			k := {{.Type.Name}}(j)
 			list.m = append(list.m, {{.Type.Name}}(k))
@@ -182,7 +197,7 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) (*{{.Prefix.U}}{
 				k := {{.Type.Name}}(s.String())
 				list.m = append(list.m, {{.Type.Amp}}k)
 			}
-		{{- end}}
+{{- end}}
 		}
 	}
 
@@ -971,7 +986,7 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) Max() (result {{.Type.Name}}) {
 	return m
 }
 {{- end}}
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type.Name}} is numeric.

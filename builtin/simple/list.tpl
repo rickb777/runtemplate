@@ -2,7 +2,7 @@
 // Not thread-safe.
 //
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}}
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Integer:{{.Integer}} Ordered:{{.Ordered}}
 //          StringLike:{{.StringLike}} StringParser:{{.StringParser}} Stringer:{{.Stringer}}
 // GobEncode:{{.GobEncode}} Mutable:always ToList:always ToSet:{{.ToSet}} MapTo:{{.MapTo}}
 // by runtemplate {{.AppVersion}}
@@ -25,6 +25,9 @@ import (
 {{- end}}
 	"math/rand"
 	"sort"
+{{- if .Integer}}
+	"strconv"
+{{- end}}
 {{- if .Stringer}}
 	"strings"
 {{- end}}
@@ -57,7 +60,7 @@ func New{{.Prefix.U}}{{.Type.U}}List(values ...{{.Type}}) {{.Prefix.U}}{{.Type.U
 // Convert{{.Prefix.U}}{{.Type.U}}List constructs a new list containing the supplied values, if any.
 // The returned boolean will be false if any of the values could not be converted correctly.
 // The returned list will contain all the values that were correctly converted.
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 // Conversions are provided from all built-in numeric types.
 {{- end}}
 {{- if .StringParser}}
@@ -68,22 +71,34 @@ func Convert{{.Prefix.U}}{{.Type.U}}List(values ...interface{}) ({{.Prefix.U}}{{
 
 	for _, i := range values {
 {{- if .StringParser}}
-		switch j := i.(type) {
+		switch s := i.(type) {
 		case string:
-			k, e := {{.StringParser}}(j)
+			k, e := {{.StringParser}}(s)
 			if e == nil {
 			    i = k
 			}
 		case *string:
-			k, e := {{.StringParser}}(*j)
+			k, e := {{.StringParser}}(*s)
 			if e == nil {
 			    i = k
 			}
 		}
-
+{{- else if .Integer}}
+		switch s := i.(type) {
+		case string:
+			k, e := strconv.ParseInt(s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		case *string:
+			k, e := strconv.ParseInt(*s, 10, 64)
+			if e == nil {
+			    i = k
+			}
+		}
 {{- end}}
 		switch j := i.(type) {
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 		case int:
 			k := {{.Type.Name}}(j)
 			list = append(list, {{.Type.Amp}}k)
@@ -887,7 +902,7 @@ func (list {{.Prefix.U}}{{.Type.U}}List) Max() (result {{.Type.Name}}) {
 	return {{.Type.Star}}m
 }
 {{- end}}
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 
 //-------------------------------------------------------------------------------------------------
 // These methods are included when {{.Type.Name}} is numeric.

@@ -2,7 +2,7 @@
 // Thread-safe.
 //
 // Generated from threadsafe/list.tpl with Type=string
-// options: Comparable:true Numeric:<no value> Ordered:true
+// options: Comparable:true Numeric:<no value> Integer:<no value> Ordered:true
 //          StringLike:<no value> StringParser:<no value> Stringer:true
 // GobEncode:<no value> Mutable:always ToList:always ToSet:<no value> MapTo:int
 // by runtemplate v3.7.1

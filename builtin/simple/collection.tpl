@@ -1,5 +1,5 @@
 // Generated from {{.TemplateFile}} with Type={{.Type}}
-// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:always
+// options: Comparable:{{.Comparable}} Numeric:{{.Numeric}} Integer:{{.Integer}} Ordered:{{.Ordered}} Stringer:{{.Stringer}} Mutable:always
 // by runtemplate {{.AppVersion}}
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
@@ -127,7 +127,7 @@ type {{.Prefix.U}}{{.Type.U}}Collection interface {
 
 	// Fold aggregates all the values in the collection using a supplied function, starting from some initial value.
 	Fold(initial {{.Type}}, fn func({{.Type}}, {{.Type}}) {{.Type}}) {{.Type}}
-{{- if .Numeric}}
+{{- if or .Numeric .Integer}}
 
 	// Sum returns the sum of all the elements in the collection.
 	Sum() {{.Type.Name}}
