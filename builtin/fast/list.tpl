@@ -545,7 +545,9 @@ func (list *{{.Prefix.U}}{{.Type.U}}List) doShuffle() *{{.Prefix.U}}{{.Type.U}}L
 // Clear the entire collection.
 func (list *{{.Prefix.U}}{{.Type.U}}List) Clear() {
 	if list != nil {
-		list.m = list.m[:]
+		// could use list.m[:0] here but it may not free the dropped elements
+		// until their array elements are overwritten
+		list.m = make([]{{.Type}}, 0, cap(list.m))
 	}
 }
 

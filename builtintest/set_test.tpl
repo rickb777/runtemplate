@@ -560,8 +560,8 @@ func Test{{.Type.U}}SetMkString3(t *testing.T) {
 	a = nil
 	a.MkString3("<", ",", ">")
 }
+{{- if .GobEncode}}
 
-{{if .GobEncode}}
 func Test{{.Type.U}}SetGobEncode(t *testing.T) {
 	g := NewGomegaWithT(t)
 
@@ -578,8 +578,8 @@ func Test{{.Type.U}}SetGobEncode(t *testing.T) {
 	g.Expect(err).NotTo(HaveOccurred())
 	g.Expect(a.Equals(b)).To(BeTrue())
 }
+{{- end}}
 
-{{end}}
 func Test{{.Type.U}}SetJsonEncode(t *testing.T) {
 	g := NewGomegaWithT(t)
 

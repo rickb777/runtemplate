@@ -736,6 +736,22 @@ func Test{{.Type.U}}ListDoShuffle(t *testing.T) {
 	a.DoShuffle()
 }
 {{- end}}
+{{- if .Mutable}}
+
+func TestMutable{{.Type.U}}ListClear(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	a := NewX1{{.Type.U}}List(2, 5, 9, 10)
+
+	a.Clear()
+
+	g.Expect(a.Size()).To(Equal(0))
+
+    // check correct nil handling
+	a = nil
+	a.Clear()
+}
+{{- end}}
 
 func Test{{.Type.U}}ListTake(t *testing.T) {
 	g := NewGomegaWithT(t)
@@ -966,7 +982,6 @@ func Test{{.Type.U}}ListGobEncode(t *testing.T) {
     err = gob.NewDecoder(buf).Decode(&b)
 
     g.Expect(err).NotTo(HaveOccurred())
-
 	g.Expect(a).To(Equal(b))
 }
 {{- end}}

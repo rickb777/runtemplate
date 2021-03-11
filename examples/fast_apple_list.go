@@ -387,7 +387,9 @@ func (list *FastAppleList) doShuffle() *FastAppleList {
 // Clear the entire collection.
 func (list *FastAppleList) Clear() {
 	if list != nil {
-		list.m = list.m[:]
+		// could use list.m[:0] here but it may not free the dropped elements
+		// until their array elements are overwritten
+		list.m = make([]Apple, 0, cap(list.m))
 	}
 }
 

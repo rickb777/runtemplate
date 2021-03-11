@@ -445,7 +445,9 @@ func (list *StringList) Clear() {
 	if list != nil {
 		list.s.Lock()
 		defer list.s.Unlock()
-		list.m = list.m[:]
+		// could use list.m[:0] here but it may not free the dropped elements
+		// until their array elements are overwritten
+		list.m = make([]string, 0, cap(list.m))
 	}
 }
 
