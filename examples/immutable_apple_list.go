@@ -5,7 +5,7 @@
 // Generated from immutable/list.tpl with Type=Apple
 // options: Comparable:<no value> Numeric:<no value> Integer:<no value> Ordered:<no value>
 //          StringLike:<no value> StringParser:<no value> Stringer:false
-// by runtemplate v3.10.0
+// by runtemplate v3.10.1
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples
