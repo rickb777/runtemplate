@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="app simple/collection.tpl string" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="v3" />
+    <working_directory value="$PROJECT_DIR$/builtintest" />
+    <parameters value="-tpl simple/collection.tpl Prefix=X1 Type=string          ToList:true ToSet:true Stringer:true Comparable:true" />
+    <kind value="FILE" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/app.go|$PROJECT_DIR$/version.go" />
+    <method v="2" />
+  </configuration>
+</component>

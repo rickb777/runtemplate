@@ -13,12 +13,6 @@ rm -f builtin/*.txt
 
 ./copy-threadsafe-builtins
 
-# we need the 'packr' tool
-if [ -z "$(type -p packr)" ]; then
-  mkdir -pv $HOME/go/src
-  go get github.com/gobuffalo/packr/packr
-fi
-
 go generate .
 
 echo

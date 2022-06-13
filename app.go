@@ -1,14 +1,12 @@
 // runtemplate is a command-line tool to facilitate using Go templates for a whole range for text file generation.
 // It is particularly good at generating Go source code.
 
-//go:generate packr -z
-
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
-	"github.com/gobuffalo/packr"
 	"github.com/rickb777/runtemplate/v3/app"
 	"github.com/rickb777/runtemplate/v3/app/support"
 	"os"
@@ -89,12 +87,5 @@ func main() {
 	app.Generate(tpl, output1, force, deps, types, others, builtins, appVersion)
 }
 
-var builtins = []packr.Box{
-	packr.NewBox("builtin"),
-	//packr.NewBox("builtin/fast"),
-	//packr.NewBox("builtin/immutable"),
-	//packr.NewBox("builtin/plumbing"),
-	//packr.NewBox("builtin/simple"),
-	//packr.NewBox("builtin/threadsafe"),
-	//packr.NewBox("builtin/types"),
-}
+//go:embed builtin/fast/* builtin/immutable/* builtin/plumbing/* builtin/simple/* builtin/threadsafe/* builtin/types/*
+var builtins embed.FS
