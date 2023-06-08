@@ -31,6 +31,7 @@ package simple
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TP1 Key=*Apple  Type=*Pear
 //go:generate runtemplate -tpl simple/map.tpl        Prefix=TP1 Key=*string Type=*big.Int/Integer Import:"math/big"
 
+
 //go:generate runtemplate -tpl plumbing/plumbing.tpl     Prefix=P1 Type=*Apple
 //go:generate runtemplate -tpl plumbing/mapTo.tpl        Prefix=P1 Type=*Apple ToPrefix=P1 ToType=*Pear
 
@@ -39,6 +40,7 @@ package simple
 var _ P1StringCollection = NewP1StringList()
 var _ P1IntCollection = NewP1IntList()
 var _ P1AppleCollection = NewP1AppleList()
+
 
 var _ P1StringCollection = NewP1StringSet()
 var _ P1IntCollection = NewP1IntSet()

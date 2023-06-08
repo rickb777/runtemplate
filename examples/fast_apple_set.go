@@ -5,7 +5,7 @@
 // Generated from fast/set.tpl with Type=Apple
 // options: Comparable:always Numeric:<no value> Integer:<no value> Ordered:<no value> ToList:<no value>
 //          StringLike:<no value> StringParser:<no value> Stringer:false
-// by runtemplate v3.10.1
+// by runtemplate v3.10.2
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

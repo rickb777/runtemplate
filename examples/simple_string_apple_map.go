@@ -4,7 +4,7 @@
 //
 // Generated from simple/map.tpl with Key=string Type=Apple
 // options: Comparable:<no value> Stringer:true KeyList:<no value> ValueList:<no value> Mutable:always
-// by runtemplate v3.10.1
+// by runtemplate v3.10.2
 // See https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
 
 package examples

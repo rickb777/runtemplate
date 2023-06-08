@@ -2,10 +2,10 @@
 // int and for Apple, the latter being a simple dummy struct. The types are prefixed according to their template group.
 // These are
 //
-//   * 'Fast...' for the fast collections,
-//   * 'Immutable...' for the imutable collections,
-//   * 'Simple...' for the simple collections,
-//   * 'Sync...' for the threadsafe collections.
+//   - 'Fast...' for the fast collections,
+//   - 'Immutable...' for the imutable collections,
+//   - 'Simple...' for the simple collections,
+//   - 'Sync...' for the threadsafe collections.
 //
 // In each group, there are two list types, two set types and two map types. There are also two collection types
 // in all except the simple group.
