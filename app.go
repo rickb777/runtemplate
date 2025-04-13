@@ -39,7 +39,6 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "\nOptions:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nSee https://github.com/rickb777/runtemplate/blob/master/README.md")
-	fmt.Fprintln(os.Stderr, "and https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md")
 	fmt.Fprintln(os.Stderr, "Version", appVersion)
 	os.Exit(1)
 }

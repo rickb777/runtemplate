@@ -180,5 +180,3 @@ The last two are useful for getting only the package name or only the type name 
 Templates are located by following `TEMPLATEPATH`, an optional environment variable. If it is defined, it is used like `PATH`, i.e. a colon-separate list of directories to be searched.
 
 If `TEMPLATEPATH` is absent, its default is `TEMPLATEPATH=.`, i.e. templates are relative to the current directory.
-
-The builtin templates are also available and are searched if no other match is found. For example, template "types/stringy.tpl" will resolve to the built-in template of that name unless the TEMPLATEPATH contains another file with the same path.
