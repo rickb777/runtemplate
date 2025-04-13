@@ -1,8 +1,6 @@
 # runtemplate
 
-[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate/v3/examples)
-[![Build Status](https://travis-ci.org/rickb777/runtemplate.svg?branch=master)](https://travis-ci.org/rickb777/runtemplate)
-[![Code Coverage](https://img.shields.io/coveralls/rickb777/runtemplate.svg)](https://coveralls.io/r/rickb777/runtemplate)
+[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg?style=flat-square)](https://godoc.org/github.com/rickb777/runtemplate/v4)
 [![Issues](https://img.shields.io/github/issues/rickb777/runtemplate.svg)](https://github.com/rickb777/runtemplate/issues)
 
 This application provides a simple way of executing standard Go templates from the command line. The obvious use-case is for source code generation, amongst many others.
