@@ -3,8 +3,4 @@
 // # See
 //
 // * Overview and usage: https://github.com/rickb777/runtemplate/blob/master/README.md
-//
-// * Suite of built-in templates for type-safe collections in Go: https://github.com/rickb777/runtemplate/blob/master/BUILTIN.md
-//
-// * Collections prepared for common standard types (int, string etc): https://github.com/rickb777/collection
 package main

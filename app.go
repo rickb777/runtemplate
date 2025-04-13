@@ -6,8 +6,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rickb777/runtemplate/v3/app"
-	"github.com/rickb777/runtemplate/v3/app/support"
+	"github.com/rickb777/runtemplate/v4/app"
+	"github.com/rickb777/runtemplate/v4/app/support"
 	"os"
 	"strings"
 )

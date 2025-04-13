@@ -7,7 +7,7 @@
 package app
 
 import (
-	. "github.com/rickb777/runtemplate/v3/app/support"
+	. "github.com/rickb777/runtemplate/v4/app/support"
 	"io"
 	"io/ioutil"
 	"os"
