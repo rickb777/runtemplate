@@ -10,14 +10,13 @@ This application provides a simple way of executing standard Go templates from t
 You can install it with:
 
 ```
-go get github.com/rickb777/runtemplate
+go get     github.com/rickb777/runtemplate/v4
+go install github.com/rickb777/runtemplate/v4
 ```
 
 It is intended to be used directly from the command-line and also with `go generate`.
 
 It supports light-weight dependency checking, i.e. less work is done when the generated output file already exists and is up to date.
-
-A selection of [built-in templates](BUILTIN.md) is included with `runtemplate`. These provide type-safe collection types etc.
 
 ## Command-Line
 
@@ -185,9 +184,3 @@ Templates are located by following `TEMPLATEPATH`, an optional environment varia
 If `TEMPLATEPATH` is absent, its default is `TEMPLATEPATH=.`, i.e. templates are relative to the current directory.
 
 The builtin templates are also available and are searched if no other match is found. For example, template "types/stringy.tpl" will resolve to the built-in template of that name unless the TEMPLATEPATH contains another file with the same path.
-
-# Built-in Templates
-
-A selection of built-in templates is included with `runtemplate`. These provide type-safe collection types. Their API style has been loosely influenced by other similar Go types and the excellent Scala collection classes.
-
-[See BUILTIN](BUILTIN.md)

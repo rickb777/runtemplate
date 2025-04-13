@@ -1,32 +1,29 @@
 package support
 
 import (
-	"github.com/benmoss/matchers"
-	. "github.com/onsi/gomega"
+	"github.com/rickb777/expect"
 	"strings"
 	"testing"
 	"time"
 )
 
-func expectPresent(g *GomegaWithT, ctx map[string]interface{}, key string) {
-	g.Expect(ctx).To(HaveKey(key))
+func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
+	expect.Map(ctx).ToContain(t, key)
 	delete(ctx, key)
 }
 
 func TestCreateContextCore(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, ""}
 	types := Tuples([]Tuple{})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	expectPresent(g, ctx, "PWD")
-	expectPresent(g, ctx, "GOOS")
-	expectPresent(g, ctx, "GOROOT")
-	expectPresent(g, ctx, "GOARCH")
-	expectPresent(g, ctx, "GOPATH")
-	expectPresent(g, ctx, "AppVersion")
+	expectPresent(t, ctx, "PWD")
+	expectPresent(t, ctx, "GOOS")
+	expectPresent(t, ctx, "GOROOT")
+	expectPresent(t, ctx, "GOARCH")
+	expectPresent(t, ctx, "GOPATH")
+	expectPresent(t, ctx, "AppVersion")
 
 	exp := map[string]interface{}{
 		"OutFile":      "output.txt",
@@ -34,12 +31,10 @@ func TestCreateContextCore(t *testing.T) {
 		"TemplatePath": "/a/b/c",
 		"TemplateFile": "foo",
 	}
-	g.Expect(ctx).To(matchers.DeepEqual(exp))
+	expect.Any(ctx).ToBe(t, exp)
 }
 
 func TestCreateContext(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, ""}
 	b := NewTuple("B=*FooBar")
 	c := NewTuple("C=vv3")
@@ -47,17 +42,17 @@ func TestCreateContext(t *testing.T) {
 	others := Pairs([]Pair{{"I1", "X1"}, {"I1", "X2"}, {"I1", "X3"}})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	expectPresent(g, ctx, "PWD")
-	expectPresent(g, ctx, "GOOS")
-	expectPresent(g, ctx, "GOROOT")
-	expectPresent(g, ctx, "GOARCH")
-	expectPresent(g, ctx, "GOPATH")
-	expectPresent(g, ctx, "OutFile")
-	expectPresent(g, ctx, "AppVersion")
-	expectPresent(g, ctx, "TemplatePath")
-	expectPresent(g, ctx, "TemplateFile")
-	expectPresent(g, ctx, "Package")
-	expectPresent(g, ctx, "I1")
+	expectPresent(t, ctx, "PWD")
+	expectPresent(t, ctx, "GOOS")
+	expectPresent(t, ctx, "GOROOT")
+	expectPresent(t, ctx, "GOARCH")
+	expectPresent(t, ctx, "GOPATH")
+	expectPresent(t, ctx, "OutFile")
+	expectPresent(t, ctx, "AppVersion")
+	expectPresent(t, ctx, "TemplatePath")
+	expectPresent(t, ctx, "TemplateFile")
+	expectPresent(t, ctx, "Package")
+	expectPresent(t, ctx, "I1")
 
 	exp := map[string]interface{}{
 		"B": b.Type,
@@ -80,28 +75,26 @@ func TestCreateContext(t *testing.T) {
 		//"BZero":  "nil",
 		//"CZero":  "*(new(vv3))",
 	}
-	g.Expect(ctx).To(matchers.DeepEqual(exp))
+	expect.Any(ctx).ToBe(t, exp)
 }
 
 func TestCreateContextWithDottedType(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, ""}
 	bigInt := NewTuple("Type=*big.Int")
 	types := Tuples([]Tuple{bigInt})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	expectPresent(g, ctx, "PWD")
-	expectPresent(g, ctx, "GOOS")
-	expectPresent(g, ctx, "GOROOT")
-	expectPresent(g, ctx, "GOARCH")
-	expectPresent(g, ctx, "GOPATH")
-	expectPresent(g, ctx, "OutFile")
-	expectPresent(g, ctx, "AppVersion")
-	expectPresent(g, ctx, "TemplatePath")
-	expectPresent(g, ctx, "TemplateFile")
-	expectPresent(g, ctx, "Package")
+	expectPresent(t, ctx, "PWD")
+	expectPresent(t, ctx, "GOOS")
+	expectPresent(t, ctx, "GOROOT")
+	expectPresent(t, ctx, "GOARCH")
+	expectPresent(t, ctx, "GOPATH")
+	expectPresent(t, ctx, "OutFile")
+	expectPresent(t, ctx, "AppVersion")
+	expectPresent(t, ctx, "TemplatePath")
+	expectPresent(t, ctx, "TemplateFile")
+	expectPresent(t, ctx, "Package")
 
 	exp := map[string]interface{}{
 		"Type": bigInt.Type,
@@ -117,27 +110,25 @@ func TestCreateContextWithDottedType(t *testing.T) {
 		//"TypeStar":  "*",
 		//"TypeZero":  "nil",
 	}
-	g.Expect(ctx).To(matchers.DeepEqual(exp))
+	expect.Any(ctx).ToBe(t, exp)
 }
 
 func TestCreateContextWithPrefix(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, ""}
 	types := Tuples([]Tuple{NewTuple("OneType=Apple"), NewTuple("TwoType=Pear/Pear/nil"), NewTuple("OnePrefix=Foo")})
 	others := Pairs([]Pair{})
 	ctx := CreateContext(m, "output.txt", types, others, "(app version)")
 
-	expectPresent(g, ctx, "PWD")
-	expectPresent(g, ctx, "GOOS")
-	expectPresent(g, ctx, "GOROOT")
-	expectPresent(g, ctx, "GOARCH")
-	expectPresent(g, ctx, "GOPATH")
-	expectPresent(g, ctx, "OutFile")
-	expectPresent(g, ctx, "AppVersion")
-	expectPresent(g, ctx, "TemplatePath")
-	expectPresent(g, ctx, "TemplateFile")
-	expectPresent(g, ctx, "Package")
+	expectPresent(t, ctx, "PWD")
+	expectPresent(t, ctx, "GOOS")
+	expectPresent(t, ctx, "GOROOT")
+	expectPresent(t, ctx, "GOARCH")
+	expectPresent(t, ctx, "GOPATH")
+	expectPresent(t, ctx, "OutFile")
+	expectPresent(t, ctx, "AppVersion")
+	expectPresent(t, ctx, "TemplatePath")
+	expectPresent(t, ctx, "TemplateFile")
+	expectPresent(t, ctx, "Package")
 
 	exp := map[string]interface{}{
 		"OneType": NewTuple("OneType=Apple").Type,
@@ -166,25 +157,23 @@ func TestCreateContextWithPrefix(t *testing.T) {
 		//"OneTypeZero":  "*(new(Apple))",
 		//"TwoTypeZero":  "nil",
 	}
-	g.Expect(ctx).To(matchers.DeepEqual(exp))
+	expect.Any(ctx).ToBe(t, exp)
 }
 
 func TestChoosePackage(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	wd, pkg := choosePackage("foo.go")
-	g.Expect(strings.HasSuffix(wd, pkg)).To(BeTrue())
+	expect.Bool(strings.HasSuffix(wd, pkg)).ToBeTrue(t)
 
 	wd, pkg = choosePackage("aaa/foo.go")
-	g.Expect(pkg).To(Equal("aaa"))
-	g.Expect(strings.HasSuffix(wd, pkg)).To(BeFalse())
+	expect.Any(pkg).ToBe(t, "aaa")
+	expect.Bool(strings.HasSuffix(wd, pkg)).ToBeFalse(t)
 
 	wd, pkg = choosePackage("bbb/aaa/foo.go")
-	g.Expect(pkg).To(Equal("aaa"))
-	g.Expect(strings.HasSuffix(wd, pkg)).To(BeFalse())
+	expect.Any(pkg).ToBe(t, "aaa")
+	expect.Bool(strings.HasSuffix(wd, pkg)).ToBeFalse(t)
 
 	wd, pkg = choosePackage("./foo.go")
-	g.Expect(strings.HasSuffix(wd, pkg)).To(BeTrue())
+	expect.Bool(strings.HasSuffix(wd, pkg)).ToBeTrue(t)
 }
 
 func diffMaps(t *testing.T, a, b map[string]interface{}) {

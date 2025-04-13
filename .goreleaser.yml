@@ -10,8 +10,6 @@ builds:
 
 before:
   hooks:
-  - ./builtintest/clean
-  - ./copy-threadsafe-builtins
   - ./run-statics-tool
 
 archive:

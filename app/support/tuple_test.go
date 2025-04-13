@@ -1,39 +1,35 @@
 package support
 
 import (
-	. "github.com/onsi/gomega"
+	"github.com/rickb777/expect"
 	"testing"
 )
 
 func TestPairsTValues(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	triples := Tuples([]Tuple{NewTuple("a=x/z"), NewTuple("b=*big.Int"), NewTuple("c=interface{}/Any/nil"), NewTuple("d=3/Cho")})
 
-	g.Expect(triples.TValues()).To(Equal([]string{"z", "bigInt", "Any", "Cho"}))
+	expect.Slice(triples.TValues()).ToBe(t, "z", "bigInt", "Any", "Cho")
 
-	g.Expect(triples[0].IsPtr()).To(BeFalse())
-	g.Expect(triples[0].String()).To(Equal("x"))
-	g.Expect(triples[0].Name()).To(Equal("x"))
-	g.Expect(triples[0].Ident()).To(Equal(RichString("z")))
-	g.Expect(triples[0].Zero()).To(Equal("*(new(x))"))
+	expect.Bool(triples[0].IsPtr()).ToBeFalse(t)
+	expect.String(triples[0].String()).ToBe(t, "x")
+	expect.String(triples[0].Name()).ToBe(t, "x")
+	expect.String(triples[0].Ident()).ToBe(t, RichString("z"))
+	expect.String(triples[0].Zero()).ToBe(t, "*(new(x))")
 
-	g.Expect(triples[1].IsPtr()).To(BeTrue())
-	g.Expect(triples[1].String()).To(Equal("*big.Int"))
-	g.Expect(triples[1].Name()).To(Equal("big.Int"))
-	g.Expect(triples[1].Ident()).To(Equal(RichString("bigInt")))
-	g.Expect(triples[1].Zero()).To(Equal("nil"))
+	expect.Bool(triples[1].IsPtr()).ToBeTrue(t)
+	expect.String(triples[1].String()).ToBe(t, "*big.Int")
+	expect.String(triples[1].Name()).ToBe(t, "big.Int")
+	expect.String(triples[1].Ident()).ToBe(t, RichString("bigInt"))
+	expect.String(triples[1].Zero()).ToBe(t, "nil")
 
-	g.Expect(triples[2].IsPtr()).To(BeFalse())
-	g.Expect(triples[2].String()).To(Equal("interface{}"))
-	g.Expect(triples[2].Name()).To(Equal("interface{}"))
-	g.Expect(triples[2].Ident()).To(Equal(RichString("Any")))
-	g.Expect(triples[2].Zero()).To(Equal("nil"))
+	expect.Bool(triples[2].IsPtr()).ToBeFalse(t)
+	expect.String(triples[2].String()).ToBe(t, "interface{}")
+	expect.String(triples[2].Name()).ToBe(t, "interface{}")
+	expect.String(triples[2].Ident()).ToBe(t, RichString("Any"))
+	expect.String(triples[2].Zero()).ToBe(t, "nil")
 }
 
 func TestNewType(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	cases := []struct{ in, exp Type }{
 		{in: NewType("/x/y/z"), exp: Type{}},
 		{in: NewType(""), exp: Type{}},
@@ -45,6 +41,6 @@ func TestNewType(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		g.Expect(c.in).To(Equal(c.exp))
+		expect.Any(c.in).ToBe(t, c.exp)
 	}
 }

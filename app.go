@@ -4,7 +4,6 @@
 package main
 
 import (
-	"embed"
 	"flag"
 	"fmt"
 	"github.com/rickb777/runtemplate/v3/app"
@@ -84,8 +83,5 @@ func main() {
 
 	types, others, leftover := support.SplitKeyValArgs(args)
 	failIfLeftoversExist(leftover)
-	app.Generate(tpl, output1, force, deps, types, others, builtins, appVersion)
+	app.Generate(tpl, output1, force, deps, types, others, appVersion)
 }
-
-//go:embed builtin/fast/* builtin/immutable/* builtin/plumbing/* builtin/simple/* builtin/threadsafe/* builtin/types/*
-var builtins embed.FS

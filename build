@@ -7,14 +7,6 @@ export GO111MODULE=on
 
 go mod download
 
-rm -f builtin/*.txt
-
-./builtintest/clean
-
-./copy-threadsafe-builtins
-
-go generate .
-
 echo
 echo App Testing...
 go test ./app/...
@@ -25,18 +17,9 @@ go install .
 
 type runtemplate
 
-./info ||:
-
-echo
-echo Generating tests...
-go generate -v ./builtintest/...
-
-rm -f examples/*_*.go
-go generate ./examples
-
 echo
 echo Go Fmt...
-gofmt -l -w *.go app/*.go examples/*.go
+gofmt -l -w *.go app/*.go
 
 echo
 echo Template Testing...

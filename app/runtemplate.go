@@ -7,7 +7,6 @@
 package app
 
 import (
-	"embed"
 	. "github.com/rickb777/runtemplate/v3/app/support"
 	"io"
 	"io/ioutil"
@@ -17,7 +16,7 @@ import (
 	"text/template"
 )
 
-func findTemplateFileFromPath(templateFile string, builtins embed.FS) FileMeta {
+func findTemplateFileFromPath(templateFile string) FileMeta {
 	Debug("findTemplateFileFromPath %q\n", templateFile)
 
 	templatePath := os.Getenv("TEMPLATEPATH")
@@ -36,13 +35,6 @@ func findTemplateFileFromPath(templateFile string, builtins embed.FS) FileMeta {
 		}
 	}
 
-	st := "builtin/" + templateFile
-	bs, err := builtins.ReadFile(st)
-	if err == nil {
-		return EmbeddedFileMeta(st, templateFile, string(bs))
-	}
-
-	Fail(templateFile, err)
 	return FileMeta{}
 }
 
@@ -129,10 +121,10 @@ func readFile(path string) (string, error) {
 	return string(b), nil
 }
 
-func Generate(templateFile, outputFile string, force bool, deps []string, types Tuples, others Pairs, builtins embed.FS, appVersion string) {
+func Generate(templateFile, outputFile string, force bool, deps []string, types Tuples, others Pairs, appVersion string) {
 	Debug("generate %s %q %v %+v %#v\n", templateFile, outputFile, force, deps, types)
 
-	foundTemplate := findTemplateFileFromPath(templateFile, builtins)
+	foundTemplate := findTemplateFileFromPath(templateFile)
 	than := templateFile
 
 	youngestDep := foundTemplate

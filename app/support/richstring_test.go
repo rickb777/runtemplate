@@ -1,59 +1,45 @@
 package support
 
 import (
-	. "github.com/onsi/gomega"
+	"github.com/rickb777/expect"
 	"testing"
 )
 
 func TestRichStringNoDots(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a := RichString(".foo.Bar.Baz.").NoDots()
-	g.Expect(a).To(BeEquivalentTo(RichString("fooBarBaz")))
+	expect.String(a).ToBe(t, RichString("fooBarBaz"))
 }
 
 func TestRichStringDivideOr0A(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a, b := RichString("foo,bar").DivideLastOr0(',')
-	g.Expect(a).To(BeEquivalentTo("foo"))
-	g.Expect(b).To(BeEquivalentTo("bar"))
+	expect.String(a).ToBe(t, "foo")
+	expect.String(b).ToBe(t, "bar")
 }
 
 func TestRichStringDivideOr0B(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a, b := RichString("foo bar").DivideLastOr0(',')
-	g.Expect(a).To(BeEquivalentTo("foo bar"))
-	g.Expect(b).To(BeEquivalentTo(""))
+	expect.String(a).ToBe(t, "foo bar")
+	expect.String(b).ToBe(t, "")
 }
 
 func TestRichStringDivideOr1A(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a, b := RichString("foo,bar").DivideLastOr1(',')
-	g.Expect(a).To(BeEquivalentTo("foo"))
-	g.Expect(b).To(BeEquivalentTo("bar"))
+	expect.String(a).ToBe(t, "foo")
+	expect.String(b).ToBe(t, "bar")
 }
 
 func TestRichStringDivideOr1B(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a, b := RichString("foo bar").DivideLastOr1(',')
-	g.Expect(a).To(BeEquivalentTo(""))
-	g.Expect(b).To(BeEquivalentTo("foo bar"))
+	expect.String(a).ToBe(t, "")
+	expect.String(b).ToBe(t, "foo bar")
 }
 
 func TestRichStringRemoveBeforeA(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a := RichString("foo/bar/baz").RemoveBeforeLast('/')
-	g.Expect(a).To(BeEquivalentTo("baz"))
+	expect.String(a).ToBe(t, "baz")
 }
 
 func TestRichStringRemoveBeforeB(t *testing.T) {
-	g := NewGomegaWithT(t)
-
 	a := RichString("foo/bar/baz").RemoveBeforeLast(',')
-	g.Expect(a).To(BeEquivalentTo("foo/bar/baz"))
+	expect.String(a).ToBe(t, "foo/bar/baz")
 }
