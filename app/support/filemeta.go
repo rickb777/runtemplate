@@ -12,10 +12,6 @@ type FileMeta struct {
 	Embedded string
 }
 
-func EmbeddedFileMeta(path, name string, content string) FileMeta {
-	return FileMeta{path, name, time.Time{}, content}
-}
-
 func SingleFileMeta(path, name string) FileMeta {
 	Debug("stat %q\n", path)
 	if path == "" {

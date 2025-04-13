@@ -132,7 +132,7 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types 
 	if outputFile == "" && len(types.TValues()) > 0 {
 		keys := strings.Join(types.TValues(), "_")
 		tf, _ := RichString(templateFile).DivideLastOr0('.')
-		tf = RichString(tf).RemoveBeforeLast('/').ToLower()
+		tf = tf.RemoveBeforeLast('/').ToLower()
 		outputFile = (RichString(keys).ToLower() + "_" + tf + ".go").String()
 		Debug("default output now %s\n", outputFile)
 	} else if outputFile == "-" {
