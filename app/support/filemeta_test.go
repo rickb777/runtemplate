@@ -34,7 +34,7 @@ func (fi fileInfo) IsDir() bool {
 	return fi.isDir
 }
 
-func (fi fileInfo) Sys() interface{} {
+func (fi fileInfo) Sys() any {
 	return nil
 }
 

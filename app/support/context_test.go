@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func expectPresent(t *testing.T, ctx map[string]interface{}, key string) {
+func expectPresent(t *testing.T, ctx map[string]any, key string) {
 	expect.Map(ctx).ToContain(t, key)
 	delete(ctx, key)
 }
@@ -25,7 +25,7 @@ func TestCreateContextCore(t *testing.T) {
 	expectPresent(t, ctx, "GOPATH")
 	expectPresent(t, ctx, "AppVersion")
 
-	exp := map[string]interface{}{
+	exp := map[string]any{
 		"OutFile":      "output.txt",
 		"Package":      "support",
 		"TemplatePath": "/a/b/c",
@@ -54,7 +54,7 @@ func TestCreateContext(t *testing.T) {
 	expectPresent(t, ctx, "Package")
 	expectPresent(t, ctx, "I1")
 
-	exp := map[string]interface{}{
+	exp := map[string]any{
 		"B": b.Type,
 		//"UB":     "FooBar",
 		//"LB":     "fooBar",
@@ -96,7 +96,7 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
 
-	exp := map[string]interface{}{
+	exp := map[string]any{
 		"Type": bigInt.Type,
 		//"UType":     "BigInt",
 		//"LType":     "bigInt",
@@ -130,7 +130,7 @@ func TestCreateContextWithPrefix(t *testing.T) {
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
 
-	exp := map[string]interface{}{
+	exp := map[string]any{
 		"OneType": NewTuple("OneType=Apple").Type,
 		"TwoType": NewTuple("TwoType=Pear/Pear/nil").Type,
 		//"UOneType":     "Apple",
@@ -176,7 +176,7 @@ func TestChoosePackage(t *testing.T) {
 	expect.Bool(strings.HasSuffix(wd, pkg)).ToBeTrue(t)
 }
 
-func diffMaps(t *testing.T, a, b map[string]interface{}) {
+func diffMaps(t *testing.T, a, b map[string]any) {
 	t.Helper()
 	if len(a) > len(b) {
 		diffMaps(t, b, a)

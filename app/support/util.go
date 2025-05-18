@@ -10,19 +10,21 @@ var ShowContextInfo = false
 var Verbose = false
 var Dbg = false
 
-func Fail(args ...interface{}) {
+// Fail is a pluggable failure handler. Normally, it prints messages and
+// exits the application.
+var Fail = func(args ...any) {
 	fmt.Fprint(os.Stderr, "Error: ")
 	fmt.Fprintln(os.Stderr, args...)
 	os.Exit(1)
 }
 
-func Progress(msg string, args ...interface{}) {
+func Progress(msg string, args ...any) {
 	if Verbose {
 		fmt.Printf(msg, args...)
 	}
 }
 
-func Debug(msg string, args ...interface{}) {
+func Debug(msg string, args ...any) {
 	if Dbg {
 		fmt.Printf("-- "+msg, args...)
 	}
@@ -64,7 +66,7 @@ func SplitKeyValArgs(args []string) (Tuples, Pairs, []string) {
 			found = true
 		} else if co >= 0 {
 			k, v := a[:co], a[co+1:]
-			p := Pair{Key: k, Val: RichString(expandSpecialChars(string(v)))}
+			p := Pair{Key: k, Val: RichString(expandSpecialChars(v))}
 			others = append(others, p)
 			found = p.Valid()
 		}

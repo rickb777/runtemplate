@@ -9,7 +9,6 @@ package app
 import (
 	. "github.com/rickb777/runtemplate/v4/app/support"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -73,7 +72,7 @@ func makeFuncMap() template.FuncMap {
 	}
 }
 
-func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[string]interface{}) {
+func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[string]any) {
 	var s string
 	var err error
 
@@ -85,6 +84,7 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 		s, err = readFile(foundTemplate.Path)
 		if err != nil {
 			Fail(foundTemplate.Path, err)
+			return
 		}
 	}
 
@@ -92,7 +92,8 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	Debug("Parse template\n")
 	tmpl, err := template.New(foundTemplate.Path).Funcs(funcMap).Parse(s)
 	if err != nil {
-		Fail(err)
+		Fail(foundTemplate.Path, err)
+		return
 	}
 
 	Debug("Create %s\n", outputFile)
@@ -100,7 +101,8 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	if len(outputFile) > 0 {
 		f, err := os.Create(outputFile)
 		if err != nil {
-			Fail(err)
+			Fail(outputFile, err)
+			return
 		}
 		defer f.Close()
 		w = f
@@ -109,12 +111,12 @@ func runTheTemplate(foundTemplate FileMeta, outputFile string, context map[strin
 	Debug("Execute template\n")
 	err = tmpl.Execute(w, context)
 	if err != nil {
-		Fail("execute template:", err)
+		Fail("execute template:", foundTemplate.Path, err)
 	}
 }
 
 func readFile(path string) (string, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
@@ -125,6 +127,11 @@ func Generate(templateFile, outputFile string, force bool, deps []string, types 
 	Debug("generate %s %q %v %+v %#v\n", templateFile, outputFile, force, deps, types)
 
 	foundTemplate := findTemplateFileFromPath(templateFile)
+	if foundTemplate.Path == "" {
+		Fail("not found:", templateFile)
+		return
+	}
+
 	than := templateFile
 
 	youngestDep := foundTemplate

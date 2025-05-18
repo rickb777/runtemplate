@@ -29,7 +29,7 @@ func choosePackage(outputFile string) (string, string) {
 	return wd, pkg.String()
 }
 
-func setIdentInContext(pp Tuple, context map[string]interface{}) {
+func setIdentInContext(pp Tuple, context map[string]any) {
 	Debug("setIdentInContext %s %#v\n", pp.Key, pp.Type)
 
 	k := pp.Key
@@ -39,7 +39,7 @@ func setIdentInContext(pp Tuple, context map[string]interface{}) {
 	//context["L"+k] = rs.FirstLower().String()
 }
 
-//func setTypeInContext(pp Tuple, context map[string]interface{}) {
+//func setTypeInContext(pp Tuple, context map[string]any) {
 //	Debug("setTypeInContext %+v\n", pp)
 //
 //	k := pp.Key
@@ -53,7 +53,7 @@ func setIdentInContext(pp Tuple, context map[string]interface{}) {
 //	}
 //}
 
-func setPairTypeInContext(pp Tuple, context map[string]interface{}) {
+func setPairTypeInContext(pp Tuple, context map[string]any) {
 	k := pp.Key
 	v := pp.s
 	switch v {
@@ -68,7 +68,7 @@ func setPairTypeInContext(pp Tuple, context map[string]interface{}) {
 	context["Has"+k] = true
 }
 
-func addPairInContext(pp Pair, context map[string]interface{}) {
+func addPairInContext(pp Pair, context map[string]any) {
 	k := pp.Key
 	v := pp.Val
 	switch v {
@@ -87,20 +87,20 @@ func addPairInContext(pp Pair, context map[string]interface{}) {
 	}
 }
 
-func copyOf(context map[string]interface{}) map[string]interface{} {
-	cp := make(map[string]interface{})
+func copyOf(context map[string]any) map[string]any {
+	cp := make(map[string]any)
 	for k, v := range context {
 		cp[k] = v
 	}
 	return cp
 }
 
-func contextInfo1(key string, context map[string]interface{}) {
+func contextInfo1(key string, context map[string]any) {
 	fmt.Printf("%-14s= %v\n", key, context[key])
 	delete(context, key)
 }
 
-func contextInfo(others Pairs, context map[string]interface{}) {
+func contextInfo(others Pairs, context map[string]any) {
 	contextInfo1("AppVersion", context)
 	contextInfo1("PWD", context)
 	contextInfo1("Package", context)
@@ -133,9 +133,9 @@ func contextInfo(others Pairs, context map[string]interface{}) {
 	}
 }
 
-func CreateContext(templateFile FileMeta, outputFile string, types Tuples, others Pairs, appVersion string) map[string]interface{} {
+func CreateContext(templateFile FileMeta, outputFile string, types Tuples, others Pairs, appVersion string) map[string]any {
 	// Context will be passed to the template as a map.
-	context := make(map[string]interface{})
+	context := make(map[string]any)
 	context["GOARCH"] = runtime.GOARCH
 	context["GOOS"] = runtime.GOOS
 	context["GOPATH"] = os.Getenv("GOPATH")

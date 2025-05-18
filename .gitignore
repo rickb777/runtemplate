@@ -7,3 +7,4 @@ reports/
 .idea/
 .DS_Store
 dist/
+/app/test-out.txt
