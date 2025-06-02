@@ -12,6 +12,11 @@ func expectPresent(t *testing.T, ctx map[string]any, key string) {
 	delete(ctx, key)
 }
 
+func expectValue(t *testing.T, ctx map[string]any, key string, value any) {
+	expect.Map(ctx).ToContain(t, key, value)
+	delete(ctx, key)
+}
+
 func TestCreateContextCore(t *testing.T) {
 	m := FileMeta{"/a/b/c", "foo", time.Time{}, ""}
 	types := Tuples([]Tuple{})
@@ -31,7 +36,7 @@ func TestCreateContextCore(t *testing.T) {
 		"TemplatePath": "/a/b/c",
 		"TemplateFile": "foo",
 	}
-	expect.Any(ctx).ToBe(t, exp)
+	expect.Map(ctx).ToBe(t, exp)
 }
 
 func TestCreateContext(t *testing.T) {
@@ -53,29 +58,13 @@ func TestCreateContext(t *testing.T) {
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
 	expectPresent(t, ctx, "I1")
+	expectValue(t, ctx, "B", b.Type)
+	expectValue(t, ctx, "C", c.Type)
+	expectValue(t, ctx, "HasB", true)
+	expectValue(t, ctx, "HasC", true)
+	expectValue(t, ctx, "HasI1", true)
 
-	exp := map[string]any{
-		"B": b.Type,
-		//"UB":     "FooBar",
-		//"LB":     "fooBar",
-		//"PB":     "*FooBar",
-		"C": c.Type,
-		//"UC":     "Vv3",
-		//"LC":     "vv3",
-		//"PC":     "vv3",
-		"HasB":  true,
-		"HasC":  true,
-		"HasI1": true,
-		//"BAmp":   "&",
-		//"CAmp":   "",
-		//"BStar":  "*",
-		//"CStar":  "",
-		//"BIsPtr": true,
-		//"CIsPtr": false,
-		//"BZero":  "nil",
-		//"CZero":  "*(new(vv3))",
-	}
-	expect.Any(ctx).ToBe(t, exp)
+	expect.Map(ctx).ToBeEmpty(t)
 }
 
 func TestCreateContextWithDottedType(t *testing.T) {
@@ -95,22 +84,11 @@ func TestCreateContextWithDottedType(t *testing.T) {
 	expectPresent(t, ctx, "TemplatePath")
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
+	expectValue(t, ctx, "Type", bigInt.Type)
+	expectValue(t, ctx, "Prefix", NewTuple("Prefix=").Type)
+	expectValue(t, ctx, "HasType", true)
 
-	exp := map[string]any{
-		"Type": bigInt.Type,
-		//"UType":     "BigInt",
-		//"LType":     "bigInt",
-		//"PType":     "*big.Int",
-		"Prefix": NewTuple("Prefix=").Type,
-		//"UPrefix":   "",
-		//"LPrefix":   "",
-		"HasType": true,
-		//"TypeIsPtr": true,
-		//"TypeAmp":   "&",
-		//"TypeStar":  "*",
-		//"TypeZero":  "nil",
-	}
-	expect.Any(ctx).ToBe(t, exp)
+	expect.Map(ctx).ToBeEmpty(t)
 }
 
 func TestCreateContextWithPrefix(t *testing.T) {
@@ -129,35 +107,15 @@ func TestCreateContextWithPrefix(t *testing.T) {
 	expectPresent(t, ctx, "TemplatePath")
 	expectPresent(t, ctx, "TemplateFile")
 	expectPresent(t, ctx, "Package")
+	expectValue(t, ctx, "OneType", NewTuple("OneType=Apple").Type)
+	expectValue(t, ctx, "TwoType", NewTuple("TwoType=Pear/Pear/nil").Type)
+	expectValue(t, ctx, "OnePrefix", NewTuple("OnePrefix=Foo").Type)
+	expectValue(t, ctx, "TwoPrefix", NewTuple("TwoPrefix=").Type)
+	expectValue(t, ctx, "HasOneType", true)
+	expectValue(t, ctx, "HasTwoType", true)
+	expectValue(t, ctx, "HasOnePrefix", true)
 
-	exp := map[string]any{
-		"OneType": NewTuple("OneType=Apple").Type,
-		"TwoType": NewTuple("TwoType=Pear/Pear/nil").Type,
-		//"UOneType":     "Apple",
-		//"UTwoType":     "Pear",
-		//"LOneType":     "apple",
-		//"LTwoType":     "pear",
-		//"POneType":     "Apple",
-		//"PTwoType":     "Pear",
-		"OnePrefix": NewTuple("OnePrefix=Foo").Type,
-		"TwoPrefix": NewTuple("TwoPrefix=").Type,
-		//"UOnePrefix":   "Foo",
-		//"UTwoPrefix":   "",
-		//"LOnePrefix":   "foo",
-		//"LTwoPrefix":   "",
-		"HasOneType":   true,
-		"HasTwoType":   true,
-		"HasOnePrefix": true,
-		//"OneTypeIsPtr": false,
-		//"TwoTypeIsPtr": false,
-		//"OneTypeAmp":   "",
-		//"TwoTypeAmp":   "",
-		//"OneTypeStar":  "",
-		//"TwoTypeStar":  "",
-		//"OneTypeZero":  "*(new(Apple))",
-		//"TwoTypeZero":  "nil",
-	}
-	expect.Any(ctx).ToBe(t, exp)
+	expect.Map(ctx).ToBeEmpty(t)
 }
 
 func TestChoosePackage(t *testing.T) {
