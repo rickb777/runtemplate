@@ -2,7 +2,7 @@ module github.com/rickb777/runtemplate/v4
 
 go 1.25.0
 
-require github.com/rickb777/expect v1.3.2
+require github.com/rickb777/expect v1.3.3
 
 require (
 	github.com/google/go-cmp v0.7.0 // indirect
